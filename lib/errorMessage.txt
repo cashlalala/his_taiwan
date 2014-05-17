@@ -1,0 +1,3654 @@
+Time : 2013/09/10 10:47:50
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/10 10:51:24
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/10 10:55:26
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/10 10:58:59
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/10 12:17:33
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/16 11:35:48
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/16 12:47:05
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/16 12:49:22
+Frame : Frm_PatientMod
+Project : Patients
+Method : btn_DealSaveActionPerformed(java.awt.event.ActionEvent evt)
+ErrorMessage : SQLException: Column count doesn't match value count at row 1
+-------------------------
+Time : 2013/09/16 12:49:39
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/16 12:51:50
+Frame : Frm_Permission_Info
+Project : Permission
+Method : setUpdateGroup()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/16 12:51:51
+Frame : Frm_Permission_Info
+Project : Permission
+Method : setUpdateGroup()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/16 12:51:51
+Frame : Frm_Permission_Info
+Project : Permission
+Method : setUpdateGroup()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/16 12:51:51
+Frame : Frm_Permission_Info
+Project : Permission
+Method : setUpdateGroup()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/16 12:51:51
+Frame : Frm_Permission_Info
+Project : Permission
+Method : setUpdateGroup()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/16 12:51:51
+Frame : Frm_Permission_Info
+Project : Permission
+Method : setUpdateGroup()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/16 12:51:51
+Frame : Frm_Permission_Info
+Project : Permission
+Method : setUpdateGroup()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/16 12:51:51
+Frame : Frm_Permission_Info
+Project : Permission
+Method : setUpdateGroup()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/16 12:51:51
+Frame : Frm_Permission_Info
+Project : Permission
+Method : setUpdateGroup()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/16 12:51:51
+Frame : Frm_Permission_Info
+Project : Permission
+Method : setUpdateGroup()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/16 12:51:51
+Frame : Frm_Permission_Info
+Project : Permission
+Method : setUpdateGroup()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/16 12:51:51
+Frame : Frm_Permission_Info
+Project : Permission
+Method : setUpdateGroup()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/16 12:51:51
+Frame : Frm_Permission_Info
+Project : Permission
+Method : setUpdateGroup()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/16 12:51:51
+Frame : Frm_Permission_Info
+Project : Permission
+Method : setUpdateGroup()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/16 12:51:51
+Frame : Frm_Permission_Info
+Project : Permission
+Method : setUpdateGroup()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/16 12:51:51
+Frame : Frm_Permission_Info
+Project : Permission
+Method : setUpdateGroup()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/16 12:51:51
+Frame : Frm_Permission_Info
+Project : Permission
+Method : setUpdateGroup()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/16 12:51:51
+Frame : Frm_Permission_Info
+Project : Permission
+Method : setUpdateGroup()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/16 12:51:51
+Frame : Frm_Permission_Info
+Project : Permission
+Method : setUpdateGroup()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/16 12:51:51
+Frame : Frm_Permission_Info
+Project : Permission
+Method : setUpdateGroup()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/16 13:20:15
+Frame : Frm_PatientMod
+Project : Patients
+Method : btn_DealSaveActionPerformed(java.awt.event.ActionEvent evt)
+ErrorMessage : SQLException: Column count doesn't match value count at row 1
+-------------------------
+Time : 2013/09/16 13:21:49
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/16 13:21:58
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/16 13:24:33
+Frame : Frm_PatientMod
+Project : Patients
+Method : btn_DealSaveActionPerformed(java.awt.event.ActionEvent evt)
+ErrorMessage : SQLException: Column count doesn't match value count at row 1
+-------------------------
+Time : 2013/09/16 13:28:22
+Frame : Frm_PatientMod
+Project : Patients
+Method : btn_DealSaveActionPerformed(java.awt.event.ActionEvent evt)
+ErrorMessage : SQLException: Column count doesn't match value count at row 1
+-------------------------
+Time : 2013/09/16 13:29:01
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 12:55:02
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/17 12:55:13
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 13:08:30
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/17 13:08:37
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 13:09:46
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/17 13:09:54
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 13:14:24
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/17 13:14:37
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 13:25:19
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/17 13:25:32
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 13:26:48
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/17 13:27:51
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/17 13:28:31
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 13:41:44
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/17 13:41:53
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 13:43:36
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/17 13:52:59
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/17 13:53:09
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 13:55:26
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/17 13:55:47
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 13:56:28
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 13:57:21
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/17 13:57:37
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/17 13:57:47
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 13:58:22
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 13:58:42
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 14:13:24
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/17 14:13:34
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 14:14:20
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 14:15:10
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/17 14:15:57
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 14:16:17
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 14:23:42
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/17 14:24:05
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 14:54:49
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/17 14:54:58
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 14:59:19
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/17 15:03:10
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 15:07:46
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/17 15:07:54
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 15:11:49
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/17 15:12:02
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 15:15:50
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/17 15:16:14
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 15:23:22
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/17 15:23:29
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 15:27:25
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/17 15:27:33
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 15:34:35
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/17 15:35:16
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 15:42:38
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/17 15:42:50
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 15:44:16
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/17 15:44:27
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 15:48:06
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/17 15:48:17
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 15:55:31
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/17 15:55:46
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 15:58:03
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/17 15:58:11
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 16:02:54
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/17 16:03:28
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 16:04:09
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 16:05:10
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/17 16:05:18
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 16:08:51
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/17 16:09:14
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 16:10:22
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 16:12:44
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 16:16:32
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 16:41:01
+Frame : Frm_PatientMod
+Project : Patients
+Method : btn_DealSaveActionPerformed(java.awt.event.ActionEvent evt)
+ErrorMessage : SQLException: Column count doesn't match value count at row 1
+-------------------------
+Time : 2013/09/17 16:42:05
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 16:42:22
+Frame : Frm_PatientMod
+Project : Patients
+Method : btn_DealSaveActionPerformed(java.awt.event.ActionEvent evt)
+ErrorMessage : SQLException: Column count doesn't match value count at row 1
+-------------------------
+Time : 2013/09/17 16:51:03
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 16:51:42
+Frame : Frm_PatientMod
+Project : Patients
+Method : btn_DealSaveActionPerformed(java.awt.event.ActionEvent evt)
+ErrorMessage : SQLException: Column count doesn't match value count at row 1
+-------------------------
+Time : 2013/09/17 16:52:03
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 16:52:37
+Frame : Frm_PatientMod
+Project : Patients
+Method : btn_DealSaveActionPerformed(java.awt.event.ActionEvent evt)
+ErrorMessage : SQLException: Column count doesn't match value count at row 1
+-------------------------
+Time : 2013/09/17 16:53:18
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 16:54:08
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 16:54:18
+Frame : Frm_PatientMod
+Project : Patients
+Method : showDealTimer()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 16:55:12
+Frame : Frm_PatientMod
+Project : Patients
+Method : btn_DealSaveActionPerformed(java.awt.event.ActionEvent evt)
+ErrorMessage : SQLException: Column count doesn't match value count at row 1
+-------------------------
+Time : 2013/09/18 09:38:55
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/18 13:27:16
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/18 13:27:25
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 13:28:01
+Frame : Frm_PatientMod
+Project : Patients
+Method : btn_DealSaveActionPerformed(java.awt.event.ActionEvent evt)
+ErrorMessage : SQLException: Column count doesn't match value count at row 1
+-------------------------
+Time : 2013/09/18 13:32:26
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/18 13:32:36
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 13:33:35
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 13:52:47
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/17 13:55:01
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 13:55:34
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 13:56:03
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 13:56:31
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 13:56:46
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 14:39:28
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 15:01:27
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 15:01:45
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 15:03:26
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/17 15:03:38
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 15:22:46
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 15:23:45
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 15:23:54
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/19 15:26:35
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/19 15:27:20
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/19 15:27:49
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 15:47:52
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/19 15:51:08
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/19 15:51:19
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 16:46:10
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/18 16:46:18
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 16:47:50
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/18 16:47:58
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:06:20
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/18 17:06:31
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:16:40
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/18 17:16:49
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:16:55
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:16:57
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:16:58
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:16:59
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:17:01
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:17:02
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:17:03
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:17:05
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:17:07
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:17:08
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:17:09
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:17:10
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:17:12
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:17:13
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:17:14
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:17:16
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:17:17
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:17:18
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:17:19
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:17:21
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:17:22
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:17:23
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:17:25
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:17:26
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:17:28
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:17:29
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:17:30
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:17:33
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:17:34
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:17:37
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:17:38
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:17:50
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:17:58
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:18:01
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:18:02
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:18:03
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:18:05
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:18:06
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:18:07
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:18:10
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:18:11
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:18:19
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:18:20
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:18:26
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:18:27
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:18:29
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:18:30
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:18:31
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:18:41
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:18:53
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:18:57
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:19:00
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:19:18
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:19:19
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:19:21
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:19:22
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:25:42
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/18 17:25:49
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:26:05
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:26:19
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:27:05
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:30:38
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/18 17:30:49
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:32:43
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/18 17:32:54
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:34:26
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/18 17:34:34
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:34:53
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:35:08
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:35:33
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:35:49
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/18 17:35:55
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:36:42
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/18 17:36:51
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/18 17:38:08
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/19 17:47:29
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/19 17:47:52
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/21 16:54:57
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/21 16:57:15
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/21 16:57:24
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/21 16:58:32
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/21 17:03:34
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/21 17:03:41
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/21 17:07:11
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/21 17:20:32
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/21 17:20:40
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/21 17:21:50
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/21 17:22:01
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/21 17:23:18
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/21 17:23:26
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/21 17:23:45
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/21 17:24:04
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/21 17:24:28
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/21 17:33:26
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/20 17:36:52
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/20 17:37:22
+Frame : Frm_Registration
+Project : Registration
+Method : btn_SaveActionPerformed()
+ErrorMessage : MySQLIntegrityConstraintViolationException: Column 'touchtime' cannot be null
+-------------------------
+Time : 2013/09/20 17:37:26
+Frame : Frm_Registration
+Project : Registration
+Method : btn_SaveActionPerformed()
+ErrorMessage : MySQLIntegrityConstraintViolationException: Column 'touchtime' cannot be null
+-------------------------
+Time : 2013/09/20 17:37:32
+Frame : Frm_Registration
+Project : Registration
+Method : btn_SaveActionPerformed()
+ErrorMessage : MySQLIntegrityConstraintViolationException: Column 'touchtime' cannot be null
+-------------------------
+Time : 2013/09/20 17:37:33
+Frame : Frm_Registration
+Project : Registration
+Method : btn_SaveActionPerformed()
+ErrorMessage : MySQLIntegrityConstraintViolationException: Column 'touchtime' cannot be null
+-------------------------
+Time : 2013/09/20 17:37:33
+Frame : Frm_Registration
+Project : Registration
+Method : btn_SaveActionPerformed()
+ErrorMessage : MySQLIntegrityConstraintViolationException: Column 'touchtime' cannot be null
+-------------------------
+Time : 2013/09/20 17:37:37
+Frame : Frm_Registration
+Project : Registration
+Method : btn_SaveActionPerformed()
+ErrorMessage : MySQLIntegrityConstraintViolationException: Column 'touchtime' cannot be null
+-------------------------
+Time : 2013/09/20 17:37:55
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/20 17:38:16
+Frame : Frm_Registration
+Project : Registration
+Method : btn_SaveActionPerformed()
+ErrorMessage : MySQLIntegrityConstraintViolationException: Column 'touchtime' cannot be null
+-------------------------
+Time : 2013/09/20 17:39:18
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/20 17:39:26
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/20 17:39:51
+Frame : Frm_Registration
+Project : Registration
+Method : btn_SaveActionPerformed()
+ErrorMessage : MySQLIntegrityConstraintViolationException: Column 'touchtime' cannot be null
+-------------------------
+Time : 2013/09/21 18:09:48
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/21 18:10:00
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/21 18:10:15
+Frame : Frm_Registration
+Project : Registration
+Method : btn_SaveActionPerformed()
+ErrorMessage : MySQLIntegrityConstraintViolationException: Column 'touchtime' cannot be null
+-------------------------
+Time : 2013/09/21 18:13:50
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/21 18:14:00
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/21 18:14:21
+Frame : Frm_Registration
+Project : Registration
+Method : btn_SaveActionPerformed()
+ErrorMessage : MySQLIntegrityConstraintViolationException: Column 'touchtime' cannot be null
+-------------------------
+Time : 2013/09/21 18:14:24
+Frame : Frm_Registration
+Project : Registration
+Method : btn_SaveActionPerformed()
+ErrorMessage : MySQLIntegrityConstraintViolationException: Column 'touchtime' cannot be null
+-------------------------
+Time : 2013/09/21 18:14:25
+Frame : Frm_Registration
+Project : Registration
+Method : btn_SaveActionPerformed()
+ErrorMessage : MySQLIntegrityConstraintViolationException: Column 'touchtime' cannot be null
+-------------------------
+Time : 2013/09/21 18:14:26
+Frame : Frm_Registration
+Project : Registration
+Method : btn_SaveActionPerformed()
+ErrorMessage : MySQLIntegrityConstraintViolationException: Column 'touchtime' cannot be null
+-------------------------
+Time : 2013/09/21 18:28:24
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/21 18:28:34
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/21 18:28:49
+Frame : Frm_Registration
+Project : Registration
+Method : btn_SaveActionPerformed()
+ErrorMessage : MySQLIntegrityConstraintViolationException: Column 'touchtime' cannot be null
+-------------------------
+Time : 2013/09/22 15:15:47
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/22 15:15:59
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/22 15:17:03
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/22 15:17:54
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/22 15:18:59
+Frame : Frm_Registration
+Project : Registration
+Method : btn_SaveActionPerformed()
+ErrorMessage : MySQLIntegrityConstraintViolationException: Column 'touchtime' cannot be null
+-------------------------
+Time : 2013/09/22 15:19:26
+Frame : Frm_Registration
+Project : Registration
+Method : btn_SaveActionPerformed()
+ErrorMessage : MySQLIntegrityConstraintViolationException: Column 'touchtime' cannot be null
+-------------------------
+Time : 2013/09/22 15:20:14
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/22 15:20:36
+Frame : Frm_Registration
+Project : Registration
+Method : btn_SaveActionPerformed()
+ErrorMessage : MySQLIntegrityConstraintViolationException: Column 'touchtime' cannot be null
+-------------------------
+Time : 2013/09/22 15:20:38
+Frame : Frm_Registration
+Project : Registration
+Method : btn_SaveActionPerformed()
+ErrorMessage : MySQLIntegrityConstraintViolationException: Column 'touchtime' cannot be null
+-------------------------
+Time : 2013/09/22 15:20:39
+Frame : Frm_Registration
+Project : Registration
+Method : btn_SaveActionPerformed()
+ErrorMessage : MySQLIntegrityConstraintViolationException: Column 'touchtime' cannot be null
+-------------------------
+Time : 2013/09/22 15:20:39
+Frame : Frm_Registration
+Project : Registration
+Method : btn_SaveActionPerformed()
+ErrorMessage : MySQLIntegrityConstraintViolationException: Column 'touchtime' cannot be null
+-------------------------
+Time : 2013/09/22 15:20:39
+Frame : Frm_Registration
+Project : Registration
+Method : btn_SaveActionPerformed()
+ErrorMessage : MySQLIntegrityConstraintViolationException: Column 'touchtime' cannot be null
+-------------------------
+Time : 2013/09/22 15:20:39
+Frame : Frm_Registration
+Project : Registration
+Method : btn_SaveActionPerformed()
+ErrorMessage : MySQLIntegrityConstraintViolationException: Column 'touchtime' cannot be null
+-------------------------
+Time : 2013/09/22 15:20:39
+Frame : Frm_Registration
+Project : Registration
+Method : btn_SaveActionPerformed()
+ErrorMessage : MySQLIntegrityConstraintViolationException: Column 'touchtime' cannot be null
+-------------------------
+Time : 2013/09/22 15:20:56
+Frame : Frm_Registration
+Project : Registration
+Method : btn_SaveActionPerformed()
+ErrorMessage : MySQLIntegrityConstraintViolationException: Column 'touchtime' cannot be null
+-------------------------
+Time : 2013/09/22 15:20:58
+Frame : Frm_Registration
+Project : Registration
+Method : btn_SaveActionPerformed()
+ErrorMessage : MySQLIntegrityConstraintViolationException: Column 'touchtime' cannot be null
+-------------------------
+Time : 2013/09/22 15:21:08
+Frame : Frm_Registration
+Project : Registration
+Method : btn_SaveActionPerformed()
+ErrorMessage : MySQLIntegrityConstraintViolationException: Column 'touchtime' cannot be null
+-------------------------
+Time : 2013/09/22 15:21:32
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/22 15:21:46
+Frame : Frm_Registration
+Project : Registration
+Method : btn_SaveActionPerformed()
+ErrorMessage : MySQLIntegrityConstraintViolationException: Column 'touchtime' cannot be null
+-------------------------
+Time : 2013/09/22 15:21:47
+Frame : Frm_Registration
+Project : Registration
+Method : btn_SaveActionPerformed()
+ErrorMessage : MySQLIntegrityConstraintViolationException: Column 'touchtime' cannot be null
+-------------------------
+Time : 2013/09/22 15:21:47
+Frame : Frm_Registration
+Project : Registration
+Method : btn_SaveActionPerformed()
+ErrorMessage : MySQLIntegrityConstraintViolationException: Column 'touchtime' cannot be null
+-------------------------
+Time : 2013/09/22 15:29:13
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/22 15:34:51
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/22 15:36:10
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/22 15:37:24
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/22 15:39:15
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/22 15:40:16
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/22 15:40:24
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/22 15:41:06
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/22 15:42:00
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/22 15:42:52
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/22 15:43:31
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/22 15:51:37
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/22 16:06:06
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 09:49:33
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 09:50:08
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 09:50:53
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 09:51:06
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 10:07:18
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 10:59:38
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 10:59:46
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:16:48
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 11:16:57
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:22:54
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 11:23:03
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:24:30
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 11:24:43
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:25:10
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:25:19
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:25:52
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:28:47
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 11:33:22
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:34:28
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 11:34:35
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:35:30
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 11:35:42
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:35:46
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:35:48
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:35:52
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:35:55
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:35:57
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:36:00
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:36:03
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:36:07
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:36:08
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:36:09
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:36:11
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:36:12
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:36:13
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:36:15
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:36:16
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:36:17
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:36:19
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:36:20
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:36:22
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:36:23
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:36:47
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 11:36:54
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:36:58
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:37:00
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:37:02
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:37:04
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:37:07
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:37:09
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:37:12
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:37:16
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:37:18
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:37:20
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:37:25
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:37:26
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:37:28
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:37:30
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:37:31
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:37:33
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:37:34
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:37:35
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:37:42
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:37:44
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:41:44
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:41:46
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:41:48
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:53:27
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 11:53:40
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 11:53:49
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 11:58:36
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 11:58:49
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:05:35
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 12:05:43
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:05:48
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:05:49
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:05:50
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:05:51
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:05:52
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:05:53
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:06:05
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:06:11
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:06:15
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:06:16
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:06:17
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:06:24
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:07:50
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 12:08:25
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:08:30
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:08:30
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:09:25
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 12:09:36
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:09:42
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:09:43
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:09:44
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:09:45
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:09:46
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:09:46
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:09:47
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:09:47
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:09:48
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:09:55
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:10:05
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:10:08
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:10:46
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 12:10:56
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:11:00
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:11:01
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:11:02
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:11:02
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:11:06
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:11:09
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:11:11
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:11:13
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:11:13
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:11:14
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:11:15
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:11:15
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:11:17
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:11:24
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:11:25
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:11:26
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:11:26
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 12:11:27
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 13:44:46
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 13:44:58
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 13:45:19
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 13:46:39
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 13:48:21
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 13:49:07
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 13:58:37
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 13:58:44
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 13:58:56
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 14:06:54
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 14:07:08
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 14:07:22
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 14:12:07
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 14:12:22
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 14:18:55
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 14:20:38
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 14:20:52
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 14:21:45
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 14:22:01
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 14:22:13
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 14:23:42
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 14:23:56
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 14:24:09
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 14:24:25
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 14:25:15
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 14:26:45
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 14:29:01
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 14:29:34
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 14:30:13
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 14:30:36
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 14:30:59
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 14:33:30
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 14:35:48
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 14:36:15
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 14:36:43
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 14:37:46
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 14:39:03
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 14:39:34
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 14:39:39
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 14:40:03
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 14:40:57
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 14:42:33
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 14:42:58
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 14:43:21
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 14:43:47
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 14:44:16
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 14:45:16
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 14:46:10
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 14:46:54
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 14:47:01
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 14:50:32
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 14:50:49
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 14:51:20
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 15:26:40
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 15:26:52
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 15:27:29
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 15:43:48
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 15:44:02
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 15:44:28
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 15:44:57
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 15:46:07
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 15:46:18
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 15:46:43
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 15:52:41
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 15:52:54
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 15:53:29
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 15:54:36
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 15:54:48
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 15:56:22
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 15:57:46
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 15:57:58
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 15:59:29
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 16:00:22
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 16:00:36
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 16:01:22
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 16:01:39
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 16:01:52
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 16:18:57
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 16:19:13
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 16:19:29
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 16:21:00
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 16:22:45
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 16:24:27
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 16:53:59
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 16:54:11
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 16:55:52
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 16:56:04
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 16:56:28
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 16:57:09
+Frame : Frm_DiagnosisTherapy
+Project : Diagnosis
+Method : setModel(String condition, String state) - DBC.closeConnection
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 16:57:48
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 16:58:01
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 16:58:13
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 16:58:24
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 17:07:27
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 17:14:17
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 17:14:36
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 17:14:49
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 17:18:26
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 17:18:41
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 17:18:58
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 17:19:03
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 17:19:06
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 17:19:09
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 17:19:12
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 17:19:14
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 17:19:17
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 17:19:20
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 17:19:23
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 17:21:44
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 17:22:35
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 17:22:57
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 17:24:38
+Frame : RefrashRecord
+Project : Anamnesis
+Method : run() - InterruptedException
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 17:33:43
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 17:34:38
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 17:35:04
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 17:47:23
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 17:47:31
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 17:47:39
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 17:47:41
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 17:47:43
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 17:48:24
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 17:48:58
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 17:49:04
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 17:49:05
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 17:49:07
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 17:49:09
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 17:50:01
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 17:50:07
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 17:50:18
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 17:52:47
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 17:52:57
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 17:53:22
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 17:53:52
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 17:54:00
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 17:57:11
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 17:57:20
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 17:57:27
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 17:57:28
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 17:57:34
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 17:57:35
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 17:57:36
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 17:57:46
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 18:02:08
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 18:02:15
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 18:02:18
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 18:02:19
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 18:02:24
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 18:02:32
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 18:02:39
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 18:02:45
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 18:24:47
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 18:26:04
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 18:26:09
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 18:26:22
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 18:26:41
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 18:26:45
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 18:27:01
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 18:28:18
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 18:28:21
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 18:28:22
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 18:29:37
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 18:29:46
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 18:29:51
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 18:29:52
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 18:30:46
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 18:30:49
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 18:30:59
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 18:31:21
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 18:31:42
+Frame : Frm_DiagnosisWorkList
+Project : Diagnosis
+Method : initWorkList() - run()
+ErrorMessage : InterruptedException: sleep interrupted
+-------------------------
+Time : 2013/09/23 18:32:08
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 18:32:22
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 18:32:29
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 18:32:50
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 18:35:34
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 18:35:39
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 18:36:00
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 18:36:21
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 18:38:04
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 18:42:06
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------
+Time : 2013/09/23 18:42:21
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2013/09/23 18:43:44
+Frame : Frm_Registration
+Project : Registration
+Method : initShiftInfo()
+ErrorMessage : 
+-------------------------
+Time : 2014/05/17 08:01:13
+Frame : Frm_Main
+Project : Main
+Method : initPermission()
+ErrorMessage : NullPointerException
+-------------------------

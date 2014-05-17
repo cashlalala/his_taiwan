@@ -1,0 +1,61 @@
+Account :
+ 1. admin / 123
+
+Archives
+ 2. archives / 123
+ 3. archives2 / 123
+
+Laboratory
+ 4. lab / 123
+
+Clinic
+ 5. prenatale / 123
+ 6. consultation / 123
+ 
+
+
+
+Procedures :
+
+a. Shift Management Setting
+	.Login admin account
+	.Enter Shift Management
+	.Select Depart/Clinic
+	.Set Doctor in target Date -> Doctor :prenatale , consultation 
+
+
+b. Registration ( Create Patient medical record, Make Appointment)
+	.Login Archives account
+	.Enter Registration
+	.Input Patient Name to Retrieve Patient Record
+	.If System doesn't exist account, the click Add Patient button
+	.Input Patient Data and SAVE
+	.Select Doctor List , Chose Doctor
+	.Click SAVE to finish appointment  
+
+
+c. Dignosis
+	.Login "prenatale" , "consultation" account
+	.Enter Dignosis
+	.Select Patien from the waiting list
+	.Click NO on the Pop-up window
+	.Input Information in the Summary Box, 
+
+
+  .Subjective : 
+  .Objective : 
+  .Assessment : 
+  .Plan: 
+	EX: SOAP
+		.Subjective : running nose, cough
+		.Objective : no wheezing sound, breathing sound: clear
+		.Assessment : Acute Respiratory tract infection
+		.Plan: Panadol 1# bid(twice per day) for 3days 
+	.Click Dignosis
+	.Input Disease Term and push Enter 
+	.Select ICD Option and Click Enter
+	.Click Send and Finish
+
+
+
+
