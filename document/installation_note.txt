@@ -1,0 +1,27 @@
+A. With ubuntu 12.04 32 bits
+git
+	sudo apt-get install git
+smartgit
+	http://www.syntevo.com/smartgithg/download
+
+JAVA
+	sudo add-apt-repository ppa:webupd8team/java
+	sudo apt-get update
+	sudo apt-get install oracle-java6-installer
+mysql
+	sudo apt-get install mysql-server
+	sudo apt-get install mysql-client
+mysql workbench
+	http://dev.mysql.com/downloads/tools/workbench/
+	1. "sudo vi /etc/mysql/my.cnf”, comment bind-address
+	1. "Database" -> "connect to database"
+	2. create new schema "hospital", default collation choose "utf8-unicode_ci"
+	3. set "hospital" as default schema
+	4. Open a SQL script file, choose "document/hospital-SaintMicheldeAttalaye-20140221.sql" and execute it
+eclipse
+	https://www.eclipse.org/downloads/
+	1. Download standard 32bit version
+	2. create an empty project
+	3. import "File System" from the his.git folder 
+	4. edit project properties, "JAVA build path" -> "Libraries" -> "Add external JARs", add all jars in his.git/lib
+	5. Window -> Preferences -> Java -> Compiler -> Errors/Warnings -> Deprecated and restricted API -> Forbidden reference (access rules) -> Warnings
