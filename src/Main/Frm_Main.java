@@ -43,9 +43,9 @@ public class Frm_Main extends javax.swing.JFrame {
         }
         this.setLocationRelativeTo(this);
    
-        btn_MedicineStock.setVisible(false);
-        btn_DepartmentManagement.setVisible(false);
-        btn_PositionManagement.setVisible(false);
+        btn_MedicineStock.setVisible(true);
+        btn_DepartmentManagement.setVisible(true);
+        btn_PositionManagement.setVisible(true);
         language paragraph = new language();
         String[] line = paragraph.setlanguage("MAIN").split("\n") ;
         for(int j = 1 ; j<line.length ; j++){
