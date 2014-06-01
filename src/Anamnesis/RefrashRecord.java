@@ -164,18 +164,18 @@ public class RefrashRecord extends Thread{
                 }
                 rs = DBC.executeQuery(check_sql);
 
-                    if(rs.next()
-                    && (rs.getString(1) == null || rs.getString("record_touchtime").equals(m_LastRecordTouchTime))
-                    && (rs.getString(2) == null || rs.getString(2).equals(m_LastBorrowTime))){
-                        RefrashRecord.sleep(time);
-                        continue;
-                    }
+                if(rs.next()
+                && (rs.getString(1) == null || rs.getString("record_touchtime").equals(m_LastRecordTouchTime))
+                && (rs.getString(2) == null || rs.getString(2).equals(m_LastBorrowTime))){
+                    RefrashRecord.sleep(time);
+                    continue;
+                }
                 //m_LastTouchTime = rs.getString(1);
                 m_LastBorrowTime = rs.getString(2);
                 DBC.closeConnection(rs);
                 
                 rs = DBC.executeQuery(getSQL());
-                System.out.println(getSQL());
+                //System.out.println(getSQL());
                 if(rs.last()){
 
                     int row = 0;
@@ -223,22 +223,19 @@ public class RefrashRecord extends Thread{
                         rs = DBC.executeQuery(check_sql);
                         if(rs.next()) m_LastRecordTouchTime = rs.getString("record_touchtime");
                     }
-
-                    
-                    
                     TableColumn columnChoose = this.tab.getColumnModel().getColumn(m_Title.length-2);
                     columnChoose.setPreferredWidth(50);
                     columnChoose.setCellRenderer(new TriStateCellRenderer());
                     columnChoose.setCellEditor(new TriStateCellEditor());
                 }else{
-                    Object[][] tableItem = null;
-                    tableItem = new Object[0][m_Title.length];
-                    this.tab.setModel(new DefaultTableModel(tableItem,m_Title));
-
+                    //Object[][] tableItem = null;
+                    //tableItem = new Object[0][m_Title.length];
+                    //this.tab.setModel(new DefaultTableModel(tableItem,m_Title));
+                    //RefrashRecord.sleep(time);
                 }
                tab.getColumnModel().getColumn(0).setMaxWidth(60);
                 TabTools.setHideColumn(tab,m_Title.length-1);
-                DBC.closeConnection(rs);
+                //DBC.closeConnection(rs);
             }catch (SQLException e) {
                 ErrorMessage.setData("Anamnesis", "RefrashRecord" ,"run()",
                     e.toString().substring(e.toString().lastIndexOf(".")+1, e.toString().length()));
