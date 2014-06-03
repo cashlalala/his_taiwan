@@ -1,12 +1,16 @@
 package Staff;
-import Multilingual.language;
 import cc.johnwu.sql.*;
 import cc.johnwu.finger.FingerPrintScanner;
+
 import java.awt.event.*;
 import java.sql.*;
+
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
+
+import multilingual.Language;
+
 import java.sql.SQLException;
 /**
  *
@@ -16,7 +20,7 @@ public class Frm_Educational extends javax.swing.JFrame {
     private int m_Sno;
     private String m_UUID = null;
     
-    private language paragraph = new language();
+    private Language paragraph = Language.getInstance();
     private String[] line = paragraph.setlanguage("EDUCATIONAL").split("\n") ;
     private String[] message = paragraph.setlanguage("MESSAGE").split("\n") ;
     

@@ -6,16 +6,19 @@
 package WorkList;
 
 import Common.TabTools;
-import Multilingual.language;
 import Common.*;
 import cc.johnwu.date.DateMethod;
 import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
 import cc.johnwu.sql.HISModel;
+
 import java.awt.Color;
 import java.sql.*;
+
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+
+import multilingual.Language;
 
 
 /**
@@ -24,7 +27,7 @@ import javax.swing.table.TableColumn;
  */
 public class RefrashWorkList extends Thread{
     private String m_SysName;                       // 進入系統名稱
-    private language paragraph = new language();
+    private Language paragraph = Language.getInstance();
     private String[] line = paragraph.setlanguage("DIAGNOSISWORKLIST").split("\n") ;
     private javax.swing.JTable m_Tab;
     private long m_Time;

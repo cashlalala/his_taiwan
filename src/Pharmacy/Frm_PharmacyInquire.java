@@ -3,20 +3,25 @@ package Pharmacy;
 import ErrorMessage.StoredErrorMessage;
 import cc.johnwu.date.DateMethod;
 import cc.johnwu.sql.*;
-import Multilingual.language;
+
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+
 import javax.swing.table.TableColumn;
+
 import java.sql.* ;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
+
+import multilingual.Language;
 
 public class Frm_PharmacyInquire extends javax.swing.JFrame {
     private Frm_Pharmacy m_Pharmacy;
     /*多國語言變數*/
-    private language paragraph = new language();
+    private Language paragraph = Language.getInstance();
     private String[] line = new String(paragraph.setlanguage("PHARMACYINQUIRE")).split("\n") ;
     private String[] message = new String(paragraph.setlanguage("MESSAGE")).split("\n") ;
     /*輸出錯誤資訊變數*/

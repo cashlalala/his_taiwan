@@ -3,25 +3,30 @@ package Diagnosis;
 import Diagnosis.TableTriStateCell.TriStateCellEditor;
 import Diagnosis.TableTriStateCell.TriStateCellRenderer;
 import cc.johnwu.sql.*;
-import Multilingual.language;
+
 import java.awt.event.ItemEvent;
 import java.sql.*;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
 import AutoComplete.CompleterComboBox;
 import ErrorMessage.StoredErrorMessage;
+
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+
+import multilingual.Language;
 
 public class Frm_DiagnosisMedicine extends javax.swing.JFrame {
     private CompleterComboBox m_Cobww;
@@ -31,7 +36,7 @@ public class Frm_DiagnosisMedicine extends javax.swing.JFrame {
     private Frm_DiagnosisAllergy m_DiagnosisAllergy;
     private String m_Allergy;
     /*多國語言變數*/
-    private language paragraph = new language();
+    private Language paragraph = Language.getInstance();
     private String[] line = paragraph.setlanguage("DIAGNOSISMEDICINE").split("\n") ;
     private String[] message = paragraph.setlanguage("MESSAGE").split("\n") ;
     /*輸出錯誤資訊變數*/

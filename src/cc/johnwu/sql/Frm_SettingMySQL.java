@@ -1,16 +1,18 @@
 package cc.johnwu.sql;
 
 
-import Multilingual.language;
 import java.awt.Frame;
 import java.sql.*;
+
 import javax.swing.JOptionPane;
+
+import multilingual.Language;
 
 
 public class Frm_SettingMySQL extends javax.swing.JFrame {
 
      /*多國語言變數*/
-   // private language paragraph = new language();
+   // private language paragraph = language.getInstance();
     //private String[] line = new String(paragraph.setlanguage("SETTINGMYSQL")).split("\n") ;
     /** Creates new form Frm_SettingMySQL */
     public Frm_SettingMySQL() {

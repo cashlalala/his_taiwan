@@ -3,15 +3,18 @@ package Pharmacy;
 //import Diagnosis.*;
 import Common.PrintTools;
 import ErrorMessage.StoredErrorMessage;
-import Multilingual.language;
 import cc.johnwu.date.DateMethod;
 import cc.johnwu.sql.DBC;
 import cc.johnwu.sql.HISModel;
+
 import java.sql.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+
+import multilingual.Language;
 
 
 public class RefrashPharmacy extends Thread{
@@ -23,7 +26,7 @@ public class RefrashPharmacy extends Thread{
     private ResultSet rs = null;
     private ResultSet rsTouchTime = null;
     private Frm_Pharmacy Frm_p;
-    private language paragraph = new language();
+    private Language paragraph = Language.getInstance();
     private String[] line = paragraph.setlanguage("PHARMACY").split("\n") ;
     /*輸出錯誤資訊變數*/
     StoredErrorMessage ErrorMessage = new StoredErrorMessage() ;

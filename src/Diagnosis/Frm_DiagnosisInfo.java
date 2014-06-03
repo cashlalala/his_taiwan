@@ -7,17 +7,19 @@ import ErrorMessage.StoredErrorMessage;
 import Laboratory.Frm_LabDM;
 import Laboratory.Frm_LabHistory;
 import cc.johnwu.sql.*;
-import Multilingual.language;
 import System.Setting;
 import Common.*;
 import WorkList.Frm_WorkList;
 import Radiology.Frm_RadiologyHistory;
+
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Vector;
+
 import cc.johnwu.login.UserInfo;
 import cc.johnwu.date.DateMethod;
+
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.*;
@@ -28,6 +30,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.swing.DefaultCellEditor;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -36,6 +39,9 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+
+import multilingual.Language;
+
 import java.awt.*;
 import java.awt.print.*;
 import java.util.Collection;
@@ -88,7 +94,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements DiagnosisIn
     private int m_Row;
     private String m_OsGuid;
     /*多國語言變數*/
-    private language paragraph = new language();
+    private Language paragraph = Language.getInstance();
     private String[] line = paragraph.setlanguage("DIAGNOSISINFO").split("\n") ;
     private String[] message = paragraph.setlanguage("MESSAGE").split("\n") ;
     /*輸出錯誤資訊變數*/

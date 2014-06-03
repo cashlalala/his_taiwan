@@ -1,12 +1,16 @@
 package Staff;
 
-import Multilingual.language;
 import cc.johnwu.sql.*;
+
 import java.awt.event.*;
 import java.sql.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.swing.JList;
+
+import multilingual.Language;
+
 import java.sql.SQLException;
 
 /**
@@ -17,7 +21,7 @@ public class Frm_Work extends javax.swing.JFrame {
       private int m_Sno;
       private String m_UUID = null;
        /*多國語言變數*/
-    private language paragraph = new language();
+    private Language paragraph = Language.getInstance();
     private String[] line = paragraph.setlanguage("WORK").split("\n") ;
     private String[] message = paragraph.setlanguage("MESSAGE").split("\n") ;
       public Frm_Work(int sno, String uuid) {

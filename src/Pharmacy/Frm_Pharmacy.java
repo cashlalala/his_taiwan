@@ -5,7 +5,6 @@ package Pharmacy;
 import ErrorMessage.StoredErrorMessage;
 import Main.Frm_Main;
 import cc.johnwu.login.UserInfo;
-import Multilingual.language;
 import cc.johnwu.date.DateMethod;
 import cc.johnwu.sql.DBC;
 
@@ -26,7 +25,10 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.swing.ListSelectionModel;
+
+import multilingual.Language;
 
 public class Frm_Pharmacy extends javax.swing.JFrame {
  
@@ -34,7 +36,7 @@ public class Frm_Pharmacy extends javax.swing.JFrame {
     private RefrashPharmacy m_RefrashWorkList;
     private Thread m_Clock;
     /*多國語言變數*/
-    private language paragraph = new language();
+    private Language paragraph = Language.getInstance();
     private String[] line = paragraph.setlanguage("PHARMACY").split("\n") ;
     private String[] message = paragraph.setlanguage("MESSAGE").split("\n") ;
     /*輸出錯誤資訊變數*/

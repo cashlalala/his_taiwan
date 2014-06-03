@@ -1,15 +1,17 @@
 package Staff;
 
 import ErrorMessage.StoredErrorMessage;
-import Multilingual.language;
 import cc.johnwu.sql.DBC;
+
 import java.sql.*;
+
+import multilingual.Language;
 
 public class Frm_UpdateMod extends javax.swing.JFrame {
     Object getValue;
     private Frm_Position frm_Pos;
     private Frm_Department frm_Dep;
-    private language paragraph = new language();
+    private Language paragraph = Language.getInstance();
     private String[] line = new String(paragraph.setlanguage("EMPLOYEE")).split("\n") ;
     private String[] message = new String(paragraph.setlanguage("MESSAGE")).split("\n") ;
     /*輸出錯誤資訊變數*/

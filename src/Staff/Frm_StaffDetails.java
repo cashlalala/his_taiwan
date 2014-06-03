@@ -23,7 +23,7 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
     private String m_UUID = null;
 
      /*多國語言變數*/
-//    private language paragraph = new language();
+//    private language paragraph = language.getInstance();
 //    private String[] line = paragraph.setlanguage("EMPLOYEE").split("\n") ;
 //    private String[] message = paragraph.setlanguage("MESSAGE").split("\n") ;
 

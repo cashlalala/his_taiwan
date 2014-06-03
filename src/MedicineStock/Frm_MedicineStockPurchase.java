@@ -4,23 +4,26 @@ import AutoComplete.CompleterComboBox;
 import ErrorMessage.StoredErrorMessage;
 import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
-import Multilingual.language;
+
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
+import multilingual.Language;
+
 public class Frm_MedicineStockPurchase extends javax.swing.JFrame implements cc.johnwu.date.DateInterface {
     private CompleterComboBox m_Cobww;
     private Frm_MidicineStockInfo m_MidicineStockInfo;
     /*多國語言變數*/
-    private language paragraph = new language();
+    private Language paragraph = Language.getInstance();
     private String[] line = new String(paragraph.setlanguage("MEDICINESTOCKPURCHASE")).split("\n") ;
     private String[] message = new String(paragraph.setlanguage("MESSAGE")).split("\n") ;
     /*輸出錯誤資訊變數*/

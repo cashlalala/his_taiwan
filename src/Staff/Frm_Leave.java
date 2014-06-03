@@ -1,10 +1,11 @@
 package Staff;
-import Multilingual.language;
 import cc.johnwu.sql.*;
 import cc.johnwu.finger.FingerPrintScanner;
+
 import java.awt.event.*;
 import java.sql.*;
-import java.sql.SQLException;
+
+import multilingual.Language;
 
 
 /**
@@ -12,7 +13,7 @@ import java.sql.SQLException;
  * @author steven
  */
 public class Frm_Leave extends javax.swing.JFrame {
-    private language paragraph = new language();
+    private Language paragraph = Language.getInstance();
     private String[] line = new String(paragraph.setlanguage("LEAVE")).split("\n") ;
     private String[] message = new String(paragraph.setlanguage("MESSAGE")).split("\n") ;
     private int m_Sno;

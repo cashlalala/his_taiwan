@@ -3,15 +3,18 @@ package Staff;
 
 import ErrorMessage.StoredErrorMessage;
 import cc.johnwu.sql.DBC;
-import Multilingual.language;
+
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.*;
+
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
+
+import multilingual.Language;
 
 public class Frm_DepartmentAdd extends javax.swing.JFrame {
     java.awt.event.ActionEvent ActionEvt;
@@ -19,7 +22,7 @@ public class Frm_DepartmentAdd extends javax.swing.JFrame {
     String Original_Guid = null;   
     String Change_Guid = null;
     /*多國語言變數*/
-    private language paragraph = new language();
+    private Language paragraph = Language.getInstance();
     private String[] line = new String(paragraph.setlanguage("DEPARTMENTADD")).split("\n") ;
     private String[] message = new String(paragraph.setlanguage("MESSAGE")).split("\n") ;
     /*輸出錯誤資訊變數*/

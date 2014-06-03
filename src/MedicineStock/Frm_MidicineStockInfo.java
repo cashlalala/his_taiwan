@@ -4,21 +4,24 @@ import AutoComplete.CompleterComboBox;
 import ErrorMessage.StoredErrorMessage;
 import cc.johnwu.sql.DBC;
 import cc.johnwu.sql.HISModel;
-import Multilingual.language;
+
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 import javax.swing.ListSelectionModel;
 import javax.swing.table.TableColumn;
+
+import multilingual.Language;
 
 
 public class Frm_MidicineStockInfo extends javax.swing.JFrame implements cc.johnwu.date.DateInterface {
     private CompleterComboBox m_Cobww;
     private CompleterComboBox m_PurchaseCombo;
     /*多國語言變數*/
-    private language paragraph = new language();
+    private Language paragraph = Language.getInstance();
     private String[] line = new String(paragraph.setlanguage("MIDICINESTOCKINFO")).split("\n") ;
     private String[] message = new String(paragraph.setlanguage("MESSAGE")).split("\n") ;
     /*輸出錯誤資訊變數*/

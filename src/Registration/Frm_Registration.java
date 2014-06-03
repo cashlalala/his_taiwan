@@ -8,6 +8,7 @@ import cc.johnwu.date.*;
 import cc.johnwu.finger.*;
 import cc.johnwu.sql.*;
 import Main.Frm_Main;
+
 import java.awt.Frame;
 import java.awt.Point;
 import java.awt.event.WindowAdapter;
@@ -15,20 +16,26 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
-import Multilingual.language;
+
 import java.text.SimpleDateFormat;
+
 import AutoComplete.CompleterComboBox;
 import Common.Constant;
 import System.Setting;
 import Common.PrintTools;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.swing.InputVerifier;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
+
+import multilingual.Language;
 
 public class Frm_Registration extends javax.swing.JFrame implements FingerPrintViewerInterface, DateInterface, PatientsInterface {
 
@@ -47,7 +54,7 @@ public class Frm_Registration extends javax.swing.JFrame implements FingerPrintV
     private int m_Number = 0;
     private String m_Guid;
     /*多國語言變數*/
-    private language paragraph = new language();
+    private Language paragraph = Language.getInstance();
     private String[] line = paragraph.setlanguage("REGISTRATION").split("\n") ;
     private String[] message = paragraph.setlanguage("MESSAGE").split("\n") ;
     /*輸出錯誤資訊變數*/

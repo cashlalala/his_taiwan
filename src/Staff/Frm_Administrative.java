@@ -1,12 +1,16 @@
 package Staff;
 import cc.johnwu.sql.*;
+
 import java.awt.event.*;
 import java.sql.*;
+
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
+
+import multilingual.Language;
+
 import java.sql.SQLException;
-import Multilingual.language;
 /**
  *
  * @author steven
@@ -16,7 +20,7 @@ public class Frm_Administrative extends javax.swing.JFrame {
     private String m_UUID = null;
     /*多國語言變數*/
     
-    private language paragraph = new language();
+    private Language paragraph = Language.getInstance();
     private String[] line = new String(paragraph.setlanguage("ADMINISTRATIVE")).split("\n") ;
     private String[] message = new String(paragraph.setlanguage("MESSAGE")).split("\n") ;
      

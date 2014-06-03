@@ -1,9 +1,10 @@
 package Staff;
-import Multilingual.language;
 import cc.johnwu.sql.*;
+
 import java.awt.event.*;
 import java.sql.*;
-import java.sql.SQLException;
+
+import multilingual.Language;
 
 /**
  *
@@ -20,7 +21,7 @@ public class Frm_Training extends javax.swing.JFrame {
         initLanguage();
     }
     /*多國語言變數*/
-    private language paragraph = new language();
+    private Language paragraph = Language.getInstance();
     private String[] line = new String(paragraph.setlanguage("TRAINING")).split("\n") ;
     private String[] message = new String(paragraph.setlanguage("MESSAGE")).split("\n") ;
 

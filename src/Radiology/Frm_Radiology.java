@@ -3,13 +3,13 @@ package Radiology;
 import Common.Constant;
 import Common.PrintTools;
 import Diagnosis.Summary;
-import Multilingual.language;
 import Common.TabTools;
 import WorkList.Frm_WorkList;
 import cc.johnwu.date.DateMethod;
 import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
 import cc.johnwu.sql.HISModel;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Frame;
@@ -30,10 +30,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+
+import multilingual.Language;
 
 /**
  *
@@ -48,7 +51,7 @@ public class Frm_Radiology extends javax.swing.JFrame {
     
     
      /*多國語言變數*/
-    private language paragraph = new language();
+    private Language paragraph = Language.getInstance();
     private String[] line = paragraph.setlanguage("LABORATORY").split("\n") ;
     private String[] message = paragraph.setlanguage("MESSAGE").split("\n") ;
     /*輸出錯誤資訊變數*/

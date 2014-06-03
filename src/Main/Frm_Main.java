@@ -4,7 +4,6 @@ import Cashier.Frm_CashierList;
 import ErrorMessage.StoredErrorMessage;
 import cc.johnwu.loading.Frm_Loading;
 import cc.johnwu.login.UserInfo;
-import Multilingual.language;
 import MobileHealth.Frm_MobileHealth;
 import Statistic.Frm_Statistic;
 import System.Frm_Setting;
@@ -13,12 +12,16 @@ import Test.Frm_Test;
 import cc.johnwu.login.Frm_Login;
 import cc.johnwu.login.SysInfo;
 import cc.johnwu.sql.DBC;
+
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.swing.JOptionPane;
+
+import multilingual.Language;
 
 
 public class Frm_Main extends javax.swing.JFrame {
@@ -43,10 +46,17 @@ public class Frm_Main extends javax.swing.JFrame {
         }
         this.setLocationRelativeTo(this);
    
+<<<<<<< HEAD
         btn_MedicineStock.setVisible(true);
         btn_DepartmentManagement.setVisible(true);
         btn_PositionManagement.setVisible(true);
         language paragraph = new language();
+=======
+        btn_MedicineStock.setVisible(false);
+        btn_DepartmentManagement.setVisible(false);
+        btn_PositionManagement.setVisible(false);
+        Language paragraph = Language.getInstance();
+>>>>>>> stash
         String[] line = paragraph.setlanguage("MAIN").split("\n") ;
         for(int j = 1 ; j<line.length ; j++){
             String[] col = line[j].split("=");

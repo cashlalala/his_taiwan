@@ -1,16 +1,19 @@
 package Staff;
 
 import ErrorMessage.StoredErrorMessage;
-import Multilingual.language;
 import cc.johnwu.sql.*;
 import cc.johnwu.finger.FingerPrintScanner;
 import cc.johnwu.finger.FingerPrintViewerInterface;
+
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.sql.*;
+
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
+
+import multilingual.Language;
 
 /**
  *
@@ -21,7 +24,7 @@ public class Frm_Employee extends javax.swing.JFrame implements FingerPrintViewe
     private int m_Sno;
     private String m_UUID = null;
      /*多國語言變數*/
-    private language paragraph = new language();
+    private Language paragraph = Language.getInstance();
     private String[] line = new String(paragraph.setlanguage("EMPLOYEE")).split("\n") ;
     private String[] message = new String(paragraph.setlanguage("MESSAGE")).split("\n") ;
   

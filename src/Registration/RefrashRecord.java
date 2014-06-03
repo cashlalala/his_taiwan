@@ -1,14 +1,17 @@
 package Registration;
 
-import Multilingual.language;
 import Common.TabTools;
 import cc.johnwu.date.*;
 import cc.johnwu.sql.*;
+
 import java.sql.*;
+
 import javax.swing.table.*;
 
+import multilingual.Language;
+
 public class RefrashRecord extends Thread{
-    private language paragraph = new language();
+    private Language paragraph = Language.getInstance();
     private String[] line = paragraph.setlanguage("REGISTRATION").split("\n") ;
     private javax.swing.JTable tab;
     private long time;

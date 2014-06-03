@@ -3,15 +3,18 @@ package Patients;
 
 import cc.johnwu.sql.*;
 import cc.johnwu.finger.*;
+
 import java.awt.Frame;
 import java.awt.Point;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.sql.*;
+
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-import Multilingual.language;
+
+import multilingual.Language;
 
 public class Frm_PatientsList extends javax.swing.JFrame implements PatientsInterface,FingerPrintViewerInterface {
     
@@ -22,7 +25,7 @@ public class Frm_PatientsList extends javax.swing.JFrame implements PatientsInte
     private String sql_FingerSelect;
     private String m_PatientsNO = "";
     /*多國語言變數*/
-    private language paragraph = new language();
+    private Language paragraph = Language.getInstance();
     private String[] line = new String(paragraph.setlanguage("PATIENTSLIST")).split("\n") ;
     private String[] message = new String(paragraph.setlanguage("MESSAGE")).split("\n") ;
 

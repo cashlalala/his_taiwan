@@ -2,20 +2,23 @@ package Radiology;
 
 import Diagnosis.Frm_DiagnosisInfo;
 import Diagnosis.Summary;
-import Multilingual.language;
 import Patients.Frm_PatientMod;
 import Common.TabTools;
 import cc.johnwu.sql.DBC;
 import cc.johnwu.sql.HISModel;
+
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+
+import multilingual.Language;
 
 /**
  *
@@ -34,7 +37,7 @@ public class Frm_RadiologyHistory extends javax.swing.JFrame {
     
     
      /*多國語言變數*/
-    private language paragraph = new language();
+    private Language paragraph = Language.getInstance();
     private String[] line = paragraph.setlanguage("LABORATORY").split("\n") ;
     private String[] message = paragraph.setlanguage("MESSAGE").split("\n") ;
     /*輸出錯誤資訊變數*/

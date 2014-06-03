@@ -4,15 +4,18 @@ package Anamnesis;
 import Anamnesis.TableTriStateCell.*;
 import Common.PrintTools;
 import ErrorMessage.StoredErrorMessage;
-import Multilingual.language;
 import Common.TabTools;
 import cc.johnwu.date.*;
 import cc.johnwu.sql.*;
+
 import java.awt.Color;
 import java.sql.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.swing.table.*;
+
+import multilingual.Language;
 
 
 public class RefrashRecord extends Thread{

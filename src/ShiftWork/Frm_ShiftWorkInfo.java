@@ -15,6 +15,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
@@ -22,7 +23,8 @@ import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
-import Multilingual.language;
+
+import multilingual.Language;
 
 public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
     private final String DOCTOR_DEPARTMENT = "Doctor"; // 排班只限醫生群組
@@ -33,7 +35,7 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
     private Map<Object, Object> m_ShiftHashMap = new LinkedHashMap<Object, Object>();   // 儲存現在班表rs
     private Map<Object, Object> m_ChooseHashMap = new LinkedHashMap<Object, Object>();  // 儲存點選過的位置
     /*多國語言變數*/
-    private language paragraph = new language();
+    private Language paragraph = Language.getInstance();
     private String[] line = new String(paragraph.setlanguage("SHIFTWORKINFO")).split("\n") ;
     private String[] message = new String(paragraph.setlanguage("MESSAGE")).split("\n") ;
     /*輸出錯誤資訊變數*/

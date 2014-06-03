@@ -3,11 +3,14 @@ package Registration;
 import AutoComplete.CompleterComboBox;
 import GPSConn.GPSPosition;
 import GpsLog.GpsLog;
-import Multilingual.language;
 import System.Setting;
+
 import java.awt.Frame;
+
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+
+import multilingual.Language;
 
 /**
  *
@@ -19,7 +22,7 @@ public class ReSearchGps  extends Thread {
     private String[] line = new String(set.setSystem("GIS")).split("\n") ;
 
         /*多國語言變數*/
-    private language paragraph = new language();
+    private Language paragraph = Language.getInstance();
     private String[] languageline = new String(paragraph.setlanguage("REGISTRATION")).split("\n") ;
     private String[] languagemessage = new String(paragraph.setlanguage("MESSAGE")).split("\n") ;
 

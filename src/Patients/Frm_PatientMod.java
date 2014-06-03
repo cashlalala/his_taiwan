@@ -9,6 +9,7 @@ import Laboratory.Frm_LabHistory;
 import cc.johnwu.finger.*;
 import cc.johnwu.date.*;
 import cc.johnwu.sql.*;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -16,8 +17,10 @@ import java.sql.*;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.swing.*;
-import Multilingual.language;
+
+import multilingual.Language;
 import Registration.Frm_Registration;
 import Radiology.Frm_RadiologyHistory;
 import cc.johnwu.login.UserInfo;
@@ -32,7 +35,7 @@ public class Frm_PatientMod  extends javax.swing.JFrame
     private String m_Status;
     /*多國語言變數*/
 
-    private language paragraph = new language();
+    private Language paragraph = Language.getInstance();
     private String[] line = paragraph.setlanguage("PATIENTMOD").split("\n") ;
     private String[] message = paragraph.setlanguage("MESSAGE").split("\n") ;
     /*輸出錯誤資訊變數*/

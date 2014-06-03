@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package Multilingual;
+package multilingual;
 
 import java.io.FileReader;
 import java.io.IOException;

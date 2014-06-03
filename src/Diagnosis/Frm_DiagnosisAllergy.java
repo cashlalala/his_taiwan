@@ -3,8 +3,8 @@ package Diagnosis;
 
 import ErrorMessage.StoredErrorMessage;
 import cc.johnwu.sql.*;
-import Multilingual.language;
 import cc.johnwu.login.UserInfo;
+
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.ResultSet;
@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -21,6 +22,8 @@ import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+
+import multilingual.Language;
 
 public class Frm_DiagnosisAllergy extends javax.swing.JFrame {
     private String m_PNo;
@@ -32,7 +35,7 @@ public class Frm_DiagnosisAllergy extends javax.swing.JFrame {
     private JComboBox m_ComboBox = new JComboBox();   // 嚴重程度combobox
     private Map<Object, Object> m_AllergyHashMap = new LinkedHashMap<Object, Object>();  // 儲存已存在的過敏資料
     /*多國語言變數*/
-    private language paragraph = new language();
+    private Language paragraph = Language.getInstance();
     private String[] line = paragraph.setlanguage("DIAGNOSISALLERGY").split("\n") ;
     private String[] message = paragraph.setlanguage("MESSAGE").split("\n") ;
     /*輸出錯誤資訊變數*/

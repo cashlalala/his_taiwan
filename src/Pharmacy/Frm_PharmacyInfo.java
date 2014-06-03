@@ -4,13 +4,17 @@ import Case.Frm_Case;
 import ErrorMessage.StoredErrorMessage;
 import cc.johnwu.sql.DBC;
 import cc.johnwu.sql.HISModel;
-import Multilingual.language;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+
+import multilingual.Language;
+
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -23,7 +27,7 @@ public class Frm_PharmacyInfo extends javax.swing.JFrame {
     private Frm_Pharmacy Frm_p = null;
     private Frm_PharmacyInquire Frm_pi = null;
     /*多國語言變數*/
-    private language paragraph = new language();
+    private Language paragraph = Language.getInstance();
     private String[] line = new String(paragraph.setlanguage("PHARMACYINFO")).split("\n") ;
     private String[] message = new String(paragraph.setlanguage("MESSAGE")).split("\n") ;
     /*輸出錯誤資訊變數*/

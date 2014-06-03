@@ -1,10 +1,13 @@
 package Staff;
 
 import ErrorMessage.StoredErrorMessage;
-import Multilingual.language;
+
 import java.sql.*;
 import java.awt.Frame;
+
 import javax.swing.JOptionPane;
+
+import multilingual.Language;
 import cc.johnwu.sql.DBC;
 
 public class Frm_AddMod extends javax.swing.JFrame {
@@ -12,7 +15,7 @@ public class Frm_AddMod extends javax.swing.JFrame {
     Frm_Position frm_pos;
     /*輸出錯誤資訊變數*/
     StoredErrorMessage ErrorMessage = new StoredErrorMessage() ;
-    private language paragraph = new language();
+    private Language paragraph = Language.getInstance();
     private String[] line = new String(paragraph.setlanguage("ADDMOD")).split("\n") ;
     private String[] message = new String(paragraph.setlanguage("MESSAGE")).split("\n") ;
     public Frm_AddMod(Frm_Department frm_dep) {

@@ -4,12 +4,13 @@ import ErrorMessage.StoredErrorMessage;
 import cc.johnwu.sql.DBC;
 import cc.johnwu.sql.HISModel;
 import cc.johnwu.finger.*;
-import Multilingual.language;
+
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.sql.*;
+
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
@@ -17,6 +18,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
+
+import multilingual.Language;
 
 
 public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintViewerInterface {
@@ -37,7 +40,7 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
     private String m_KeepId = "Admin 1";  // 系統保留帳號
     private String m_UUID;
     /*多國語言變數*/
-    private language paragraph = new language();
+    private Language paragraph = Language.getInstance();
     private String[] line = paragraph.setlanguage("STAFFINFO").split("\n") ;
     private String[] message = paragraph.setlanguage("MESSAGE").split("\n") ;
     /*輸出錯誤資訊變數*/

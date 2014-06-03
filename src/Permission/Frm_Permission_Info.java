@@ -1,17 +1,20 @@
 package Permission;
 
 import ErrorMessage.StoredErrorMessage;
-import Multilingual.language;
 import cc.johnwu.sql.DBC; 
+
 import java.awt.Frame;
 import java.sql.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.SQLException;
+
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
+
+import multilingual.Language;
 
 /**
  *
@@ -19,7 +22,7 @@ import javax.swing.table.TableModel;
  */
 public class Frm_Permission_Info extends javax.swing.JFrame {
     /*多國語言變數*/
-    private language paragraph = new language();
+    private Language paragraph = Language.getInstance();
     private String[] line = paragraph.setlanguage("PERMISSIONINFO").split("\n");
     private String[] message = paragraph.setlanguage("MESSAGE").split("\n");
     /*輸出錯誤資訊變數*/

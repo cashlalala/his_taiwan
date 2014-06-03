@@ -1,21 +1,26 @@
 package Staff;
 
 import ErrorMessage.StoredErrorMessage;
+
 import java.sql.*;
+
 import cc.johnwu.sql.DBC;
 import cc.johnwu.sql.HISModel;
-import Multilingual.language;
+
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import multilingual.Language;
+
 public class Frm_Department extends javax.swing.JFrame {
 
     /*多國語言變數*/
-    private language paragraph = new language();
+    private Language paragraph = Language.getInstance();
     private String[] line = new String(paragraph.setlanguage("DEPARTMENT")).split("\n") ;
     private String[] message = new String(paragraph.setlanguage("MESSAGE")).split("\n") ;
     /*輸出錯誤資訊變數*/

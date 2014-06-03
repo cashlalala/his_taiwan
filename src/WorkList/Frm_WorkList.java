@@ -6,11 +6,11 @@ import ErrorMessage.StoredErrorMessage;
 import Laboratory.Frm_Laboratory;
 import Main.Frm_Main;
 import cc.johnwu.login.UserInfo;
-import Multilingual.language;
 import Common.TabTools;
 import Radiology.Frm_Radiology;
 import cc.johnwu.date.DateMethod;
 import cc.johnwu.sql.DBC;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Frame;
@@ -27,8 +27,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
+
+import multilingual.Language;
 
 public class Frm_WorkList extends javax.swing.JFrame {
  
@@ -40,7 +43,7 @@ public class Frm_WorkList extends javax.swing.JFrame {
     private String m_RegGuid;
     private String m_Pno;
     /*多國語言變數*/
-    private language paragraph = new language();
+    private Language paragraph = Language.getInstance();
     private String[] line = paragraph.setlanguage("DIAGNOSISWORKLIST").split("\n") ;
     private String[] message = paragraph.setlanguage("MESSAGE").split("\n") ;
     /*輸出錯誤資訊變數*/

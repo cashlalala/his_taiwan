@@ -11,7 +11,7 @@
 
 package Patients;
 
-import Multilingual.language;
+import multilingual.Language;
 
 /**
  *
@@ -22,7 +22,7 @@ public class Frm_Check extends javax.swing.JFrame {
     private String m_PNO = "";
     private PatientsInterface m_frame;
     /*多國語言變數*/
-    private language paragraph = new language();
+    private Language paragraph = Language.getInstance();
     private String[] line = new String(paragraph.setlanguage("CHECK")).split("\n") ;
     private String[] message = new String(paragraph.setlanguage("MESSAGE")).split("\n") ;
 

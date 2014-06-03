@@ -3,15 +3,20 @@ package Anamnesis;
 
 import ErrorMessage.StoredErrorMessage;
 import cc.johnwu.login.UserInfo;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.sql.*;
+
 import cc.johnwu.sql.DBC;
+
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.*;
-import Multilingual.language;
+
 import javax.swing.ListSelectionModel;
+
+import multilingual.Language;
 
 
 public class Frm_Anamnesis extends javax.swing.JFrame {
@@ -23,7 +28,7 @@ public class Frm_Anamnesis extends javax.swing.JFrame {
     protected static Set<String> m_Select = new HashSet<String>();
 
     /*多國語言變數*/
-    private language paragraph = new language();
+    private Language paragraph = Language.getInstance();
     private String[] line = paragraph.setlanguage("ANAMNESIS").split("\n") ;
 
     /*輸出錯誤資訊變數*/

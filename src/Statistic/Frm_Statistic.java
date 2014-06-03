@@ -6,19 +6,24 @@ import Main.Frm_Main;
 import cc.johnwu.date.DateInterface;
 import cc.johnwu.sql.DBC;
 import cc.johnwu.sql.HISModel;
-import Multilingual.language;
 import Pharmacy.Frm_Pharmacy;
+
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+
 import javax.swing.table.TableColumn;
+
 import java.sql.* ;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.swing.DefaultListModel;
 import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
+
+import multilingual.Language;
 /**
  *
  * @author Steven
