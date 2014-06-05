@@ -75,7 +75,7 @@ public class Language {
 		return "";
 	}
 
-	/** 多國語系翻譯 */
+	@Deprecated
 	public String getLanguage(String line[], String key) {
 		return rb.getString(key);
 
