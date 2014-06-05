@@ -46,17 +46,11 @@ public class Frm_Main extends javax.swing.JFrame {
         }
         this.setLocationRelativeTo(this);
    
-<<<<<<< HEAD
         btn_MedicineStock.setVisible(true);
         btn_DepartmentManagement.setVisible(true);
         btn_PositionManagement.setVisible(true);
-        language paragraph = new language();
-=======
-        btn_MedicineStock.setVisible(false);
-        btn_DepartmentManagement.setVisible(false);
-        btn_PositionManagement.setVisible(false);
         Language paragraph = Language.getInstance();
->>>>>>> stash
+        
         String[] line = paragraph.setlanguage("MAIN").split("\n") ;
         for(int j = 1 ; j<line.length ; j++){
             String[] col = line[j].split("=");
