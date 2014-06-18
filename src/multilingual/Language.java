@@ -77,7 +77,7 @@ public class Language {
 
 	@Deprecated
 	public String getLanguage(String line[], String key) {
-		return rb.getString(key);
+		return rb.getString(key.toUpperCase());
 
 		// String word = null;
 		// for (int i = 1; i < line.length; i++) {
