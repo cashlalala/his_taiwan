@@ -43,7 +43,7 @@ public class UserInfo {
         if(setUserInfo(userID)){
             m_EnteredFrm.setVisible(true);
 
-            ((Main.Frm_Main)m_EnteredFrm).initPermission();
+            ((main.Frm_Main)m_EnteredFrm).initPermission();
             m_frm_Login.dispose();  // 登入畫面消失
             return true;
         }

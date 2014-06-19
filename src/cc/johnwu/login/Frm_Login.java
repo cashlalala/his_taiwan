@@ -1,21 +1,24 @@
 package cc.johnwu.login;
 
 
-import Multilingual.language;
 import cc.johnwu.sql.*;
+
 import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.sql.*;
+
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+
+import multilingual.Language;
 
 
 public class Frm_Login extends javax.swing.JFrame {
     private UserInfo m_UserInfo;
 
     /*多國語言變數*/
-    private language paragraph = new language();
+    private Language paragraph = Language.getInstance();
     private String[] line = paragraph.setlanguage("LOGIN").split("\n") ;
 
     /** Creates new form Frm_Login */
