@@ -14,6 +14,9 @@ import java.util.Date;
     @NamedQuery(
         name="QueryExistedUsers",
         query="SELECT pinfo FROM PatientsInfo pinfo WHERE pinfo.exist = 1"),
+    @NamedQuery(
+        name="QueryPatientCount",
+        query="SELECT COUNT(pinfo) FROM PatientsInfo pinfo WHERE pinfo.exist = 1")       
 })
 
 @Entity

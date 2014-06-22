@@ -1,33 +1,47 @@
 package patients;
 
 
-import cc.johnwu.sql.*;
-import cc.johnwu.finger.*;
-
 import java.awt.Frame;
 import java.awt.Point;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
-import java.sql.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 import multilingual.Language;
 
+import org.his.bind.PatientsInfoJPATable;
+import org.his.dao.PatientsInfoDao;
+import org.his.model.PatientsInfo;
+
+import cc.johnwu.finger.FingerPrintScanner;
+import cc.johnwu.finger.FingerPrintViewerInterface;
+import cc.johnwu.sql.DBC;
+
 public class Frm_PatientsList extends javax.swing.JFrame implements PatientsInterface,FingerPrintViewerInterface {
     
-    private final int MAX_ROWS_OF_PAGE = 50;
-    private ResultSet m_PatientsRS;
+	private static final long serialVersionUID = 8066425764080097198L;
+
+	private final int MAX_ROWS_OF_PAGE = 50;
 
     private final int MAX_FINGERPRINT_COUNT = 5000;
     private String sql_FingerSelect;
     private String m_PatientsNO = "";
     /*多國語言變數*/
-    private Language paragraph = Language.getInstance();
+    private static final Language paragraph = Language.getInstance();
     private String[] line = new String(paragraph.setlanguage("PATIENTSLIST")).split("\n") ;
     private String[] message = new String(paragraph.setlanguage("MESSAGE")).split("\n") ;
+    
+	private PatientsInfoDao patiensInfoDao;
+
+	private List<PatientsInfo> patiensInfo;
+	
+	private String conditions;
 
     public Frm_PatientsList() {
         initComponents();
@@ -48,9 +62,13 @@ public class Frm_PatientsList extends javax.swing.JFrame implements PatientsInte
                 btn_CloseActionPerformed(null);
             }
         });
+        //show the default table
+        patiensInfoDao = new PatientsInfoDao();
+        conditions = null;
     }
 
-    private void initLanguage() {
+    @SuppressWarnings({ "unchecked", "deprecation" })
+	private void initLanguage() {
         this.btn_Search.setText(paragraph.getLanguage(message, "SEARCH"));
         this.btn_Add.setText(paragraph.getLanguage(line, "ADD"));
         this.btn_Edit.setText(paragraph.getLanguage(line, "EDIT"));
@@ -66,83 +84,67 @@ public class Frm_PatientsList extends javax.swing.JFrame implements PatientsInte
         this.setTitle(paragraph.getLanguage(line, "TITLEPATIENTLIST"));
     }
 
-    private void showPatientsList(){
-        ResultSet rs = null;
-        String sql = "";
-        String conditions = "";
-        try {
-            switch(this.cob_Conditions.getSelectedIndex()){
-                case 0: // ALL
-                conditions = "(UPPER(p_no) LIKE UPPER('%" + txt_Search.getText().replace(" ", "%") + "%')" +
-                             "OR UPPER(concat(FirstName,' ',LastName)) LIKE UPPER('%" + txt_Search.getText().replace(" ", "%") + "%') " +
-                             "OR UPPER(birth) LIKE UPPER('%" + txt_Search.getText().replace(" ", "%") + "%') " +
-                             "OR UPPER(nhis_no) LIKE UPPER('%" + txt_Search.getText().replace(" ", "%") + "%') " +
-                             "OR UPPER(nia_no) LIKE UPPER('%" + txt_Search.getText().replace(" ", "%") + "%') " +
-                             "OR UPPER(phone) LIKE UPPER('%" + txt_Search.getText().replace(" ", "%") + "%') " +
-                             "OR UPPER(cell_phone) LIKE UPPER('%" + txt_Search.getText().replace(" ", "%") + "%') " +
-                             "OR UPPER(town) LIKE UPPER('%" + txt_Search.getText().replace(" ", "%") + "%') " +
-                             "OR UPPER(address) LIKE UPPER('%" + txt_Search.getText().replace(" ", "%") + "%') " +
-                             ")";
-                    break;
-                case 1: // P_NO
-                    conditions = "(UPPER(p_no) LIKE UPPER('%" + txt_Search.getText().replace(" ", "%") + "%'))";
-                    break;
-                case 2: // NAME
-                    conditions = "(UPPER(concat(FirstName,' ',LastName)) LIKE UPPER('%" + txt_Search.getText().replace(" ", "%") + "%'))";
-                    break;
-                case 3: // BIRTH
-                    conditions = "(UPPER(birth) LIKE UPPER('%" + txt_Search.getText().replace(" ", "%") + "%'))";
-                    break;
-                case 4: // NHIS NO.
-                    conditions = "(UPPER(nhis_no) LIKE UPPER('%" + txt_Search.getText().replace(" ", "%") + "%'))";
-                    break;
-                case 5: // NIA NO.
-                    conditions = "(UPPER(nia_no) LIKE UPPER('%" + txt_Search.getText().replace(" ", "%") + "%'))";
-                    break;
-                case 6: // PHONE
-                    conditions = "(UPPER(phone) LIKE UPPER('%" + txt_Search.getText().replace(" ", "%") + "%') " +
-                             "OR UPPER(cell_phone) LIKE UPPER('%" + txt_Search.getText().replace(" ", "%") + "%'))";
-                    break;
-                case 7: // TOWN
-                    conditions = "(UPPER(town) LIKE UPPER('%" + txt_Search.getText().replace(" ", "%") + "%'))";
-                    break;
-                case 8: // ADDRESS
-                    conditions = "(UPPER(address) LIKE UPPER('%" + txt_Search.getText().replace(" ", "%") + "%'))";
-                    break;
+    @SuppressWarnings("unchecked")
+	private void showPatientsList(){
+        switch(this.cob_Conditions.getSelectedIndex()){
+            case 0: // ALL
+            conditions = "(UPPER(p_no) LIKE UPPER('%" + txt_Search.getText().replace(" ", "%") + "%')" +
+                         "OR UPPER(concat(FirstName,' ',LastName)) LIKE UPPER('%" + txt_Search.getText().replace(" ", "%") + "%') " +
+                         "OR UPPER(birth) LIKE UPPER('%" + txt_Search.getText().replace(" ", "%") + "%') " +
+                         "OR UPPER(nhis_no) LIKE UPPER('%" + txt_Search.getText().replace(" ", "%") + "%') " +
+                         "OR UPPER(nia_no) LIKE UPPER('%" + txt_Search.getText().replace(" ", "%") + "%') " +
+                         "OR UPPER(phone) LIKE UPPER('%" + txt_Search.getText().replace(" ", "%") + "%') " +
+                         "OR UPPER(cell_phone) LIKE UPPER('%" + txt_Search.getText().replace(" ", "%") + "%') " +
+                         "OR UPPER(town) LIKE UPPER('%" + txt_Search.getText().replace(" ", "%") + "%') " +
+                         "OR UPPER(address) LIKE UPPER('%" + txt_Search.getText().replace(" ", "%") + "%') " +
+                         ")";
+                break;
+            case 1: // P_NO
+                conditions = "(UPPER(p_no) LIKE UPPER('%" + txt_Search.getText().replace(" ", "%") + "%'))";
+                break;
+            case 2: // NAME
+                conditions = "(UPPER(concat(FirstName,' ',LastName)) LIKE UPPER('%" + txt_Search.getText().replace(" ", "%") + "%'))";
+                break;
+            case 3: // BIRTH
+                conditions = "(UPPER(birth) LIKE UPPER('%" + txt_Search.getText().replace(" ", "%") + "%'))";
+                break;
+            case 4: // NHIS NO.
+                conditions = "(UPPER(nhis_no) LIKE UPPER('%" + txt_Search.getText().replace(" ", "%") + "%'))";
+                break;
+            case 5: // NIA NO.
+                conditions = "(UPPER(nia_no) LIKE UPPER('%" + txt_Search.getText().replace(" ", "%") + "%'))";
+                break;
+            case 6: // PHONE
+                conditions = "(UPPER(phone) LIKE UPPER('%" + txt_Search.getText().replace(" ", "%") + "%') " +
+                         "OR UPPER(cell_phone) LIKE UPPER('%" + txt_Search.getText().replace(" ", "%") + "%'))";
+                break;
+            case 7: // TOWN
+                conditions = "(UPPER(town) LIKE UPPER('%" + txt_Search.getText().replace(" ", "%") + "%'))";
+                break;
+            case 8: // ADDRESS
+                conditions = "(UPPER(address) LIKE UPPER('%" + txt_Search.getText().replace(" ", "%") + "%'))";
+                break;
+        }
+        
+        patiensInfo = patiensInfoDao.getExistedPatients(conditions, 0, MAX_ROWS_OF_PAGE);
+        int count = patiensInfoDao.getPatientCount();
+        int page = count / MAX_ROWS_OF_PAGE + (( count % MAX_ROWS_OF_PAGE == 0 )? 0 : 1); 
+        
+        if ( page != 0 ) {
+        	this.cob_Page.removeAllItems();
+            for(int i=0; i<page;i++){
+                this.cob_Page.addItem(+ (i+1) + " of " + page);
             }
-            sql = "SELECT p_no AS '"+paragraph.getLanguage(line, "COL_NO")+"', " +
-                        "concat(FirstName,' ',LastName) AS '"+paragraph.getLanguage(line, "COL_NAME")+"', " +
-                        "Birth AS '"+paragraph.getLanguage(line, "COL_BIRTH")+"', " +
-                        "phone AS '"+paragraph.getLanguage(line, "COL_PHONE")+"', " +
-                        "cell_phone AS '"+paragraph.getLanguage(line, "COL_CELLPHONE")+"', " +
-                        "Town AS '"+paragraph.getLanguage(line, "COL_TOWN")+"', " +
-                        "Address AS '"+paragraph.getLanguage(line, "COL_ADDRESS")+"'" +
-                  "FROM patients_info " +
-                  "WHERE exist = 1 " +
-                  "AND " + conditions;
-            m_PatientsRS = DBC.executeQuery(sql);
-            if(m_PatientsRS.last()){
-                this.cob_Page.removeAllItems();
-                int page = (m_PatientsRS.getRow()/MAX_ROWS_OF_PAGE)+(m_PatientsRS.getRow()%MAX_ROWS_OF_PAGE==0?0:1);
-                for(int i=0; i<page;i++){
-                    this.cob_Page.addItem(+ (i+1) + " of " + page);
-                }
-                m_PatientsRS.beforeFirst();
-                tab_List.setModel(HISModel.getModel(m_PatientsRS, 1, MAX_ROWS_OF_PAGE));
-                if(this.cob_Page.getItemCount()>1){
-                    this.btn_Next.setEnabled(true);
-                }else{
-                    this.btn_Next.setEnabled(false);
-                }
-                this.btn_Previous.setEnabled(false);
+            tab_List.setModel(new PatientsInfoJPATable(patiensInfo));
+            if(this.cob_Page.getItemCount()>1){
+                this.btn_Next.setEnabled(true);
             }else{
-                tab_List.setModel(getModle(new String[]{"Message"},new String[][]{{paragraph.getLanguage(message, "NOINFORMATION")}}));
+                this.btn_Next.setEnabled(false);
             }
-        } catch (SQLException ex) {
-            System.out.println(ex);
-        } finally {
-            try{DBC.closeConnection(rs);}
-            catch (SQLException ex) {}
+            this.btn_Previous.setEnabled(false);
+        }
+        else{
+            tab_List.setModel(getModle(new String[]{"Message"},new String[][]{{paragraph.getLanguage(message, "NOINFORMATION")}}));
         }
     }
 
@@ -535,29 +537,27 @@ public class Frm_PatientsList extends javax.swing.JFrame implements PatientsInte
 }//GEN-LAST:event_tab_ListMouseClicked
 
     private void btn_DeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_DeleteActionPerformed
-        String sql = "";
+        PatientsInfo pInfo = this.patiensInfo.get(tab_List.getSelectedRow());
         String p_no = tab_List.getValueAt(tab_List.getSelectedRow(), 0).toString();
         String p_name = tab_List.getValueAt(tab_List.getSelectedRow(), 1).toString();
         Object[] options = {"Yes","No"};
         int response = JOptionPane.showOptionDialog(
                         new Frame(),
-                        paragraph.getLanguage(message, "WILLITBEDELETE")+p_no+" "+p_name+" ?",
-                        paragraph.getLanguage(message, "MESSAGE"),
+                        paragraph.getString("WILLITBEDELETE")+p_no+" "+p_name+" ?",
+                        paragraph.getString("MESSAGE"),
                         JOptionPane.YES_OPTION,
                         JOptionPane.QUESTION_MESSAGE,
                         null,
                         options,
                         options[0]
                     );
-        try {
-            if(response==0){
-                sql = "UPDATE patients_info SET exist = 0 " +
-                     "WHERE p_no ='"+ p_no +"'";
-                DBC.executeUpdate(sql);
-                JOptionPane.showMessageDialog(new Frame(), paragraph.getLanguage(message, "DELETECOMPLETE"));
-                this.btn_Delete.setEnabled(false);
-            }
-        } catch (SQLException ex) {}
+        
+        if(response==0){
+        	pInfo.setExist((byte)0);
+        	this.patiensInfoDao.persist(pInfo);
+            JOptionPane.showMessageDialog(new Frame(), paragraph.getString("DELETECOMPLETE"));
+            this.btn_Delete.setEnabled(false);
+        }
         showPatientsList();
 }//GEN-LAST:event_btn_DeleteActionPerformed
 
@@ -586,8 +586,9 @@ public class Frm_PatientsList extends javax.swing.JFrame implements PatientsInte
 }//GEN-LAST:event_btn_CloseActionPerformed
 
     private void cob_PageItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cob_PageItemStateChanged
-        if(evt.getStateChange() == java.awt.event.ItemEvent.SELECTED && m_PatientsRS!=null){
-            tab_List.setModel(HISModel.getModel(m_PatientsRS, this.cob_Page.getSelectedIndex()*MAX_ROWS_OF_PAGE+1,MAX_ROWS_OF_PAGE));
+        if(evt.getStateChange() == java.awt.event.ItemEvent.SELECTED ){
+        	patiensInfo = patiensInfoDao.getExistedPatients(conditions, cob_Page.getSelectedIndex() * MAX_ROWS_OF_PAGE, MAX_ROWS_OF_PAGE);
+        	tab_List.setModel(new PatientsInfoJPATable(patiensInfo));
             if(cob_Page.getSelectedIndex()>=0 
             && cob_Page.getItemCount()>(cob_Page.getSelectedIndex()+1)){
                 this.btn_Next.setEnabled(true);
