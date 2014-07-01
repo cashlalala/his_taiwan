@@ -1,5 +1,6 @@
 package org.his.dao;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -20,10 +21,46 @@ public class PatientsInfoDao {
 	public void persist(PatientsInfo patiensInfo) {
 		EntityTransaction etx = em.getTransaction();
 		etx.begin();
-		em.persist(patiensInfo);
+		em.merge(patiensInfo);
 		etx.commit();
 	}
 
+	public void merge(PatientsInfo patiensInfo) {
+		EntityTransaction etx = em.getTransaction();
+		etx.begin();
+		em.merge(patiensInfo);
+		etx.commit();
+	}
+	
+	public void DeleteAutoGenUser(String id) {
+		EntityTransaction etx = em.getTransaction();
+		etx.begin();
+		Query query = em.createNamedQuery("DeleteAutoGenUser");
+		query.setParameter("uuid", id);
+		@SuppressWarnings("unused")
+		int affectedItem = query.executeUpdate();
+		etx.commit();
+	}
+	
+	public void remove(PatientsInfo patiensInfo) {
+		EntityTransaction etx = em.getTransaction();
+		etx.begin();
+		em.merge(patiensInfo);
+		em.remove(patiensInfo);
+		etx.commit();
+	}
+	
+	public PatientsInfo QueryPatientInfoById(String id) {
+		return em.find(PatientsInfo.class, id);
+	}
+
+	public int getNewPNo() {
+		Query query = em
+				.createNativeQuery("SELECT IF(COUNT(p_no) <> 0,MAX(p_no)+1,0) FROM patients_info");
+		int pNo = ((BigInteger) query.getSingleResult()).intValue();
+		return pNo;
+	}
+	
 	public List<PatientsInfo> getExistedPatients() {
 		return getExistedPatients(null, 0, 0);
 	}

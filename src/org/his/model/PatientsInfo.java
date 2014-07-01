@@ -2,6 +2,7 @@ package org.his.model;
 
 import java.io.Serializable;
 import javax.persistence.*;
+
 import java.util.Date;
 
 
@@ -16,7 +17,10 @@ import java.util.Date;
         query="SELECT pinfo FROM PatientsInfo pinfo WHERE pinfo.exist = 1"),
     @NamedQuery(
         name="QueryPatientCount",
-        query="SELECT COUNT(pinfo) FROM PatientsInfo pinfo WHERE pinfo.exist = 1")       
+        query="SELECT COUNT(pinfo) FROM PatientsInfo pinfo WHERE pinfo.exist = 1"),
+    @NamedQuery(
+        name="DeleteAutoGenUser",
+        query="DELETE FROM PatientsInfo p WHERE p.firstname = :uuid AND p.exist = 0")
 })
 
 @Entity
@@ -25,9 +29,8 @@ public class PatientsInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="p_no")
-	private int pNo;
+	private Integer pNo;
 
 	@Column(name="account_num")
 	private String accountNum;
@@ -148,11 +151,11 @@ public class PatientsInfo implements Serializable {
 	public PatientsInfo() {
 	}
 
-	public int getPNo() {
+	public Integer getPNo() {
 		return this.pNo;
 	}
 
-	public void setPNo(int pNo) {
+	public void setPNo(Integer pNo) {
 		this.pNo = pNo;
 	}
 

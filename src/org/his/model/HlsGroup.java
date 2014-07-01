@@ -8,6 +8,15 @@ import javax.persistence.*;
  * The persistent class for the hls_group database table.
  * 
  */
+@NamedQueries ({
+    @NamedQuery(
+        name="QueryHlsgroups",
+        query="SELECT hls_group FROM HlsGroup hls_group"),
+    @NamedQuery(
+        name="QueryHlsgroupByValue",
+        query="SELECT hls_group FROM HlsGroup hls_group WHERE hls_group.value = :val")
+})
+
 @Entity
 @Table(name="hls_group")
 public class HlsGroup implements Serializable {

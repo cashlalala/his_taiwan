@@ -3,23 +3,22 @@ package org.his.model;
 import java.io.Serializable;
 import javax.persistence.*;
 
-
 /**
  * The persistent class for the contactperson_info database table.
  * 
  */
+
 @Entity
-@Table(name="contactperson_info")
+@Table(name = "contactperson_info")
 public class ContactpersonInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private String guid;
 
 	private String address;
 
-	@Column(name="cell_phone")
+	@Column(name = "cell_phone")
 	private String cellPhone;
 
 	private String country;
@@ -32,14 +31,14 @@ public class ContactpersonInfo implements Serializable {
 
 	private String lastname;
 
-	@Column(name="marital_status")
+	@Column(name = "marital_status")
 	private String maritalStatus;
 
 	private String occupation;
 
 	private String phone;
 
-	@Column(name="place_of_birth")
+	@Column(name = "place_of_birth")
 	private String placeOfBirth;
 
 	private String relation;

@@ -2,46 +2,95 @@ package patients;
 
 
 //import Diagnosis.*;
-import barcode.PrintBarcode;
-import cashier.Frm_CashierHistory;
-import cc.johnwu.finger.*;
-import cc.johnwu.date.*;
-import cc.johnwu.sql.*;
-
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Frame;
+import java.awt.Point;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.*;
+import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
-import radiology.Frm_RadiologyHistory;
-import registration.Frm_Registration;
 import laboratory.Frm_LabHistory;
 import multilingual.Language;
-import cc.johnwu.login.UserInfo;
+
+import org.his.dao.ContactpersonInfoDao;
+import org.his.dao.DeathInfoDao;
+import org.his.dao.HlsGroupDao;
+import org.his.dao.PatientsInfoDao;
+import org.his.dao.ReligionDao;
+import org.his.model.ContactpersonInfo;
+import org.his.model.DeathInfo;
+import org.his.model.HlsGroup;
+import org.his.model.PatientsInfo;
+import org.his.model.Religion;
+import org.jdesktop.beansbinding.AutoBinding;
+import org.jdesktop.beansbinding.AutoBinding.UpdateStrategy;
+import org.jdesktop.beansbinding.BeanProperty;
+import org.jdesktop.beansbinding.Bindings;
+import org.jdesktop.beansbinding.Converter;
+
+import radiology.Frm_RadiologyHistory;
+import barcode.PrintBarcode;
+import cashier.Frm_CashierHistory;
+import cc.johnwu.date.DateInterface;
+import cc.johnwu.finger.FingerPrintScanner;
+import cc.johnwu.finger.FingerPrintViewerInterface;
+import cc.johnwu.sql.DBC;
 import errormessage.StoredErrorMessage;
 
 
 public class Frm_PatientMod  extends javax.swing.JFrame 
         implements FingerPrintViewerInterface, DateInterface, diagnosis.DiagnosisInterface{
-    private PatientsInterface m_frame = null;
-    private String m_UUID;
-    private String[] m_MaritalStatus ={"m","d","s","o"};
-    private String[] temp_MaritalName = {};
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private PatientsInterface m_frame = null;
+    private static String m_UUID;
+    public static final String[] m_MaritalStatus ={"m","d","s","o"};
     private String m_Status;
     /*多國語言變數*/
 
-    private Language paragraph = Language.getInstance();
+    private static final Language paragraph = Language.getInstance();
+    private static final String[] LOCALED_MARRITALNAME = new String[] { 
+        paragraph.getString("MARRIED"), paragraph.getString("DIVORCED"),
+        paragraph.getString("SINGLE"), paragraph.getString("OTHER")
+      };
     private String[] line = paragraph.setlanguage("PATIENTMOD").split("\n") ;
     private String[] message = paragraph.setlanguage("MESSAGE").split("\n") ;
     /*輸出錯誤資訊變數*/
     StoredErrorMessage ErrorMessage = new StoredErrorMessage() ;
+    
+    private PatientsInfo patientInfo;
+    
+    private ContactpersonInfo contactpersonInfo;
+    
+    private PatientsInfoDao patientInfoDao;
+    
+    private ContactpersonInfoDao contactpersonInfoDao;
+    
+    private DeathInfoDao deathInfoDao = new DeathInfoDao();
+    
+    private DeathInfo deathInfo;
 
-    java.awt.event.ActionEvent evt;
+	public void setPatientInfo(PatientsInfo patientInfo) {
+		this.patientInfo = patientInfo;
+	}
+
+	java.awt.event.ActionEvent evt;
     public Frm_PatientMod(PatientsInterface m_frame) {
         initComponents();
         initPatientInfo();
@@ -62,13 +111,18 @@ public class Frm_PatientMod  extends javax.swing.JFrame
             bar_menu.setVisible(false);
         }
         
-
+        initDataBindings();
     }
-
-    public Frm_PatientMod(PatientsInterface m_frame, String p_no){
+    
+    public Frm_PatientMod(PatientsInterface m_frame, PatientsInfo pInfo){
         this(m_frame);
-        setPatientIndo(p_no);
-        this.setTitle(paragraph.getLanguage(line, "EDITPATIENTDATA"));
+        this.patientInfo = pInfo;
+        this.patientInfoDao = new PatientsInfoDao();
+        this.contactpersonInfoDao = new ContactpersonInfoDao();
+    	this.contactpersonInfo = (patientInfo.getCpGuid() != null) ? 
+    			contactpersonInfoDao.QueryContactInfoById(patientInfo.getCpGuid()): new ContactpersonInfo();
+        
+        this.setTitle(paragraph.getString("EDITPATIENTDATA"));
         m_Status = "EDIT";
         this.btn_OK.setEnabled(isCanSave());
         check_Deal.setVisible(true);
@@ -76,10 +130,29 @@ public class Frm_PatientMod  extends javax.swing.JFrame
         if (m_frame.getClass().getName().equals("Registration.Frm_Registration")) {
             bar_menu.setVisible(false);
         }
+        initDataBindings();
+    }
+
+    public Frm_PatientMod(PatientsInterface m_frame, String p_no){
+        this(m_frame);
+        this.patientInfoDao = new PatientsInfoDao();
+        this.contactpersonInfoDao = new ContactpersonInfoDao();
+    	this.contactpersonInfo = (patientInfo.getCpGuid() != null) ? 
+    			contactpersonInfoDao.QueryContactInfoById(patientInfo.getCpGuid()): new ContactpersonInfo();
+        
+        this.setTitle(paragraph.getString("EDITPATIENTDATA"));
+        m_Status = "EDIT";
+        this.btn_OK.setEnabled(isCanSave());
+        check_Deal.setVisible(true);
+        initLanguage() ;
+        if (m_frame.getClass().getName().equals("Registration.Frm_Registration")) {
+            bar_menu.setVisible(false);
+        }
+        initDataBindings();
     }
 
     /** 初始化*/
-    private void init(){
+    private void init(){    	
         this.setExtendedState(Frm_PatientMod.MAXIMIZED_BOTH);  // 最大化
         this.setLocationRelativeTo(this);//視窗顯示至中
         this.dateChooser1.setParentFrame(this);
@@ -91,40 +164,425 @@ public class Frm_PatientMod  extends javax.swing.JFrame
                 btn_CancelActionPerformed(null);
             }
         });
-
-        ResultSet rs = null;
-        try {
-            m_UUID = UUID.randomUUID().toString();
-            String sql = "INSERT INTO patients_info (p_no,firstname,lastname,exist,c_sno) " +
-                "SELECT IF(COUNT(p_no) <> 0,MAX(p_no)+1,0), " +// p_no
-                "'"+m_UUID+"', " +      // firstname
-                "'"+m_UUID+"', " +      // lastname
-                "false, " +              // exist
-                " "+UserInfo.getUserNO()+" "+
-                "FROM patients_info ";
-            DBC.executeUpdate(sql);
-            sql = "SELECT p_no FROM patients_info " +
-                  "WHERE firstname = '"+m_UUID+"' ";
-            rs = DBC.executeQuery(sql);
-            if(rs.next()){
-                this.txt_No.setText(rs.getString(1));
-            }
-
-
-
-
-        } catch (SQLException e) {
-            ErrorMessage.setData("Patients", "Frm_PatientMod" ,"init()",
-                    e.toString().substring(e.toString().lastIndexOf(".")+1, e.toString().length()));
-            System.out.println(e);
-        } finally{
-            try{ DBC.closeConnection(rs); }
-            catch (SQLException e) {
-                ErrorMessage.setData("Patients", "Frm_PatientMod" ,"init() - DBC.closeConnection",
-                    e.toString().substring(e.toString().lastIndexOf(".")+1, e.toString().length()));
-            }
-        }
+        
+        contactpersonInfoDao = new ContactpersonInfoDao();
+    	this.patientInfoDao = new PatientsInfoDao();
+    	
+        m_UUID = UUID.randomUUID().toString();
+        this.patientInfo = new PatientsInfo();
+        patientInfo.setPNo(this.patientInfoDao.getNewPNo());
+        this.patientInfo.setFirstname(m_UUID);
+        this.patientInfo.setLastname(m_UUID);
+        this.patientInfo.setExist((byte)0);
+        this.patientInfo.setBirth(dateChooser1.getShownDate());
+        patientInfo.setGender((String)cob_Gender.getSelectedItem());
+        patientInfo.setMaritalStatus(m_MaritalStatus[getMaritalStatusIndexByFullName(
+        		(String)cob_MaritalStatus.getSelectedItem())]);
+        this.patientInfoDao.persist(patientInfo);
+        
+        this.contactpersonInfo = new ContactpersonInfo();
     }
+    
+	protected void initDataBindings() {
+		
+		BeanProperty<PatientsInfo, Integer> jIntBeanProp1 = BeanProperty.create("PNo");
+		BeanProperty<JTextField, String> jTextFieldBeanProperty = BeanProperty.create("text");
+		AutoBinding<PatientsInfo, Integer, JTextField, String> bind1 = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, 
+				patientInfo, jIntBeanProp1, this.txt_No, jTextFieldBeanProperty);
+		Converter<Integer, String> conv = new Converter<Integer,String>() {
+
+			@Override
+			public String convertForward(Integer arg0) {
+				return String.valueOf(arg0);
+			}
+
+			@Override
+			public Integer convertReverse(String arg0) {
+				return Integer.valueOf(arg0);
+			}
+			
+		};
+		bind1.setConverter(conv);
+		bind1.bind();
+		
+		BeanProperty<PatientsInfo, String> jIntBeanProp2 = BeanProperty.create("nhisNo");
+		BeanProperty<JTextField, String> jTextFieldProp2 = BeanProperty.create("text");
+		AutoBinding<PatientsInfo, String, JTextField, String> bind2 = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, 
+				patientInfo, jIntBeanProp2, txt_NhisNo, jTextFieldProp2);
+		bind2.bind();
+		
+		BeanProperty<PatientsInfo, String> jIntBeanProp3 = BeanProperty.create("firstname");
+		BeanProperty<JTextField, String> jTextFieldProp3 = BeanProperty.create("text");
+		AutoBinding<PatientsInfo, String, JTextField, String> bind3 = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, 
+				patientInfo, jIntBeanProp3, txt_FirstName, jTextFieldProp3);
+		bind3.setConverter(new Converter<String,String>(){
+
+			@Override
+			public String convertForward(String paramS) {
+				if (Frm_PatientMod.m_UUID == paramS) {
+					return "";
+				}
+				return paramS;
+			}
+
+			@Override
+			public String convertReverse(String paramT) {
+				if (paramT == "") {
+					return Frm_PatientMod.m_UUID;
+				}
+				return paramT;
+			}
+			
+		});
+		bind3.bind();
+		
+		BeanProperty<PatientsInfo, String> jIntBeanProp4 = BeanProperty.create("gender");
+		BeanProperty<JComboBox, String> jComboBoxBeanProperty = BeanProperty.create("selectedItem");
+		AutoBinding<PatientsInfo, String, JComboBox, String> bind4 = Bindings
+				.createAutoBinding(AutoBinding.UpdateStrategy.READ_WRITE,
+						patientInfo, jIntBeanProp4, cob_Gender,jComboBoxBeanProperty);
+		bind4.bind();
+		
+		BeanProperty<PatientsInfo, String> jIntBeanProp5 = BeanProperty.create("bloodtype");
+		BeanProperty<JComboBox, String> jComboBoxBeanProperty2 = BeanProperty
+				.create("selectedItem");
+		AutoBinding<PatientsInfo, String, JComboBox, String> bind5 = Bindings
+				.createAutoBinding(AutoBinding.UpdateStrategy.READ_WRITE,
+						patientInfo, jIntBeanProp5, cob_Bloodtype,jComboBoxBeanProperty2);
+		bind5.bind();
+		
+		BeanProperty<PatientsInfo, String> jIntBeanProp6 = BeanProperty.create("lastname");
+		BeanProperty<JTextField, String> jTextFieldProp6 = BeanProperty.create("text");
+		AutoBinding<PatientsInfo, String, JTextField, String> bind6 = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, 
+				patientInfo, jIntBeanProp6, txt_LastName, jTextFieldProp6);
+		bind6.setConverter(new Converter<String,String>(){
+
+			@Override
+			public String convertForward(String paramS) {
+				if (Frm_PatientMod.m_UUID == paramS) {
+					return "";
+				}
+				return paramS;
+			}
+
+			@Override
+			public String convertReverse(String paramT) {
+				if (paramT == "") {
+					return Frm_PatientMod.m_UUID;
+				}
+				return paramT;
+			}
+			
+		});
+		bind6.bind();
+		
+		BeanProperty<PatientsInfo, Date> jIntBeanProp7 = BeanProperty.create("birth");
+		BeanProperty<JTextField, String> jTextFieldProp7 = BeanProperty.create("text");
+		AutoBinding<PatientsInfo, Date, JTextField, String> bind7 = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, 
+				patientInfo, jIntBeanProp7, dateChooser1.getTxt_Date(), jTextFieldProp7);
+		bind7.setConverter(new Converter<Date,String>() {
+
+			private SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+			
+			@Override
+			public String convertForward(Date arg0) {
+				return formatter.format(arg0);
+			}
+
+			@Override
+			public Date convertReverse(String arg0) {
+				Date dateStr = null;
+				try {
+					dateStr = formatter.parse(arg0);
+				} catch (ParseException e) {
+					e.printStackTrace();
+					dateStr = new Date();
+				}
+				return dateStr;
+			}
+			
+		});
+		bind7.bind();
+		
+		BeanProperty<PatientsInfo, String> jIntBeanProp8 = BeanProperty.create("rhType");
+		BeanProperty<JComboBox, String> jComboBoxBeanProperty8 = BeanProperty
+				.create("selectedItem");
+		AutoBinding<PatientsInfo, String, JComboBox, String> bind8 = Bindings
+				.createAutoBinding(AutoBinding.UpdateStrategy.READ_WRITE,
+						patientInfo, jIntBeanProp8, cob_Rh,jComboBoxBeanProperty8);
+		bind8.bind();
+		
+		BeanProperty<PatientsInfo, String> jIntBeanProp9 = BeanProperty.create("maritalStatus");
+		BeanProperty<JComboBox, String> jComboBoxBeanProperty9 = BeanProperty
+				.create("selectedItem");
+		AutoBinding<PatientsInfo, String, JComboBox, String> bind9 = Bindings
+				.createAutoBinding(AutoBinding.UpdateStrategy.READ_WRITE,
+						patientInfo, jIntBeanProp9, cob_MaritalStatus,jComboBoxBeanProperty9);
+		bind9.setConverter(new Converter<String,String>() {
+
+			@Override
+			public String convertForward(String arg0) {
+				return Frm_PatientMod.getMaritalStatusName(arg0);
+			}
+
+			@Override
+			public String convertReverse(String arg0) {
+				return Frm_PatientMod.m_MaritalStatus[Frm_PatientMod.getMaritalStatusIndexByFullName(arg0)];
+			}
+			
+		});
+		bind9.bind();
+		
+		BeanProperty<PatientsInfo, String> jIntBeanProp10 = BeanProperty.create("height");
+		BeanProperty<JTextField, String> jTextFieldProp10 = BeanProperty.create("text");
+		AutoBinding<PatientsInfo, String, JTextField, String> bind10 = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, 
+				patientInfo, jIntBeanProp10, txt_Height, jTextFieldProp10);
+		bind10.bind();
+		
+		BeanProperty<PatientsInfo, String> jIntBeanProp11 = BeanProperty.create("weight");
+		BeanProperty<JTextField, String> jTextFieldProp11 = BeanProperty.create("text");
+		AutoBinding<PatientsInfo, String, JTextField, String> bind11 = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, 
+				patientInfo, jIntBeanProp11, txt_Weight, jTextFieldProp11);
+		bind11.bind();
+		
+		BeanProperty<PatientsInfo, String> jIntBeanProp12 = BeanProperty.create("phone");
+		BeanProperty<JTextField, String> jTextFieldProp12 = BeanProperty.create("text");
+		AutoBinding<PatientsInfo, String, JTextField, String> bind12 = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, 
+				patientInfo, jIntBeanProp12, txt_Phone1, jTextFieldProp12);
+		bind12.bind();
+		
+		BeanProperty<PatientsInfo, String> jIntBeanProp13 = BeanProperty.create("cellPhone");
+		BeanProperty<JTextField, String> jTextFieldProp13 = BeanProperty.create("text");
+		AutoBinding<PatientsInfo, String, JTextField, String> bind13 = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, 
+				patientInfo, jIntBeanProp13, txt_Phone2, jTextFieldProp13);
+		bind13.bind();
+		
+		BeanProperty<PatientsInfo, String> jIntBeanProp14 = BeanProperty.create("town");
+		BeanProperty<JTextField, String> jTextFieldProp14 = BeanProperty.create("text");
+		AutoBinding<PatientsInfo, String, JTextField, String> bind14 = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, 
+				patientInfo, jIntBeanProp14, txt_Town, jTextFieldProp14);
+		bind14.bind();
+		
+		BeanProperty<PatientsInfo, String> jIntBeanProp15 = BeanProperty.create("state");
+		BeanProperty<JTextField, String> jTextFieldProp15 = BeanProperty.create("text");
+		AutoBinding<PatientsInfo, String, JTextField, String> bind15 = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, 
+				patientInfo, jIntBeanProp15, txt_State, jTextFieldProp15);
+		bind15.bind();
+		
+		BeanProperty<PatientsInfo, String> jIntBeanProp16 = BeanProperty.create("country");
+		BeanProperty<JTextField, String> jTextFieldProp16 = BeanProperty.create("text");
+		AutoBinding<PatientsInfo, String, JTextField, String> bind16 = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, 
+				patientInfo, jIntBeanProp16, txt_Country, jTextFieldProp16);
+		bind16.bind();
+		
+		BeanProperty<PatientsInfo, String> jIntBeanProp17 = BeanProperty.create("address");
+		BeanProperty<JTextArea, String> jTextFieldProp17 = BeanProperty.create("text");
+		AutoBinding<PatientsInfo, String, JTextArea, String> bind17 = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, 
+				patientInfo, jIntBeanProp17, txt_Address, jTextFieldProp17);
+		bind17.bind();
+		
+		BeanProperty<PatientsInfo, String> jIntBeanProp18 = BeanProperty.create("occupation");
+		BeanProperty<JTextField, String> jTextFieldProp18 = BeanProperty.create("text");
+		AutoBinding<PatientsInfo, String, JTextField, String> bind18 = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, 
+				patientInfo, jIntBeanProp18, txt_Occupation, jTextFieldProp18);
+		bind18.bind();
+		
+		BeanProperty<PatientsInfo, String> jIntBeanProp19 = BeanProperty.create("language");
+		BeanProperty<JTextField, String> jTextFieldProp19 = BeanProperty.create("text");
+		AutoBinding<PatientsInfo, String, JTextField, String> bind19 = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, 
+				patientInfo, jIntBeanProp19, txt_Language, jTextFieldProp19);
+		bind19.bind();
+		
+		BeanProperty<PatientsInfo, String> jIntBeanProp20 = BeanProperty.create("placeOfBirth");
+		BeanProperty<JTextField, String> jTextFieldProp20 = BeanProperty.create("text");
+		AutoBinding<PatientsInfo, String, JTextField, String> bind20 = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, 
+				patientInfo, jIntBeanProp20, txt_PlaceOfBirth, jTextFieldProp20);
+		bind20.bind();
+		
+		BeanProperty<PatientsInfo, String> jIntBeanProp21 = BeanProperty.create("ps");
+		BeanProperty<JTextArea, String> jTextFieldProp21 = BeanProperty.create("text");
+		AutoBinding<PatientsInfo, String, JTextArea, String> bind21 = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, 
+				patientInfo, jIntBeanProp21, txt_Ps, jTextFieldProp21);
+		bind21.bind();
+		
+		BeanProperty<PatientsInfo, String> jIntBeanProp22 = BeanProperty.create("tribe");
+		BeanProperty<JComboBox, String> jComboBoxBeanProperty22 = BeanProperty
+				.create("selectedItem");
+		AutoBinding<PatientsInfo, String, JComboBox, String> bind22 = Bindings
+				.createAutoBinding(AutoBinding.UpdateStrategy.READ_WRITE,
+						patientInfo, jIntBeanProp22, cbox_Trible,jComboBoxBeanProperty22);
+		bind22.setConverter(new Converter<String,String>() {
+			private HlsGroupDao dao = new HlsGroupDao(); 
+			
+			@Override
+			public String convertForward(String arg0) {
+				return dao.QueryCompStringByValue(arg0);
+			}
+
+			@Override
+			public String convertReverse(String arg0) {
+				if (arg0 != null) {
+					return arg0.toString().split(" - ")[0];
+				}
+				return "";
+			}
+			
+		});
+		bind22.bind();		
+		
+		BeanProperty<PatientsInfo, String> jIntBeanProp23 = BeanProperty.create("religion");
+		BeanProperty<JComboBox, String> jComboBoxBeanProperty23 = BeanProperty
+				.create("selectedItem");
+		AutoBinding<PatientsInfo, String, JComboBox, String> bind23 = Bindings
+				.createAutoBinding(AutoBinding.UpdateStrategy.READ_WRITE,
+						patientInfo, jIntBeanProp23, cbox_Religion,jComboBoxBeanProperty23);
+		bind23.setConverter(new Converter<String,String>() {
+			private ReligionDao dao = new ReligionDao(); 
+			
+			@Override
+			public String convertForward(String arg0) {
+				return dao.QueryCompStringByValue(arg0);
+			}
+
+			@Override
+			public String convertReverse(String arg0) {
+				if (arg0 != null) {
+					return arg0.toString().split(" - ")[0];
+				}
+				return "";
+			}
+			
+		});
+		bind23.bind();
+		
+		BeanProperty<PatientsInfo, String> jIntBeanProp24 = BeanProperty.create("niaNo");
+		BeanProperty<JTextField, String> jTextFieldProp24 = BeanProperty.create("text");
+		AutoBinding<PatientsInfo, String, JTextField, String> bind24 = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, 
+				patientInfo, jIntBeanProp24, txt_NiaNo, jTextFieldProp24);
+		bind24.bind();
+		
+		BeanProperty<ContactpersonInfo, String> jIntBeanPropc1 = BeanProperty.create("firstname");
+		BeanProperty<JTextField, String> jTextFieldPropc1 = BeanProperty.create("text");
+		AutoBinding<ContactpersonInfo, String, JTextField, String> bindc1 = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, 
+				contactpersonInfo, jIntBeanPropc1, txt_EmeFirstName, jTextFieldPropc1);
+		bindc1.bind();
+		
+		BeanProperty<ContactpersonInfo, String> jIntBeanPropc2 = BeanProperty.create("lastname");
+		BeanProperty<JTextField, String> jTextFieldPropc2 = BeanProperty.create("text");
+		AutoBinding<ContactpersonInfo, String, JTextField, String> bindc2 = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, 
+				contactpersonInfo, jIntBeanPropc2, txt_EmeLastName, jTextFieldPropc2);
+		bindc2.setConverter(new Converter<String,String>(){
+			@Override
+			public String convertForward(String paramS) {
+				return paramS;
+			}
+			@Override
+			public String convertReverse(String paramT) {
+				return paramT;
+			}
+		});
+		bindc2.bind();
+		
+		BeanProperty<ContactpersonInfo, String> jIntBeanPropc3 = BeanProperty.create("gender");
+		BeanProperty<JComboBox, String> jComboBoxBeanPropertyc3 = BeanProperty.create("selectedItem");
+		AutoBinding<ContactpersonInfo, String, JComboBox, String> bindc3 = Bindings
+				.createAutoBinding(AutoBinding.UpdateStrategy.READ_WRITE,
+						contactpersonInfo, jIntBeanPropc3, cob_EmeGender,jComboBoxBeanPropertyc3);
+		bindc3.bind();
+		
+		BeanProperty<ContactpersonInfo, String> jIntBeanPropc4 = BeanProperty.create("phone");
+		BeanProperty<JTextField, String> jTextFieldPropc4 = BeanProperty.create("text");
+		AutoBinding<ContactpersonInfo, String, JTextField, String> bindc4 = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, 
+				contactpersonInfo, jIntBeanPropc4, txt_EmePhone, jTextFieldPropc4);
+		bindc4.bind();
+		
+		BeanProperty<ContactpersonInfo, String> jIntBeanPropc5 = BeanProperty.create("cellPhone");
+		BeanProperty<JTextField, String> jTextFieldPropc5 = BeanProperty.create("text");
+		AutoBinding<ContactpersonInfo, String, JTextField, String> bindc5 = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, 
+				contactpersonInfo, jIntBeanPropc5, txt_empCellPhone, jTextFieldPropc5);
+		bindc5.bind();
+
+		BeanProperty<ContactpersonInfo, String> jIntBeanPropc6 = BeanProperty.create("town");
+		BeanProperty<JTextField, String> jTextFieldPropc6 = BeanProperty.create("text");
+		AutoBinding<ContactpersonInfo, String, JTextField, String> bindc6 = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, 
+				contactpersonInfo, jIntBeanPropc6, txt_CPTown, jTextFieldPropc6);
+		bindc6.bind();
+		
+		BeanProperty<ContactpersonInfo, String> jIntBeanPropc7 = BeanProperty.create("state");
+		BeanProperty<JTextField, String> jTextFieldPropc7 = BeanProperty.create("text");
+		AutoBinding<ContactpersonInfo, String, JTextField, String> bindc7 = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, 
+				contactpersonInfo, jIntBeanPropc7, txt_EmeState, jTextFieldPropc7);
+		bindc7.bind();
+		
+		BeanProperty<ContactpersonInfo, String> jIntBeanPropc8 = BeanProperty.create("country");
+		BeanProperty<JTextField, String> jTextFieldPropc8 = BeanProperty.create("text");
+		AutoBinding<ContactpersonInfo, String, JTextField, String> bindc8 = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, 
+				contactpersonInfo, jIntBeanPropc8, txt_EmeCountry, jTextFieldPropc8);
+		bindc8.bind();
+
+		BeanProperty<ContactpersonInfo, String> jIntBeanPropc9 = BeanProperty.create("address");
+		BeanProperty<JTextArea, String> jTextFieldPropc9 = BeanProperty.create("text");
+		AutoBinding<ContactpersonInfo, String, JTextArea, String> bindc9 = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, 
+				contactpersonInfo, jIntBeanPropc9, txta_EmeAddress, jTextFieldPropc9);
+		bindc9.bind();
+		
+		BeanProperty<ContactpersonInfo, String> jIntBeanPropc10 = BeanProperty.create("occupation");
+		BeanProperty<JTextField, String> jTextFieldPropc10 = BeanProperty.create("text");
+		AutoBinding<ContactpersonInfo, String, JTextField, String> bindc10 = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, 
+				contactpersonInfo, jIntBeanPropc10, txt_EmeOccupation, jTextFieldPropc10);
+		bindc10.bind();
+		
+		BeanProperty<ContactpersonInfo, String> jIntBeanPropc11 = BeanProperty.create("language");
+		BeanProperty<JTextField, String> jTextFieldPropc11 = BeanProperty.create("text");
+		AutoBinding<ContactpersonInfo, String, JTextField, String> bindc11 = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, 
+				contactpersonInfo, jIntBeanPropc11, txt_EmeLanguage, jTextFieldPropc11);
+		bindc11.bind();
+		
+		BeanProperty<ContactpersonInfo, String> jIntBeanPropc12 = BeanProperty.create("maritalStatus");
+		BeanProperty<JComboBox, String> jComboBoxBeanPropertyc12 = BeanProperty
+				.create("selectedItem");
+		AutoBinding<ContactpersonInfo, String, JComboBox, String> bindc12 = Bindings
+				.createAutoBinding(AutoBinding.UpdateStrategy.READ_WRITE,
+						contactpersonInfo, jIntBeanPropc12, cob_EmeMaritalStatus,jComboBoxBeanPropertyc12);
+		bindc12.setConverter(new Converter<String,String>() {
+
+			@Override
+			public String convertForward(String arg0) {
+				return Frm_PatientMod.getMaritalStatusName(arg0);
+			}
+
+			@Override
+			public String convertReverse(String arg0) {
+				return Frm_PatientMod.m_MaritalStatus[Frm_PatientMod.getMaritalStatusIndexByFullName(arg0)];
+			}
+			
+		});
+		bindc12.bind();
+		
+		BeanProperty<ContactpersonInfo, String> jIntBeanPropc13 = BeanProperty.create("placeOfBirth");
+		BeanProperty<JTextField, String> jTextFieldPropc13 = BeanProperty.create("text");
+		AutoBinding<ContactpersonInfo, String, JTextField, String> bindc13 = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, 
+				contactpersonInfo, jIntBeanPropc13, txt_EmePlaceOfBirth, jTextFieldPropc13);
+		bindc13.bind();
+		
+		BeanProperty<ContactpersonInfo, String> jIntBeanPropc14 = BeanProperty.create("tribe");
+		BeanProperty<JTextField, String> jTextFieldPropc14 = BeanProperty.create("text");
+		AutoBinding<ContactpersonInfo, String, JTextField, String> bindc14 = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, 
+				contactpersonInfo, jIntBeanPropc14, txt_EmeTribe, jTextFieldPropc14);
+		bindc14.bind();
+		
+		BeanProperty<ContactpersonInfo, String> jIntBeanPropc15 = BeanProperty.create("religion");
+		BeanProperty<JTextField, String> jTextFieldPropc15 = BeanProperty.create("text");
+		AutoBinding<ContactpersonInfo, String, JTextField, String> bindc15 = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, 
+				contactpersonInfo, jIntBeanPropc15, txt_EmeReligion, jTextFieldPropc15);
+		bindc15.bind();
+		
+		BeanProperty<ContactpersonInfo, String> jIntBeanPropc16 = BeanProperty.create("relation");
+		BeanProperty<JTextField, String> jTextFieldPropc16 = BeanProperty.create("text");
+		AutoBinding<ContactpersonInfo, String, JTextField, String> bindc16 = Bindings.createAutoBinding(UpdateStrategy.READ_WRITE, 
+				contactpersonInfo, jIntBeanPropc16, txt_EmeRelation, jTextFieldPropc16);
+		bindc16.bind();
+	}
 
     /** 初始化權限*/
     private void initPermission(){
@@ -167,7 +625,8 @@ public class Frm_PatientMod  extends javax.swing.JFrame
         this.txt_EmeCountry.setText("");
     }
 
-    private void initLanguage() {
+    @SuppressWarnings("deprecation")
+	private void initLanguage() {
         this.lab_TitleNo.setText(paragraph.getLanguage(line, "TITLENO"));
         this.lab_TitleFirstName.setText("* "+paragraph.getLanguage(line, "TITLEFIRSTNAME"));
         this.lab_TitleLastName.setText("* "+paragraph.getLanguage(line, "TITLELASTNAME"));
@@ -223,43 +682,36 @@ public class Frm_PatientMod  extends javax.swing.JFrame
         this.Pat_List.setTitleAt(0, paragraph.getLanguage(line, "PATIENTINFRMATION"));
         this.Pat_List.setTitleAt(1, paragraph.getLanguage(line, "CONTRACTPERSON"));
 
-        temp_MaritalName =  new String[] { 
-                                   paragraph.getLanguage(line, "MARRIED"), paragraph.getLanguage(line, "DIVORCED"),
-                                   paragraph.getLanguage(line, "SINGLE"), paragraph.getLanguage(line, "OTHER")
-                                 };
-
-       cob_MaritalStatus.addItem(temp_MaritalName[0]);
-      cob_MaritalStatus.addItem(temp_MaritalName[1]);
-      cob_MaritalStatus.addItem(temp_MaritalName[2]);
-      cob_MaritalStatus.addItem(temp_MaritalName[3]);
-
-      //cob_EmeMaritalStatus.addItem(temp_MaritalName[0]);
-     // cob_EmeMaritalStatus.addItem(temp_MaritalName[1]);
-     // cob_EmeMaritalStatus.addItem(temp_MaritalName[2]);
-     // cob_EmeMaritalStatus.addItem(temp_MaritalName[3]);
     }
 
     // 初始化 種族  宗教
     private void initcBox() {
-        try {
-            cbox_Trible.addItem("");
-            cbox_Religion.addItem("");
-
-            String sql = "SELECT CONCAT(value,' - ', descrition) AS religion FROM religion ";
-            ResultSet rs = DBC.executeQuery(sql);
-            while(rs.next()) cbox_Religion.addItem(rs.getString("religion"));
-            //cbox_Religion.setSelectedItem("U - Unknown");
-            
-            sql = "SELECT CONCAT(value,' - ', descrition) AS hls_group FROM hls_group  ";
-            rs = DBC.executeQuery(sql);
-            while(rs.next()) cbox_Trible.addItem(rs.getString("hls_group"));
-            
-        } catch (SQLException ex) {
-            Logger.getLogger(Frm_PatientMod.class.getName()).log(Level.SEVERE, null, ex);
+        cbox_Trible.addItem("");
+        cbox_Religion.addItem("");
+        
+        ReligionDao religionDao = new ReligionDao();
+        List<Religion> religions = religionDao.QueryReligions();
+        for (Religion religion : religions) cbox_Religion.addItem(religionDao.getComposedString(religion));
+        
+        HlsGroupDao hlsgpDao = new HlsGroupDao();
+        List<HlsGroup> hlsGrps = hlsgpDao.QueryHlsGroups();
+        for (HlsGroup hlsGrp : hlsGrps) cbox_Trible.addItem(hlsgpDao.getComposedString(hlsGrp));
+    }
+    
+    private static int getMaritalStatusIndexByFullName(String marital_status){
+        
+        if(marital_status==null || marital_status.equals("Other")){
+            return 3;
+        }else if(marital_status.equals("Married")) {
+            return 0;
+        } else if (marital_status.equals("Divorsed")) {
+            return 1;
         }
+            return 2;
+        
     }
 
-    private int getMaritalStatusIndex(String marital_status){
+    private static int getMaritalStatusIndex(String marital_status){
         
         if(marital_status==null || marital_status.equals("o")){
             return 3;
@@ -271,7 +723,7 @@ public class Frm_PatientMod  extends javax.swing.JFrame
             return 2;
         
     }
-        private String getMaritalStatusName(String marital_status){
+        private static String getMaritalStatusName(String marital_status){
         
         if(marital_status==null || marital_status.equals("o")){
             return "Other";
@@ -285,7 +737,8 @@ public class Frm_PatientMod  extends javax.swing.JFrame
     }
 
     /** 檢查病患編號是否存在*//*如存在顯示病患、聯絡人資料*/
-    private void setPatientIndo(String p_no){
+    @SuppressWarnings("unused")
+	private void setPatientIndo(String p_no){
         ResultSet rs = null ;
         String sql = "";
         try {
@@ -694,7 +1147,7 @@ public class Frm_PatientMod  extends javax.swing.JFrame
 
         lab_MaritalStatus.setText("Marital Status :");
 
-        cob_MaritalStatus.setMaximumRowCount(4);
+        cob_MaritalStatus.setModel(new javax.swing.DefaultComboBoxModel(LOCALED_MARRITALNAME));
 
         lab_Occupation.setText("Occupation :");
 
@@ -1272,16 +1725,23 @@ public class Frm_PatientMod  extends javax.swing.JFrame
 
     private void btn_DealSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_DealSaveActionPerformed
         String uuid = UUID.randomUUID().toString();
-        String sql = "";
         try {
-            sql = "INSERT INTO death_info(guid, date_of_death, cause) VALUES( " +
-                "'"+uuid+"', " +
-                "'" + this.dia_cob_date.getValue().toString()+":"+this.dia_spi_Hour.getValue().toString()+":"+this.dia_spi_Min.getValue().toString()+"', " +
-                "'"+this.dia_txt_Cause.getText()+"')";
-            DBC.executeUpdate(sql);
-            sql = "UPDATE patients_info SET dead_guid = '"+uuid+"' WHERE p_no = '"+this.txt_No.getText()+"'";
-            DBC.executeUpdate(sql);
-        } catch (SQLException e) {
+        	deathInfo = new DeathInfo();
+        	deathInfo.setGuid(uuid);
+        	deathInfo.setCause(this.dia_txt_Cause.getText());
+        	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd:HH:mm");
+        	try {
+        		deathInfo.setDateOfDeath(format.parse(String.format("%s:%s:%s", dia_cob_date.getValue().toString(),
+						dia_spi_Hour.getValue().toString(),dia_spi_Min.getValue().toString())));
+			} catch (ParseException e) {
+				e.printStackTrace();
+				deathInfo.setDateOfDeath(new Date());
+			}
+        	deathInfoDao.merge(deathInfo);
+            
+            this.patientInfo.setDeadGuid(uuid);
+            patientInfoDao.merge(patientInfo);
+        } catch (Exception e) {
             ErrorMessage.setData("Patients", "Frm_PatientMod" ,"btn_DealSaveActionPerformed(java.awt.event.ActionEvent evt)",
                    e.toString().substring(e.toString().lastIndexOf(".")+1, e.toString().length()));
             System.out.println(e);
@@ -1291,15 +1751,13 @@ public class Frm_PatientMod  extends javax.swing.JFrame
 
     private void btn_DealCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_DealCancelActionPerformed
         this.jDialog1.setVisible(false);
-        ResultSet rs = null;
-        String sql  = "";
         try{
-            sql = "DELETE FROM death_info WHERE guid = (SELECT dead_guid FROM patients_info WHERE p_no = '" + this.txt_No.getText() +"')";
-            DBC.executeUpdate(sql) ;
-            sql = "UPDATE patients_info SET dead_guid = NULL WHERE  p_no = '" + this.txt_No.getText() +"'";
-            DBC.executeUpdate(sql) ;
+        	if (deathInfo != null)
+        		deathInfoDao.remove(deathInfo);
+            patientInfo.setDeadGuid(null);
+            patientInfoDao.merge(patientInfo);
             this.check_Deal.setSelected(false);
-        }catch(SQLException e){
+        }catch(Exception e){
             ErrorMessage.setData("Patients", "Frm_PatientMod" ,"btn_DealCancelActionPerformed(java.awt.event.ActionEvent evt)",
                    e.toString().substring(e.toString().lastIndexOf(".")+1, e.toString().length()));
         }
@@ -1330,113 +1788,32 @@ public class Frm_PatientMod  extends javax.swing.JFrame
         ResultSet rs = null;
 
         try {
-             String trible[]={"",""};
-              String religion[]={"",""};
-            if(this.cbox_Trible.getSelectedItem()!=null)
-            {
-                trible = this.cbox_Trible.getSelectedItem().toString().split(" - ");
-            }
-               if(this.cbox_Religion.getSelectedItem()!=null)
-            {
-                 religion = this.cbox_Religion.getSelectedItem().toString().split(" - ");
-            }
-         
-               
-            sql = "UPDATE patients_info SET "+
-                    "nhis_no = '"+this.txt_NhisNo.getText()+"', " +
-                    "nia_no = '"+this.txt_NiaNo.getText()+"', " +
-                    "firstname = '"+this.txt_FirstName.getText()+"', " +
-                    "lastname = '"+this.txt_LastName.getText()+"', " +
-                    "birth = '"+this.dateChooser1.getValue()+"', " +
-                    "gender = '"+this.cob_Gender.getSelectedItem().toString()+"', " +
-                    "bloodtype = '"+this.cob_Bloodtype.getSelectedItem().toString()+"', " +
-                    "rh_type = '"+this.cob_Rh.getSelectedItem().toString()+"', " +
-                    "height = '"+this.txt_Height.getText()+"', " +
-                    "weight = '"+this.txt_Weight.getText()+"', " +
-                    "phone = '"+this.txt_Phone1.getText()+"', " +
-                    "cell_phone = '"+this.txt_Phone2.getText()+"', " +
-                    "town = '"+this.txt_Town.getText()+"', " +
-                    "state = '"+this.txt_State.getText()+"', " +
-                    "country = '"+this.txt_Country.getText()+"', " +
-                    "address = '"+this.txt_Address.getText()+"', " +
-                    "occupation = '"+this.txt_Occupation.getText()+"', " +
-                    "language = '"+this.txt_Language.getText()+"', " +
-                    "marital_status = '"+this.m_MaritalStatus[this.cob_MaritalStatus.getSelectedIndex()]+"', " +
-                    "place_of_birth = '"+this.txt_PlaceOfBirth.getText()+"', " +
-                    "tribe = '"+ trible[0]+"', " +
-                    "religion = '"+religion[0]+"', " +
-                    "ps = '"+this.txt_Ps.getText()+"', " +
-                    "exist = true " +
-                    "WHERE p_no = '"+this.txt_No.getText()+"' ";
-  
-            DBC.executeUpdate(sql);
+            patientInfo.setExist((byte)1);
+            
             cc.johnwu.login.ChangesLog.ChangesLog("patients_info", this.txt_No.getText(), "add");
             /*新增或修改聯絡人資料*/
             if(!txt_EmeRelation.getText().trim().equals("")
                     || !this.txt_EmeFirstName.getText().trim().equals("")
                     || !this.txt_EmeLastName.getText().trim().equals("")){
-                sql = "SELECT * FROM contactperson_info	LEFT JOIN patients_info " +
-                        "ON contactperson_info.guid = patients_info.cp_guid " +
-                        "WHERE patients_info.p_no = '" + this.txt_No.getText() + "'" ;
-                rs = DBC.executeQuery(sql) ;
-                if(rs.next()){
-                    sql = "UPDATE contactperson_info SET "+
-                            "firstName = '" + this.txt_EmeFirstName.getText() + "', " +
-                            "lastName = '" + this.txt_EmeLastName.getText() + "', " +
-                            "gender = '" + this.cob_EmeGender.getSelectedItem().toString() + "', " +
-                            "phone = '" + this.txt_EmePhone.getText() + "', " +
-                            "cell_phone = '"+txt_empCellPhone.getText()+"', " +
-                            "town = '" + this.txt_CPTown.getText() + "', " +
-                            "state = '" + this.txt_EmeState.getText() + "', " +
-                            "country = '" + this.txt_EmeCountry.getText() + "', " +
-                            "address = '" + this.txta_EmeAddress.getText() + "', " +
-                            "occupation = '"+this.txt_EmeOccupation.getText()+"', " +
-                            "language = '"+this.txt_EmeLanguage.getText()+"', " +
-                            "marital_status = '"+this.m_MaritalStatus[this.cob_EmeMaritalStatus.getSelectedIndex()]+"', " +
-                            "place_of_birth = '"+this.txt_EmePlaceOfBirth.getText()+"', " +
-                            "tribe = '"+this.txt_EmeTribe.getText()+"', " +
-                            "religion = '"+this.txt_EmeReligion.getText()+"', " +
-                            "relation = '" + this.txt_EmeRelation.getText() + "' " +
-                            "WHERE guid = " +
-                            "(SELECT cp_guid FROM patients_info WHERE p_no = '"+this.txt_No.getText()+"') ";
-                }else{
+            	                
+                if (patientInfo.getCpGuid() == null){
                     String uuid = UUID.randomUUID().toString();
-                    sql = "INSERT INTO contactperson_info " +
-                            "(guid,firstName,lastName,gender,phone,town,state,country,address,occupation,language,marital_status,place_of_birth,tribe,religion,relation) " +
-                            "VALUES ('" + uuid + "','"+
-                            this.txt_EmeFirstName.getText() + "','" +
-                            this.txt_EmeLastName.getText() + "','" +
-                            this.cob_EmeGender.getSelectedItem().toString() + "','" +
-                            this.txt_EmePhone.getText() + "','" +
-                            this.txt_CPTown.getText() + "','" +
-                            this.txt_EmeState.getText() + "','" +
-                            this.txt_EmeCountry.getText() + "','" +
-                            this.txta_EmeAddress.getText() + "','" +
-                            this.txt_EmeOccupation.getText() + "','" +
-                            this.txt_EmeLanguage.getText() + "','" +
-
-                            this.m_MaritalStatus[this.cob_EmeMaritalStatus.getSelectedIndex()] + "','" +
-                            this.txt_EmePlaceOfBirth.getText() + "','" +
-                            this.txt_EmeTribe.getText() + "','" +
-                            this.txt_EmeReligion.getText() + "','" +
-                            this.txt_EmeRelation.getText() +"' )" ;
-                    DBC.executeUpdate(sql) ;
-                    sql = "UPDATE patients_info SET cp_guid = '" + uuid + "' " +
-                            "WHERE p_no = '" + this.txt_No.getText() + "'" ;
-
+                    contactpersonInfo.setGuid(uuid);
+                    patientInfo.setCpGuid(uuid);
                 }
-                DBC.executeUpdate(sql) ;
+                this.contactpersonInfoDao.persist(contactpersonInfo);
             }
+            this.patientInfoDao.persist(patientInfo);
             //***********************列印barcode
             if (this.m_Status.equals("NEW")) {
                 PrintBarcode.PrintBarcode(txt_No.getText());
             }
             
             //************************
-            JOptionPane.showMessageDialog(new Frame(), paragraph.getLanguage(message, "SAVECOMPLETE"));
+            JOptionPane.showMessageDialog(new Frame(), paragraph.getString("SAVECOMPLETE"));
             btn_CancelActionPerformed(null);
             m_frame.onPatientMod(this.txt_No.getText());
-        } catch (SQLException e) {
+        } catch (Exception e) {
             ErrorMessage.setData("Patients", "Frm_PatientMod" ,"btn_OKActionPerformed(java.awt.event.ActionEvent evt)",
                     e.toString().substring(e.toString().lastIndexOf(".")+1, e.toString().length()));
             System.out.println(e);
@@ -1444,14 +1821,7 @@ public class Frm_PatientMod  extends javax.swing.JFrame
 }//GEN-LAST:event_btn_OKActionPerformed
 
     private void btn_CancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_CancelActionPerformed
-        try {
-            String sql = "DELETE FROM patients_info WHERE firstname = '"+m_UUID+"' AND exist = false";
-            DBC.executeUpdate(sql);
-        } catch (SQLException e) {
-            ErrorMessage.setData("Patients", "Frm_PatientMod" ,"btn_CancelActionPerformed(java.awt.event.ActionEvent evt)",
-                    e.toString().substring(e.toString().lastIndexOf(".")+1, e.toString().length()));
-            System.out.println(e);
-        }
+        this.patientInfoDao.DeleteAutoGenUser(m_UUID);
         if(m_frame!=null) m_frame.reLoad();
         dispose();
 }//GEN-LAST:event_btn_CancelActionPerformed
@@ -1480,24 +1850,25 @@ public class Frm_PatientMod  extends javax.swing.JFrame
         int y = p.y+(this.getHeight()-jDialog1.getHeight())/2;
         this.jDialog1.setLocation(x, y);
         // death_info
+        
         try{
-            sql = "SELECT * FROM death_info " +
-                    "WHERE guid = (SELECT dead_guid FROM patients_info " +
-                    "WHERE p_no = '"+this.txt_No.getText()+"')" ;
-            rs = DBC.executeQuery(sql) ;
-            if(rs.next()){
+            if (patientInfo.getDeadGuid() != null){
+            	deathInfo = deathInfoDao.QueryDeathInfoById(patientInfo.getDeadGuid());
                 this.check_Deal.setSelected(true);
-                this.dia_txt_Cause.setText(rs.getString("cause"));
-                timer = rs.getString("date_of_death").substring(0, 10);
+                this.dia_txt_Cause.setText(deathInfo.getCause());
+                
+                SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd:HH:mm");
+                String dateTime = ft.format(deathInfo.getDateOfDeath());
+                timer = dateTime.substring(0, 10);
                 this.dia_cob_date.setValue(timer);
-                int time =Integer.parseInt(rs.getString("date_of_death").substring(11, 13));
+                int time =Integer.parseInt(dateTime.substring(11, 13));
                 this.dia_spi_Hour.setValue(time);
-                time = Integer.parseInt(rs.getString("date_of_death").substring(14, 16));
+                time = Integer.parseInt(dateTime.substring(14, 16));
                 this.dia_spi_Min.setValue(time);
             }else{
                 this.btn_DealSave.setEnabled(true);
             }
-        }catch(SQLException e){
+        }catch(Exception e){
             ErrorMessage.setData("Patients", "Frm_PatientMod" ,"check_DealActionPerformed(java.awt.event.ActionEvent evt)",
                     e.toString().substring(e.toString().lastIndexOf(".")+1, e.toString().length()));
             System.out.println(e) ;

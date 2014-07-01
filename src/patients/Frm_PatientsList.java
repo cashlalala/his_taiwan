@@ -41,7 +41,7 @@ public class Frm_PatientsList extends javax.swing.JFrame implements
 
 	private PatientsInfoDao patiensInfoDao;
 
-	private List<PatientsInfo> patiensInfo;
+	private List<PatientsInfo> patientsInfo;
 
 	private String conditions;
 
@@ -146,7 +146,7 @@ public class Frm_PatientsList extends javax.swing.JFrame implements
 			break;
 		}
 
-		patiensInfo = patiensInfoDao.getExistedPatients(conditions, 0,
+		patientsInfo = patiensInfoDao.getExistedPatients(conditions, 0,
 				MAX_ROWS_OF_PAGE);
 		int count = patiensInfoDao.getPatientCount();
 		int page = count / MAX_ROWS_OF_PAGE
@@ -157,7 +157,7 @@ public class Frm_PatientsList extends javax.swing.JFrame implements
 			for (int i = 0; i < page; i++) {
 				this.cob_Page.addItem(+(i + 1) + " of " + page);
 			}
-			tab_List.setModel(new PatientsInfoJPATable(patiensInfo));
+			tab_List.setModel(new PatientsInfoJPATable(patientsInfo));
 			if (this.cob_Page.getItemCount() > 1) {
 				this.btn_Next.setEnabled(true);
 			} else {
@@ -786,7 +786,8 @@ public class Frm_PatientsList extends javax.swing.JFrame implements
 
 	private void btn_AddActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_AddActionPerformed
 		showImage(null, "");
-		new Frm_PatientMod(this).setVisible(true);
+		Frm_PatientMod frmPatientMod = new Frm_PatientMod(this);
+		frmPatientMod.setVisible(true);
 		this.setEnabled(false);
 		this.setVisible(false);
 	}// GEN-LAST:event_btn_AddActionPerformed
@@ -800,7 +801,7 @@ public class Frm_PatientsList extends javax.swing.JFrame implements
 	}// GEN-LAST:event_tab_ListMouseClicked
 
 	private void btn_DeleteActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_DeleteActionPerformed
-		PatientsInfo pInfo = this.patiensInfo.get(tab_List.getSelectedRow());
+		PatientsInfo pInfo = this.patientsInfo.get(tab_List.getSelectedRow());
 		String p_no = tab_List.getValueAt(tab_List.getSelectedRow(), 0)
 				.toString();
 		String p_name = tab_List.getValueAt(tab_List.getSelectedRow(), 1)
@@ -828,8 +829,9 @@ public class Frm_PatientsList extends javax.swing.JFrame implements
 
 	private void btn_EditActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_EditActionPerformed
 		showImage(null, "");
-		new Frm_PatientMod(this, tab_List.getValueAt(tab_List.getSelectedRow(),
-				0).toString()).setVisible(true);
+		Frm_PatientMod frmPatientMod = new Frm_PatientMod(this,
+				patientsInfo.get(tab_List.getSelectedRow()));
+		frmPatientMod.setVisible(true);
 		this.setEnabled(false);
 		this.setVisible(false);
 	}// GEN-LAST:event_btn_EditActionPerformed
@@ -849,10 +851,10 @@ public class Frm_PatientsList extends javax.swing.JFrame implements
 
 	private void cob_PageItemStateChanged(java.awt.event.ItemEvent evt) {// GEN-FIRST:event_cob_PageItemStateChanged
 		if (evt.getStateChange() == java.awt.event.ItemEvent.SELECTED) {
-			patiensInfo = patiensInfoDao.getExistedPatients(conditions,
+			patientsInfo = patiensInfoDao.getExistedPatients(conditions,
 					cob_Page.getSelectedIndex() * MAX_ROWS_OF_PAGE,
 					MAX_ROWS_OF_PAGE);
-			tab_List.setModel(new PatientsInfoJPATable(patiensInfo));
+			tab_List.setModel(new PatientsInfoJPATable(patientsInfo));
 			if (cob_Page.getSelectedIndex() >= 0
 					&& cob_Page.getItemCount() > (cob_Page.getSelectedIndex() + 1)) {
 				this.btn_Next.setEnabled(true);

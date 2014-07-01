@@ -8,10 +8,20 @@ import javax.persistence.*;
  * The persistent class for the religion database table.
  * 
  */
+@NamedQueries ({
+    @NamedQuery(
+        name="QueryReligions",
+        query="SELECT religion FROM Religion religion"),
+    @NamedQuery(
+        name="QueryReligionByValue",
+        query="SELECT religion FROM Religion religion WHERE religion.value = :val")
+})
+
 @Entity
+@Table(name="religion")
 public class Religion implements Serializable {
 	private static final long serialVersionUID = 1L;
-
+	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private String value;
