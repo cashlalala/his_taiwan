@@ -12,8 +12,7 @@ import org.his.model.PatientsInfo;
 
 public class PatientsInfoDao {
 
-	private EntityManager em = JPAUtil.getEntityManagerFactory()
-			.createEntityManager();
+	private EntityManager em = JPAUtil.getEntityManager();
 
 	public PatientsInfoDao() {
 	}
@@ -21,15 +20,22 @@ public class PatientsInfoDao {
 	public void persist(PatientsInfo patiensInfo) {
 		EntityTransaction etx = em.getTransaction();
 		etx.begin();
-		em.merge(patiensInfo);
+		em.persist(patiensInfo);
 		etx.commit();
 	}
 
-	public void merge(PatientsInfo patiensInfo) {
-		EntityTransaction etx = em.getTransaction();
-		etx.begin();
-		em.merge(patiensInfo);
-		etx.commit();
+	public PatientsInfo merge(PatientsInfo patiensInfo) {
+		try {
+			return em.merge(patiensInfo);	
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public void close() {
+		em.close();
 	}
 	
 	public void DeleteAutoGenUser(String id) {
@@ -45,7 +51,6 @@ public class PatientsInfoDao {
 	public void remove(PatientsInfo patiensInfo) {
 		EntityTransaction etx = em.getTransaction();
 		etx.begin();
-		em.merge(patiensInfo);
 		em.remove(patiensInfo);
 		etx.commit();
 	}

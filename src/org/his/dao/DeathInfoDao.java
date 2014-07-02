@@ -11,11 +11,16 @@ public class DeathInfoDao {
 	public DeathInfoDao() {
 	}
 
-	private EntityManager em = JPAUtil.getEntityManagerFactory()
-			.createEntityManager();
-	
+	private EntityManager em = JPAUtil.getEntityManager();
+
 	public DeathInfo QueryDeathInfoById(String guid) {
-		return em.find(DeathInfo.class, guid);
+		try {
+			return em.find(DeathInfo.class, guid);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	public void persist(DeathInfo deathInfo) {
@@ -23,32 +28,26 @@ public class DeathInfoDao {
 		try {
 			etx.begin();
 			em.persist(deathInfo);
-			etx.commit();			
-		}
-		catch (Exception e) {
+			etx.commit();
+		} catch (Exception e) {
 			e.printStackTrace();
-			etx.rollback();	
+			etx.rollback();
 		}
 	}
-	
-	public void merge(DeathInfo deathInfo) {
-		EntityTransaction etx = em.getTransaction();
+
+	public DeathInfo merge(DeathInfo deathInfo) {
 		try {
-			etx.begin();
-			em.merge(deathInfo);
-			etx.commit();			
-		}
-		catch (Exception e) {
+			return em.merge(deathInfo);
+		} catch (Exception e) {
 			e.printStackTrace();
-			etx.rollback();	
+			return null;
 		}
 	}
 
 	public void remove(DeathInfo deathInfo) {
 		EntityTransaction etx = em.getTransaction();
 		etx.begin();
-		em.merge(deathInfo);
 		em.remove(deathInfo);
-		etx.commit();		
+		etx.commit();
 	}
 }

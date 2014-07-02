@@ -15,16 +15,16 @@ public class DeathInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private String guid;
 
-	@Lob
+	@Column(name="cause")
 	private String cause;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="date_of_death")
 	private Date dateOfDeath;
 
+	@Column(name="indicator")
 	private String indicator;
 
 	public DeathInfo() {

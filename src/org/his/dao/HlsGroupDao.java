@@ -15,8 +15,7 @@ public class HlsGroupDao {
 		// TODO Auto-generated constructor stub
 	}
 
-	private EntityManager em = JPAUtil.getEntityManagerFactory()
-			.createEntityManager();
+	private EntityManager em = JPAUtil.getEntityManager();
 
 	public void persist(ContactpersonInfo contactpersonInfo) {
 		em.persist(contactpersonInfo);
