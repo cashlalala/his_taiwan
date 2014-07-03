@@ -786,7 +786,7 @@ public class Frm_PatientsList extends javax.swing.JFrame implements
 
 	private void btn_AddActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_AddActionPerformed
 		showImage(null, "");
-		Frm_PatientMod frmPatientMod = new Frm_PatientMod(this);
+		Frm_PatientMod frmPatientMod = new Frm_PatientMod(this,true);
 		frmPatientMod.setVisible(true);
 		this.setEnabled(false);
 		this.setVisible(false);
@@ -815,7 +815,7 @@ public class Frm_PatientsList extends javax.swing.JFrame implements
 
 		if (response == 0) {
 			pInfo.setExist((byte) 0);
-			this.patiensInfoDao.persist(pInfo);
+			patiensInfoDao.persist(patiensInfoDao.merge(pInfo));
 			JOptionPane.showMessageDialog(new Frame(),
 					paragraph.getString("DELETECOMPLETE"));
 			this.btn_Delete.setEnabled(false);

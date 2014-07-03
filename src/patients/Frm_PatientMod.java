@@ -18,6 +18,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.persistence.EntityTransaction;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
@@ -26,6 +27,7 @@ import javax.swing.JTextField;
 import laboratory.Frm_LabHistory;
 import multilingual.Language;
 
+import org.his.JPAUtil;
 import org.his.dao.ContactpersonInfoDao;
 import org.his.dao.DeathInfoDao;
 import org.his.dao.HlsGroupDao;
@@ -82,19 +84,15 @@ public class Frm_PatientMod  extends javax.swing.JFrame
     
     private ContactpersonInfoDao contactpersonInfoDao;
     
-    private DeathInfoDao deathInfoDao = new DeathInfoDao();
+    private DeathInfoDao deathInfoDao;
     
     private DeathInfo deathInfo;
 
-	public void setPatientInfo(PatientsInfo patientInfo) {
-		this.patientInfo = patientInfo;
-	}
-
 	java.awt.event.ActionEvent evt;
-    public Frm_PatientMod(PatientsInterface m_frame) {
+    public Frm_PatientMod(PatientsInterface m_frame, boolean isNewPatient) {
         initComponents();
-        initPatientInfo();
-        initContact() ;
+        initPatientInfoCtrl();
+        initContactCtrl() ;
         init();
         initcBox();
         initPermission();
@@ -111,14 +109,22 @@ public class Frm_PatientMod  extends javax.swing.JFrame
             bar_menu.setVisible(false);
         }
         
-        initDataBindings();
+        patientInfoDao = new PatientsInfoDao();
+        contactpersonInfoDao = new ContactpersonInfoDao();
+        deathInfoDao = new DeathInfoDao();
+        
+        if (isNewPatient) {
+        	initPatientInfo();
+        	contactpersonInfo = new ContactpersonInfo();
+        	contactpersonInfo.setGender("M");
+        	contactpersonInfo.setMaritalStatus(m_MaritalStatus[0]);
+        	initDataBindings();
+        }
     }
     
     public Frm_PatientMod(PatientsInterface m_frame, PatientsInfo pInfo){
-        this(m_frame);
-        this.patientInfo = pInfo;
-        this.patientInfoDao = new PatientsInfoDao();
-        this.contactpersonInfoDao = new ContactpersonInfoDao();
+        this(m_frame,false);
+        this.patientInfo = patientInfoDao.merge(pInfo);
     	this.contactpersonInfo = (patientInfo.getCpGuid() != null) ? 
     			contactpersonInfoDao.QueryContactInfoById(patientInfo.getCpGuid()): new ContactpersonInfo();
         
@@ -134,9 +140,7 @@ public class Frm_PatientMod  extends javax.swing.JFrame
     }
 
     public Frm_PatientMod(PatientsInterface m_frame, String p_no){
-        this(m_frame);
-        this.patientInfoDao = new PatientsInfoDao();
-        this.contactpersonInfoDao = new ContactpersonInfoDao();
+        this(m_frame,false);
     	this.contactpersonInfo = (patientInfo.getCpGuid() != null) ? 
     			contactpersonInfoDao.QueryContactInfoById(patientInfo.getCpGuid()): new ContactpersonInfo();
         
@@ -164,24 +168,22 @@ public class Frm_PatientMod  extends javax.swing.JFrame
                 btn_CancelActionPerformed(null);
             }
         });
-        
-        contactpersonInfoDao = new ContactpersonInfoDao();
-    	this.patientInfoDao = new PatientsInfoDao();
     	
         m_UUID = UUID.randomUUID().toString();
-        this.patientInfo = new PatientsInfo();
-        patientInfo.setPNo(this.patientInfoDao.getNewPNo());
-        this.patientInfo.setFirstname(m_UUID);
-        this.patientInfo.setLastname(m_UUID);
-        this.patientInfo.setExist((byte)0);
-        this.patientInfo.setBirth(dateChooser1.getShownDate());
-        patientInfo.setGender((String)cob_Gender.getSelectedItem());
-        patientInfo.setMaritalStatus(m_MaritalStatus[getMaritalStatusIndexByFullName(
-        		(String)cob_MaritalStatus.getSelectedItem())]);
-        this.patientInfoDao.persist(patientInfo);
-        
-        this.contactpersonInfo = new ContactpersonInfo();
     }
+
+	public void initPatientInfo() {
+		PatientsInfo pInfo = new PatientsInfo();
+		pInfo.setPNo(this.patientInfoDao.getNewPNo());
+		pInfo.setFirstname(m_UUID);
+        pInfo.setLastname(m_UUID);
+        pInfo.setExist((byte)0);
+        pInfo.setBirth(dateChooser1.getShownDate());
+        pInfo.setGender((String)cob_Gender.getSelectedItem());
+        pInfo.setMaritalStatus(m_MaritalStatus[getMaritalStatusIndexByFullName(
+        		(String)cob_MaritalStatus.getSelectedItem())]);
+        patientInfo = patientInfoDao.merge(pInfo);
+	}
     
 	protected void initDataBindings() {
 		
@@ -291,14 +293,14 @@ public class Frm_PatientMod  extends javax.swing.JFrame
 
 			@Override
 			public Date convertReverse(String arg0) {
-				Date dateStr = null;
+				Date date = null;
 				try {
-					dateStr = formatter.parse(arg0);
+					date = formatter.parse(arg0);
 				} catch (ParseException e) {
 					e.printStackTrace();
-					dateStr = new Date();
+					date = new Date();
 				}
-				return dateStr;
+				return date;
 			}
 			
 		});
@@ -590,7 +592,7 @@ public class Frm_PatientMod  extends javax.swing.JFrame
     }
 
     /** 初始化病患資料欄位*/
-    private void initPatientInfo(){
+    private void initPatientInfoCtrl(){
         this.txt_No.setText("");
         this.txt_FirstName.setText("");
         this.txt_LastName.setText("");
@@ -614,7 +616,7 @@ public class Frm_PatientMod  extends javax.swing.JFrame
     }
 
     /**初始化聯絡人欄位*/
-    private void initContact(){
+    private void initContactCtrl(){
         this.txt_EmeFirstName.setText("");
         this.txt_EmeLastName.setText("");
         this.txt_EmePhone.setText("");
@@ -813,8 +815,8 @@ public class Frm_PatientMod  extends javax.swing.JFrame
             System.out.println(e);
             ErrorMessage.setData("Patients", "Frm_PatientMod" ,"setPatientIndo(String p_no)",
                     e.toString().substring(e.toString().lastIndexOf(".")+1, e.toString().length()));
-            initPatientInfo();
-            initContact() ;
+            initPatientInfoCtrl();
+            initContactCtrl() ;
         } finally {
             try{ DBC.closeConnection(rs); }
             catch (SQLException e) {
@@ -1801,7 +1803,7 @@ public class Frm_PatientMod  extends javax.swing.JFrame
                     contactpersonInfo.setGuid(uuid);
                     patientInfo.setCpGuid(uuid);
                 }
-                this.contactpersonInfoDao.persist(contactpersonInfo);
+                contactpersonInfoDao.persist(contactpersonInfoDao.merge(contactpersonInfo));
             }
             this.patientInfoDao.persist(patientInfo);
             //***********************列印barcode
@@ -1821,7 +1823,8 @@ public class Frm_PatientMod  extends javax.swing.JFrame
 }//GEN-LAST:event_btn_OKActionPerformed
 
     private void btn_CancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_CancelActionPerformed
-        this.patientInfoDao.DeleteAutoGenUser(m_UUID);
+    	if (patientInfo.getExist() == 0 && patientInfo.getFirstname() == m_UUID)
+    		patientInfoDao.remove(patientInfo);
         if(m_frame!=null) m_frame.reLoad();
         dispose();
 }//GEN-LAST:event_btn_CancelActionPerformed

@@ -1,6 +1,7 @@
 package org.his.bind;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
@@ -65,7 +66,8 @@ public class PatientsInfoJPATable extends AbstractTableModel implements
 			return String.format("%s %s", pInfo.getFirstname(),
 					pInfo.getLastname());
 		case COL_BIRTH:
-			return pInfo.getBirth();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			return sdf.format(pInfo.getBirth());
 		case COL_PHONE:
 			return pInfo.getPhone();
 		case COL_CELLPHONE:
