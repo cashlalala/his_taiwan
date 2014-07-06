@@ -18,7 +18,6 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.persistence.EntityTransaction;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
@@ -27,7 +26,6 @@ import javax.swing.JTextField;
 import laboratory.Frm_LabHistory;
 import multilingual.Language;
 
-import org.his.JPAUtil;
 import org.his.dao.ContactpersonInfoDao;
 import org.his.dao.DeathInfoDao;
 import org.his.dao.HlsGroupDao;
@@ -127,6 +125,11 @@ public class Frm_PatientMod  extends javax.swing.JFrame
         this.patientInfo = patientInfoDao.merge(pInfo);
     	this.contactpersonInfo = (patientInfo.getCpGuid() != null) ? 
     			contactpersonInfoDao.QueryContactInfoById(patientInfo.getCpGuid()): new ContactpersonInfo();
+    			
+    	if (patientInfo.getDeadGuid() != null && !patientInfo.getDeadGuid().isEmpty()) {
+    		deathInfo = deathInfoDao.QueryDeathInfoById(patientInfo.getDeadGuid());
+    		check_Deal.setSelected(true);
+    	}
         
         this.setTitle(paragraph.getString("EDITPATIENTDATA"));
         m_Status = "EDIT";
@@ -144,6 +147,11 @@ public class Frm_PatientMod  extends javax.swing.JFrame
     	this.contactpersonInfo = (patientInfo.getCpGuid() != null) ? 
     			contactpersonInfoDao.QueryContactInfoById(patientInfo.getCpGuid()): new ContactpersonInfo();
         
+    	if (patientInfo.getDeadGuid() != null && !patientInfo.getDeadGuid().isEmpty()) {
+    		deathInfo = deathInfoDao.QueryDeathInfoById(patientInfo.getDeadGuid());
+    		check_Deal.setSelected(true);
+    	}
+    			
         this.setTitle(paragraph.getString("EDITPATIENTDATA"));
         m_Status = "EDIT";
         this.btn_OK.setEnabled(isCanSave());
@@ -1726,10 +1734,13 @@ public class Frm_PatientMod  extends javax.swing.JFrame
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_DealSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_DealSaveActionPerformed
-        String uuid = UUID.randomUUID().toString();
+    	
         try {
-        	deathInfo = new DeathInfo();
-        	deathInfo.setGuid(uuid);
+        	if (deathInfo == null){
+        		deathInfo = new DeathInfo();
+        		String uuid = UUID.randomUUID().toString();
+        		deathInfo.setGuid(uuid);
+        	}
         	deathInfo.setCause(this.dia_txt_Cause.getText());
         	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd:HH:mm");
         	try {
@@ -1739,10 +1750,9 @@ public class Frm_PatientMod  extends javax.swing.JFrame
 				e.printStackTrace();
 				deathInfo.setDateOfDeath(new Date());
 			}
-        	deathInfoDao.merge(deathInfo);
-            
-            this.patientInfo.setDeadGuid(uuid);
-            patientInfoDao.merge(patientInfo);
+        	deathInfo = deathInfoDao.merge(deathInfo);
+        	deathInfoDao.persist(deathInfo);
+            patientInfo.setDeadGuid(deathInfo.getGuid());
         } catch (Exception e) {
             ErrorMessage.setData("Patients", "Frm_PatientMod" ,"btn_DealSaveActionPerformed(java.awt.event.ActionEvent evt)",
                    e.toString().substring(e.toString().lastIndexOf(".")+1, e.toString().length()));
@@ -1757,7 +1767,6 @@ public class Frm_PatientMod  extends javax.swing.JFrame
         	if (deathInfo != null)
         		deathInfoDao.remove(deathInfo);
             patientInfo.setDeadGuid(null);
-            patientInfoDao.merge(patientInfo);
             this.check_Deal.setSelected(false);
         }catch(Exception e){
             ErrorMessage.setData("Patients", "Frm_PatientMod" ,"btn_DealCancelActionPerformed(java.awt.event.ActionEvent evt)",
@@ -1767,28 +1776,14 @@ public class Frm_PatientMod  extends javax.swing.JFrame
 
     private void jDialog1WindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_jDialog1WindowClosing
         this.jDialog1.setVisible(false);
-        ResultSet rs = null;
-        String sql  = "SELECT guid FROM death_info " +
-                      "WHERE guid = " +
-                      "(SELECT dead_guid FROM patients_info " +
-                      "WHERE p_no = '" + this.txt_No.getText() +"')";
-        try{
-            rs = DBC.executeQuery(sql) ;
-            if(rs.next()){
-                this.check_Deal.setSelected(true);
-            }else{
-                this.check_Deal.setSelected(false);
-            }
-        }catch(SQLException e){
-            ErrorMessage.setData("Patients", "Frm_PatientMod" ,"jDialog1WindowClosing(java.awt.event.WindowEvent evt)",
-                   e.toString().substring(e.toString().lastIndexOf(".")+1, e.toString().length()));
+        if(deathInfo !=null && patientInfo.getDeadGuid() == deathInfo.getGuid() ){
+            this.check_Deal.setSelected(true);
+        }else{
+            this.check_Deal.setSelected(false);
         }
     }//GEN-LAST:event_jDialog1WindowClosing
 
     private void btn_OKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_OKActionPerformed
-        String sql = "";
-        ResultSet rs = null;
-
         try {
             patientInfo.setExist((byte)1);
             
@@ -1847,8 +1842,7 @@ public class Frm_PatientMod  extends javax.swing.JFrame
 
     private void check_DealActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_check_DealActionPerformed
         Point p = this.getLocation();
-        ResultSet rs = null;
-        String sql = null ,timer = null;
+        String timer = null;
         int x = p.x+(this.getWidth()-jDialog1.getWidth())/2;
         int y = p.y+(this.getHeight()-jDialog1.getHeight())/2;
         this.jDialog1.setLocation(x, y);
