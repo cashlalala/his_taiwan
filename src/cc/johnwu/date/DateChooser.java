@@ -60,6 +60,17 @@ public class DateChooser extends JPanel {
                 +txt_Date.getText().substring(2,6)
                 +txt_Date.getText().substring(0,2);
     }
+    
+    public Date getShownDate() {
+    	SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+    	try {
+			return formatter.parse(txt_Date.getText());
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return new Date();
+		}
+    }
 
     public void setValue(String date) {
         try {
@@ -171,7 +182,11 @@ public class DateChooser extends JPanel {
     private javax.swing.JTextField txt_Date;
     // End of variables declaration//GEN-END:variables
 
-    class DatePanel extends JPanel implements MouseListener, ChangeListener {
+    public javax.swing.JTextField getTxt_Date() {
+		return txt_Date;
+	}
+
+	class DatePanel extends JPanel implements MouseListener, ChangeListener {
 
         JSpinner yearSpin;
         JSpinner monthSpin;

@@ -1456,7 +1456,8 @@ public void ShowGpsFrom() {
 
     private void btn_NewPatientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_NewPatientActionPerformed
         showImage(null,"");
-        new Frm_PatientMod(this).setVisible(true);
+        Frm_PatientMod patientMod = new Frm_PatientMod(this,true);
+        patientMod.setVisible(true);
         this.setEnabled(false);
 }//GEN-LAST:event_btn_NewPatientActionPerformed
 
