@@ -850,14 +850,17 @@ public class Frm_PatientMod  extends javax.swing.JFrame
     }
 
     private boolean isCanSave(){
-       
-        if(!this.txt_FirstName.getText().equals("")
-        && !this.txt_LastName.getText().equals("") && !txt_Phone2.getText().equals("")
-        && this.txt_FirstName.getText() != null && txt_Phone2.getText() != null
-        && this.txt_LastName.getText() != null ){
-                return true;
-        }
-        return false;
+       try {
+    	   if (this.patientInfo.getFirstname().equals("") || this.patientInfo.getLastname().equals("") 
+    			   || this.patientInfo.getCellPhone().equals("")) {
+    		   return false;
+    	   }
+    	   return true;
+       }
+       catch (Exception e) { // catch all null pointer exceptions
+    	   e.printStackTrace();
+    	   return false;
+       }
     }
 
     @SuppressWarnings("unchecked")
