@@ -1,0 +1,7 @@
+1. Dump DB to sql
+	mysqldump --opt --user=root --password hospital > hospital.sql
+
+2. Restore DB from sql
+	a. create a database
+	b. set the database as default schema
+	c. open and execute the sql script
