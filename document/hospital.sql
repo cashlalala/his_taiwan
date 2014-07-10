@@ -25,13 +25,13 @@ DROP TABLE IF EXISTS `academic_record`;
 CREATE TABLE `academic_record` (
   `no` int(4) unsigned zerofill NOT NULL DEFAULT '0001',
   `s_no` int(8) unsigned zerofill NOT NULL DEFAULT '00000001',
-  `name` varchar(255) COLLATE utf8_bin NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `commencement_date` date DEFAULT NULL,
   `completion_date` date DEFAULT NULL,
-  `qualification` varchar(255) COLLATE utf8_bin DEFAULT NULL,
+  `qualification` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
   PRIMARY KEY (`no`),
   KEY `s_no` (`s_no`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -53,11 +53,13 @@ DROP TABLE IF EXISTS `administrative`;
 CREATE TABLE `administrative` (
   `no` int(4) unsigned zerofill NOT NULL DEFAULT '0001',
   `s_no` int(8) unsigned zerofill NOT NULL DEFAULT '00000001',
-  `dep_guid` char(36) COLLATE utf8_bin DEFAULT NULL,
+  `dep_guid` char(36) DEFAULT NULL,
   PRIMARY KEY (`no`),
   KEY `s_no` (`s_no`),
-  KEY `dep_guid` (`dep_guid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+  KEY `dep_guid` (`dep_guid`),
+  CONSTRAINT `fk_administrative_1` FOREIGN KEY (`dep_guid`) REFERENCES `department` (`guid`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_administrative_2` FOREIGN KEY (`s_no`) REFERENCES `staff_info` (`s_no`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -78,7 +80,7 @@ DROP TABLE IF EXISTS `allergy`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `allergy` (
   `guid` char(36) NOT NULL,
-  `p_no` int(8) NOT NULL,
+  `p_no` char(36) NOT NULL,
   `m_code` varchar(255) NOT NULL,
   `level` tinyint(1) NOT NULL COMMENT '0:不過敏, 1:SLIGHT, 2:GENERAL, 3:SERIOUS',
   `u_sid` varchar(20) DEFAULT NULL COMMENT '最後變更員工ID',
@@ -86,7 +88,10 @@ CREATE TABLE `allergy` (
   PRIMARY KEY (`guid`),
   KEY `m_code` (`m_code`),
   KEY `p_no` (`p_no`),
-  KEY `u_sid` (`u_sid`)
+  KEY `u_sid` (`u_sid`),
+  CONSTRAINT `fk_allergy_1` FOREIGN KEY (`p_no`) REFERENCES `patients_info` (`p_no`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_allergy_2` FOREIGN KEY (`m_code`) REFERENCES `medicines` (`code`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_allergy_3` FOREIGN KEY (`u_sid`) REFERENCES `staff_info` (`s_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -107,12 +112,17 @@ DROP TABLE IF EXISTS `anamnesis`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `anamnesis` (
-  `p_no` int(8) NOT NULL,
-  `reg_guid` char(36) COLLATE utf8_unicode_ci NOT NULL,
-  `status` char(1) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'O:出庫;I:在庫',
-  `borrow_guid` char(36) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '目前借用記錄guid',
-  PRIMARY KEY (`p_no`,`reg_guid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='病歷';
+  `p_no` char(36) NOT NULL,
+  `reg_guid` char(36) NOT NULL,
+  `status` char(1) DEFAULT NULL COMMENT 'O:出庫;I:在庫',
+  `borrow_guid` char(36) DEFAULT NULL COMMENT '目前借用記錄guid',
+  PRIMARY KEY (`p_no`,`reg_guid`),
+  KEY `fk_anamnesis_2` (`reg_guid`),
+  KEY `fk_anamnesis_3` (`borrow_guid`),
+  CONSTRAINT `fk_anamnesis_1` FOREIGN KEY (`p_no`) REFERENCES `patients_info` (`p_no`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_anamnesis_2` FOREIGN KEY (`reg_guid`) REFERENCES `registration_info` (`guid`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_anamnesis_3` FOREIGN KEY (`borrow_guid`) REFERENCES `anamnesis_retrieve` (`guid`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='病歷';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -121,7 +131,7 @@ CREATE TABLE `anamnesis` (
 
 LOCK TABLES `anamnesis` WRITE;
 /*!40000 ALTER TABLE `anamnesis` DISABLE KEYS */;
-INSERT INTO `anamnesis` VALUES (0,'c619d304-e27d-11df-a9d1-aaf1b7c1a3ec','I',NULL);
+INSERT INTO `anamnesis` VALUES ('c861043a-083e-11e4-bfdc-000c29285422','c619d304-e27d-11df-a9d1-aaf1b7c1a3ec','I',NULL);
 /*!40000 ALTER TABLE `anamnesis` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -141,7 +151,11 @@ CREATE TABLE `anamnesis_retrieve` (
   `borrow_time` datetime NOT NULL COMMENT '借出日時',
   `return_time` datetime DEFAULT NULL COMMENT '歸還日時',
   PRIMARY KEY (`guid`),
-  KEY `reg_guid` (`p_no`)
+  KEY `reg_guid` (`p_no`),
+  KEY `fk_anamnesis_retrieve_2` (`s_no`),
+  KEY `fk_anamnesis_retrieve_3` (`shift_guid`),
+  CONSTRAINT `fk_anamnesis_retrieve_2` FOREIGN KEY (`s_no`) REFERENCES `staff_info` (`s_no`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_anamnesis_retrieve_3` FOREIGN KEY (`shift_guid`) REFERENCES `shift_table` (`guid`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='病歷出借紀錄';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -229,10 +243,12 @@ DROP TABLE IF EXISTS `bed_code`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `bed_code` (
   `bed_no` int(11) NOT NULL COMMENT '床號',
-  `description` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `poli_guid` char(36) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '科別',
-  PRIMARY KEY (`bed_no`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='病床資料';
+  `description` varchar(255) DEFAULT NULL,
+  `poli_guid` char(36) DEFAULT NULL COMMENT '科別',
+  PRIMARY KEY (`bed_no`),
+  KEY `fk_bed_code_1` (`poli_guid`),
+  CONSTRAINT `fk_bed_code_1` FOREIGN KEY (`poli_guid`) REFERENCES `policlinic` (`guid`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='病床資料';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -252,20 +268,32 @@ DROP TABLE IF EXISTS `bed_record`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `bed_record` (
-  `guid` char(36) COLLATE utf8_unicode_ci NOT NULL,
-  `p_no` int(8) DEFAULT NULL,
+  `guid` char(36) NOT NULL,
+  `p_no` char(36) DEFAULT NULL,
   `bed_no` int(11) DEFAULT NULL,
-  `actual_poli_guid` char(36) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '實際科別',
-  `status` char(1) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'R:Reserved; N:has checkin; C:Canceled; T:Transfered',
+  `actual_poli_guid` char(36) DEFAULT NULL COMMENT '實際科別',
+  `status` char(1) DEFAULT NULL COMMENT 'R:Reserved; N:has checkin; C:Canceled; T:Transfered',
   `checkinTime` datetime DEFAULT NULL COMMENT '住院日期',
   `checkinStaff_no` int(8) unsigned DEFAULT NULL COMMENT '住院辦理人員',
   `checkoutTime` datetime DEFAULT NULL COMMENT '出院時間',
   `mainDr_no` int(8) unsigned DEFAULT NULL COMMENT '負責此病人之主治醫師',
   `mainNurse_no` int(8) unsigned DEFAULT NULL COMMENT 'C:Cancel',
-  `note` varchar(500) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '備註',
+  `note` varchar(500) DEFAULT NULL COMMENT '備註',
   `cost` float DEFAULT NULL COMMENT '實收費用',
-  PRIMARY KEY (`guid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='住院記錄';
+  PRIMARY KEY (`guid`),
+  KEY `fk_bed_record_1` (`p_no`),
+  KEY `fk_bed_record_2` (`bed_no`),
+  KEY `fk_bed_record_3` (`checkinStaff_no`),
+  KEY `fk_bed_record_4` (`mainDr_no`),
+  KEY `fk_bed_record_5` (`actual_poli_guid`),
+  KEY `fk_bed_record_6` (`mainNurse_no`),
+  CONSTRAINT `fk_bed_record_1` FOREIGN KEY (`p_no`) REFERENCES `patients_info` (`p_no`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_bed_record_2` FOREIGN KEY (`bed_no`) REFERENCES `bed_code` (`bed_no`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_bed_record_3` FOREIGN KEY (`checkinStaff_no`) REFERENCES `staff_info` (`s_no`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_bed_record_4` FOREIGN KEY (`mainDr_no`) REFERENCES `staff_info` (`s_no`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_bed_record_5` FOREIGN KEY (`actual_poli_guid`) REFERENCES `policlinic` (`guid`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_bed_record_6` FOREIGN KEY (`mainNurse_no`) REFERENCES `staff_info` (`s_no`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='住院記錄';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -354,7 +382,8 @@ CREATE TABLE `changes_log` (
   `chg_info` char(6) NOT NULL,
   `chg_time` datetime NOT NULL,
   PRIMARY KEY (`chg_guid`),
-  KEY `s_no` (`s_no`)
+  KEY `s_no` (`s_no`),
+  CONSTRAINT `fk_changes_log_1` FOREIGN KEY (`s_no`) REFERENCES `staff_info` (`s_no`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='使用者DB操作紀錄';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -400,12 +429,13 @@ DROP TABLE IF EXISTS `children`;
 CREATE TABLE `children` (
   `no` int(4) unsigned zerofill NOT NULL DEFAULT '0001',
   `s_no` int(8) unsigned zerofill NOT NULL DEFAULT '00000001',
-  `name` varchar(72) COLLATE utf8_bin NOT NULL,
+  `name` varchar(72) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `date_birth` date NOT NULL,
-  `nhis_no` varchar(15) COLLATE utf8_bin NOT NULL,
+  `nhis_no` varchar(15) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   PRIMARY KEY (`no`),
-  KEY `s_no` (`s_no`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+  KEY `s_no` (`s_no`),
+  CONSTRAINT `fk_children_1` FOREIGN KEY (`s_no`) REFERENCES `staff_info` (`s_no`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -427,11 +457,13 @@ DROP TABLE IF EXISTS `clinical`;
 CREATE TABLE `clinical` (
   `no` int(4) NOT NULL,
   `s_no` int(8) unsigned zerofill NOT NULL DEFAULT '00000001',
-  `poli_guid` char(36) COLLATE utf8_bin DEFAULT NULL,
+  `poli_guid` char(36) DEFAULT NULL,
   PRIMARY KEY (`no`),
   KEY `poli_guid` (`poli_guid`),
-  KEY `s_no` (`s_no`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+  KEY `s_no` (`s_no`),
+  CONSTRAINT `fk_clinical_1` FOREIGN KEY (`poli_guid`) REFERENCES `policlinic` (`guid`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_clinical_2` FOREIGN KEY (`s_no`) REFERENCES `staff_info` (`s_no`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -472,7 +504,8 @@ CREATE TABLE `complication` (
   `udate` datetime NOT NULL,
   PRIMARY KEY (`guid`),
   KEY `u_sid` (`u_sid`),
-  KEY `reg_guid` (`reg_guid`)
+  KEY `reg_guid` (`reg_guid`),
+  CONSTRAINT `fk_complication_1` FOREIGN KEY (`reg_guid`) REFERENCES `registration_info` (`guid`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='併發症狀表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -531,12 +564,12 @@ DROP TABLE IF EXISTS `death_info`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `death_info` (
-  `guid` char(36) COLLATE utf8_bin NOT NULL,
+  `guid` char(36) NOT NULL,
   `date_of_death` datetime NOT NULL,
-  `cause` text COLLATE utf8_bin,
-  `indicator` char(1) COLLATE utf8_bin DEFAULT NULL,
+  `cause` text,
+  `indicator` char(1) DEFAULT NULL,
   PRIMARY KEY (`guid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='死亡原因表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='死亡原因表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -614,11 +647,14 @@ CREATE TABLE `diagnostic` (
   `guid` char(36) NOT NULL,
   `reg_guid` char(36) NOT NULL,
   `ICDVersion` varchar(45) DEFAULT NULL,
-  `dia_code` char(8) NOT NULL,
+  `dia_code` varchar(20) NOT NULL,
   `priority` int(11) DEFAULT NULL,
   `state` bit(1) NOT NULL DEFAULT b'0' COMMENT 'ICD-9, ICD10:ICD-10',
   PRIMARY KEY (`guid`),
-  KEY `dia_code` (`dia_code`)
+  KEY `dia_code` (`dia_code`),
+  KEY `fk_diagnostic_3` (`reg_guid`),
+  CONSTRAINT `fk_diagnostic_2` FOREIGN KEY (`dia_code`) REFERENCES `diagnosis_code` (`dia_code`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_diagnostic_3` FOREIGN KEY (`reg_guid`) REFERENCES `registration_info` (`guid`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='診斷';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -664,13 +700,14 @@ DROP TABLE IF EXISTS `employment_history`;
 CREATE TABLE `employment_history` (
   `no` int(4) unsigned zerofill NOT NULL DEFAULT '0001',
   `s_no` int(8) unsigned zerofill NOT NULL DEFAULT '00000001',
-  `employer_name` varchar(72) COLLATE utf8_bin DEFAULT NULL,
-  `position` varchar(255) COLLATE utf8_bin NOT NULL,
+  `employer_name` varchar(72) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
+  `position` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `commencement_date` date NOT NULL,
   `leaving_date` date NOT NULL,
   PRIMARY KEY (`no`),
-  KEY `s_no` (`s_no`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+  KEY `s_no` (`s_no`),
+  CONSTRAINT `fk_employment_history_1` FOREIGN KEY (`s_no`) REFERENCES `staff_info` (`s_no`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -713,12 +750,13 @@ DROP TABLE IF EXISTS `fingertemplate`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `fingertemplate` (
-  `guid` char(36) COLLATE utf8_bin NOT NULL,
-  `id` int(8) NOT NULL,
+  `guid` char(36) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `id` char(36) NOT NULL,
   `template` longblob NOT NULL COMMENT '指紋',
   PRIMARY KEY (`guid`),
-  KEY `id` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='指紋檔';
+  KEY `id` (`id`),
+  CONSTRAINT `fk_fingertemplate_1` FOREIGN KEY (`id`) REFERENCES `patients_info` (`p_no`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='指紋檔';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -743,7 +781,8 @@ CREATE TABLE `gis` (
   `reg_guid` char(36) NOT NULL,
   `address` text COMMENT '地址',
   PRIMARY KEY (`guid`),
-  KEY `reg_guid` (`reg_guid`)
+  KEY `reg_guid` (`reg_guid`),
+  CONSTRAINT `fk_gis_1` FOREIGN KEY (`reg_guid`) REFERENCES `registration_info` (`guid`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='掛號時的gis座標';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -773,7 +812,10 @@ CREATE TABLE `health_teach` (
   PRIMARY KEY (`guid`),
   KEY `hti_code` (`hti_code`),
   KEY `s_id` (`s_id`),
-  KEY `reg_guid` (`reg_guid`)
+  KEY `reg_guid` (`reg_guid`),
+  CONSTRAINT `fk_health_teach_1` FOREIGN KEY (`hti_code`) REFERENCES `health_teach_item` (`code`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_health_teach_2` FOREIGN KEY (`reg_guid`) REFERENCES `registration_info` (`guid`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_health_teach_3` FOREIGN KEY (`s_id`) REFERENCES `staff_info` (`s_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='衛教記錄';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -818,10 +860,10 @@ DROP TABLE IF EXISTS `hls_country`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `hls_country` (
-  `value` varchar(3) COLLATE utf8_bin NOT NULL,
-  `descrition` varchar(128) COLLATE utf8_bin NOT NULL,
+  `value` varchar(3) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `descrition` varchar(128) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   PRIMARY KEY (`value`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -866,10 +908,10 @@ DROP TABLE IF EXISTS `hls_specimen_action`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `hls_specimen_action` (
-  `value` varchar(1) COLLATE utf8_bin NOT NULL,
-  `descrition` varchar(64) COLLATE utf8_bin NOT NULL,
+  `value` varchar(1) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `descrition` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   PRIMARY KEY (`value`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='NOT RELATED';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='NOT RELATED';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -890,10 +932,10 @@ DROP TABLE IF EXISTS `hls_specimen_source`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `hls_specimen_source` (
-  `value` varchar(10) COLLATE utf8_bin NOT NULL,
-  `descrition` varchar(64) COLLATE utf8_bin NOT NULL,
+  `value` varchar(10) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `descrition` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   PRIMARY KEY (`value`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='NOT RELATED';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='NOT RELATED';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -914,13 +956,15 @@ DROP TABLE IF EXISTS `image_meta`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `image_meta` (
-  `guid` char(36) COLLATE utf8_unicode_ci NOT NULL,
-  `p_no` int(8) NOT NULL,
-  `item_guid` char(36) COLLATE utf8_unicode_ci NOT NULL,
-  `file_path` varchar(255) COLLATE utf8_unicode_ci NOT NULL COMMENT '影像路徑',
-  `type` char(1) COLLATE utf8_unicode_ci NOT NULL COMMENT 'P:prescription;',
-  PRIMARY KEY (`guid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='metadata of image for HIS';
+  `guid` char(36) NOT NULL,
+  `p_no` char(36) NOT NULL,
+  `item_guid` char(36) NOT NULL,
+  `file_path` varchar(255) NOT NULL COMMENT '影像路徑',
+  `type` char(1) NOT NULL COMMENT 'P:prescription;',
+  PRIMARY KEY (`guid`),
+  KEY `fk_image_meta_1` (`p_no`),
+  CONSTRAINT `fk_image_meta_1` FOREIGN KEY (`p_no`) REFERENCES `patients_info` (`p_no`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='metadata of image for HIS';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -944,7 +988,8 @@ CREATE TABLE `login_log` (
   `s_no` int(4) unsigned zerofill NOT NULL,
   `log_time` datetime NOT NULL,
   PRIMARY KEY (`guid`),
-  KEY `s_no` (`s_no`)
+  KEY `s_no` (`s_no`),
+  CONSTRAINT `fk_login_log_1` FOREIGN KEY (`s_no`) REFERENCES `staff_info` (`s_no`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='登入記錄';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -990,14 +1035,14 @@ DROP TABLE IF EXISTS `material_code`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `material_code` (
-  `guid` char(36) COLLATE utf8_unicode_ci NOT NULL,
-  `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '名稱',
-  `description` text COLLATE utf8_unicode_ci COMMENT '說明內容',
-  `unit` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '單位度量',
+  `guid` char(36) NOT NULL,
+  `name` varchar(255) DEFAULT NULL COMMENT '名稱',
+  `description` text COMMENT '說明內容',
+  `unit` varchar(45) DEFAULT NULL COMMENT '單位度量',
   `unit_cost` float DEFAULT NULL COMMENT '一單位成本',
   `unit_price` float DEFAULT NULL COMMENT '預設一單位收費價格',
   PRIMARY KEY (`guid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='衛材代碼表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='衛材代碼表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1017,13 +1062,13 @@ DROP TABLE IF EXISTS `medical_stock`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `medical_stock` (
-  `guid` char(36) COLLATE utf8_unicode_ci NOT NULL,
-  `type` char(1) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'P:藥品; M:衛材',
-  `item_guid` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'if type=P:foreigh key of medicines; if type=M:foreigh key of material_code',
+  `guid` char(36) NOT NULL,
+  `type` char(1) DEFAULT NULL COMMENT 'P:藥品; M:衛材',
+  `item_guid` varchar(255) DEFAULT NULL COMMENT 'if type=P:foreigh key of medicines; if type=M:foreigh key of material_code',
   `current_amount` int(11) DEFAULT NULL COMMENT '目前存量',
   `minimal_amount` int(11) DEFAULT '0' COMMENT '安全存量',
   PRIMARY KEY (`guid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='藥品及衛材庫房';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='藥品及衛材庫房';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1043,15 +1088,19 @@ DROP TABLE IF EXISTS `medical_stock_change_record`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `medical_stock_change_record` (
-  `guid` char(36) COLLATE utf8_unicode_ci NOT NULL,
-  `action` char(1) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'A:add; D:disposal',
-  `item_guid` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `type` char(1) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'P:藥品; M:衛材',
+  `guid` char(36) NOT NULL,
+  `action` char(1) DEFAULT NULL COMMENT 'A:add; D:disposal',
+  `item_guid` varchar(255) DEFAULT NULL,
+  `type` char(1) DEFAULT NULL COMMENT 'P:藥品; M:衛材',
   `amount` int(11) DEFAULT NULL COMMENT '增加或報廢數量',
   `s_no` int(8) unsigned DEFAULT NULL,
   `createtime` datetime DEFAULT NULL,
-  PRIMARY KEY (`guid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='新增報廢記錄';
+  PRIMARY KEY (`guid`),
+  KEY `fk_disposal_record_1` (`item_guid`),
+  KEY `fk_disposal_record_2` (`s_no`),
+  CONSTRAINT `fk_disposal_record_1` FOREIGN KEY (`item_guid`) REFERENCES `medical_stock` (`guid`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_disposal_record_2` FOREIGN KEY (`s_no`) REFERENCES `staff_info` (`s_no`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='新增報廢記錄';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1071,12 +1120,16 @@ DROP TABLE IF EXISTS `medicine_favorite`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `medicine_favorite` (
-  `guid` char(36) COLLATE utf8_unicode_ci NOT NULL,
+  `guid` char(36) NOT NULL,
   `s_no` int(8) unsigned DEFAULT NULL,
-  `m_code` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `usedTime` mediumtext COLLATE utf8_unicode_ci COMMENT '使用次數',
-  PRIMARY KEY (`guid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='醫生常用藥';
+  `m_code` varchar(255) DEFAULT NULL,
+  `usedTime` mediumtext COMMENT '使用次數',
+  PRIMARY KEY (`guid`),
+  KEY `fk_medicine_favorite_1` (`s_no`),
+  KEY `fk_medicine_favorite_2` (`m_code`),
+  CONSTRAINT `fk_medicine_favorite_1` FOREIGN KEY (`s_no`) REFERENCES `staff_info` (`s_no`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_medicine_favorite_2` FOREIGN KEY (`m_code`) REFERENCES `medicines` (`code`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='醫生常用藥';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1144,7 +1197,14 @@ CREATE TABLE `medicine_stock` (
   PRIMARY KEY (`guid`),
   KEY `m_code` (`m_code`),
   KEY `os_guid` (`reg_guid`),
-  KEY `s_id` (`s_id`)
+  KEY `s_id` (`s_id`),
+  KEY `fk_medicine_stock_4` (`usage`),
+  KEY `fk_medicine_stock_5` (`way`),
+  CONSTRAINT `fk_medicine_stock_1` FOREIGN KEY (`m_code`) REFERENCES `medicines` (`code`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_medicine_stock_2` FOREIGN KEY (`s_id`) REFERENCES `staff_info` (`s_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_medicine_stock_3` FOREIGN KEY (`reg_guid`) REFERENCES `registration_info` (`guid`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_medicine_stock_4` FOREIGN KEY (`usage`) REFERENCES `medicine_frequency` (`code`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_medicine_stock_5` FOREIGN KEY (`way`) REFERENCES `medicine_way` (`code`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='藥品處方';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1252,7 +1312,8 @@ CREATE TABLE `outpatient_services` (
   `finishtime` datetime DEFAULT NULL,
   `state` bit(1) NOT NULL DEFAULT b'0',
   PRIMARY KEY (`guid`),
-  KEY `reg_guid` (`reg_guid`)
+  KEY `reg_guid` (`reg_guid`),
+  CONSTRAINT `fk_outpatient_services_1` FOREIGN KEY (`reg_guid`) REFERENCES `registration_info` (`guid`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='門診';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1276,7 +1337,8 @@ CREATE TABLE `package_item` (
   `id` varchar(16) NOT NULL,
   `typ` char(1) DEFAULT NULL COMMENT '''M'': , ''P'': ',
   `days` int(3) DEFAULT NULL COMMENT '回診日',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_package_item_1` FOREIGN KEY (`id`) REFERENCES `medicines` (`code`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='回診天數設定';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1384,7 +1446,15 @@ CREATE TABLE `patients_info` (
   KEY `cp_guid` (`cp_guid`),
   KEY `c_sno` (`c_sno`),
   KEY `u_sno` (`u_sno`),
-  KEY `identity_code` (`identity_code`)
+  KEY `identity_code` (`identity_code`),
+  KEY `fk_patients_info_2` (`religion`),
+  KEY `fk_patients_info_3` (`tribe`),
+  KEY `fk_patients_info_5` (`dead_guid`),
+  CONSTRAINT `fk_patients_info_1` FOREIGN KEY (`c_sno`) REFERENCES `staff_info` (`s_no`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_patients_info_2` FOREIGN KEY (`religion`) REFERENCES `religion` (`value`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_patients_info_3` FOREIGN KEY (`tribe`) REFERENCES `hls_group` (`value`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_patients_info_4` FOREIGN KEY (`cp_guid`) REFERENCES `contactperson_info` (`guid`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_patients_info_5` FOREIGN KEY (`dead_guid`) REFERENCES `death_info` (`guid`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='病人基本資料';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1437,7 +1507,8 @@ CREATE TABLE `poli_room` (
   `name` varchar(50) NOT NULL,
   `type` char(1) DEFAULT NULL COMMENT 'L:院內門診; M:行動醫療',
   PRIMARY KEY (`guid`),
-  KEY `poli_guid` (`poli_guid`)
+  KEY `poli_guid` (`poli_guid`),
+  CONSTRAINT `fk_poli_room_1` FOREIGN KEY (`poli_guid`) REFERENCES `policlinic` (`guid`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='診別';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1535,7 +1606,12 @@ CREATE TABLE `prescription` (
   PRIMARY KEY (`guid`),
   KEY `os_guid` (`os_guid`),
   KEY `code` (`code`),
-  KEY `case_guid` (`reg_guid`)
+  KEY `case_guid` (`reg_guid`),
+  KEY `fk_prescription_4` (`xray_file_guid`),
+  CONSTRAINT `fk_prescription_1` FOREIGN KEY (`reg_guid`) REFERENCES `registration_info` (`guid`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_prescription_2` FOREIGN KEY (`code`) REFERENCES `prescription_code` (`code`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_prescription_3` FOREIGN KEY (`os_guid`) REFERENCES `outpatient_services` (`guid`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_prescription_4` FOREIGN KEY (`xray_file_guid`) REFERENCES `image_meta` (`guid`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='醫療處置';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1556,22 +1632,22 @@ DROP TABLE IF EXISTS `prescription_code`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `prescription_code` (
-  `code` varchar(255) COLLATE utf8_bin NOT NULL,
-  `loinc` varchar(255) COLLATE utf8_bin DEFAULT NULL,
-  `name` varchar(255) CHARACTER SET utf8 NOT NULL,
-  `shortname` varchar(255) COLLATE utf8_bin DEFAULT NULL,
-  `type` varchar(255) COLLATE utf8_bin DEFAULT NULL COMMENT '"X-RAY":要照x光',
-  `equipment_ID` varchar(22) COLLATE utf8_bin DEFAULT NULL,
-  `data_type` char(1) COLLATE utf8_bin DEFAULT NULL,
-  `limit` text COLLATE utf8_bin,
-  `unit` char(10) COLLATE utf8_bin DEFAULT NULL,
+  `code` varchar(255) NOT NULL,
+  `loinc` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
+  `name` varchar(255) NOT NULL,
+  `shortname` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
+  `type` varchar(255) DEFAULT NULL COMMENT '"X-RAY":要照x光',
+  `equipment_ID` varchar(22) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
+  `data_type` char(1) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
+  `limit` text CHARACTER SET utf8 COLLATE utf8_bin,
+  `unit` char(10) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
   `effective` bit(1) NOT NULL DEFAULT b'1' COMMENT '刪除與否. 1:正常',
-  `guideline` varchar(500) COLLATE utf8_bin DEFAULT NULL COMMENT '臨床診療指引',
+  `guideline` varchar(500) DEFAULT NULL COMMENT '臨床診療指引',
   `cost` float DEFAULT NULL COMMENT '成本',
   `default_price` float DEFAULT NULL COMMENT '預設費用',
   PRIMARY KEY (`code`),
   KEY `loinc` (`loinc`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='醫療處置代碼表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='醫療處置代碼表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1594,7 +1670,7 @@ DROP TABLE IF EXISTS `registration_info`;
 CREATE TABLE `registration_info` (
   `guid` char(36) NOT NULL,
   `bed_guid` char(36) DEFAULT NULL,
-  `p_no` int(8) NOT NULL,
+  `p_no` char(36) NOT NULL,
   `reg_time` datetime NOT NULL COMMENT '掛號日期時間',
   `gis_guid` char(36) DEFAULT NULL,
   `shift_guid` char(36) DEFAULT NULL,
@@ -1607,12 +1683,12 @@ CREATE TABLE `registration_info` (
   `modify_count` int(2) DEFAULT NULL,
   `reg_cost` double DEFAULT NULL COMMENT '掛號實收費用',
   `dia_cost` double DEFAULT NULL COMMENT '診察實收費用',
-  `registration_payment` char(1) DEFAULT NULL COMMENT 'F:掛號已繳費',
-  `diagnosis_payment` char(1) DEFAULT NULL COMMENT 'F:診察已繳費',
-  `pharmacy_payment` char(1) DEFAULT NULL COMMENT 'F:藥已繳費',
-  `lab_payment` char(1) DEFAULT NULL COMMENT 'F:檢驗已繳費',
-  `radiology_payment` char(1) DEFAULT NULL COMMENT 'F:檢查已繳費(xray)',
-  `bed_payment` char(1) DEFAULT NULL COMMENT 'F:住院已繳費',
+  `registration_payment` char(1) DEFAULT NULL COMMENT 'F:掛號已繳費;Z:不用繳費',
+  `diagnosis_payment` char(1) DEFAULT NULL COMMENT 'F:診察已繳費;Z:不用繳費',
+  `pharmacy_payment` char(1) DEFAULT NULL COMMENT 'F:藥已繳費;Z:不用繳費',
+  `lab_payment` char(1) DEFAULT NULL COMMENT 'F:檢驗已繳費;Z:不用繳費',
+  `radiology_payment` char(1) DEFAULT NULL COMMENT 'F:檢查已繳費(xray);Z:不用繳費',
+  `bed_payment` char(1) DEFAULT NULL COMMENT 'F:住院已繳費;Z:不用繳費',
   `visits_no` int(4) NOT NULL COMMENT '就診號',
   `pharmacy_no` int(4) DEFAULT NULL COMMENT '領藥號',
   `touchtime` char(20) NOT NULL COMMENT '資料建立時間',
@@ -1620,7 +1696,13 @@ CREATE TABLE `registration_info` (
   `record_touchtime` char(20) DEFAULT NULL,
   PRIMARY KEY (`guid`),
   KEY `shift_guid` (`shift_guid`),
-  KEY `p_no` (`p_no`)
+  KEY `p_no` (`p_no`),
+  KEY `fk_registration_info_4` (`gis_guid`),
+  KEY `fk_registration_info_3_idx` (`bed_guid`),
+  CONSTRAINT `fk_registration_info_3` FOREIGN KEY (`bed_guid`) REFERENCES `bed_record` (`guid`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_registration_info_1` FOREIGN KEY (`p_no`) REFERENCES `patients_info` (`p_no`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_registration_info_2` FOREIGN KEY (`shift_guid`) REFERENCES `shift_table` (`guid`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_registration_info_4` FOREIGN KEY (`gis_guid`) REFERENCES `gis` (`guid`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='掛號記錄';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1630,7 +1712,7 @@ CREATE TABLE `registration_info` (
 
 LOCK TABLES `registration_info` WRITE;
 /*!40000 ALTER TABLE `registration_info` DISABLE KEYS */;
-INSERT INTO `registration_info` VALUES ('c619d304-e27d-11df-a9d1-aaf1b7c1a3ec',NULL,0,'2010-10-28 18:39:19','','11bda2f7-dd9d-11df-a9d1-aaf1b7c1a3ec','Y',NULL,'O','TCH','F',NULL,NULL,20.5,20.5,'F','F','F','Z','Z','Z',1,1,'20101028183919000000','20101028183919000000','20101028183919000000');
+INSERT INTO `registration_info` VALUES ('c619d304-e27d-11df-a9d1-aaf1b7c1a3ec',NULL,'c861043a-083e-11e4-bfdc-000c29285422','2010-10-28 18:39:19',NULL,'11bda2f7-dd9d-11df-a9d1-aaf1b7c1a3ec','Y',NULL,'O','TCH','F',NULL,NULL,20.5,20.5,'F','F','F','Z','Z','Z',1,1,'20101028183919000000','20101028183919000000','20101028183919000000');
 /*!40000 ALTER TABLE `registration_info` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1666,15 +1748,21 @@ DROP TABLE IF EXISTS `set_diagnostic`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `set_diagnostic` (
-  `guid` char(36) COLLATE utf8_unicode_ci NOT NULL,
+  `guid` char(36) NOT NULL,
   `no` int(11) NOT NULL COMMENT 'number of this set',
-  `name` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'label of this set',
-  `dia_code` char(8) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `name` varchar(100) DEFAULT NULL COMMENT 'label of this set',
+  `dia_code` varchar(20) DEFAULT NULL,
   `related_medicine_set_no` int(11) DEFAULT NULL,
-  `related_prescription_set_no` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `related_prescription_set_no` int(11) DEFAULT NULL,
   PRIMARY KEY (`guid`),
-  UNIQUE KEY `no_UNIQUE` (`no`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='診斷套餐';
+  UNIQUE KEY `no_UNIQUE` (`no`),
+  KEY `fk_set_diagnostic_1` (`dia_code`),
+  KEY `fk_set_diagnostic_2` (`related_medicine_set_no`),
+  KEY `fk_set_diagnostic_3` (`related_prescription_set_no`),
+  CONSTRAINT `fk_set_diagnostic_1` FOREIGN KEY (`dia_code`) REFERENCES `diagnosis_code` (`dia_code`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_set_diagnostic_2` FOREIGN KEY (`related_medicine_set_no`) REFERENCES `set_medicine` (`no`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_set_diagnostic_3` FOREIGN KEY (`related_prescription_set_no`) REFERENCES `set_prescription` (`no`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='診斷套餐';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1694,13 +1782,15 @@ DROP TABLE IF EXISTS `set_medicine`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `set_medicine` (
-  `guid` char(36) COLLATE utf8_unicode_ci NOT NULL,
+  `guid` char(36) NOT NULL,
   `no` int(11) NOT NULL COMMENT 'number of this set',
-  `name` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'label of this set',
-  `m_code` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `name` varchar(100) DEFAULT NULL COMMENT 'label of this set',
+  `m_code` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`guid`),
-  UNIQUE KEY `no_UNIQUE` (`no`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='用藥處方套餐';
+  UNIQUE KEY `no_UNIQUE` (`no`),
+  KEY `fk_set_medicine_1` (`m_code`),
+  CONSTRAINT `fk_set_medicine_1` FOREIGN KEY (`m_code`) REFERENCES `medicines` (`code`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用藥處方套餐';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1720,13 +1810,15 @@ DROP TABLE IF EXISTS `set_prescription`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `set_prescription` (
-  `guid` char(36) COLLATE utf8_unicode_ci NOT NULL,
+  `guid` char(36) NOT NULL,
   `no` int(11) NOT NULL COMMENT 'number of this set',
-  `name` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'label of this set',
-  `pre_code` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `name` varchar(100) DEFAULT NULL COMMENT 'label of this set',
+  `pre_code` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`guid`),
-  UNIQUE KEY `no_UNIQUE` (`no`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='檢驗處方套餐';
+  UNIQUE KEY `no_UNIQUE` (`no`),
+  KEY `fk_set_prescription_1` (`pre_code`),
+  CONSTRAINT `fk_set_prescription_1` FOREIGN KEY (`pre_code`) REFERENCES `prescription_code` (`code`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='檢驗處方套餐';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1799,7 +1891,9 @@ CREATE TABLE `shift_table` (
   PRIMARY KEY (`guid`),
   KEY `guid` (`guid`),
   KEY `s_id` (`s_id`),
-  KEY `poli_guid` (`room_guid`)
+  KEY `poli_guid` (`room_guid`),
+  CONSTRAINT `fk_shift_table_1` FOREIGN KEY (`s_id`) REFERENCES `staff_info` (`s_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_shift_table_2` FOREIGN KEY (`room_guid`) REFERENCES `poli_room` (`guid`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='排班表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1809,7 +1903,7 @@ CREATE TABLE `shift_table` (
 
 LOCK TABLES `shift_table` WRITE;
 /*!40000 ALTER TABLE `shift_table` DISABLE KEYS */;
-INSERT INTO `shift_table` VALUES ('119c29e5-dd9d-11df-a9d1-aaf1b7c1a3ec','dm','2010-10-28','1','45fad8d5-c91c-11df-a9d1-aaf1b7c1a3e1'),('11ad1bdf-dd9d-11df-a9d1-aaf1b7c1a3ec','dm','2010-10-28','2','45fad8d5-c91c-11df-a9d1-aaf1b7c1a3e1'),('11bda2f7-dd9d-11df-a9d1-aaf1b7c1a3ec','dm','2010-10-28','3','45fad8d5-c91c-11df-a9d1-aaf1b7c1a3e1');
+INSERT INTO `shift_table` VALUES ('119c29e5-dd9d-11df-a9d1-aaf1b7c1a3ec','admin','2010-10-28','1','45fad8d5-c91c-11df-a9d1-aaf1b7c1a3e1'),('11ad1bdf-dd9d-11df-a9d1-aaf1b7c1a3ec','admin','2010-10-28','2','45fad8d5-c91c-11df-a9d1-aaf1b7c1a3e1'),('11bda2f7-dd9d-11df-a9d1-aaf1b7c1a3ec','admin','2010-10-28','3','45fad8d5-c91c-11df-a9d1-aaf1b7c1a3e1');
 /*!40000 ALTER TABLE `shift_table` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1844,11 +1938,13 @@ DROP TABLE IF EXISTS `staff_fingertemplate`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `staff_fingertemplate` (
-  `guid` char(36) COLLATE utf8_bin NOT NULL,
-  `id` varchar(20) COLLATE utf8_bin NOT NULL,
+  `guid` char(36) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `id` varchar(20) NOT NULL,
   `template` longblob NOT NULL COMMENT '指紋',
-  PRIMARY KEY (`guid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='員工指紋檔';
+  PRIMARY KEY (`guid`),
+  KEY `fk_staff_fingertemplate_1` (`id`),
+  CONSTRAINT `fk_staff_fingertemplate_1` FOREIGN KEY (`id`) REFERENCES `staff_info` (`s_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='員工指紋檔';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1951,7 +2047,10 @@ CREATE TABLE `staff_info` (
   KEY `posi_guid` (`posi_guid`),
   KEY `dep_guid` (`dep_guid`),
   KEY `gp_name` (`grp_name`),
-  KEY `poli_guid` (`poli_guid`)
+  KEY `poli_guid` (`poli_guid`),
+  CONSTRAINT `fk_staff_info_1` FOREIGN KEY (`dep_guid`) REFERENCES `department` (`guid`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_staff_info_2` FOREIGN KEY (`poli_guid`) REFERENCES `policlinic` (`guid`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_staff_info_4` FOREIGN KEY (`posi_guid`) REFERENCES `position` (`guid`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='員工資料表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1973,19 +2072,19 @@ DROP TABLE IF EXISTS `sys_info`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `sys_info` (
-  `hos_name` varchar(250) COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '醫院名稱',
-  `hos_phone` varchar(45) COLLATE utf8_bin DEFAULT NULL,
-  `hos_address` varchar(250) COLLATE utf8_bin DEFAULT NULL COMMENT '醫院地址',
-  `hos_icon_path` varchar(255) COLLATE utf8_bin DEFAULT NULL,
-  `hos_local` varchar(60) COLLATE utf8_bin NOT NULL,
-  `hos_info` varchar(250) COLLATE utf8_bin DEFAULT NULL,
-  `hos_mail` varchar(250) COLLATE utf8_bin DEFAULT NULL,
-  `hos_id` varchar(20) COLLATE utf8_bin DEFAULT NULL,
-  `hl7_edition` varchar(60) COLLATE utf8_bin DEFAULT NULL,
-  `icd_deition` varchar(60) COLLATE utf8_bin DEFAULT NULL,
+  `hos_name` varchar(250) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '醫院名稱',
+  `hos_phone` varchar(45) DEFAULT NULL,
+  `hos_address` varchar(250) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL COMMENT '醫院地址',
+  `hos_icon_path` varchar(255) DEFAULT NULL,
+  `hos_local` varchar(60) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `hos_info` varchar(250) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
+  `hos_mail` varchar(250) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
+  `hos_id` varchar(20) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
+  `hl7_edition` varchar(60) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
+  `icd_deition` varchar(60) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
   `remind_days` int(2) DEFAULT NULL COMMENT '醫院連絡電話',
   PRIMARY KEY (`hos_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='醫院設定檔';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='醫院設定檔';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2043,7 +2142,9 @@ CREATE TABLE `treat` (
   PRIMARY KEY (`guid`),
   KEY `sur_id` (`sur_id`),
   KEY `ane_id` (`ane_id`),
-  KEY `treat_type` (`treat_type`)
+  KEY `treat_type` (`treat_type`),
+  KEY `fk_treat_1` (`os_guid`),
+  CONSTRAINT `fk_treat_1` FOREIGN KEY (`os_guid`) REFERENCES `outpatient_services` (`guid`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2065,4 +2166,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-07-10  7:34:42
+-- Dump completed on 2014-07-10  9:35:53
