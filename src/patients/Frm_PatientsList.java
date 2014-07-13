@@ -148,7 +148,7 @@ public class Frm_PatientsList extends javax.swing.JFrame implements
 
 		patientsInfo = patiensInfoDao.getExistedPatients(conditions, 0,
 				MAX_ROWS_OF_PAGE);
-		int count = patiensInfoDao.getPatientCount();
+		int count = patientsInfo.size();
 		int page = count / MAX_ROWS_OF_PAGE
 				+ ((count % MAX_ROWS_OF_PAGE == 0) ? 0 : 1);
 
@@ -786,7 +786,7 @@ public class Frm_PatientsList extends javax.swing.JFrame implements
 
 	private void btn_AddActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_AddActionPerformed
 		showImage(null, "");
-		Frm_PatientMod frmPatientMod = new Frm_PatientMod(this,true);
+		Frm_PatientMod frmPatientMod = new Frm_PatientMod(this, true);
 		frmPatientMod.setVisible(true);
 		this.setEnabled(false);
 		this.setVisible(false);

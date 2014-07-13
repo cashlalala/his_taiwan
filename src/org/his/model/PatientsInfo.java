@@ -5,7 +5,6 @@ import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
-
 /**
  * The persistent class for the patients_info database table.
  * 
@@ -24,15 +23,15 @@ import java.util.List;
 })
 
 @Entity
-@Table(name="patients_info")
+@Table(name = "patients_info")
 public class PatientsInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name="p_no")
+	@Column(name = "p_no")
 	private String pNo;
 
-	@Column(name="account_num")
+	@Column(name = "account_num")
 	private String accountNum;
 
 	private String address;
@@ -42,25 +41,25 @@ public class PatientsInfo implements Serializable {
 	@Temporal(TemporalType.DATE)
 	private Date birth;
 
-	@Column(name="birth_order")
+	@Column(name = "birth_order")
 	private Integer birthOrder;
 
 	private String bloodtype;
 
-	@Column(name="business_phone")
+	@Column(name = "business_phone")
 	private String businessPhone;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date cdate;
 
-	@Column(name="cell_phone")
+	@Column(name = "cell_phone")
 	private String cellPhone;
 
 	private String citizenship;
 
 	private String country;
 
-	@Column(name="driver_num")
+	@Column(name = "driver_num")
 	private String driverNum;
 
 	private String education;
@@ -73,34 +72,34 @@ public class PatientsInfo implements Serializable {
 
 	private String height;
 
-	@Column(name="identity_code")
+	@Column(name = "identity_code")
 	private String identityCode;
 
-	@Column(name="identity_unknown")
+	@Column(name = "identity_unknown")
 	private String identityUnknown;
 
 	private String language;
 
 	private String lastname;
 
-	@Column(name="marital_status")
+	@Column(name = "marital_status")
 	private String maritalStatus;
 
-	@Column(name="mother_id")
+	@Column(name = "mother_id")
 	private String motherId;
 
-	@Column(name="mother_name")
+	@Column(name = "mother_name")
 	private String motherName;
 
-	@Column(name="multiple_birth")
+	@Column(name = "multiple_birth")
 	private String multipleBirth;
 
 	private String nationality;
 
-	@Column(name="nhis_no")
+	@Column(name = "nhis_no")
 	private String nhisNo;
 
-	@Column(name="nia_no")
+	@Column(name = "nia_no")
 	private String niaNo;
 
 	private String note;
@@ -109,81 +108,81 @@ public class PatientsInfo implements Serializable {
 
 	private String phone;
 
-	@Column(name="place_of_birth")
+	@Column(name = "place_of_birth")
 	private String placeOfBirth;
 
 	private String ps;
 
 	private String race;
 
-	@Column(name="rh_type")
+	@Column(name = "rh_type")
 	private String rhType;
 
-	@Column(name="ssn_num")
+	@Column(name = "ssn_num")
 	private String ssnNum;
 
 	private String state;
 
 	private String town;
 
-	@Column(name="u_sno")
+	@Column(name = "u_sno")
 	private Integer uSno;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date udate;
 
-	@Column(name="veterans_military")
+	@Column(name = "veterans_military")
 	private String veteransMilitary;
 
 	private String weight;
 
-	//bi-directional many-to-one association to Allergy
-	@OneToMany(mappedBy="patientsInfo")
+	// bi-directional many-to-one association to Allergy
+	@OneToMany(mappedBy = "patientsInfo")
 	private List<Allergy> allergies;
 
-	//bi-directional many-to-one association to Anamnesi
-	@OneToMany(mappedBy="patientsInfo")
+	// bi-directional many-to-one association to Anamnesi
+	@OneToMany(mappedBy = "patientsInfo")
 	private List<Anamnesi> anamnesis;
 
-	//bi-directional many-to-one association to BedRecord
-	@OneToMany(mappedBy="patientsInfo")
+	// bi-directional many-to-one association to BedRecord
+	@OneToMany(mappedBy = "patientsInfo")
 	private List<BedRecord> bedRecords;
 
-	//bi-directional many-to-one association to Fingertemplate
-	@OneToMany(mappedBy="patientsInfo")
+	// bi-directional many-to-one association to Fingertemplate
+	@OneToMany(mappedBy = "patientsInfo")
 	private List<Fingertemplate> fingertemplates;
 
-	//bi-directional many-to-one association to ImageMeta
-	@OneToMany(mappedBy="patientsInfo")
+	// bi-directional many-to-one association to ImageMeta
+	@OneToMany(mappedBy = "patientsInfo")
 	private List<ImageMeta> imageMetas;
 
-	//bi-directional many-to-one association to StaffInfo
-	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="c_sno")
+	// bi-directional many-to-one association to StaffInfo
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "c_sno")
 	private StaffInfo staffInfo;
 
-	//bi-directional many-to-one association to Religion
-	@ManyToOne
-	@JoinColumn(name="religion")
+	// bi-directional many-to-one association to Religion
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "religion")
 	private Religion religionBean;
 
-	//bi-directional many-to-one association to HlsGroup
-	@ManyToOne
-	@JoinColumn(name="tribe")
+	// bi-directional many-to-one association to HlsGroup
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "tribe")
 	private HlsGroup hlsGroup;
 
-	//bi-directional many-to-one association to ContactpersonInfo
-	@ManyToOne
-	@JoinColumn(name="cp_guid")
+	// bi-directional many-to-one association to ContactpersonInfo
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "cp_guid")
 	private ContactpersonInfo contactpersonInfo;
 
-	//bi-directional many-to-one association to DeathInfo
-	@ManyToOne
-	@JoinColumn(name="dead_guid")
+	// bi-directional many-to-one association to DeathInfo
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "dead_guid")
 	private DeathInfo deathInfo;
 
-	//bi-directional many-to-one association to RegistrationInfo
-	@OneToMany(mappedBy="patientsInfo")
+	// bi-directional many-to-one association to RegistrationInfo
+	@OneToMany(mappedBy = "patientsInfo", fetch = FetchType.LAZY)
 	private List<RegistrationInfo> registrationInfos;
 
 	public PatientsInfo() {
@@ -691,14 +690,16 @@ public class PatientsInfo implements Serializable {
 		this.registrationInfos = registrationInfos;
 	}
 
-	public RegistrationInfo addRegistrationInfo(RegistrationInfo registrationInfo) {
+	public RegistrationInfo addRegistrationInfo(
+			RegistrationInfo registrationInfo) {
 		getRegistrationInfos().add(registrationInfo);
 		registrationInfo.setPatientsInfo(this);
 
 		return registrationInfo;
 	}
 
-	public RegistrationInfo removeRegistrationInfo(RegistrationInfo registrationInfo) {
+	public RegistrationInfo removeRegistrationInfo(
+			RegistrationInfo registrationInfo) {
 		getRegistrationInfos().remove(registrationInfo);
 		registrationInfo.setPatientsInfo(null);
 
