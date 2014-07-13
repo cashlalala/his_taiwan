@@ -2,6 +2,7 @@ package org.his.model;
 
 import java.io.Serializable;
 import javax.persistence.*;
+import java.util.List;
 
 
 /**
@@ -14,12 +15,16 @@ public class MedicineFrequency implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String code;
 
 	private String explain;
 
 	private int value;
+
+	//bi-directional many-to-one association to MedicineStock
+	@OneToMany(mappedBy="medicineFrequency")
+	private List<MedicineStock> medicineStocks;
 
 	public MedicineFrequency() {
 	}
@@ -46,6 +51,28 @@ public class MedicineFrequency implements Serializable {
 
 	public void setValue(int value) {
 		this.value = value;
+	}
+
+	public List<MedicineStock> getMedicineStocks() {
+		return this.medicineStocks;
+	}
+
+	public void setMedicineStocks(List<MedicineStock> medicineStocks) {
+		this.medicineStocks = medicineStocks;
+	}
+
+	public MedicineStock addMedicineStock(MedicineStock medicineStock) {
+		getMedicineStocks().add(medicineStock);
+		medicineStock.setMedicineFrequency(this);
+
+		return medicineStock;
+	}
+
+	public MedicineStock removeMedicineStock(MedicineStock medicineStock) {
+		getMedicineStocks().remove(medicineStock);
+		medicineStock.setMedicineFrequency(null);
+
+		return medicineStock;
 	}
 
 }

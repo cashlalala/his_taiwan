@@ -122,14 +122,11 @@ public class Frm_PatientMod extends javax.swing.JFrame implements
 	public Frm_PatientMod(PatientsInterface m_frame, PatientsInfo pInfo) {
 		this(m_frame, false);
 		this.patientInfo = patientInfoDao.merge(pInfo);
-		this.contactpersonInfo = (patientInfo.getCpGuid() != null) ? contactpersonInfoDao
-				.QueryContactInfoById(patientInfo.getCpGuid())
-				: new ContactpersonInfo();
+		this.contactpersonInfo = (patientInfo.getContactpersonInfo() != null) ? patientInfo
+				.getContactpersonInfo() : new ContactpersonInfo();
 
-		if (patientInfo.getDeadGuid() != null
-				&& !patientInfo.getDeadGuid().isEmpty()) {
-			deathInfo = deathInfoDao.QueryDeathInfoById(patientInfo
-					.getDeadGuid());
+		if (patientInfo.getDeathInfo() != null) {
+			deathInfo = patientInfo.getDeathInfo();
 			check_Deal.setSelected(true);
 		}
 
@@ -147,14 +144,11 @@ public class Frm_PatientMod extends javax.swing.JFrame implements
 
 	public Frm_PatientMod(PatientsInterface m_frame, String p_no) {
 		this(m_frame, false);
-		this.contactpersonInfo = (patientInfo.getCpGuid() != null) ? contactpersonInfoDao
-				.QueryContactInfoById(patientInfo.getCpGuid())
-				: new ContactpersonInfo();
+		this.contactpersonInfo = (patientInfo.getContactpersonInfo() != null) ? patientInfo
+				.getContactpersonInfo() : new ContactpersonInfo();
 
-		if (patientInfo.getDeadGuid() != null
-				&& !patientInfo.getDeadGuid().isEmpty()) {
-			deathInfo = deathInfoDao.QueryDeathInfoById(patientInfo
-					.getDeadGuid());
+		if (patientInfo.getDeathInfo() != null) {
+			deathInfo = patientInfo.getDeathInfo();
 			check_Deal.setSelected(true);
 		}
 
@@ -188,7 +182,7 @@ public class Frm_PatientMod extends javax.swing.JFrame implements
 
 	public void initPatientInfo() {
 		PatientsInfo pInfo = new PatientsInfo();
-		pInfo.setPNo(this.patientInfoDao.getNewPNo());
+		pInfo.setPNo(UUID.randomUUID().toString());
 		pInfo.setFirstname(m_UUID);
 		pInfo.setLastname(m_UUID);
 		pInfo.setExist((byte) 0);
@@ -197,31 +191,18 @@ public class Frm_PatientMod extends javax.swing.JFrame implements
 		pInfo.setMaritalStatus(m_MaritalStatus[getMaritalStatusIndexByFullName((String) cob_MaritalStatus
 				.getSelectedItem())]);
 		patientInfo = patientInfoDao.merge(pInfo);
+		patientInfoDao.persist(patientInfo);
 	}
 
 	protected void initDataBindings() {
 
-		BeanProperty<PatientsInfo, Integer> jIntBeanProp1 = BeanProperty
+		BeanProperty<PatientsInfo, String> jIntBeanProp1 = BeanProperty
 				.create("PNo");
 		BeanProperty<JTextField, String> jTextFieldBeanProperty = BeanProperty
 				.create("text");
-		AutoBinding<PatientsInfo, Integer, JTextField, String> bind1 = Bindings
+		AutoBinding<PatientsInfo, String, JTextField, String> bind1 = Bindings
 				.createAutoBinding(UpdateStrategy.READ_WRITE, patientInfo,
 						jIntBeanProp1, this.txt_No, jTextFieldBeanProperty);
-		Converter<Integer, String> conv = new Converter<Integer, String>() {
-
-			@Override
-			public String convertForward(Integer arg0) {
-				return String.valueOf(arg0);
-			}
-
-			@Override
-			public Integer convertReverse(String arg0) {
-				return Integer.valueOf(arg0);
-			}
-
-		};
-		bind1.setConverter(conv);
 		bind1.bind();
 
 		BeanProperty<PatientsInfo, String> jIntBeanProp2 = BeanProperty
@@ -2896,7 +2877,7 @@ public class Frm_PatientMod extends javax.swing.JFrame implements
 			}
 			deathInfo = deathInfoDao.merge(deathInfo);
 			deathInfoDao.persist(deathInfo);
-			patientInfo.setDeadGuid(deathInfo.getGuid());
+			patientInfo.setDeathInfo(deathInfo);
 		} catch (Exception e) {
 			ErrorMessage
 					.setData(
@@ -2914,9 +2895,9 @@ public class Frm_PatientMod extends javax.swing.JFrame implements
 	private void btn_DealCancelActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_DealCancelActionPerformed
 		this.jDialog1.setVisible(false);
 		try {
+			patientInfo.setDeathInfo(null);
 			if (deathInfo != null)
 				deathInfoDao.remove(deathInfo);
-			patientInfo.setDeadGuid(null);
 			this.check_Deal.setSelected(false);
 		} catch (Exception e) {
 			ErrorMessage
@@ -2933,7 +2914,7 @@ public class Frm_PatientMod extends javax.swing.JFrame implements
 	private void jDialog1WindowClosing(java.awt.event.WindowEvent evt) {// GEN-FIRST:event_jDialog1WindowClosing
 		this.jDialog1.setVisible(false);
 		if (deathInfo != null
-				&& patientInfo.getDeadGuid() == deathInfo.getGuid()) {
+				&& patientInfo.getDeathInfo().getGuid() == deathInfo.getGuid()) {
 			this.check_Deal.setSelected(true);
 		} else {
 			this.check_Deal.setSelected(false);
@@ -2951,13 +2932,14 @@ public class Frm_PatientMod extends javax.swing.JFrame implements
 					|| !this.txt_EmeFirstName.getText().trim().equals("")
 					|| !this.txt_EmeLastName.getText().trim().equals("")) {
 
-				if (patientInfo.getCpGuid() == null) {
+				if (patientInfo.getContactpersonInfo() == null) {
 					String uuid = UUID.randomUUID().toString();
 					contactpersonInfo.setGuid(uuid);
-					patientInfo.setCpGuid(uuid);
+					contactpersonInfoDao.persist(contactpersonInfoDao
+							.merge(contactpersonInfo));
+					patientInfo.setContactpersonInfo(contactpersonInfo);
 				}
-				contactpersonInfoDao.persist(contactpersonInfoDao
-						.merge(contactpersonInfo));
+
 			}
 			this.patientInfoDao.persist(patientInfo);
 			// ***********************列印barcode
@@ -3021,9 +3003,8 @@ public class Frm_PatientMod extends javax.swing.JFrame implements
 		// death_info
 
 		try {
-			if (patientInfo.getDeadGuid() != null) {
-				deathInfo = deathInfoDao.QueryDeathInfoById(patientInfo
-						.getDeadGuid());
+			if (patientInfo.getDeathInfo() != null) {
+				deathInfo = patientInfo.getDeathInfo();
 				this.check_Deal.setSelected(true);
 				this.dia_txt_Cause.setText(deathInfo.getCause());
 

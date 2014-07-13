@@ -10,26 +10,18 @@ import java.util.Date;
  * 
  */
 @Entity
+@Table(name="cashier")
 public class Cashier implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String no;
 
 	@Column(name="amount_receivable")
 	private double amountReceivable;
 
 	private double arrears;
-
-	private String backin;
-
-	@Column(name="backin_sno")
-	private int backinSno;
-
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="backin_time")
-	private Date backinTime;
 
 	@Column(name="p_no")
 	private int pNo;
@@ -47,7 +39,7 @@ public class Cashier implements Serializable {
 	@Column(name="s_no")
 	private int sNo;
 
-	private String typ;
+	private String type;
 
 	public Cashier() {
 	}
@@ -74,30 +66,6 @@ public class Cashier implements Serializable {
 
 	public void setArrears(double arrears) {
 		this.arrears = arrears;
-	}
-
-	public String getBackin() {
-		return this.backin;
-	}
-
-	public void setBackin(String backin) {
-		this.backin = backin;
-	}
-
-	public int getBackinSno() {
-		return this.backinSno;
-	}
-
-	public void setBackinSno(int backinSno) {
-		this.backinSno = backinSno;
-	}
-
-	public Date getBackinTime() {
-		return this.backinTime;
-	}
-
-	public void setBackinTime(Date backinTime) {
-		this.backinTime = backinTime;
 	}
 
 	public int getPNo() {
@@ -140,12 +108,12 @@ public class Cashier implements Serializable {
 		this.sNo = sNo;
 	}
 
-	public String getTyp() {
-		return this.typ;
+	public String getType() {
+		return this.type;
 	}
 
-	public void setTyp(String typ) {
-		this.typ = typ;
+	public void setType(String type) {
+		this.type = type;
 	}
 
 }

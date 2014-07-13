@@ -2,14 +2,15 @@ package org.his.model;
 
 import java.io.Serializable;
 import javax.persistence.*;
+import java.util.List;
+
 
 /**
  * The persistent class for the contactperson_info database table.
  * 
  */
-
 @Entity
-@Table(name = "contactperson_info")
+@Table(name="contactperson_info")
 public class ContactpersonInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -18,7 +19,7 @@ public class ContactpersonInfo implements Serializable {
 
 	private String address;
 
-	@Column(name = "cell_phone")
+	@Column(name="cell_phone")
 	private String cellPhone;
 
 	private String country;
@@ -31,14 +32,14 @@ public class ContactpersonInfo implements Serializable {
 
 	private String lastname;
 
-	@Column(name = "marital_status")
+	@Column(name="marital_status")
 	private String maritalStatus;
 
 	private String occupation;
 
 	private String phone;
 
-	@Column(name = "place_of_birth")
+	@Column(name="place_of_birth")
 	private String placeOfBirth;
 
 	private String relation;
@@ -50,6 +51,10 @@ public class ContactpersonInfo implements Serializable {
 	private String town;
 
 	private String tribe;
+
+	//bi-directional many-to-one association to PatientsInfo
+	@OneToMany(mappedBy="contactpersonInfo")
+	private List<PatientsInfo> patientsInfos;
 
 	public ContactpersonInfo() {
 	}
@@ -188,6 +193,28 @@ public class ContactpersonInfo implements Serializable {
 
 	public void setTribe(String tribe) {
 		this.tribe = tribe;
+	}
+
+	public List<PatientsInfo> getPatientsInfos() {
+		return this.patientsInfos;
+	}
+
+	public void setPatientsInfos(List<PatientsInfo> patientsInfos) {
+		this.patientsInfos = patientsInfos;
+	}
+
+	public PatientsInfo addPatientsInfo(PatientsInfo patientsInfo) {
+		getPatientsInfos().add(patientsInfo);
+		patientsInfo.setContactpersonInfo(this);
+
+		return patientsInfo;
+	}
+
+	public PatientsInfo removePatientsInfo(PatientsInfo patientsInfo) {
+		getPatientsInfos().remove(patientsInfo);
+		patientsInfo.setContactpersonInfo(null);
+
+		return patientsInfo;
 	}
 
 }

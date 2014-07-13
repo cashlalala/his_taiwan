@@ -2,6 +2,7 @@ package org.his.model;
 
 import java.io.Serializable;
 import javax.persistence.*;
+import java.util.List;
 
 
 /**
@@ -21,12 +22,16 @@ import javax.persistence.*;
 @Table(name="religion")
 public class Religion implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String value;
 
 	private String descrition;
+
+	//bi-directional many-to-one association to PatientsInfo
+	@OneToMany(mappedBy="religionBean")
+	private List<PatientsInfo> patientsInfos;
 
 	public Religion() {
 	}
@@ -45,6 +50,28 @@ public class Religion implements Serializable {
 
 	public void setDescrition(String descrition) {
 		this.descrition = descrition;
+	}
+
+	public List<PatientsInfo> getPatientsInfos() {
+		return this.patientsInfos;
+	}
+
+	public void setPatientsInfos(List<PatientsInfo> patientsInfos) {
+		this.patientsInfos = patientsInfos;
+	}
+
+	public PatientsInfo addPatientsInfo(PatientsInfo patientsInfo) {
+		getPatientsInfos().add(patientsInfo);
+		patientsInfo.setReligionBean(this);
+
+		return patientsInfo;
+	}
+
+	public PatientsInfo removePatientsInfo(PatientsInfo patientsInfo) {
+		getPatientsInfos().remove(patientsInfo);
+		patientsInfo.setReligionBean(null);
+
+		return patientsInfo;
 	}
 
 }

@@ -2,6 +2,7 @@ package org.his.model;
 
 import java.io.Serializable;
 import javax.persistence.*;
+import java.util.List;
 
 
 /**
@@ -14,7 +15,7 @@ public class Gi implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String guid;
 
 	@Lob
@@ -22,8 +23,14 @@ public class Gi implements Serializable {
 
 	private String gis;
 
-	@Column(name="reg_guid")
-	private String regGuid;
+	//bi-directional many-to-one association to RegistrationInfo
+	@ManyToOne
+	@JoinColumn(name="reg_guid")
+	private RegistrationInfo registrationInfo;
+
+	//bi-directional many-to-one association to RegistrationInfo
+	@OneToMany(mappedBy="gi")
+	private List<RegistrationInfo> registrationInfos;
 
 	public Gi() {
 	}
@@ -52,12 +59,34 @@ public class Gi implements Serializable {
 		this.gis = gis;
 	}
 
-	public String getRegGuid() {
-		return this.regGuid;
+	public RegistrationInfo getRegistrationInfo() {
+		return this.registrationInfo;
 	}
 
-	public void setRegGuid(String regGuid) {
-		this.regGuid = regGuid;
+	public void setRegistrationInfo(RegistrationInfo registrationInfo) {
+		this.registrationInfo = registrationInfo;
+	}
+
+	public List<RegistrationInfo> getRegistrationInfos() {
+		return this.registrationInfos;
+	}
+
+	public void setRegistrationInfos(List<RegistrationInfo> registrationInfos) {
+		this.registrationInfos = registrationInfos;
+	}
+
+	public RegistrationInfo addRegistrationInfo(RegistrationInfo registrationInfo) {
+		getRegistrationInfos().add(registrationInfo);
+		registrationInfo.setGi(this);
+
+		return registrationInfo;
+	}
+
+	public RegistrationInfo removeRegistrationInfo(RegistrationInfo registrationInfo) {
+		getRegistrationInfos().remove(registrationInfo);
+		registrationInfo.setGi(null);
+
+		return registrationInfo;
 	}
 
 }

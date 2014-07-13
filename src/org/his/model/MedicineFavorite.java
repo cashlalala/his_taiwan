@@ -2,32 +2,35 @@ package org.his.model;
 
 import java.io.Serializable;
 import javax.persistence.*;
-import java.util.Date;
 
 
 /**
- * The persistent class for the login_log database table.
+ * The persistent class for the medicine_favorite database table.
  * 
  */
 @Entity
-@Table(name="login_log")
-public class LoginLog implements Serializable {
+@Table(name="medicine_favorite")
+public class MedicineFavorite implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String guid;
 
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="log_time")
-	private Date logTime;
+	@Lob
+	private String usedTime;
 
 	//bi-directional many-to-one association to StaffInfo
 	@ManyToOne
 	@JoinColumn(name="s_no")
 	private StaffInfo staffInfo;
 
-	public LoginLog() {
+	//bi-directional many-to-one association to Medicine
+	@ManyToOne
+	@JoinColumn(name="m_code")
+	private Medicine medicine;
+
+	public MedicineFavorite() {
 	}
 
 	public String getGuid() {
@@ -38,12 +41,12 @@ public class LoginLog implements Serializable {
 		this.guid = guid;
 	}
 
-	public Date getLogTime() {
-		return this.logTime;
+	public String getUsedTime() {
+		return this.usedTime;
 	}
 
-	public void setLogTime(Date logTime) {
-		this.logTime = logTime;
+	public void setUsedTime(String usedTime) {
+		this.usedTime = usedTime;
 	}
 
 	public StaffInfo getStaffInfo() {
@@ -52,6 +55,14 @@ public class LoginLog implements Serializable {
 
 	public void setStaffInfo(StaffInfo staffInfo) {
 		this.staffInfo = staffInfo;
+	}
+
+	public Medicine getMedicine() {
+		return this.medicine;
+	}
+
+	public void setMedicine(Medicine medicine) {
+		this.medicine = medicine;
 	}
 
 }

@@ -14,7 +14,7 @@ public class SysInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	@Column(name="hos_name")
 	private String hosName;
 
@@ -23,6 +23,9 @@ public class SysInfo implements Serializable {
 
 	@Column(name="hos_address")
 	private String hosAddress;
+
+	@Column(name="hos_icon_path")
+	private String hosIconPath;
 
 	@Column(name="hos_id")
 	private String hosId;
@@ -35,6 +38,9 @@ public class SysInfo implements Serializable {
 
 	@Column(name="hos_mail")
 	private String hosMail;
+
+	@Column(name="hos_phone")
+	private String hosPhone;
 
 	@Column(name="icd_deition")
 	private String icdDeition;
@@ -69,6 +75,14 @@ public class SysInfo implements Serializable {
 		this.hosAddress = hosAddress;
 	}
 
+	public String getHosIconPath() {
+		return this.hosIconPath;
+	}
+
+	public void setHosIconPath(String hosIconPath) {
+		this.hosIconPath = hosIconPath;
+	}
+
 	public String getHosId() {
 		return this.hosId;
 	}
@@ -99,6 +113,14 @@ public class SysInfo implements Serializable {
 
 	public void setHosMail(String hosMail) {
 		this.hosMail = hosMail;
+	}
+
+	public String getHosPhone() {
+		return this.hosPhone;
+	}
+
+	public void setHosPhone(String hosPhone) {
+		this.hosPhone = hosPhone;
 	}
 
 	public String getIcdDeition() {

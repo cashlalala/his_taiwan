@@ -2,8 +2,8 @@ package org.his.model;
 
 import java.io.Serializable;
 import javax.persistence.*;
-
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -30,7 +30,7 @@ public class PatientsInfo implements Serializable {
 
 	@Id
 	@Column(name="p_no")
-	private Integer pNo;
+	private String pNo;
 
 	@Column(name="account_num")
 	private String accountNum;
@@ -50,9 +50,6 @@ public class PatientsInfo implements Serializable {
 	@Column(name="business_phone")
 	private String businessPhone;
 
-	@Column(name="c_sno")
-	private Integer cSno;
-
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date cdate;
 
@@ -62,12 +59,6 @@ public class PatientsInfo implements Serializable {
 	private String citizenship;
 
 	private String country;
-
-	@Column(name="cp_guid")
-	private String cpGuid;
-
-	@Column(name="dead_guid")
-	private String deadGuid;
 
 	@Column(name="driver_num")
 	private String driverNum;
@@ -112,6 +103,8 @@ public class PatientsInfo implements Serializable {
 	@Column(name="nia_no")
 	private String niaNo;
 
+	private String note;
+
 	private String occupation;
 
 	private String phone;
@@ -123,8 +116,6 @@ public class PatientsInfo implements Serializable {
 
 	private String race;
 
-	private String religion;
-
 	@Column(name="rh_type")
 	private String rhType;
 
@@ -134,8 +125,6 @@ public class PatientsInfo implements Serializable {
 	private String state;
 
 	private String town;
-
-	private String tribe;
 
 	@Column(name="u_sno")
 	private Integer uSno;
@@ -148,14 +137,63 @@ public class PatientsInfo implements Serializable {
 
 	private String weight;
 
+	//bi-directional many-to-one association to Allergy
+	@OneToMany(mappedBy="patientsInfo")
+	private List<Allergy> allergies;
+
+	//bi-directional many-to-one association to Anamnesi
+	@OneToMany(mappedBy="patientsInfo")
+	private List<Anamnesi> anamnesis;
+
+	//bi-directional many-to-one association to BedRecord
+	@OneToMany(mappedBy="patientsInfo")
+	private List<BedRecord> bedRecords;
+
+	//bi-directional many-to-one association to Fingertemplate
+	@OneToMany(mappedBy="patientsInfo")
+	private List<Fingertemplate> fingertemplates;
+
+	//bi-directional many-to-one association to ImageMeta
+	@OneToMany(mappedBy="patientsInfo")
+	private List<ImageMeta> imageMetas;
+
+	//bi-directional many-to-one association to StaffInfo
+	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="c_sno")
+	private StaffInfo staffInfo;
+
+	//bi-directional many-to-one association to Religion
+	@ManyToOne
+	@JoinColumn(name="religion")
+	private Religion religionBean;
+
+	//bi-directional many-to-one association to HlsGroup
+	@ManyToOne
+	@JoinColumn(name="tribe")
+	private HlsGroup hlsGroup;
+
+	//bi-directional many-to-one association to ContactpersonInfo
+	@ManyToOne
+	@JoinColumn(name="cp_guid")
+	private ContactpersonInfo contactpersonInfo;
+
+	//bi-directional many-to-one association to DeathInfo
+	@ManyToOne
+	@JoinColumn(name="dead_guid")
+	private DeathInfo deathInfo;
+
+	//bi-directional many-to-one association to RegistrationInfo
+	@OneToMany(mappedBy="patientsInfo")
+	private List<RegistrationInfo> registrationInfos;
+
 	public PatientsInfo() {
 	}
 
-	public Integer getPNo() {
+	public String getPNo() {
 		return this.pNo;
 	}
 
-	public void setPNo(Integer pNo) {
+	public void setPNo(String pNo) {
 		this.pNo = pNo;
 	}
 
@@ -191,11 +229,11 @@ public class PatientsInfo implements Serializable {
 		this.birth = birth;
 	}
 
-	public int getBirthOrder() {
+	public Integer getBirthOrder() {
 		return this.birthOrder;
 	}
 
-	public void setBirthOrder(int birthOrder) {
+	public void setBirthOrder(Integer birthOrder) {
 		this.birthOrder = birthOrder;
 	}
 
@@ -213,14 +251,6 @@ public class PatientsInfo implements Serializable {
 
 	public void setBusinessPhone(String businessPhone) {
 		this.businessPhone = businessPhone;
-	}
-
-	public int getCSno() {
-		return this.cSno;
-	}
-
-	public void setCSno(int cSno) {
-		this.cSno = cSno;
 	}
 
 	public Date getCdate() {
@@ -253,22 +283,6 @@ public class PatientsInfo implements Serializable {
 
 	public void setCountry(String country) {
 		this.country = country;
-	}
-
-	public String getCpGuid() {
-		return this.cpGuid;
-	}
-
-	public void setCpGuid(String cpGuid) {
-		this.cpGuid = cpGuid;
-	}
-
-	public String getDeadGuid() {
-		return this.deadGuid;
-	}
-
-	public void setDeadGuid(String deadGuid) {
-		this.deadGuid = deadGuid;
 	}
 
 	public String getDriverNum() {
@@ -407,6 +421,14 @@ public class PatientsInfo implements Serializable {
 		this.niaNo = niaNo;
 	}
 
+	public String getNote() {
+		return this.note;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
+	}
+
 	public String getOccupation() {
 		return this.occupation;
 	}
@@ -447,14 +469,6 @@ public class PatientsInfo implements Serializable {
 		this.race = race;
 	}
 
-	public String getReligion() {
-		return this.religion;
-	}
-
-	public void setReligion(String religion) {
-		this.religion = religion;
-	}
-
 	public String getRhType() {
 		return this.rhType;
 	}
@@ -487,19 +501,11 @@ public class PatientsInfo implements Serializable {
 		this.town = town;
 	}
 
-	public String getTribe() {
-		return this.tribe;
-	}
-
-	public void setTribe(String tribe) {
-		this.tribe = tribe;
-	}
-
-	public int getUSno() {
+	public Integer getUSno() {
 		return this.uSno;
 	}
 
-	public void setUSno(int uSno) {
+	public void setUSno(Integer uSno) {
 		this.uSno = uSno;
 	}
 
@@ -525,6 +531,178 @@ public class PatientsInfo implements Serializable {
 
 	public void setWeight(String weight) {
 		this.weight = weight;
+	}
+
+	public List<Allergy> getAllergies() {
+		return this.allergies;
+	}
+
+	public void setAllergies(List<Allergy> allergies) {
+		this.allergies = allergies;
+	}
+
+	public Allergy addAllergy(Allergy allergy) {
+		getAllergies().add(allergy);
+		allergy.setPatientsInfo(this);
+
+		return allergy;
+	}
+
+	public Allergy removeAllergy(Allergy allergy) {
+		getAllergies().remove(allergy);
+		allergy.setPatientsInfo(null);
+
+		return allergy;
+	}
+
+	public List<Anamnesi> getAnamnesis() {
+		return this.anamnesis;
+	}
+
+	public void setAnamnesis(List<Anamnesi> anamnesis) {
+		this.anamnesis = anamnesis;
+	}
+
+	public Anamnesi addAnamnesi(Anamnesi anamnesi) {
+		getAnamnesis().add(anamnesi);
+		anamnesi.setPatientsInfo(this);
+
+		return anamnesi;
+	}
+
+	public Anamnesi removeAnamnesi(Anamnesi anamnesi) {
+		getAnamnesis().remove(anamnesi);
+		anamnesi.setPatientsInfo(null);
+
+		return anamnesi;
+	}
+
+	public List<BedRecord> getBedRecords() {
+		return this.bedRecords;
+	}
+
+	public void setBedRecords(List<BedRecord> bedRecords) {
+		this.bedRecords = bedRecords;
+	}
+
+	public BedRecord addBedRecord(BedRecord bedRecord) {
+		getBedRecords().add(bedRecord);
+		bedRecord.setPatientsInfo(this);
+
+		return bedRecord;
+	}
+
+	public BedRecord removeBedRecord(BedRecord bedRecord) {
+		getBedRecords().remove(bedRecord);
+		bedRecord.setPatientsInfo(null);
+
+		return bedRecord;
+	}
+
+	public List<Fingertemplate> getFingertemplates() {
+		return this.fingertemplates;
+	}
+
+	public void setFingertemplates(List<Fingertemplate> fingertemplates) {
+		this.fingertemplates = fingertemplates;
+	}
+
+	public Fingertemplate addFingertemplate(Fingertemplate fingertemplate) {
+		getFingertemplates().add(fingertemplate);
+		fingertemplate.setPatientsInfo(this);
+
+		return fingertemplate;
+	}
+
+	public Fingertemplate removeFingertemplate(Fingertemplate fingertemplate) {
+		getFingertemplates().remove(fingertemplate);
+		fingertemplate.setPatientsInfo(null);
+
+		return fingertemplate;
+	}
+
+	public List<ImageMeta> getImageMetas() {
+		return this.imageMetas;
+	}
+
+	public void setImageMetas(List<ImageMeta> imageMetas) {
+		this.imageMetas = imageMetas;
+	}
+
+	public ImageMeta addImageMeta(ImageMeta imageMeta) {
+		getImageMetas().add(imageMeta);
+		imageMeta.setPatientsInfo(this);
+
+		return imageMeta;
+	}
+
+	public ImageMeta removeImageMeta(ImageMeta imageMeta) {
+		getImageMetas().remove(imageMeta);
+		imageMeta.setPatientsInfo(null);
+
+		return imageMeta;
+	}
+
+	public StaffInfo getStaffInfo() {
+		return this.staffInfo;
+	}
+
+	public void setStaffInfo(StaffInfo staffInfo) {
+		this.staffInfo = staffInfo;
+	}
+
+	public Religion getReligionBean() {
+		return this.religionBean;
+	}
+
+	public void setReligionBean(Religion religionBean) {
+		this.religionBean = religionBean;
+	}
+
+	public HlsGroup getHlsGroup() {
+		return this.hlsGroup;
+	}
+
+	public void setHlsGroup(HlsGroup hlsGroup) {
+		this.hlsGroup = hlsGroup;
+	}
+
+	public ContactpersonInfo getContactpersonInfo() {
+		return this.contactpersonInfo;
+	}
+
+	public void setContactpersonInfo(ContactpersonInfo contactpersonInfo) {
+		this.contactpersonInfo = contactpersonInfo;
+	}
+
+	public DeathInfo getDeathInfo() {
+		return this.deathInfo;
+	}
+
+	public void setDeathInfo(DeathInfo deathInfo) {
+		this.deathInfo = deathInfo;
+	}
+
+	public List<RegistrationInfo> getRegistrationInfos() {
+		return this.registrationInfos;
+	}
+
+	public void setRegistrationInfos(List<RegistrationInfo> registrationInfos) {
+		this.registrationInfos = registrationInfos;
+	}
+
+	public RegistrationInfo addRegistrationInfo(RegistrationInfo registrationInfo) {
+		getRegistrationInfos().add(registrationInfo);
+		registrationInfo.setPatientsInfo(this);
+
+		return registrationInfo;
+	}
+
+	public RegistrationInfo removeRegistrationInfo(RegistrationInfo registrationInfo) {
+		getRegistrationInfos().remove(registrationInfo);
+		registrationInfo.setPatientsInfo(null);
+
+		return registrationInfo;
 	}
 
 }

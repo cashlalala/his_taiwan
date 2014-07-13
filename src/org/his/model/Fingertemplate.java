@@ -9,17 +9,21 @@ import javax.persistence.*;
  * 
  */
 @Entity
+@Table(name="fingertemplate")
 public class Fingertemplate implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String guid;
-
-	private int id;
 
 	@Lob
 	private byte[] template;
+
+	//bi-directional many-to-one association to PatientsInfo
+	@ManyToOne
+	@JoinColumn(name="id")
+	private PatientsInfo patientsInfo;
 
 	public Fingertemplate() {
 	}
@@ -32,20 +36,20 @@ public class Fingertemplate implements Serializable {
 		this.guid = guid;
 	}
 
-	public int getId() {
-		return this.id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
 	public byte[] getTemplate() {
 		return this.template;
 	}
 
 	public void setTemplate(byte[] template) {
 		this.template = template;
+	}
+
+	public PatientsInfo getPatientsInfo() {
+		return this.patientsInfo;
+	}
+
+	public void setPatientsInfo(PatientsInfo patientsInfo) {
+		this.patientsInfo = patientsInfo;
 	}
 
 }

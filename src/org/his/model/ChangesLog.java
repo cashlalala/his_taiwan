@@ -15,7 +15,7 @@ public class ChangesLog implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	@Column(name="chg_guid")
 	private String chgGuid;
 
@@ -26,14 +26,16 @@ public class ChangesLog implements Serializable {
 	@Column(name="chg_time")
 	private Date chgTime;
 
-	@Column(name="s_no")
-	private int sNo;
-
 	@Column(name="table_guid")
 	private String tableGuid;
 
 	@Column(name="table_name")
 	private String tableName;
+
+	//bi-directional many-to-one association to StaffInfo
+	@ManyToOne
+	@JoinColumn(name="s_no")
+	private StaffInfo staffInfo;
 
 	public ChangesLog() {
 	}
@@ -62,14 +64,6 @@ public class ChangesLog implements Serializable {
 		this.chgTime = chgTime;
 	}
 
-	public int getSNo() {
-		return this.sNo;
-	}
-
-	public void setSNo(int sNo) {
-		this.sNo = sNo;
-	}
-
 	public String getTableGuid() {
 		return this.tableGuid;
 	}
@@ -84,6 +78,14 @@ public class ChangesLog implements Serializable {
 
 	public void setTableName(String tableName) {
 		this.tableName = tableName;
+	}
+
+	public StaffInfo getStaffInfo() {
+		return this.staffInfo;
+	}
+
+	public void setStaffInfo(StaffInfo staffInfo) {
+		this.staffInfo = staffInfo;
 	}
 
 }

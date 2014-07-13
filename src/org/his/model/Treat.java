@@ -10,11 +10,12 @@ import java.util.Date;
  * 
  */
 @Entity
+@Table(name="treat")
 public class Treat implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String guid;
 
 	@Lob
@@ -33,9 +34,6 @@ public class Treat implements Serializable {
 	@Lob
 	private String description;
 
-	@Column(name="os_guid")
-	private String osGuid;
-
 	private String priority;
 
 	@Column(name="sur_id")
@@ -50,6 +48,11 @@ public class Treat implements Serializable {
 
 	@Column(name="treat_type")
 	private String treatType;
+
+	//bi-directional many-to-one association to OutpatientService
+	@ManyToOne
+	@JoinColumn(name="os_guid")
+	private OutpatientService outpatientService;
 
 	public Treat() {
 	}
@@ -102,14 +105,6 @@ public class Treat implements Serializable {
 		this.description = description;
 	}
 
-	public String getOsGuid() {
-		return this.osGuid;
-	}
-
-	public void setOsGuid(String osGuid) {
-		this.osGuid = osGuid;
-	}
-
 	public String getPriority() {
 		return this.priority;
 	}
@@ -148,6 +143,14 @@ public class Treat implements Serializable {
 
 	public void setTreatType(String treatType) {
 		this.treatType = treatType;
+	}
+
+	public OutpatientService getOutpatientService() {
+		return this.outpatientService;
+	}
+
+	public void setOutpatientService(OutpatientService outpatientService) {
+		this.outpatientService = outpatientService;
 	}
 
 }

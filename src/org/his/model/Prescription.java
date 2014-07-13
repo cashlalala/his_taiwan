@@ -11,11 +11,12 @@ import java.util.Date;
  * 
  */
 @Entity
+@Table(name="prescription")
 public class Prescription implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String guid;
 
 	@Column(name="abnormal_flags")
@@ -24,11 +25,6 @@ public class Prescription implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="analysis_time")
 	private Date analysisTime;
-
-	@Column(name="case_guid")
-	private String caseGuid;
-
-	private String code;
 
 	private double cost;
 
@@ -47,9 +43,6 @@ public class Prescription implements Serializable {
 	@Lob
 	@Column(name="obs_method")
 	private String obsMethod;
-
-	@Column(name="os_guid")
-	private String osGuid;
 
 	private String place;
 
@@ -73,6 +66,26 @@ public class Prescription implements Serializable {
 
 	@Column(name="tissue_type")
 	private String tissueType;
+
+	//bi-directional many-to-one association to RegistrationInfo
+	@ManyToOne
+	@JoinColumn(name="reg_guid")
+	private RegistrationInfo registrationInfo;
+
+	//bi-directional many-to-one association to PrescriptionCode
+	@ManyToOne
+	@JoinColumn(name="code")
+	private PrescriptionCode prescriptionCode;
+
+	//bi-directional many-to-one association to OutpatientService
+	@ManyToOne
+	@JoinColumn(name="os_guid")
+	private OutpatientService outpatientService;
+
+	//bi-directional many-to-one association to ImageMeta
+	@ManyToOne
+	@JoinColumn(name="xray_file_guid")
+	private ImageMeta imageMeta;
 
 	public Prescription() {
 	}
@@ -99,22 +112,6 @@ public class Prescription implements Serializable {
 
 	public void setAnalysisTime(Date analysisTime) {
 		this.analysisTime = analysisTime;
-	}
-
-	public String getCaseGuid() {
-		return this.caseGuid;
-	}
-
-	public void setCaseGuid(String caseGuid) {
-		this.caseGuid = caseGuid;
-	}
-
-	public String getCode() {
-		return this.code;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
 	}
 
 	public double getCost() {
@@ -163,14 +160,6 @@ public class Prescription implements Serializable {
 
 	public void setObsMethod(String obsMethod) {
 		this.obsMethod = obsMethod;
-	}
-
-	public String getOsGuid() {
-		return this.osGuid;
-	}
-
-	public void setOsGuid(String osGuid) {
-		this.osGuid = osGuid;
 	}
 
 	public String getPlace() {
@@ -235,6 +224,38 @@ public class Prescription implements Serializable {
 
 	public void setTissueType(String tissueType) {
 		this.tissueType = tissueType;
+	}
+
+	public RegistrationInfo getRegistrationInfo() {
+		return this.registrationInfo;
+	}
+
+	public void setRegistrationInfo(RegistrationInfo registrationInfo) {
+		this.registrationInfo = registrationInfo;
+	}
+
+	public PrescriptionCode getPrescriptionCode() {
+		return this.prescriptionCode;
+	}
+
+	public void setPrescriptionCode(PrescriptionCode prescriptionCode) {
+		this.prescriptionCode = prescriptionCode;
+	}
+
+	public OutpatientService getOutpatientService() {
+		return this.outpatientService;
+	}
+
+	public void setOutpatientService(OutpatientService outpatientService) {
+		this.outpatientService = outpatientService;
+	}
+
+	public ImageMeta getImageMeta() {
+		return this.imageMeta;
+	}
+
+	public void setImageMeta(ImageMeta imageMeta) {
+		this.imageMeta = imageMeta;
 	}
 
 }

@@ -2,6 +2,7 @@ package org.his.model;
 
 import java.io.Serializable;
 import javax.persistence.*;
+import java.util.List;
 
 
 /**
@@ -14,13 +15,21 @@ public class PoliRoom implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String guid;
 
 	private String name;
 
-	@Column(name="poli_guid")
-	private String poliGuid;
+	private String type;
+
+	//bi-directional many-to-one association to Policlinic
+	@ManyToOne
+	@JoinColumn(name="poli_guid")
+	private Policlinic policlinic;
+
+	//bi-directional many-to-one association to ShiftTable
+	@OneToMany(mappedBy="poliRoom")
+	private List<ShiftTable> shiftTables;
 
 	public PoliRoom() {
 	}
@@ -41,12 +50,42 @@ public class PoliRoom implements Serializable {
 		this.name = name;
 	}
 
-	public String getPoliGuid() {
-		return this.poliGuid;
+	public String getType() {
+		return this.type;
 	}
 
-	public void setPoliGuid(String poliGuid) {
-		this.poliGuid = poliGuid;
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public Policlinic getPoliclinic() {
+		return this.policlinic;
+	}
+
+	public void setPoliclinic(Policlinic policlinic) {
+		this.policlinic = policlinic;
+	}
+
+	public List<ShiftTable> getShiftTables() {
+		return this.shiftTables;
+	}
+
+	public void setShiftTables(List<ShiftTable> shiftTables) {
+		this.shiftTables = shiftTables;
+	}
+
+	public ShiftTable addShiftTable(ShiftTable shiftTable) {
+		getShiftTables().add(shiftTable);
+		shiftTable.setPoliRoom(this);
+
+		return shiftTable;
+	}
+
+	public ShiftTable removeShiftTable(ShiftTable shiftTable) {
+		getShiftTables().remove(shiftTable);
+		shiftTable.setPoliRoom(null);
+
+		return shiftTable;
 	}
 
 }

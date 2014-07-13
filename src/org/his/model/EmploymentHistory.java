@@ -15,7 +15,7 @@ public class EmploymentHistory implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private int no;
 
 	@Temporal(TemporalType.DATE)
@@ -31,8 +31,10 @@ public class EmploymentHistory implements Serializable {
 
 	private String position;
 
-	@Column(name="s_no")
-	private int sNo;
+	//bi-directional many-to-one association to StaffInfo
+	@ManyToOne
+	@JoinColumn(name="s_no")
+	private StaffInfo staffInfo;
 
 	public EmploymentHistory() {
 	}
@@ -77,12 +79,12 @@ public class EmploymentHistory implements Serializable {
 		this.position = position;
 	}
 
-	public int getSNo() {
-		return this.sNo;
+	public StaffInfo getStaffInfo() {
+		return this.staffInfo;
 	}
 
-	public void setSNo(int sNo) {
-		this.sNo = sNo;
+	public void setStaffInfo(StaffInfo staffInfo) {
+		this.staffInfo = staffInfo;
 	}
 
 }

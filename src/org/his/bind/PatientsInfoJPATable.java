@@ -67,7 +67,7 @@ public class PatientsInfoJPATable extends AbstractTableModel implements
 					pInfo.getLastname());
 		case COL_BIRTH:
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-			return sdf.format(pInfo.getBirth());
+			return (pInfo.getBirth() == null)? "" : sdf.format(pInfo.getBirth());
 		case COL_PHONE:
 			return pInfo.getPhone();
 		case COL_CELLPHONE:

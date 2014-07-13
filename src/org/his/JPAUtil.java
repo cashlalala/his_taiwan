@@ -13,7 +13,7 @@ public class JPAUtil {
 	static {
 		try {
 			entityManagerFactory = Persistence
-					.createEntityManagerFactory("hospital");
+					.createEntityManagerFactory("new_hospital");
 			
 			entityManager = entityManagerFactory.createEntityManager();
 		} catch (Throwable ex) {

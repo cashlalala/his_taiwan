@@ -58,13 +58,6 @@ public class PatientsInfoDao {
 	public PatientsInfo QueryPatientInfoById(String id) {
 		return em.find(PatientsInfo.class, id);
 	}
-
-	public int getNewPNo() {
-		Query query = em
-				.createNativeQuery("SELECT IF(COUNT(p_no) <> 0,MAX(p_no)+1,0) FROM patients_info");
-		int pNo = ((BigInteger) query.getSingleResult()).intValue();
-		return pNo;
-	}
 	
 	public List<PatientsInfo> getExistedPatients() {
 		return getExistedPatients(null, 0, 0);

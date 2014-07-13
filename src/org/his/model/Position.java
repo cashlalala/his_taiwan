@@ -2,6 +2,7 @@ package org.his.model;
 
 import java.io.Serializable;
 import javax.persistence.*;
+import java.util.List;
 
 
 /**
@@ -9,14 +10,19 @@ import javax.persistence.*;
  * 
  */
 @Entity
+@Table(name="position")
 public class Position implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String guid;
 
 	private String name;
+
+	//bi-directional many-to-one association to StaffInfo
+	@OneToMany(mappedBy="position")
+	private List<StaffInfo> staffInfos;
 
 	public Position() {
 	}
@@ -35,6 +41,28 @@ public class Position implements Serializable {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public List<StaffInfo> getStaffInfos() {
+		return this.staffInfos;
+	}
+
+	public void setStaffInfos(List<StaffInfo> staffInfos) {
+		this.staffInfos = staffInfos;
+	}
+
+	public StaffInfo addStaffInfo(StaffInfo staffInfo) {
+		getStaffInfos().add(staffInfo);
+		staffInfo.setPosition(this);
+
+		return staffInfo;
+	}
+
+	public StaffInfo removeStaffInfo(StaffInfo staffInfo) {
+		getStaffInfos().remove(staffInfo);
+		staffInfo.setPosition(null);
+
+		return staffInfo;
 	}
 
 }

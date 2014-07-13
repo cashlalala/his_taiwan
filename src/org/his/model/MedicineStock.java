@@ -15,10 +15,8 @@ public class MedicineStock implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String guid;
-
-	private float day;
 
 	private float dosage;
 
@@ -26,11 +24,9 @@ public class MedicineStock implements Serializable {
 
 	private byte exist;
 
-	@Column(name="m_code")
-	private String mCode;
-
-	@Column(name="os_guid")
-	private String osGuid;
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="get_medicine_time")
+	private Date getMedicineTime;
 
 	private String powder;
 
@@ -40,21 +36,49 @@ public class MedicineStock implements Serializable {
 
 	private float quantity;
 
+	@Column(name="repeat_number")
+	private int repeatNumber;
+
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="replenish_date")
 	private Date replenishDate;
 
-	@Column(name="s_id")
-	private String sId;
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="return_medicine_time")
+	private Date returnMedicineTime;
 
 	@Column(name="teach_complete")
 	private String teachComplete;
 
+	@Column(name="unit_price")
+	private float unitPrice;
+
 	private String urgent;
 
-	private String usage;
+	//bi-directional many-to-one association to Medicine
+	@ManyToOne
+	@JoinColumn(name="m_code")
+	private Medicine medicine;
 
-	private String way;
+	//bi-directional many-to-one association to StaffInfo
+	@ManyToOne
+	@JoinColumn(name="s_id")
+	private StaffInfo staffInfo;
+
+	//bi-directional many-to-one association to RegistrationInfo
+	@ManyToOne
+	@JoinColumn(name="reg_guid")
+	private RegistrationInfo registrationInfo;
+
+	//bi-directional many-to-one association to MedicineFrequency
+	@ManyToOne
+	@JoinColumn(name="usage")
+	private MedicineFrequency medicineFrequency;
+
+	//bi-directional many-to-one association to MedicineWay
+	@ManyToOne
+	@JoinColumn(name="way")
+	private MedicineWay medicineWay;
 
 	public MedicineStock() {
 	}
@@ -65,14 +89,6 @@ public class MedicineStock implements Serializable {
 
 	public void setGuid(String guid) {
 		this.guid = guid;
-	}
-
-	public float getDay() {
-		return this.day;
-	}
-
-	public void setDay(float day) {
-		this.day = day;
 	}
 
 	public float getDosage() {
@@ -99,20 +115,12 @@ public class MedicineStock implements Serializable {
 		this.exist = exist;
 	}
 
-	public String getMCode() {
-		return this.mCode;
+	public Date getGetMedicineTime() {
+		return this.getMedicineTime;
 	}
 
-	public void setMCode(String mCode) {
-		this.mCode = mCode;
-	}
-
-	public String getOsGuid() {
-		return this.osGuid;
-	}
-
-	public void setOsGuid(String osGuid) {
-		this.osGuid = osGuid;
+	public void setGetMedicineTime(Date getMedicineTime) {
+		this.getMedicineTime = getMedicineTime;
 	}
 
 	public String getPowder() {
@@ -147,6 +155,14 @@ public class MedicineStock implements Serializable {
 		this.quantity = quantity;
 	}
 
+	public int getRepeatNumber() {
+		return this.repeatNumber;
+	}
+
+	public void setRepeatNumber(int repeatNumber) {
+		this.repeatNumber = repeatNumber;
+	}
+
 	public Date getReplenishDate() {
 		return this.replenishDate;
 	}
@@ -155,12 +171,12 @@ public class MedicineStock implements Serializable {
 		this.replenishDate = replenishDate;
 	}
 
-	public String getSId() {
-		return this.sId;
+	public Date getReturnMedicineTime() {
+		return this.returnMedicineTime;
 	}
 
-	public void setSId(String sId) {
-		this.sId = sId;
+	public void setReturnMedicineTime(Date returnMedicineTime) {
+		this.returnMedicineTime = returnMedicineTime;
 	}
 
 	public String getTeachComplete() {
@@ -171,6 +187,14 @@ public class MedicineStock implements Serializable {
 		this.teachComplete = teachComplete;
 	}
 
+	public float getUnitPrice() {
+		return this.unitPrice;
+	}
+
+	public void setUnitPrice(float unitPrice) {
+		this.unitPrice = unitPrice;
+	}
+
 	public String getUrgent() {
 		return this.urgent;
 	}
@@ -179,20 +203,44 @@ public class MedicineStock implements Serializable {
 		this.urgent = urgent;
 	}
 
-	public String getUsage() {
-		return this.usage;
+	public Medicine getMedicine() {
+		return this.medicine;
 	}
 
-	public void setUsage(String usage) {
-		this.usage = usage;
+	public void setMedicine(Medicine medicine) {
+		this.medicine = medicine;
 	}
 
-	public String getWay() {
-		return this.way;
+	public StaffInfo getStaffInfo() {
+		return this.staffInfo;
 	}
 
-	public void setWay(String way) {
-		this.way = way;
+	public void setStaffInfo(StaffInfo staffInfo) {
+		this.staffInfo = staffInfo;
+	}
+
+	public RegistrationInfo getRegistrationInfo() {
+		return this.registrationInfo;
+	}
+
+	public void setRegistrationInfo(RegistrationInfo registrationInfo) {
+		this.registrationInfo = registrationInfo;
+	}
+
+	public MedicineFrequency getMedicineFrequency() {
+		return this.medicineFrequency;
+	}
+
+	public void setMedicineFrequency(MedicineFrequency medicineFrequency) {
+		this.medicineFrequency = medicineFrequency;
+	}
+
+	public MedicineWay getMedicineWay() {
+		return this.medicineWay;
+	}
+
+	public void setMedicineWay(MedicineWay medicineWay) {
+		this.medicineWay = medicineWay;
 	}
 
 }

@@ -10,11 +10,12 @@ import java.util.Date;
  * 
  */
 @Entity
+@Table(name="children")
 public class Children implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private int no;
 
 	@Temporal(TemporalType.DATE)
@@ -26,8 +27,10 @@ public class Children implements Serializable {
 	@Column(name="nhis_no")
 	private String nhisNo;
 
-	@Column(name="s_no")
-	private int sNo;
+	//bi-directional many-to-one association to StaffInfo
+	@ManyToOne
+	@JoinColumn(name="s_no")
+	private StaffInfo staffInfo;
 
 	public Children() {
 	}
@@ -64,12 +67,12 @@ public class Children implements Serializable {
 		this.nhisNo = nhisNo;
 	}
 
-	public int getSNo() {
-		return this.sNo;
+	public StaffInfo getStaffInfo() {
+		return this.staffInfo;
 	}
 
-	public void setSNo(int sNo) {
-		this.sNo = sNo;
+	public void setStaffInfo(StaffInfo staffInfo) {
+		this.staffInfo = staffInfo;
 	}
 
 }

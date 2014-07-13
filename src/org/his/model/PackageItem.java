@@ -14,12 +14,17 @@ public class PackageItem implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String id;
 
 	private int days;
 
 	private String typ;
+
+	//bi-directional one-to-one association to Medicine
+	@OneToOne
+	@JoinColumn(name="id")
+	private Medicine medicine;
 
 	public PackageItem() {
 	}
@@ -46,6 +51,14 @@ public class PackageItem implements Serializable {
 
 	public void setTyp(String typ) {
 		this.typ = typ;
+	}
+
+	public Medicine getMedicine() {
+		return this.medicine;
+	}
+
+	public void setMedicine(Medicine medicine) {
+		this.medicine = medicine;
 	}
 
 }

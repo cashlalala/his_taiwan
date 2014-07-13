@@ -10,26 +10,33 @@ import java.util.Date;
  * 
  */
 @Entity
+@Table(name="allergy")
 public class Allergy implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String guid;
 
 	private byte level;
 
-	@Column(name="m_code")
-	private String mCode;
-
-	@Column(name="p_no")
-	private int pNo;
-
-	@Column(name="u_sid")
-	private String uSid;
-
 	@Temporal(TemporalType.DATE)
 	private Date udate;
+
+	//bi-directional many-to-one association to PatientsInfo
+	@ManyToOne
+	@JoinColumn(name="p_no")
+	private PatientsInfo patientsInfo;
+
+	//bi-directional many-to-one association to Medicine
+	@ManyToOne
+	@JoinColumn(name="m_code")
+	private Medicine medicine;
+
+	//bi-directional many-to-one association to StaffInfo
+	@ManyToOne
+	@JoinColumn(name="u_sid")
+	private StaffInfo staffInfo;
 
 	public Allergy() {
 	}
@@ -50,36 +57,36 @@ public class Allergy implements Serializable {
 		this.level = level;
 	}
 
-	public String getMCode() {
-		return this.mCode;
-	}
-
-	public void setMCode(String mCode) {
-		this.mCode = mCode;
-	}
-
-	public int getPNo() {
-		return this.pNo;
-	}
-
-	public void setPNo(int pNo) {
-		this.pNo = pNo;
-	}
-
-	public String getUSid() {
-		return this.uSid;
-	}
-
-	public void setUSid(String uSid) {
-		this.uSid = uSid;
-	}
-
 	public Date getUdate() {
 		return this.udate;
 	}
 
 	public void setUdate(Date udate) {
 		this.udate = udate;
+	}
+
+	public PatientsInfo getPatientsInfo() {
+		return this.patientsInfo;
+	}
+
+	public void setPatientsInfo(PatientsInfo patientsInfo) {
+		this.patientsInfo = patientsInfo;
+	}
+
+	public Medicine getMedicine() {
+		return this.medicine;
+	}
+
+	public void setMedicine(Medicine medicine) {
+		this.medicine = medicine;
+	}
+
+	public StaffInfo getStaffInfo() {
+		return this.staffInfo;
+	}
+
+	public void setStaffInfo(StaffInfo staffInfo) {
+		this.staffInfo = staffInfo;
 	}
 
 }

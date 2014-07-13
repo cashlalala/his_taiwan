@@ -14,21 +14,27 @@ public class HealthTeach implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String guid;
 
 	private String acceptance;
 
 	private String confirm;
 
-	@Column(name="hti_code")
-	private String htiCode;
+	//bi-directional many-to-one association to HealthTeachItem
+	@ManyToOne
+	@JoinColumn(name="hti_code")
+	private HealthTeachItem healthTeachItem;
 
-	@Column(name="reg_guid")
-	private String regGuid;
+	//bi-directional many-to-one association to RegistrationInfo
+	@ManyToOne
+	@JoinColumn(name="reg_guid")
+	private RegistrationInfo registrationInfo;
 
-	@Column(name="s_id")
-	private String sId;
+	//bi-directional many-to-one association to StaffInfo
+	@ManyToOne
+	@JoinColumn(name="s_id")
+	private StaffInfo staffInfo;
 
 	public HealthTeach() {
 	}
@@ -57,28 +63,28 @@ public class HealthTeach implements Serializable {
 		this.confirm = confirm;
 	}
 
-	public String getHtiCode() {
-		return this.htiCode;
+	public HealthTeachItem getHealthTeachItem() {
+		return this.healthTeachItem;
 	}
 
-	public void setHtiCode(String htiCode) {
-		this.htiCode = htiCode;
+	public void setHealthTeachItem(HealthTeachItem healthTeachItem) {
+		this.healthTeachItem = healthTeachItem;
 	}
 
-	public String getRegGuid() {
-		return this.regGuid;
+	public RegistrationInfo getRegistrationInfo() {
+		return this.registrationInfo;
 	}
 
-	public void setRegGuid(String regGuid) {
-		this.regGuid = regGuid;
+	public void setRegistrationInfo(RegistrationInfo registrationInfo) {
+		this.registrationInfo = registrationInfo;
 	}
 
-	public String getSId() {
-		return this.sId;
+	public StaffInfo getStaffInfo() {
+		return this.staffInfo;
 	}
 
-	public void setSId(String sId) {
-		this.sId = sId;
+	public void setStaffInfo(StaffInfo staffInfo) {
+		this.staffInfo = staffInfo;
 	}
 
 }

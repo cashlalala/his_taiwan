@@ -3,6 +3,7 @@ package org.his.model;
 import java.io.Serializable;
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -15,7 +16,7 @@ public class StaffInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	@Column(name="s_no")
 	private int sNo;
 
@@ -55,13 +56,10 @@ public class StaffInfo implements Serializable {
 	private Date dateSuspension;
 
 	@Column(name="days_remaining")
-	private int daysRemaining;
+	private Integer daysRemaining;
 
 	@Column(name="days_taken")
-	private int daysTaken;
-
-	@Column(name="dep_guid")
-	private String depGuid;
+	private Integer daysTaken;
 
 	@Column(name="disability_description")
 	private String disabilityDescription;
@@ -100,14 +98,14 @@ public class StaffInfo implements Serializable {
 
 	private String firstname;
 
-	@Column(name="gp_guid")
-	private String gpGuid;
-
 	@Column(name="grade_level")
 	private String gradeLevel;
 
 	@Column(name="groos_salary")
-	private int groosSalary;
+	private Integer groosSalary;
+
+	@Column(name="grp_name")
+	private String grpName;
 
 	@Column(name="hss_no")
 	private String hssNo;
@@ -178,12 +176,6 @@ public class StaffInfo implements Serializable {
 	@Column(name="place_birth")
 	private String placeBirth;
 
-	@Column(name="poli_guid")
-	private String poliGuid;
-
-	@Column(name="posi_guid")
-	private String posiGuid;
-
 	@Lob
 	private String postal;
 
@@ -226,6 +218,8 @@ public class StaffInfo implements Serializable {
 	@Temporal(TemporalType.DATE)
 	private Date startdate;
 
+	private String status;
+
 	private String step;
 
 	private String surname;
@@ -244,9 +238,94 @@ public class StaffInfo implements Serializable {
 	@Column(name="transfer_date")
 	private Date transferDate;
 
-	private String type;
-
 	private String website;
+
+	//bi-directional many-to-one association to Administrative
+	@OneToMany(mappedBy="staffInfo")
+	private List<Administrative> administratives;
+
+	//bi-directional many-to-one association to Allergy
+	@OneToMany(mappedBy="staffInfo")
+	private List<Allergy> allergies;
+
+	//bi-directional many-to-one association to AnamnesisRetrieve
+	@OneToMany(mappedBy="staffInfo")
+	private List<AnamnesisRetrieve> anamnesisRetrieves;
+
+	//bi-directional many-to-one association to BedRecord
+	@OneToMany(mappedBy="staffInfo1")
+	private List<BedRecord> bedRecords1;
+
+	//bi-directional many-to-one association to BedRecord
+	@OneToMany(mappedBy="staffInfo2")
+	private List<BedRecord> bedRecords2;
+
+	//bi-directional many-to-one association to BedRecord
+	@OneToMany(mappedBy="staffInfo3")
+	private List<BedRecord> bedRecords3;
+
+	//bi-directional many-to-one association to ChangesLog
+	@OneToMany(mappedBy="staffInfo")
+	private List<ChangesLog> changesLogs;
+
+	//bi-directional many-to-one association to Children
+	@OneToMany(mappedBy="staffInfo")
+	private List<Children> childrens;
+
+	//bi-directional many-to-one association to Clinical
+	@OneToMany(mappedBy="staffInfo")
+	private List<Clinical> clinicals;
+
+	//bi-directional many-to-one association to EmploymentHistory
+	@OneToMany(mappedBy="staffInfo")
+	private List<EmploymentHistory> employmentHistories;
+
+	//bi-directional many-to-one association to HealthTeach
+	@OneToMany(mappedBy="staffInfo")
+	private List<HealthTeach> healthTeaches;
+
+	//bi-directional many-to-one association to LoginLog
+	@OneToMany(mappedBy="staffInfo")
+	private List<LoginLog> loginLogs;
+
+	//bi-directional many-to-one association to MedicalStockChangeRecord
+	@OneToMany(mappedBy="staffInfo")
+	private List<MedicalStockChangeRecord> medicalStockChangeRecords;
+
+	//bi-directional many-to-one association to MedicineFavorite
+	@OneToMany(mappedBy="staffInfo")
+	private List<MedicineFavorite> medicineFavorites;
+
+	//bi-directional many-to-one association to MedicineStock
+	@OneToMany(mappedBy="staffInfo")
+	private List<MedicineStock> medicineStocks;
+
+	//bi-directional many-to-one association to PatientsInfo
+	@OneToMany(mappedBy="staffInfo")
+	private List<PatientsInfo> patientsInfos;
+
+	//bi-directional many-to-one association to ShiftTable
+	@OneToMany(mappedBy="staffInfo")
+	private List<ShiftTable> shiftTables;
+
+	//bi-directional many-to-one association to StaffFingertemplate
+	@OneToMany(mappedBy="staffInfo")
+	private List<StaffFingertemplate> staffFingertemplates;
+
+	//bi-directional many-to-one association to Department
+	@ManyToOne
+	@JoinColumn(name="dep_guid")
+	private Department department;
+
+	//bi-directional many-to-one association to Policlinic
+	@ManyToOne
+	@JoinColumn(name="poli_guid")
+	private Policlinic policlinic;
+
+	//bi-directional many-to-one association to Position
+	@ManyToOne
+	@JoinColumn(name="posi_guid")
+	private Position position;
 
 	public StaffInfo() {
 	}
@@ -347,28 +426,20 @@ public class StaffInfo implements Serializable {
 		this.dateSuspension = dateSuspension;
 	}
 
-	public int getDaysRemaining() {
+	public Integer getDaysRemaining() {
 		return this.daysRemaining;
 	}
 
-	public void setDaysRemaining(int daysRemaining) {
+	public void setDaysRemaining(Integer daysRemaining) {
 		this.daysRemaining = daysRemaining;
 	}
 
-	public int getDaysTaken() {
+	public Integer getDaysTaken() {
 		return this.daysTaken;
 	}
 
-	public void setDaysTaken(int daysTaken) {
+	public void setDaysTaken(Integer daysTaken) {
 		this.daysTaken = daysTaken;
-	}
-
-	public String getDepGuid() {
-		return this.depGuid;
-	}
-
-	public void setDepGuid(String depGuid) {
-		this.depGuid = depGuid;
 	}
 
 	public String getDisabilityDescription() {
@@ -475,14 +546,6 @@ public class StaffInfo implements Serializable {
 		this.firstname = firstname;
 	}
 
-	public String getGpGuid() {
-		return this.gpGuid;
-	}
-
-	public void setGpGuid(String gpGuid) {
-		this.gpGuid = gpGuid;
-	}
-
 	public String getGradeLevel() {
 		return this.gradeLevel;
 	}
@@ -491,12 +554,20 @@ public class StaffInfo implements Serializable {
 		this.gradeLevel = gradeLevel;
 	}
 
-	public int getGroosSalary() {
+	public Integer getGroosSalary() {
 		return this.groosSalary;
 	}
 
-	public void setGroosSalary(int groosSalary) {
+	public void setGroosSalary(Integer groosSalary) {
 		this.groosSalary = groosSalary;
+	}
+
+	public String getGrpName() {
+		return this.grpName;
+	}
+
+	public void setGrpName(String grpName) {
+		this.grpName = grpName;
 	}
 
 	public String getHssNo() {
@@ -683,22 +754,6 @@ public class StaffInfo implements Serializable {
 		this.placeBirth = placeBirth;
 	}
 
-	public String getPoliGuid() {
-		return this.poliGuid;
-	}
-
-	public void setPoliGuid(String poliGuid) {
-		this.poliGuid = poliGuid;
-	}
-
-	public String getPosiGuid() {
-		return this.posiGuid;
-	}
-
-	public void setPosiGuid(String posiGuid) {
-		this.posiGuid = posiGuid;
-	}
-
 	public String getPostal() {
 		return this.postal;
 	}
@@ -811,6 +866,14 @@ public class StaffInfo implements Serializable {
 		this.startdate = startdate;
 	}
 
+	public String getStatus() {
+		return this.status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
 	public String getStep() {
 		return this.step;
 	}
@@ -859,20 +922,432 @@ public class StaffInfo implements Serializable {
 		this.transferDate = transferDate;
 	}
 
-	public String getType() {
-		return this.type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
 	public String getWebsite() {
 		return this.website;
 	}
 
 	public void setWebsite(String website) {
 		this.website = website;
+	}
+
+	public List<Administrative> getAdministratives() {
+		return this.administratives;
+	}
+
+	public void setAdministratives(List<Administrative> administratives) {
+		this.administratives = administratives;
+	}
+
+	public Administrative addAdministrative(Administrative administrative) {
+		getAdministratives().add(administrative);
+		administrative.setStaffInfo(this);
+
+		return administrative;
+	}
+
+	public Administrative removeAdministrative(Administrative administrative) {
+		getAdministratives().remove(administrative);
+		administrative.setStaffInfo(null);
+
+		return administrative;
+	}
+
+	public List<Allergy> getAllergies() {
+		return this.allergies;
+	}
+
+	public void setAllergies(List<Allergy> allergies) {
+		this.allergies = allergies;
+	}
+
+	public Allergy addAllergy(Allergy allergy) {
+		getAllergies().add(allergy);
+		allergy.setStaffInfo(this);
+
+		return allergy;
+	}
+
+	public Allergy removeAllergy(Allergy allergy) {
+		getAllergies().remove(allergy);
+		allergy.setStaffInfo(null);
+
+		return allergy;
+	}
+
+	public List<AnamnesisRetrieve> getAnamnesisRetrieves() {
+		return this.anamnesisRetrieves;
+	}
+
+	public void setAnamnesisRetrieves(List<AnamnesisRetrieve> anamnesisRetrieves) {
+		this.anamnesisRetrieves = anamnesisRetrieves;
+	}
+
+	public AnamnesisRetrieve addAnamnesisRetrieve(AnamnesisRetrieve anamnesisRetrieve) {
+		getAnamnesisRetrieves().add(anamnesisRetrieve);
+		anamnesisRetrieve.setStaffInfo(this);
+
+		return anamnesisRetrieve;
+	}
+
+	public AnamnesisRetrieve removeAnamnesisRetrieve(AnamnesisRetrieve anamnesisRetrieve) {
+		getAnamnesisRetrieves().remove(anamnesisRetrieve);
+		anamnesisRetrieve.setStaffInfo(null);
+
+		return anamnesisRetrieve;
+	}
+
+	public List<BedRecord> getBedRecords1() {
+		return this.bedRecords1;
+	}
+
+	public void setBedRecords1(List<BedRecord> bedRecords1) {
+		this.bedRecords1 = bedRecords1;
+	}
+
+	public BedRecord addBedRecords1(BedRecord bedRecords1) {
+		getBedRecords1().add(bedRecords1);
+		bedRecords1.setStaffInfo1(this);
+
+		return bedRecords1;
+	}
+
+	public BedRecord removeBedRecords1(BedRecord bedRecords1) {
+		getBedRecords1().remove(bedRecords1);
+		bedRecords1.setStaffInfo1(null);
+
+		return bedRecords1;
+	}
+
+	public List<BedRecord> getBedRecords2() {
+		return this.bedRecords2;
+	}
+
+	public void setBedRecords2(List<BedRecord> bedRecords2) {
+		this.bedRecords2 = bedRecords2;
+	}
+
+	public BedRecord addBedRecords2(BedRecord bedRecords2) {
+		getBedRecords2().add(bedRecords2);
+		bedRecords2.setStaffInfo2(this);
+
+		return bedRecords2;
+	}
+
+	public BedRecord removeBedRecords2(BedRecord bedRecords2) {
+		getBedRecords2().remove(bedRecords2);
+		bedRecords2.setStaffInfo2(null);
+
+		return bedRecords2;
+	}
+
+	public List<BedRecord> getBedRecords3() {
+		return this.bedRecords3;
+	}
+
+	public void setBedRecords3(List<BedRecord> bedRecords3) {
+		this.bedRecords3 = bedRecords3;
+	}
+
+	public BedRecord addBedRecords3(BedRecord bedRecords3) {
+		getBedRecords3().add(bedRecords3);
+		bedRecords3.setStaffInfo3(this);
+
+		return bedRecords3;
+	}
+
+	public BedRecord removeBedRecords3(BedRecord bedRecords3) {
+		getBedRecords3().remove(bedRecords3);
+		bedRecords3.setStaffInfo3(null);
+
+		return bedRecords3;
+	}
+
+	public List<ChangesLog> getChangesLogs() {
+		return this.changesLogs;
+	}
+
+	public void setChangesLogs(List<ChangesLog> changesLogs) {
+		this.changesLogs = changesLogs;
+	}
+
+	public ChangesLog addChangesLog(ChangesLog changesLog) {
+		getChangesLogs().add(changesLog);
+		changesLog.setStaffInfo(this);
+
+		return changesLog;
+	}
+
+	public ChangesLog removeChangesLog(ChangesLog changesLog) {
+		getChangesLogs().remove(changesLog);
+		changesLog.setStaffInfo(null);
+
+		return changesLog;
+	}
+
+	public List<Children> getChildrens() {
+		return this.childrens;
+	}
+
+	public void setChildrens(List<Children> childrens) {
+		this.childrens = childrens;
+	}
+
+	public Children addChildren(Children children) {
+		getChildrens().add(children);
+		children.setStaffInfo(this);
+
+		return children;
+	}
+
+	public Children removeChildren(Children children) {
+		getChildrens().remove(children);
+		children.setStaffInfo(null);
+
+		return children;
+	}
+
+	public List<Clinical> getClinicals() {
+		return this.clinicals;
+	}
+
+	public void setClinicals(List<Clinical> clinicals) {
+		this.clinicals = clinicals;
+	}
+
+	public Clinical addClinical(Clinical clinical) {
+		getClinicals().add(clinical);
+		clinical.setStaffInfo(this);
+
+		return clinical;
+	}
+
+	public Clinical removeClinical(Clinical clinical) {
+		getClinicals().remove(clinical);
+		clinical.setStaffInfo(null);
+
+		return clinical;
+	}
+
+	public List<EmploymentHistory> getEmploymentHistories() {
+		return this.employmentHistories;
+	}
+
+	public void setEmploymentHistories(List<EmploymentHistory> employmentHistories) {
+		this.employmentHistories = employmentHistories;
+	}
+
+	public EmploymentHistory addEmploymentHistory(EmploymentHistory employmentHistory) {
+		getEmploymentHistories().add(employmentHistory);
+		employmentHistory.setStaffInfo(this);
+
+		return employmentHistory;
+	}
+
+	public EmploymentHistory removeEmploymentHistory(EmploymentHistory employmentHistory) {
+		getEmploymentHistories().remove(employmentHistory);
+		employmentHistory.setStaffInfo(null);
+
+		return employmentHistory;
+	}
+
+	public List<HealthTeach> getHealthTeaches() {
+		return this.healthTeaches;
+	}
+
+	public void setHealthTeaches(List<HealthTeach> healthTeaches) {
+		this.healthTeaches = healthTeaches;
+	}
+
+	public HealthTeach addHealthTeach(HealthTeach healthTeach) {
+		getHealthTeaches().add(healthTeach);
+		healthTeach.setStaffInfo(this);
+
+		return healthTeach;
+	}
+
+	public HealthTeach removeHealthTeach(HealthTeach healthTeach) {
+		getHealthTeaches().remove(healthTeach);
+		healthTeach.setStaffInfo(null);
+
+		return healthTeach;
+	}
+
+	public List<LoginLog> getLoginLogs() {
+		return this.loginLogs;
+	}
+
+	public void setLoginLogs(List<LoginLog> loginLogs) {
+		this.loginLogs = loginLogs;
+	}
+
+	public LoginLog addLoginLog(LoginLog loginLog) {
+		getLoginLogs().add(loginLog);
+		loginLog.setStaffInfo(this);
+
+		return loginLog;
+	}
+
+	public LoginLog removeLoginLog(LoginLog loginLog) {
+		getLoginLogs().remove(loginLog);
+		loginLog.setStaffInfo(null);
+
+		return loginLog;
+	}
+
+	public List<MedicalStockChangeRecord> getMedicalStockChangeRecords() {
+		return this.medicalStockChangeRecords;
+	}
+
+	public void setMedicalStockChangeRecords(List<MedicalStockChangeRecord> medicalStockChangeRecords) {
+		this.medicalStockChangeRecords = medicalStockChangeRecords;
+	}
+
+	public MedicalStockChangeRecord addMedicalStockChangeRecord(MedicalStockChangeRecord medicalStockChangeRecord) {
+		getMedicalStockChangeRecords().add(medicalStockChangeRecord);
+		medicalStockChangeRecord.setStaffInfo(this);
+
+		return medicalStockChangeRecord;
+	}
+
+	public MedicalStockChangeRecord removeMedicalStockChangeRecord(MedicalStockChangeRecord medicalStockChangeRecord) {
+		getMedicalStockChangeRecords().remove(medicalStockChangeRecord);
+		medicalStockChangeRecord.setStaffInfo(null);
+
+		return medicalStockChangeRecord;
+	}
+
+	public List<MedicineFavorite> getMedicineFavorites() {
+		return this.medicineFavorites;
+	}
+
+	public void setMedicineFavorites(List<MedicineFavorite> medicineFavorites) {
+		this.medicineFavorites = medicineFavorites;
+	}
+
+	public MedicineFavorite addMedicineFavorite(MedicineFavorite medicineFavorite) {
+		getMedicineFavorites().add(medicineFavorite);
+		medicineFavorite.setStaffInfo(this);
+
+		return medicineFavorite;
+	}
+
+	public MedicineFavorite removeMedicineFavorite(MedicineFavorite medicineFavorite) {
+		getMedicineFavorites().remove(medicineFavorite);
+		medicineFavorite.setStaffInfo(null);
+
+		return medicineFavorite;
+	}
+
+	public List<MedicineStock> getMedicineStocks() {
+		return this.medicineStocks;
+	}
+
+	public void setMedicineStocks(List<MedicineStock> medicineStocks) {
+		this.medicineStocks = medicineStocks;
+	}
+
+	public MedicineStock addMedicineStock(MedicineStock medicineStock) {
+		getMedicineStocks().add(medicineStock);
+		medicineStock.setStaffInfo(this);
+
+		return medicineStock;
+	}
+
+	public MedicineStock removeMedicineStock(MedicineStock medicineStock) {
+		getMedicineStocks().remove(medicineStock);
+		medicineStock.setStaffInfo(null);
+
+		return medicineStock;
+	}
+
+	public List<PatientsInfo> getPatientsInfos() {
+		return this.patientsInfos;
+	}
+
+	public void setPatientsInfos(List<PatientsInfo> patientsInfos) {
+		this.patientsInfos = patientsInfos;
+	}
+
+	public PatientsInfo addPatientsInfo(PatientsInfo patientsInfo) {
+		getPatientsInfos().add(patientsInfo);
+		patientsInfo.setStaffInfo(this);
+
+		return patientsInfo;
+	}
+
+	public PatientsInfo removePatientsInfo(PatientsInfo patientsInfo) {
+		getPatientsInfos().remove(patientsInfo);
+		patientsInfo.setStaffInfo(null);
+
+		return patientsInfo;
+	}
+
+	public List<ShiftTable> getShiftTables() {
+		return this.shiftTables;
+	}
+
+	public void setShiftTables(List<ShiftTable> shiftTables) {
+		this.shiftTables = shiftTables;
+	}
+
+	public ShiftTable addShiftTable(ShiftTable shiftTable) {
+		getShiftTables().add(shiftTable);
+		shiftTable.setStaffInfo(this);
+
+		return shiftTable;
+	}
+
+	public ShiftTable removeShiftTable(ShiftTable shiftTable) {
+		getShiftTables().remove(shiftTable);
+		shiftTable.setStaffInfo(null);
+
+		return shiftTable;
+	}
+
+	public List<StaffFingertemplate> getStaffFingertemplates() {
+		return this.staffFingertemplates;
+	}
+
+	public void setStaffFingertemplates(List<StaffFingertemplate> staffFingertemplates) {
+		this.staffFingertemplates = staffFingertemplates;
+	}
+
+	public StaffFingertemplate addStaffFingertemplate(StaffFingertemplate staffFingertemplate) {
+		getStaffFingertemplates().add(staffFingertemplate);
+		staffFingertemplate.setStaffInfo(this);
+
+		return staffFingertemplate;
+	}
+
+	public StaffFingertemplate removeStaffFingertemplate(StaffFingertemplate staffFingertemplate) {
+		getStaffFingertemplates().remove(staffFingertemplate);
+		staffFingertemplate.setStaffInfo(null);
+
+		return staffFingertemplate;
+	}
+
+	public Department getDepartment() {
+		return this.department;
+	}
+
+	public void setDepartment(Department department) {
+		this.department = department;
+	}
+
+	public Policlinic getPoliclinic() {
+		return this.policlinic;
+	}
+
+	public void setPoliclinic(Policlinic policlinic) {
+		this.policlinic = policlinic;
+	}
+
+	public Position getPosition() {
+		return this.position;
+	}
+
+	public void setPosition(Position position) {
+		this.position = position;
 	}
 
 }

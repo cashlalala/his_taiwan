@@ -3,6 +3,7 @@ package org.his.model;
 import java.io.Serializable;
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -24,8 +25,11 @@ public class DeathInfo implements Serializable {
 	@Column(name="date_of_death")
 	private Date dateOfDeath;
 
-	@Column(name="indicator")
 	private String indicator;
+
+	//bi-directional many-to-one association to PatientsInfo
+	@OneToMany(mappedBy="deathInfo")
+	private List<PatientsInfo> patientsInfos;
 
 	public DeathInfo() {
 	}
@@ -60,6 +64,28 @@ public class DeathInfo implements Serializable {
 
 	public void setIndicator(String indicator) {
 		this.indicator = indicator;
+	}
+
+	public List<PatientsInfo> getPatientsInfos() {
+		return this.patientsInfos;
+	}
+
+	public void setPatientsInfos(List<PatientsInfo> patientsInfos) {
+		this.patientsInfos = patientsInfos;
+	}
+
+	public PatientsInfo addPatientsInfo(PatientsInfo patientsInfo) {
+		getPatientsInfos().add(patientsInfo);
+		patientsInfo.setDeathInfo(this);
+
+		return patientsInfo;
+	}
+
+	public PatientsInfo removePatientsInfo(PatientsInfo patientsInfo) {
+		getPatientsInfos().remove(patientsInfo);
+		patientsInfo.setDeathInfo(null);
+
+		return patientsInfo;
 	}
 
 }

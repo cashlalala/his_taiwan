@@ -9,18 +9,23 @@ import javax.persistence.*;
  * 
  */
 @Entity
+@Table(name="administrative")
 public class Administrative implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private int no;
 
-	@Column(name="dep_guid")
-	private String depGuid;
+	//bi-directional many-to-one association to Department
+	@ManyToOne
+	@JoinColumn(name="dep_guid")
+	private Department department;
 
-	@Column(name="s_no")
-	private int sNo;
+	//bi-directional many-to-one association to StaffInfo
+	@ManyToOne
+	@JoinColumn(name="s_no")
+	private StaffInfo staffInfo;
 
 	public Administrative() {
 	}
@@ -33,20 +38,20 @@ public class Administrative implements Serializable {
 		this.no = no;
 	}
 
-	public String getDepGuid() {
-		return this.depGuid;
+	public Department getDepartment() {
+		return this.department;
 	}
 
-	public void setDepGuid(String depGuid) {
-		this.depGuid = depGuid;
+	public void setDepartment(Department department) {
+		this.department = department;
 	}
 
-	public int getSNo() {
-		return this.sNo;
+	public StaffInfo getStaffInfo() {
+		return this.staffInfo;
 	}
 
-	public void setSNo(int sNo) {
-		this.sNo = sNo;
+	public void setStaffInfo(StaffInfo staffInfo) {
+		this.staffInfo = staffInfo;
 	}
 
 }

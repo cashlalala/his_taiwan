@@ -10,11 +10,12 @@ import java.util.Date;
  * 
  */
 @Entity
+@Table(name="complication")
 public class Complication implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String guid;
 
 	private String angina;
@@ -48,9 +49,6 @@ public class Complication implements Serializable {
 	@Column(name="postural_hypotension")
 	private String posturalHypotension;
 
-	@Column(name="reg_guid")
-	private String regGuid;
-
 	private String stroke;
 
 	@Column(name="u_sid")
@@ -60,6 +58,11 @@ public class Complication implements Serializable {
 	private Date udate;
 
 	private double waist;
+
+	//bi-directional many-to-one association to RegistrationInfo
+	@ManyToOne
+	@JoinColumn(name="reg_guid")
+	private RegistrationInfo registrationInfo;
 
 	public Complication() {
 	}
@@ -176,14 +179,6 @@ public class Complication implements Serializable {
 		this.posturalHypotension = posturalHypotension;
 	}
 
-	public String getRegGuid() {
-		return this.regGuid;
-	}
-
-	public void setRegGuid(String regGuid) {
-		this.regGuid = regGuid;
-	}
-
 	public String getStroke() {
 		return this.stroke;
 	}
@@ -214,6 +209,14 @@ public class Complication implements Serializable {
 
 	public void setWaist(double waist) {
 		this.waist = waist;
+	}
+
+	public RegistrationInfo getRegistrationInfo() {
+		return this.registrationInfo;
+	}
+
+	public void setRegistrationInfo(RegistrationInfo registrationInfo) {
+		this.registrationInfo = registrationInfo;
 	}
 
 }

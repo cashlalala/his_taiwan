@@ -9,12 +9,19 @@ import javax.persistence.*;
  * 
  */
 @Entity
+@Table(name="setting")
 public class Setting implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private int id;
+
+	@Column(name="bed_price")
+	private float bedPrice;
+
+	@Column(name="diagnosis_price")
+	private float diagnosisPrice;
 
 	@Lob
 	@Column(name="dm_drugtip")
@@ -27,6 +34,28 @@ public class Setting implements Serializable {
 	private int eveningShiftS;
 
 	private String gps;
+
+	@Column(name="hl7_edition")
+	private String hl7Edition;
+
+	@Column(name="hos_address")
+	private String hosAddress;
+
+	@Column(name="hos_icon_path")
+	private String hosIconPath;
+
+	@Column(name="hos_mail")
+	private String hosMail;
+
+	@Column(name="hos_name")
+	private String hosName;
+
+	@Column(name="hos_phone")
+	private String hosPhone;
+
+	private String hospicalID;
+
+	private String ICDVersion;
 
 	private String language;
 
@@ -42,6 +71,12 @@ public class Setting implements Serializable {
 	@Column(name="noon_shift_s")
 	private int noonShiftS;
 
+	@Column(name="registration_price")
+	private float registrationPrice;
+
+	@Column(name="sms_remind_days")
+	private int smsRemindDays;
+
 	@Column(name="updata_ftp")
 	private String updataFtp;
 
@@ -54,6 +89,22 @@ public class Setting implements Serializable {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public float getBedPrice() {
+		return this.bedPrice;
+	}
+
+	public void setBedPrice(float bedPrice) {
+		this.bedPrice = bedPrice;
+	}
+
+	public float getDiagnosisPrice() {
+		return this.diagnosisPrice;
+	}
+
+	public void setDiagnosisPrice(float diagnosisPrice) {
+		this.diagnosisPrice = diagnosisPrice;
 	}
 
 	public String getDmDrugtip() {
@@ -86,6 +137,70 @@ public class Setting implements Serializable {
 
 	public void setGps(String gps) {
 		this.gps = gps;
+	}
+
+	public String getHl7Edition() {
+		return this.hl7Edition;
+	}
+
+	public void setHl7Edition(String hl7Edition) {
+		this.hl7Edition = hl7Edition;
+	}
+
+	public String getHosAddress() {
+		return this.hosAddress;
+	}
+
+	public void setHosAddress(String hosAddress) {
+		this.hosAddress = hosAddress;
+	}
+
+	public String getHosIconPath() {
+		return this.hosIconPath;
+	}
+
+	public void setHosIconPath(String hosIconPath) {
+		this.hosIconPath = hosIconPath;
+	}
+
+	public String getHosMail() {
+		return this.hosMail;
+	}
+
+	public void setHosMail(String hosMail) {
+		this.hosMail = hosMail;
+	}
+
+	public String getHosName() {
+		return this.hosName;
+	}
+
+	public void setHosName(String hosName) {
+		this.hosName = hosName;
+	}
+
+	public String getHosPhone() {
+		return this.hosPhone;
+	}
+
+	public void setHosPhone(String hosPhone) {
+		this.hosPhone = hosPhone;
+	}
+
+	public String getHospicalID() {
+		return this.hospicalID;
+	}
+
+	public void setHospicalID(String hospicalID) {
+		this.hospicalID = hospicalID;
+	}
+
+	public String getICDVersion() {
+		return this.ICDVersion;
+	}
+
+	public void setICDVersion(String ICDVersion) {
+		this.ICDVersion = ICDVersion;
 	}
 
 	public String getLanguage() {
@@ -126,6 +241,22 @@ public class Setting implements Serializable {
 
 	public void setNoonShiftS(int noonShiftS) {
 		this.noonShiftS = noonShiftS;
+	}
+
+	public float getRegistrationPrice() {
+		return this.registrationPrice;
+	}
+
+	public void setRegistrationPrice(float registrationPrice) {
+		this.registrationPrice = registrationPrice;
+	}
+
+	public int getSmsRemindDays() {
+		return this.smsRemindDays;
+	}
+
+	public void setSmsRemindDays(int smsRemindDays) {
+		this.smsRemindDays = smsRemindDays;
 	}
 
 	public String getUpdataFtp() {

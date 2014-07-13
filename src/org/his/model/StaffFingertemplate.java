@@ -14,13 +14,16 @@ public class StaffFingertemplate implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String guid;
-
-	private int id;
 
 	@Lob
 	private byte[] template;
+
+	//bi-directional many-to-one association to StaffInfo
+	@ManyToOne
+	@JoinColumn(name="id")
+	private StaffInfo staffInfo;
 
 	public StaffFingertemplate() {
 	}
@@ -33,20 +36,20 @@ public class StaffFingertemplate implements Serializable {
 		this.guid = guid;
 	}
 
-	public int getId() {
-		return this.id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
 	public byte[] getTemplate() {
 		return this.template;
 	}
 
 	public void setTemplate(byte[] template) {
 		this.template = template;
+	}
+
+	public StaffInfo getStaffInfo() {
+		return this.staffInfo;
+	}
+
+	public void setStaffInfo(StaffInfo staffInfo) {
+		this.staffInfo = staffInfo;
 	}
 
 }
