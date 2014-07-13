@@ -61,15 +61,15 @@ public class UserInfo {
                                 "'DEFAULT' AS posi, "+
                                 "concat(staff_info.firstname,'  ',staff_info.lastname) as name, "+
                                 "policlinic.name as poli, " +
-                                "policlinic.typ as poli_type, " +
+                                "policlinic.type as poli_type, " +
                                 "department.name as dep, "+
-                                "staff_info.gp_guid as pow_gp "+
+                                "staff_info.grp_name as pow_gp "+
                           "FROM staff_info "+
                                 "LEFT JOIN (policlinic CROSS JOIN " +
                                            "department CROSS JOIN permission_info ) "+
                                 "ON (department.guid = staff_info.dep_guid "+
                                 "AND policlinic.guid = staff_info.poli_guid "+
-                                "AND permission_info.guid = staff_info.gp_guid) "+
+                                "AND permission_info.grp_name = staff_info.grp_name) "+
                           "WHERE s_id = '"+userID+"' ";
 
 
@@ -92,8 +92,7 @@ public class UserInfo {
             }
             sql_power = "SELECT grp_name, lvl, sys_name " +
                     "FROM permission_info " +
-                    "WHERE (SELECT grp_name FROM permission_info " +
-                    "WHERE guid = '" + s_PermissionGroup + "') = grp_name";
+                    "WHERE '" + s_PermissionGroup + "' = grp_name";
             rs = DBC.executeQuery(sql_power);
             rs.last();
             s_PermissionGroup = rs.getString("grp_name");

@@ -172,7 +172,7 @@ public class RefrashWorkList extends Thread{
                             "patients_info.gender AS '"+paragraph.getLanguage(line, "COL_GENDER")+"', "+
                             "concat(patients_info.bloodtype,patients_info.rh_type) AS '"+paragraph.getLanguage(line, "COL_BLOOD")+"', "+
                             "patients_info.ps AS '"+paragraph.getLanguage(line, "COL_PS")+"', "+
-                            "A.guid, policlinic.typ  "+
+                            "A.guid, policlinic.type  "+
                         "FROM registration_info AS A, patients_info, shift_table,staff_info, poli_room, policlinic  "+
                         "WHERE A.shift_guid = shift_table.guid "+
                             "AND shift_table.room_guid = poli_room.guid "+
@@ -182,7 +182,7 @@ public class RefrashWorkList extends Thread{
                             "AND shift_table.s_id = staff_info.s_id "+
                             "AND (A.case_finish = 'F' OR A.case_finish IS NULL) "+
                             "AND A.p_no = patients_info.p_no " +
-                            "AND policlinic.typ = 'DM' "+
+                            "AND policlinic.type = 'DM' "+
                         "ORDER BY Status, A.visits_no";
         }
         this.m_Tab = tab;
@@ -400,7 +400,7 @@ public class RefrashWorkList extends Thread{
                             "patients_info.gender AS '"+paragraph.getLanguage(line, "COL_GENDER")+"', "+
                             "concat(patients_info.bloodtype,patients_info.rh_type) AS '"+paragraph.getLanguage(line, "COL_BLOOD")+"', "+
                             "patients_info.ps AS '"+paragraph.getLanguage(line, "COL_PS")+"', "+
-                            "A.guid, policlinic.typ  "+
+                            "A.guid, policlinic.type  "+
                         "FROM registration_info AS A, patients_info, shift_table,staff_info, poli_room, policlinic  "+
                         "WHERE A.shift_guid = shift_table.guid "+
                             "AND shift_table.room_guid = poli_room.guid "+
@@ -408,7 +408,7 @@ public class RefrashWorkList extends Thread{
                             "AND shift_table.s_id = staff_info.s_id "+
                             "AND (A.case_finish = 'F' OR A.case_finish IS NULL) "+
                             "AND A.p_no = patients_info.p_no " +
-                            "AND policlinic.typ = 'DM' "+
+                            "AND policlinic.type = 'DM' "+
                             "AND A.reg_time LIKE '"+date+"%' "+
                         "ORDER BY State, A.visits_no";
         }
