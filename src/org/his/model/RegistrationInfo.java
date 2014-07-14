@@ -16,7 +16,6 @@ public class RegistrationInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String guid;
 
 	@Column(name="bed_payment")
@@ -80,10 +79,6 @@ public class RegistrationInfo implements Serializable {
 	@Column(name="visits_no")
 	private int visitsNo;
 
-	//bi-directional many-to-one association to Anamnesi
-	@OneToMany(mappedBy="registrationInfo")
-	private List<Anamnesi> anamnesis;
-
 	//bi-directional many-to-one association to Complication
 	@OneToMany(mappedBy="registrationInfo")
 	private List<Complication> complications;
@@ -113,24 +108,24 @@ public class RegistrationInfo implements Serializable {
 	private List<Prescription> prescriptions;
 
 	//bi-directional many-to-one association to BedRecord
-	@ManyToOne
+	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="bed_guid")
 	private BedRecord bedRecord;
 
+	//bi-directional many-to-one association to Gi
+	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="gis_guid")
+	private Gi gi;
+
 	//bi-directional many-to-one association to PatientsInfo
-	@ManyToOne
+	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="p_no")
 	private PatientsInfo patientsInfo;
 
 	//bi-directional many-to-one association to ShiftTable
-	@ManyToOne
+	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="shift_guid")
 	private ShiftTable shiftTable;
-
-	//bi-directional many-to-one association to Gi
-	@ManyToOne
-	@JoinColumn(name="gis_guid")
-	private Gi gi;
 
 	public RegistrationInfo() {
 	}
@@ -311,28 +306,6 @@ public class RegistrationInfo implements Serializable {
 		this.visitsNo = visitsNo;
 	}
 
-	public List<Anamnesi> getAnamnesis() {
-		return this.anamnesis;
-	}
-
-	public void setAnamnesis(List<Anamnesi> anamnesis) {
-		this.anamnesis = anamnesis;
-	}
-
-	public Anamnesi addAnamnesi(Anamnesi anamnesi) {
-		getAnamnesis().add(anamnesi);
-		anamnesi.setRegistrationInfo(this);
-
-		return anamnesi;
-	}
-
-	public Anamnesi removeAnamnesi(Anamnesi anamnesi) {
-		getAnamnesis().remove(anamnesi);
-		anamnesi.setRegistrationInfo(null);
-
-		return anamnesi;
-	}
-
 	public List<Complication> getComplications() {
 		return this.complications;
 	}
@@ -495,6 +468,14 @@ public class RegistrationInfo implements Serializable {
 		this.bedRecord = bedRecord;
 	}
 
+	public Gi getGi() {
+		return this.gi;
+	}
+
+	public void setGi(Gi gi) {
+		this.gi = gi;
+	}
+
 	public PatientsInfo getPatientsInfo() {
 		return this.patientsInfo;
 	}
@@ -509,14 +490,6 @@ public class RegistrationInfo implements Serializable {
 
 	public void setShiftTable(ShiftTable shiftTable) {
 		this.shiftTable = shiftTable;
-	}
-
-	public Gi getGi() {
-		return this.gi;
-	}
-
-	public void setGi(Gi gi) {
-		this.gi = gi;
 	}
 
 }

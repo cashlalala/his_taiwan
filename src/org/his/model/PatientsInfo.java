@@ -137,23 +137,23 @@ public class PatientsInfo implements Serializable {
 	private String weight;
 
 	// bi-directional many-to-one association to Allergy
-	@OneToMany(mappedBy = "patientsInfo")
+	@OneToMany(mappedBy = "patientsInfo",fetch = FetchType.LAZY)
 	private List<Allergy> allergies;
 
 	// bi-directional many-to-one association to Anamnesi
-	@OneToMany(mappedBy = "patientsInfo")
+	@OneToMany(mappedBy = "patientsInfo",fetch = FetchType.LAZY)
 	private List<Anamnesi> anamnesis;
 
 	// bi-directional many-to-one association to BedRecord
-	@OneToMany(mappedBy = "patientsInfo")
+	@OneToMany(mappedBy = "patientsInfo",fetch = FetchType.LAZY)
 	private List<BedRecord> bedRecords;
 
 	// bi-directional many-to-one association to Fingertemplate
-	@OneToMany(mappedBy = "patientsInfo")
+	@OneToMany(mappedBy = "patientsInfo",fetch = FetchType.LAZY)
 	private List<Fingertemplate> fingertemplates;
 
 	// bi-directional many-to-one association to ImageMeta
-	@OneToMany(mappedBy = "patientsInfo")
+	@OneToMany(mappedBy = "patientsInfo",fetch = FetchType.LAZY)
 	private List<ImageMeta> imageMetas;
 
 	// bi-directional many-to-one association to StaffInfo
