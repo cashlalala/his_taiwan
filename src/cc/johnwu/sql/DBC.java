@@ -5,6 +5,8 @@ import java.awt.Frame;
 import java.sql.*;
 import javax.swing.JOptionPane;
 
+import org.his.JPAUtil;
+
 public class DBC {
 
     private final static String LOCALURL;
@@ -63,12 +65,20 @@ public class DBC {
                           "/"+s_LocalRS.getString("database").trim();
             s_ServerName = HISPassword.deCode(s_LocalRS.getString("user")).trim();
             s_ServerPasswd = HISPassword.deCode(s_LocalRS.getString("passwd")).trim();
+            
+            JPAUtil.setPassword(s_ServerPasswd);
+            JPAUtil.setUser(s_ServerName);
+            JPAUtil.setUrl(s_ServerURL);
+            
             Connection conn = DriverManager.getConnection(s_ServerURL,s_ServerName,s_ServerPasswd);
             conn.close();
             if(s_EnteredFrm!=null){
                 s_EnteredFrm.setVisible(true);
                 s_EnteredFrm = null;
             }
+            
+            JPAUtil.getEntityManager().createNativeQuery("select now()").getSingleResult();
+            
             return true;
         } catch (SQLException ex) {
             try {

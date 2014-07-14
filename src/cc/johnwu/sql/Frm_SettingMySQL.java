@@ -6,6 +6,8 @@ import java.sql.*;
 
 import javax.swing.JOptionPane;
 
+import org.his.JPAUtil;
+
 import multilingual.Language;
 
 
@@ -181,6 +183,11 @@ public class Frm_SettingMySQL extends javax.swing.JFrame {
 
     private void btn_SaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_SaveActionPerformed
         try {
+        	JPAUtil.setUser(this.txt_User.getText());
+        	JPAUtil.setPassword(new String(this.txt_Passwd.getPassword()));
+        	JPAUtil.setUrl(String.format("jdbc:mysql://%s:%s/%s", 
+        			this.txt_Host.getText(),this.txt_Port.getText(),this.txt_Database.getText()));
+        	
             DBC.localExecuteUpdate("DELETE FROM conn_info");
             DBC.localExecuteUpdate("INSERT INTO conn_info VALUES(" +
                     "'"+this.txt_Host.getText()+"',"+
@@ -191,6 +198,7 @@ public class Frm_SettingMySQL extends javax.swing.JFrame {
                     ")");
             DBC.localExecute("SHUTDOWN");
             if(DBC.getConnection()){
+            	JPAUtil.getEntityManager().createNativeQuery("select now()").getSingleResult();
                 this.dispose();
             }
         } catch (SQLException ex) {

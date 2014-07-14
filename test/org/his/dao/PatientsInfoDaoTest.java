@@ -1,7 +1,6 @@
 package org.his.dao;
 
-import static org.junit.Assert.*;
-
+import org.his.JPAUtil;
 import org.his.model.PatientsInfo;
 import org.junit.After;
 import org.junit.Assert;
@@ -15,6 +14,7 @@ public class PatientsInfoDaoTest {
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
+		JPAUtil.getEntityManagerFactory("UT_hospital");
 		patientsInfoDao = new PatientsInfoDao();
 	}
 
