@@ -2,6 +2,7 @@ package org.his.model;
 
 import java.io.Serializable;
 import javax.persistence.*;
+
 import java.util.Date;
 import java.util.List;
 
@@ -10,6 +11,12 @@ import java.util.List;
  * The persistent class for the staff_info database table.
  * 
  */
+@NamedQueries ({
+    @NamedQuery(
+        name="QueryIfUserIsValid",
+        query="Select staffInfo FROM StaffInfo staffInfo WHERE staffInfo.sId = :sId and staffInfo.passwd = :pwd"),
+})
+
 @Entity
 @Table(name="staff_info")
 public class StaffInfo implements Serializable {

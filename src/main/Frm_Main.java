@@ -15,6 +15,8 @@ import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 
+import org.his.JPAUtil;
+
 import statistic.Frm_Statistic;
 import system.Frm_Setting;
 import test.Frm_PoliManage;
@@ -665,6 +667,7 @@ public class Frm_Main extends javax.swing.JFrame {
 
     private void mnit_ExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnit_ExitActionPerformed
         cc.johnwu.login.OnlineState.LogOut();
+        JPAUtil.shutdown();
         System.exit(0);
     }//GEN-LAST:event_mnit_ExitActionPerformed
 
