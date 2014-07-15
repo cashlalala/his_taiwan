@@ -18,10 +18,7 @@ public class PatientsInfoDao {
 	}
 
 	public void persist(PatientsInfo patiensInfo) {
-		EntityTransaction etx = em.getTransaction();
-		etx.begin();
 		em.persist(patiensInfo);
-		etx.commit();
 	}
 
 	public PatientsInfo merge(PatientsInfo patiensInfo) {

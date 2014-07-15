@@ -5,6 +5,7 @@ import javax.persistence.EntityTransaction;
 
 import org.his.JPAUtil;
 import org.his.model.ContactpersonInfo;
+import org.his.model.PatientsInfo;
 
 public class ContactpersonInfoDao {
 
@@ -23,10 +24,7 @@ public class ContactpersonInfoDao {
 	}
 	
 	public void persist(ContactpersonInfo contactpersonInfo) {
-		EntityTransaction tx = em.getTransaction();
-		tx.begin();
 		em.persist(contactpersonInfo);
-		tx.commit();
 	}
 	
 	public void close(){

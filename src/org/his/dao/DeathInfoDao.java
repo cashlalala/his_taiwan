@@ -24,15 +24,7 @@ public class DeathInfoDao {
 	}
 
 	public void persist(DeathInfo deathInfo) {
-		EntityTransaction etx = em.getTransaction();
-		try {
-			etx.begin();
-			em.persist(deathInfo);
-			etx.commit();
-		} catch (Exception e) {
-			e.printStackTrace();
-			etx.rollback();
-		}
+		em.persist(deathInfo);
 	}
 
 	public DeathInfo merge(DeathInfo deathInfo) {
@@ -45,9 +37,6 @@ public class DeathInfoDao {
 	}
 
 	public void remove(DeathInfo deathInfo) {
-		EntityTransaction etx = em.getTransaction();
-		etx.begin();
 		em.remove(deathInfo);
-		etx.commit();
 	}
 }

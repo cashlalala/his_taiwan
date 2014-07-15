@@ -17,6 +17,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.persistence.EntityTransaction;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
@@ -25,6 +26,7 @@ import javax.swing.JTextField;
 import laboratory.Frm_LabHistory;
 import multilingual.Language;
 
+import org.his.JPAUtil;
 import org.his.dao.ContactpersonInfoDao;
 import org.his.dao.DeathInfoDao;
 import org.his.dao.HlsGroupDao;
@@ -85,7 +87,11 @@ public class Frm_PatientMod extends javax.swing.JFrame implements
 
 	java.awt.event.ActionEvent evt;
 
+	private EntityTransaction etx;
+
 	public Frm_PatientMod(PatientsInterface m_frame, boolean isNewPatient) {
+		etx = JPAUtil.getTransaction();
+		etx.begin();
 		initComponents();
 		initPatientInfoCtrl();
 		initContactCtrl();
@@ -144,6 +150,7 @@ public class Frm_PatientMod extends javax.swing.JFrame implements
 
 	public Frm_PatientMod(PatientsInterface m_frame, String p_no) {
 		this(m_frame, false);
+		this.patientInfo = this.patientInfoDao.QueryPatientInfoById(p_no);
 		this.contactpersonInfo = (patientInfo.getContactpersonInfo() != null) ? patientInfo
 				.getContactpersonInfo() : new ContactpersonInfo();
 
@@ -2935,8 +2942,9 @@ public class Frm_PatientMod extends javax.swing.JFrame implements
 				if (patientInfo.getContactpersonInfo() == null) {
 					String uuid = UUID.randomUUID().toString();
 					contactpersonInfo.setGuid(uuid);
-					contactpersonInfoDao.persist(contactpersonInfoDao
-							.merge(contactpersonInfo));
+					contactpersonInfo = contactpersonInfoDao
+							.merge(contactpersonInfo);
+					contactpersonInfoDao.persist(contactpersonInfo);
 					patientInfo.setContactpersonInfo(contactpersonInfo);
 				}
 
@@ -2947,6 +2955,7 @@ public class Frm_PatientMod extends javax.swing.JFrame implements
 				PrintBarcode.PrintBarcode(txt_No.getText());
 			}
 
+			etx.commit();
 			// ************************
 			JOptionPane.showMessageDialog(new Frame(),
 					paragraph.getString("SAVECOMPLETE"));
@@ -2964,8 +2973,8 @@ public class Frm_PatientMod extends javax.swing.JFrame implements
 	}// GEN-LAST:event_btn_OKActionPerformed
 
 	private void btn_CancelActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_CancelActionPerformed
-		if (patientInfo.getExist() == 0 && patientInfo.getFirstname() == m_UUID)
-			patientInfoDao.remove(patientInfo);
+		if (etx.isActive())
+			etx.rollback();
 		if (m_frame != null)
 			m_frame.reLoad();
 		dispose();
