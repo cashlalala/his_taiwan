@@ -45,7 +45,7 @@ public class Frm_Registration extends javax.swing.JFrame implements FingerPrintV
 //    private final String SYSTEMNAME = "Registration";   //系統名稱
     private final long REFRASH_TIME = 3000; //自度刷新跨號資訊時間
     private final int MAX_FINGERPRINT_COUNT = 5000;
-    private final int MAX_SEARCH_ROWS = 10;
+    private final int MAX_SEARCH_ROWS = 50;
     private final String POLINAME_DM = Constant.POLINAME_DM;
     private String m_RegShiftGuid; //條件班表
     private String m_RegtGuid;  //修改掛號需要
