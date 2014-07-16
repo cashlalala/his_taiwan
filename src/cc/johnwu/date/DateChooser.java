@@ -210,10 +210,21 @@ public class DateChooser extends JPanel {
             initButton();
             createYearAndMonthPanal();
 
-            String[] date = txt_Date.getText().split("-");
-            yearSpin.setValue(Integer.parseInt(date[2]));
-            monthSpin.setValue(Integer.parseInt(date[1]));
-            today = Integer.parseInt(date[0]);
+            if (txt_Date.getText() != null && !txt_Date.getText().equals("")) {
+                String[] date = txt_Date.getText().split("-");
+                yearSpin.setValue(Integer.parseInt(date[2]));
+                monthSpin.setValue(Integer.parseInt(date[1]));
+                today = Integer.parseInt(date[0]);            	
+            }
+            else {
+            	Date date = new Date();
+            	SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+            	String[] dateToken = sdf.format(date).split("-");
+                yearSpin.setValue(Integer.parseInt(dateToken[2]));
+                monthSpin.setValue(Integer.parseInt(dateToken[1]));
+                today = Integer.parseInt(dateToken[0]);            	
+            }
+
             this.flushWeekAndDayPanal(calendar);
             this.setLayout(new BorderLayout());
             this.add(yearPanel, BorderLayout.NORTH);

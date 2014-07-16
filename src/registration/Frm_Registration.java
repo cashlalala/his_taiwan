@@ -556,7 +556,7 @@ public class Frm_Registration extends javax.swing.JFrame implements FingerPrintV
             this.lab_FirstName.setText(rs.getString("firstname"));
             this.lab_LastName.setText(rs.getString("lastname"));
             this.lab_Birth.setText(rs.getString("birth"));
-            this.lab_Age.setText(DateMethod.getAgeWithMonth(rs.getDate("birth")));
+            this.lab_Age.setText( (lab_Birth.getText() == null || lab_Birth.getText().isEmpty())? "" : DateMethod.getAgeWithMonth(rs.getDate("birth")));
             this.lab_Gender.setText(rs.getString("gender"));
             this.lab_Bloodtype.setText(rs.getString("bloodtype"));
             this.lab_Rh.setText(rs.getString("rh_type"));

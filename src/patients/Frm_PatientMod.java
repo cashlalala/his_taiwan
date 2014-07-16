@@ -193,7 +193,7 @@ public class Frm_PatientMod extends javax.swing.JFrame implements
 		pInfo.setFirstname(m_UUID);
 		pInfo.setLastname(m_UUID);
 		pInfo.setExist((byte) 0);
-		pInfo.setBirth(dateChooser1.getShownDate());
+		pInfo.setBirth(null);
 		pInfo.setGender((String) cob_Gender.getSelectedItem());
 		pInfo.setMaritalStatus(m_MaritalStatus[getMaritalStatusIndexByFullName((String) cob_MaritalStatus
 				.getSelectedItem())]);
