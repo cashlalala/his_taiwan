@@ -3,9 +3,15 @@ package cc.johnwu.sql;
 
 import java.awt.Frame;
 import java.sql.*;
+import java.util.Locale;
+
 import javax.swing.JOptionPane;
 
+import multilingual.Language;
+
 import org.his.JPAUtil;
+import org.his.dao.SettingDao;
+import org.his.model.Setting;
 
 public class DBC {
 
@@ -72,12 +78,21 @@ public class DBC {
             
             Connection conn = DriverManager.getConnection(s_ServerURL,s_ServerName,s_ServerPasswd);
             conn.close();
+            
+            JPAUtil.getEntityManager().createNativeQuery("select now()").getSingleResult();
+        	
+            try {
+            	SettingDao settingDao = new SettingDao();
+            	Setting setting = settingDao.QuerySettingById(1);
+                Language.getInstance().setLocale(setting.getLanguage());
+            } catch (Exception ex) {
+            	ex.printStackTrace();
+            }
+            
             if(s_EnteredFrm!=null){
                 s_EnteredFrm.setVisible(true);
                 s_EnteredFrm = null;
             }
-            
-            JPAUtil.getEntityManager().createNativeQuery("select now()").getSingleResult();
             
             return true;
         } catch (SQLException ex) {

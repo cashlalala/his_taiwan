@@ -40,19 +40,40 @@ public class Language {
 	}
 
 	private Language(Locale locale) {
+		loadResourceBundle(locale);
+	}
+
+	private void loadResourceBundle(Locale locale) {
 		File resourceFile = new File("lang/");
-		if (resourceFile.exists()) { // for testing purpose or alternative approach
+		if (resourceFile.exists()) { // for testing purpose or alternative
+										// approach
 			URL[] urls = new URL[1];
 			try {
-				urls[0]  = resourceFile.toURI().toURL();
+				urls[0] = resourceFile.toURI().toURL();
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			}
 			ClassLoader loader = new URLClassLoader(urls);
-			rb = ResourceBundle.getBundle("language", locale, loader);			
-		}
-		else //basically we use the RC in classpath
+			rb = ResourceBundle.getBundle("language", locale, loader);
+		} else
+			// basically we use the RC in classpath
 			rb = ResourceBundle.getBundle("lang.language", locale);
+	}
+
+	public void setLocale(String localeStr) {
+		Locale locale = null;
+		String[] lanCode = localeStr.split("-");
+		try {
+			if (lanCode.length == 1)
+				locale = new Locale(lanCode[0]);
+			else if (lanCode.length == 2)
+				locale = new Locale(lanCode[0], lanCode[1]);
+			else
+				throw new Exception();
+		} catch (Exception ex) {
+			locale = Locale.US;
+		}
+		loadResourceBundle(locale);
 	}
 
 	public String setlanguage(String Title) {
