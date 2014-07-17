@@ -177,9 +177,10 @@ public class RefrashRecord extends Thread{
                 m_LastBorrowTime = rs.getString(2);
                 DBC.closeConnection(rs);
                 
-                rs = DBC.executeQuery(getSQL());
+                String getsqlStr = getSQL();
+                rs = DBC.executeQuery(getsqlStr);
                 //System.out.println(getSQL());
-                if(rs.last()){
+                if(rs.last()){	// if query has returned data
 
                     int row = 0;
                     ((DefaultTableModel)tab.getModel()).setRowCount(rs.getRow());

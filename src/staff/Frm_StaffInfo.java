@@ -80,13 +80,15 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
         cob_GeneralSearch.setModel(new javax.swing.DefaultComboBoxModel(
                     new String[] { paragraph.getLanguage(line, "ALL"), paragraph.getLanguage(line, "NO"),
                                    paragraph.getLanguage(line, "NAME"), paragraph.getLanguage(line, "BIRTH"),
-                                   paragraph.getLanguage(line, "PHONE"), paragraph.getLanguage(line, "ADDRESS") }
+                                   paragraph.getLanguage(line, "PHONE"), paragraph.getLanguage(line, "ADDRESS"),
+                                   "Department", "Division", "Position"}
                 )
         );
         cob_DoctorSearch.setModel(new javax.swing.DefaultComboBoxModel(
                     new String[] { paragraph.getLanguage(line, "ALL"), paragraph.getLanguage(line, "NO"),
                                    paragraph.getLanguage(line, "NAME"), paragraph.getLanguage(line, "BIRTH"),
-                                   paragraph.getLanguage(line, "PHONE"), paragraph.getLanguage(line, "ADDRESS") }
+                                   paragraph.getLanguage(line, "PHONE"), paragraph.getLanguage(line, "ADDRESS"),
+                                   "Department", "Division"}
                 )
         );
     }
@@ -100,7 +102,7 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
         try {
             switch(searchCondition){
                 case 0: // ALL
-                conditions = "(UPPER(s_no) LIKE UPPER('%" + txt_Conditions.getText().replace(" ", "%") + "%')" +
+                conditions = "AND (UPPER(s_no) LIKE UPPER('%" + txt_Conditions.getText().replace(" ", "%") + "%')" +
                              "OR UPPER(concat(firstname,' ',lastname)) LIKE UPPER('%" + txt_Conditions.getText().replace(" ", "%") + "%') " +
                              "OR UPPER(date_birth) LIKE UPPER('%" + txt_Conditions.getText().replace(" ", "%") + "%') " +
                              "OR UPPER(phone) LIKE UPPER('%" + txt_Conditions.getText().replace(" ", "%") + "%') " +
@@ -109,22 +111,31 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
                              ")";
                     break;
                 case 1: // P_NO
-                    conditions = "(UPPER(s_no) LIKE UPPER('%" + txt_Conditions.getText().replace(" ", "%") + "%'))";
+                    conditions = "AND (UPPER(s_no) LIKE UPPER('%" + txt_Conditions.getText().replace(" ", "%") + "%'))";
                     break;
                 case 2: // NAME
-                    conditions = "(UPPER(concat(firstname,' ',lastname)) LIKE UPPER('%" + txt_Conditions.getText().replace(" ", "%") + "%'))";
+                    conditions = "AND (UPPER(concat(firstname,' ',lastname)) LIKE UPPER('%" + txt_Conditions.getText().replace(" ", "%") + "%'))";
                     break;
                 case 3: // BIRTH
-                    conditions = "(UPPER(date_birth) LIKE UPPER('%" + txt_Conditions.getText().replace(" ", "%") + "%'))";
+                    conditions = "AND (UPPER(date_birth) LIKE UPPER('%" + txt_Conditions.getText().replace(" ", "%") + "%'))";
                     break;
                 
                 case 4: // PHONE
-                    conditions = "(UPPER(phone) LIKE UPPER('%" + txt_Conditions.getText().replace(" ", "%") + "%') " +
+                    conditions = "AND (UPPER(phone) LIKE UPPER('%" + txt_Conditions.getText().replace(" ", "%") + "%') " +
                              "OR UPPER(cellphone) LIKE UPPER('%" + txt_Conditions.getText().replace(" ", "%") + "%'))";
                     break;
                 case 5: // ADDRESS
-                    conditions = "(UPPER(address) LIKE UPPER('%" + txt_Conditions.getText().replace(" ", "%") + "%'))";
+                    conditions = "AND (UPPER(address) LIKE UPPER('%" + txt_Conditions.getText().replace(" ", "%") + "%'))";
                     break;
+                case 6:	// Department 
+                	conditions = "AND (UPPER(department.name) LIKE UPPER('%" + txt_Conditions.getText().replace(" ", "%") + "%'))";
+                	break;
+                case 7:	// Division
+                	conditions = "AND (UPPER(policlinic.name) LIKE UPPER('%" + txt_Conditions.getText().replace(" ", "%") + "%'))";
+                	break;
+                case 9:	// Position
+                	conditions = "AND (UPPER(grp_name) LIKE UPPER('%" + txt_Conditions.getText().replace(" ", "%") + "%'))";
+                	break;
             }
             sql = "SELECT s_no AS '"+paragraph.getLanguage(line, "NO")+"', " +
                         "concat(firstname,' ',lastname) AS '"+paragraph.getLanguage(line, "NAME")+"', " +
@@ -132,17 +143,16 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
                         "phone AS '"+paragraph.getLanguage(line, "PHONE")+"', " +
                         "cellphone AS '"+paragraph.getLanguage(line, "CELLPHONE")+"', " +
                         "address AS '"+paragraph.getLanguage(line, "ADDRESS")+"', " +
-                       // "policlinic.name AS '"+paragraph.getLanguage(line, "DEPNAME")+"' " +
-                        "department.name AS 'Position' ," +
-                        "policlinic.name AS 'Dep.' " +
+                        "department.name AS '"+paragraph.getLanguage(line, "DEPNAME")+"', " +
+                        "policlinic.name AS 'Division', " +
+                        "grp_name AS 'Position/Permission' " +
                   "FROM staff_info " +
                   "LEFT JOIN department ON department.guid=staff_info.dep_guid LEFT JOIN policlinic ON policlinic.guid=staff_info.poli_guid " +
-                  "WHERE exist = 1 " +
-                  "AND " + conditions;
+                  "WHERE exist = 1 AND status = 'N' " + conditions;
             if (this.tabp_StaffInfo.getSelectedIndex()==0) {
-                sql = sql + " AND (department.name <> 'Doctor' OR staff_info.dep_guid IS NULL) ";
+                sql = sql + " AND grp_name <> 'Doctor' ";
             } else {
-                sql = sql + " AND department.name = 'Doctor' ";
+                sql = sql + " AND grp_name = 'Doctor' ";
             }
             System.out.println(sql);
             m_StaffRS = DBC.executeQuery(sql);
@@ -168,7 +178,7 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
                 btn_Next.setEnabled(false);
                 tab_List.setEnabled(false);
             }
-            System.out.println(sql);
+            //System.out.println(sql);
         } catch (SQLException e) {
             ErrorMessage.setData("Staff", "Frm_StaffInfo" ,"showStaffList()",
                 e.toString().substring(e.toString().lastIndexOf(".")+1, e.toString().length()));
@@ -312,6 +322,7 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
         btn_GeneralSearch.setText("Search");
         btn_GeneralSearch.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
+                searchCondition = cob_GeneralSearch.getSelectedIndex();
                 btn_GeneralSearchActionPerformed(evt);
             }
         });
@@ -322,7 +333,7 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
             }
         });
 
-        cob_GeneralSearch.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "ALL", "No.", "Name", "Birth", "Phone", "Address" }));
+        //cob_GeneralSearch.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "ALL", "No.", "Name", "Birth", "Phone", "Address", "Department", "Division", "Position" }));
         cob_GeneralSearch.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cob_GeneralSearchActionPerformed(evt);
@@ -425,6 +436,7 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
         btn_DoctorSearch.setText("Search");
         btn_DoctorSearch.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
+                searchCondition = cob_DoctorSearch.getSelectedIndex();
                 btn_DoctorSearchActionPerformed(evt);
             }
         });
@@ -653,7 +665,7 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
         Object[] options = {"YES","NO"};
         int response = JOptionPane.showOptionDialog(
                 new Frame(),
-                 paragraph.getLanguage(line, "WILLITBEDELETENO") +s_no+" Name: "+s_name+"?",
+                 paragraph.getLanguage(line, "WILLITBEDELETENO") + s_no + " Name: " + s_name + "?",
                 "MESSAGE",
                 JOptionPane.YES_OPTION,
                 JOptionPane.QUESTION_MESSAGE,
@@ -666,7 +678,7 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
         try {
             if(response==0){
                 sql = "UPDATE staff_info SET exist = 0 " +
-                        "WHERE s_no ='"+ s_no +"'";
+                        "WHERE s_no ='" + s_no + "'";
                 DBC.executeUpdate(sql);
                 JOptionPane.showMessageDialog(new Frame(), paragraph.getLanguage(message , "DELETECOMPLETE"));
                 this.btn_GeneralDelete.setEnabled(false);

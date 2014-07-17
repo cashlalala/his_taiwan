@@ -68,7 +68,7 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
         ResultSet rs = null;
         try {
             m_UUID = UUID.randomUUID().toString();
-            String sql = "INSERT INTO staff_info (s_no,firstname,lastname,sex,bloodgroup,rh_type,marital_status,staff_type,staff_category,employee_status,training_type,sponsorship,commitment,entitlement,type,exist) " +
+            String sql = "INSERT INTO staff_info (s_no,firstname,lastname,sex,bloodgroup,rh_type,marital_status,staff_type,staff_category,employee_status,training_type,sponsorship,commitment,entitlement,status,exist) " +
                 "SELECT MAX(s_no)+1, " +// s_no
                 "'"+m_UUID+"', " +      // firstname
                 "'"+m_UUID+"', " +      // lastname
@@ -83,7 +83,7 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
                 "0, " +
                 "0, " +
                 "0, " +
-                "0, " +
+                "'N', " +					// status
                 "false " +              // exist
                 "FROM staff_info ";
             DBC.executeUpdate(sql);
@@ -211,22 +211,24 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
             ResultSet rs_staffInfo = DBC.executeQuery("SELECT * FROM staff_info WHERE s_no = " + m_Sno);
             ResultSet rs_dep = DBC.executeQuery("SELECT * FROM department GROUP BY name");
             ResultSet rs_pos = DBC.executeQuery("SELECT * FROM position GROUP BY name");
-            ResultSet rs_permission = DBC.executeQuery("SELECT * FROM permission_info GROUP BY grp_name");
+            //ResultSet rs_permission = DBC.executeQuery("SELECT * FROM permission_info GROUP BY grp_name");
             ResultSet rs_poli = DBC.executeQuery("SELECT * FROM policlinic GROUP BY name");
             rs_staffInfo.next();
             rs_dep.next();
             rs_pos.next();
-            rs_permission.next();
+            //rs_permission.next();
             rs_poli.next();
+            
+            dateChooser_PersonalDateBirth.setValue(rs_staffInfo.getString("date_birth"));
             /*將combobox設定為員工所屬群組 */
             for (int i = 0; i < cob_Permission.getItemCount(); i++) {
-                if (rs_staffInfo.getString("gp_guid") != null) {
-                    if (rs_staffInfo.getString("gp_guid").equals(rs_permission.getString("guid"))) {
+                if (rs_staffInfo.getString("grp_name") != null) {
+                    if (rs_staffInfo.getString("grp_name").equals(cob_Permission.getItemAt(i+1).toString() )) {
                         cob_Permission.setSelectedIndex(i + 1);
                         break;
-                    } else {
-                        rs_permission.next();
-                    }
+                    }// else {
+                    //    rs_permission.next();
+                    //}
                 } else {
                     cob_Permission.setSelectedIndex(0);
                 }
@@ -379,7 +381,7 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
             }
         });
 
-        btn_Cancel.setText("Cancle");
+        btn_Cancel.setText("Cancel");
         btn_Cancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_CancelActionPerformed(evt);
@@ -450,7 +452,7 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
 
         lab_cellphone.setText("Contact Number :");
 
-        lab_Posi.setText("Position of Staff :");
+        lab_Posi.setText("Department :");
 
         lab_mail.setText("Email Address :");
 
@@ -467,11 +469,11 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
         txt_No.setText("00000000");
         txt_No.setEnabled(false);
 
-        lab_Group.setText("Permmision Group :");
+        lab_Group.setText("Position/Permission :");
 
         lab_No.setText("Staff No. :");
 
-        lab_ToDepartment.setText("Depart/Clinic:");
+        lab_ToDepartment.setText("Division :");
 
         lab_FirstName.setText("* First Name :");
 
@@ -702,10 +704,11 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
 //            }
 
             if(this.cob_Permission.getSelectedIndex()!=0){
-                rsPermission = DBC.executeQuery("SELECT guid FROM permission_info WHERE grp_name = '" + cob_Permission.getSelectedItem().toString() + "'" );
-                if(rsPermission.next()){
-                    Permission = "'" + rsPermission.getString("guid") + "'";
-                }
+            	Permission = "'" + cob_Permission.getSelectedItem().toString() + "'";
+                //rsPermission = DBC.executeQuery("SELECT guid FROM permission_info WHERE grp_name = '" + cob_Permission.getSelectedItem().toString() + "'" );
+                //if(rsPermission.next()){
+                //    Permission = "'" + rsPermission.getString("guid") + "'";
+                //}
             }
 
             if(this.cob_Administrative.getSelectedIndex()!=0){
@@ -731,7 +734,7 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
                     "place_birth = '"+this.txt_PlaceOfBirth.getText()+"', " +
                     "cellphone = '"+this.txt_CellPhone.getText()+"', " +
                     "email = '"+this.txt_Email.getText()+"', " +
-                    "gp_guid = "+ Permission + ", "+
+                    "grp_name = "+ Permission + ", "+
                     "poli_guid ="+ Poli + ", "+
                     "posi_guid = "+ Posi + ", "+
                     "dep_guid = "+ Dep + ", "+
