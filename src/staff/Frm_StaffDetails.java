@@ -23,17 +23,17 @@ import errormessage.StoredErrorMessage;
 
 
 
-class selectOption {
+class SelectOption {
     private String code;
     private String value;
 
-    public selectOption(String c, String v)  {
+    public SelectOption(String c, String v)  {
     	setCode(c);
     	setValue(v);
     }
      
-    public selectOption() {
-    	this("N", "Normal");
+    public SelectOption() {
+    	this("", "");
     }
    
 
@@ -62,7 +62,7 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
     private StoredErrorMessage ErrorMessage = new StoredErrorMessage() ;
     private int m_Sno = 0;
     private String m_UUID = null;
-    private selectOption[] LeaveOption;
+    private SelectOption[] LeaveOption;
 
      /*多國語言變數*/
 //    private language paragraph = language.getInstance();
@@ -244,11 +244,11 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
         }
         
         // setup combobox of leave status
-        LeaveOption = new selectOption[4];
-        LeaveOption[0] = new selectOption("N", "Normal");
-        LeaveOption[1] = new selectOption("R", "Retired");
-        LeaveOption[2] = new selectOption("S", "Suspended");
-        LeaveOption[3] = new selectOption("D", "Dismissed");
+        LeaveOption = new SelectOption[4];
+        LeaveOption[0] = new SelectOption("N", "Normal");
+        LeaveOption[1] = new SelectOption("R", "Retired");
+        LeaveOption[2] = new SelectOption("S", "Suspended");
+        LeaveOption[3] = new SelectOption("D", "Dismissed");
         
         for(int i = 0; i < LeaveOption.length; i++)
         	this.cob_Leave.addItem(LeaveOption[i].getValue());
@@ -548,7 +548,7 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
 
         lab_HssNo.setText("HSS NO. :");
         
-        lab_Leave.setText("Leave :");
+        lab_Leave.setText("Current Status :");
 
         txt_HssNo.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {

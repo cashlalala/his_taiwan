@@ -1,14 +1,13 @@
 package staff;
 
-import cc.johnwu.sql.DBC;
-import cc.johnwu.sql.HISModel;
-import cc.johnwu.finger.*;
-
 import java.awt.Frame;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
-import java.sql.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -18,8 +17,12 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
-import errormessage.StoredErrorMessage;
 import multilingual.Language;
+import cc.johnwu.finger.FingerPrintScanner;
+import cc.johnwu.finger.FingerPrintViewerInterface;
+import cc.johnwu.sql.DBC;
+import cc.johnwu.sql.HISModel;
+import errormessage.StoredErrorMessage;
 
 
 public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintViewerInterface {
@@ -34,7 +37,7 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
     private JTable tab_List = null;
     private JButton btn_Next = null;
     private JButton btn_Previous = null;
-    private JButton btn_Delete = null;
+    //private JButton btn_Delete = null;
     private JButton btn_Edit = null;
     private JButton btn_Add = null;
     private String m_KeepId = "Admin 1";  // 系統保留帳號
@@ -72,7 +75,7 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
         this.btn_GeneralSearch.setText(paragraph.getLanguage(message, "SEARCH"));
         this.btn_GeneralAdd.setText(paragraph.getLanguage(line, "GENERALADD"));
         this.btn_GeneralEdit.setText(paragraph.getLanguage(line, "GENERALEDIT"));
-        this.btn_GeneralDelete.setText(paragraph.getLanguage(line, "GENERALDELETE"));
+        //this.btn_GeneralDelete.setText(paragraph.getLanguage(line, "GENERALDELETE"));
         this.btn_GeneralBack.setText(paragraph.getLanguage(line, "GENERALBACK"));
         this.btn_DoctorSearch.setText(paragraph.getLanguage(message, "SEARCH"));
         this.tabp_StaffInfo.setTitleAt(0,paragraph.getLanguage(line, "GENERAL"));
@@ -98,7 +101,18 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
         ResultSet rs = null;
         String sql = "";
         String conditions = "";
-
+        String statusCondition = "";
+        
+        searchCondition = cob_GeneralSearch.getSelectedIndex();
+    	if(cbx_ShowCurrentEmployee.isSelected()) statusCondition += "'N',";
+        if(cbx_ShowRetiredEmployee.isSelected())  statusCondition += "'R',";
+        if(cbx_ShowSuspendedEmployee.isSelected()) statusCondition += "'S',";
+        if(cbx_ShowDismissedEmployee.isSelected()) statusCondition += "'D',";
+        if(statusCondition.length() > 0)
+        	statusCondition = " AND status in (" + statusCondition.substring(0, statusCondition.length() - 1) + ")";
+        else
+        	statusCondition = " AND status not in ('N','R','S','D') ";
+        
         try {
             switch(searchCondition){
                 case 0: // ALL
@@ -148,7 +162,7 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
                         "grp_name AS 'Position/Permission' " +
                   "FROM staff_info " +
                   "LEFT JOIN department ON department.guid=staff_info.dep_guid LEFT JOIN policlinic ON policlinic.guid=staff_info.poli_guid " +
-                  "WHERE exist = 1 AND status = 'N' " + conditions;
+                  "WHERE exist = 1 " + statusCondition + " " + conditions;
             if (this.tabp_StaffInfo.getSelectedIndex()==0) {
                 sql = sql + " AND grp_name <> 'Doctor' ";
             } else {
@@ -198,7 +212,7 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
             tab_List = this.tab_GeneralList;
             btn_Next = this.btn_GeneralNext;
             btn_Previous = this.btn_GeneralPrevious;
-            btn_Delete = this.btn_GeneralDelete;
+            //btn_Delete = this.btn_GeneralDelete;
             btn_Edit = this.btn_GeneralEdit;
             btn_Add = this.btn_GeneralAdd;
         }else{
@@ -247,7 +261,11 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
         btn_GeneralBack = new javax.swing.JButton();
         btn_GeneralAdd = new javax.swing.JButton();
         btn_GeneralEdit = new javax.swing.JButton();
-        btn_GeneralDelete = new javax.swing.JButton();
+        //btn_GeneralDelete = new javax.swing.JButton();
+        cbx_ShowCurrentEmployee = new javax.swing.JCheckBox();
+        cbx_ShowRetiredEmployee = new javax.swing.JCheckBox();
+        cbx_ShowSuspendedEmployee = new javax.swing.JCheckBox();
+        cbx_ShowDismissedEmployee = new javax.swing.JCheckBox();
         fingerPrintViewer1 = new cc.johnwu.finger.FingerPrintViewer();
         lab_FingerprintSearch = new javax.swing.JLabel();
 
@@ -322,7 +340,6 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
         btn_GeneralSearch.setText("Search");
         btn_GeneralSearch.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                searchCondition = cob_GeneralSearch.getSelectedIndex();
                 btn_GeneralSearchActionPerformed(evt);
             }
         });
@@ -333,7 +350,7 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
             }
         });
 
-        //cob_GeneralSearch.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "ALL", "No.", "Name", "Birth", "Phone", "Address", "Department", "Division", "Position" }));
+        cob_GeneralSearch.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "ALL", "No.", "Name", "Birth", "Phone", "Address" }));
         cob_GeneralSearch.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cob_GeneralSearchActionPerformed(evt);
@@ -436,8 +453,7 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
         btn_DoctorSearch.setText("Search");
         btn_DoctorSearch.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                searchCondition = cob_DoctorSearch.getSelectedIndex();
-                btn_DoctorSearchActionPerformed(evt);
+            	btn_DoctorSearchActionPerformed(evt);
             }
         });
 
@@ -488,6 +504,31 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
 
         tabp_StaffInfo.addTab("Doctor", pan_Doctor);
 
+        cbx_ShowCurrentEmployee.setSelected(true);
+        cbx_ShowCurrentEmployee.addItemListener(new ItemListener() {
+		public void itemStateChanged(ItemEvent e) {
+			showStaffList();
+			}
+		});
+        cbx_ShowRetiredEmployee.setSelected(false);
+        cbx_ShowRetiredEmployee.addItemListener(new ItemListener() {
+    		public void itemStateChanged(ItemEvent e) {
+    			showStaffList();
+    			}
+    		});
+        cbx_ShowSuspendedEmployee.setSelected(false);
+        cbx_ShowSuspendedEmployee.addItemListener(new ItemListener() {
+    		public void itemStateChanged(ItemEvent e) {
+    			showStaffList();
+    			}
+    		});
+        cbx_ShowDismissedEmployee.setSelected(false);
+        cbx_ShowDismissedEmployee.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				showStaffList();
+				}
+			});
+        
         btn_GeneralBack.setText("Close");
         btn_GeneralBack.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -510,14 +551,32 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
             }
         });
 
-        btn_GeneralDelete.setText("Delete");
+        /*btn_GeneralDelete.setText("Delete");
         btn_GeneralDelete.setEnabled(false);
         btn_GeneralDelete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_GeneralDeleteActionPerformed(evt);
             }
+        });*/
+
+        cbx_ShowCurrentEmployee.setText("Current Employed");
+        cbx_ShowCurrentEmployee.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbx_ShowCurrentEmployeeActionPerformed(evt);
+            }
         });
 
+        cbx_ShowRetiredEmployee.setText("Retired");
+
+        cbx_ShowSuspendedEmployee.setText("Suspended");
+        cbx_ShowSuspendedEmployee.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbx_ShowSuspendedEmployeeActionPerformed(evt);
+            }
+        });
+
+        cbx_ShowDismissedEmployee.setText("Dismissed");
+        
         fingerPrintViewer1.setVisible(true);
 
         javax.swing.GroupLayout fingerPrintViewer1Layout = new javax.swing.GroupLayout(fingerPrintViewer1.getContentPane());
@@ -534,37 +593,45 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
         javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
         jPanel8.setLayout(jPanel8Layout);
         jPanel8Layout.setHorizontalGroup(
-            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel8Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(lab_FingerprintSearch, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(btn_GeneralBack, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btn_GeneralEdit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btn_GeneralAdd, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btn_GeneralDelete, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
-                        .addComponent(fingerPrintViewer1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        jPanel8Layout.setVerticalGroup(
-            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel8Layout.createSequentialGroup()
-                .addGap(27, 27, 27)
-                .addComponent(btn_GeneralAdd)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btn_GeneralEdit)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btn_GeneralDelete)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btn_GeneralBack)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(fingerPrintViewer1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lab_FingerprintSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(257, Short.MAX_VALUE))
-        );
-
+                jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel8Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(lab_FingerprintSearch, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(btn_GeneralBack, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btn_GeneralEdit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btn_GeneralAdd, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            //.addComponent(btn_GeneralDelete, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
+                            .addComponent(cbx_ShowCurrentEmployee, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+			                .addComponent(cbx_ShowRetiredEmployee, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+			                .addComponent(cbx_ShowSuspendedEmployee, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+			                .addComponent(cbx_ShowDismissedEmployee, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)			                
+                            .addComponent(fingerPrintViewer1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            );
+            jPanel8Layout.setVerticalGroup(
+                jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel8Layout.createSequentialGroup()
+                    .addGap(27, 27, 27)
+                    .addComponent(btn_GeneralAdd)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(btn_GeneralEdit)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    //.addComponent(btn_GeneralDelete)
+                    //.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(btn_GeneralBack)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(cbx_ShowCurrentEmployee).addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(cbx_ShowRetiredEmployee).addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(cbx_ShowSuspendedEmployee).addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(cbx_ShowDismissedEmployee).addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)                    
+                    .addComponent(fingerPrintViewer1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(lab_FingerprintSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(257, Short.MAX_VALUE))
+            );
+            
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -650,7 +717,7 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
     private void btn_GeneralPreviousActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_GeneralPreviousActionPerformed
         cob_Page.setSelectedIndex(cob_Page.getSelectedIndex()-1);
 }//GEN-LAST:event_btn_GeneralPreviousActionPerformed
-
+/*
     private void btn_GeneralDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_GeneralDeleteActionPerformed
         String sql = "";
         int s_no = -1;
@@ -691,7 +758,7 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
         this.btn_GeneralEdit.setEnabled(false);
         this.btn_GeneralDelete.setEnabled(false);
 }//GEN-LAST:event_btn_GeneralDeleteActionPerformed
-
+*/
     private void btn_GeneralEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_GeneralEditActionPerformed
         FingerPrintScanner.stop();
         int getSNo = 0;
@@ -736,15 +803,15 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
         setControl();
         showStaffList();
         btn_Edit.setEnabled(false);
-        btn_Delete.setEnabled(false);
+        //btn_Delete.setEnabled(false);
     }//GEN-LAST:event_tabp_StaffInfoMouseClicked
 
     private void tab_GeneralListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tab_GeneralListMouseClicked
         if(tab_List.getSelectedRow()<0 || tab_List.getSelectedColumnCount() == 0 || tab_List.getValueAt(tab_List.getSelectedRow(), 1).equals(m_KeepId)) {
-            btn_Delete.setEnabled(false);
+            //btn_Delete.setEnabled(false);
             btn_Edit.setEnabled(false);
         } else {
-            btn_Delete.setEnabled(true);
+            //btn_Delete.setEnabled(true);
             btn_Edit.setEnabled(true);
         }
         
@@ -756,10 +823,10 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
 
     private void tab_DoctorListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tab_DoctorListMouseClicked
         if(tab_List.getSelectedRow()<0 || tab_List.getSelectedColumnCount() == 0 || tab_List.getValueAt(tab_List.getSelectedRow(), 1).equals(m_KeepId)){
-            btn_Delete.setEnabled(false);
+            //btn_Delete.setEnabled(false);
             btn_Edit.setEnabled(false);
         }  else {
-            btn_Delete.setEnabled(true);
+            //btn_Delete.setEnabled(true);
             btn_Edit.setEnabled(true);
         }
     }//GEN-LAST:event_tab_DoctorListMouseClicked
@@ -768,25 +835,37 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
         tab_DoctorListMouseClicked(null);
     }//GEN-LAST:event_tab_DoctorListKeyPressed
 
+    private void cbx_ShowSuspendedEmployeeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbx_ShowSuspendedEmployeeActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cbx_ShowSuspendedEmployeeActionPerformed
+
+    private void cbx_ShowCurrentEmployeeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbx_ShowCurrentEmployeeActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cbx_ShowCurrentEmployeeActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_DoctorNext;
     private javax.swing.JButton btn_DoctorPrevious;
     private javax.swing.JButton btn_DoctorSearch;
     private javax.swing.JButton btn_GeneralAdd;
     private javax.swing.JButton btn_GeneralBack;
-    private javax.swing.JButton btn_GeneralDelete;
+    //private javax.swing.JButton btn_GeneralDelete;
     private javax.swing.JButton btn_GeneralEdit;
     private javax.swing.JButton btn_GeneralNext;
     private javax.swing.JButton btn_GeneralPrevious;
     private javax.swing.JButton btn_GeneralSearch;
+    private javax.swing.JCheckBox cbx_ShowDismissedEmployee;
+    private javax.swing.JCheckBox cbx_ShowCurrentEmployee;
+    private javax.swing.JCheckBox cbx_ShowRetiredEmployee;
+    private javax.swing.JCheckBox cbx_ShowSuspendedEmployee;
     private javax.swing.JComboBox cob_DoctorPage;
     private javax.swing.JComboBox cob_DoctorSearch;
     private javax.swing.JComboBox cob_GeneralPage;
     private javax.swing.JComboBox cob_GeneralSearch;
-    private cc.johnwu.finger.FingerPrintViewer fingerPrintViewer1;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel8;
+    private cc.johnwu.finger.FingerPrintViewer fingerPrintViewer1;
     private javax.swing.JLabel lab_FingerprintSearch;
     private javax.swing.JPanel pan_Doctor;
     private javax.swing.JPanel pan_General;
