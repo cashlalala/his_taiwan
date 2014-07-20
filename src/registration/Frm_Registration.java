@@ -19,12 +19,17 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.InputVerifier;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
+
+import org.his.bind.PatientsInfoJPATable;
+import org.his.dao.PatientsInfoDao;
+import org.his.model.PatientsInfo;
 
 import patients.*;
 import system.Setting;
@@ -40,7 +45,7 @@ public class Frm_Registration extends javax.swing.JFrame implements FingerPrintV
 //    private final String SYSTEMNAME = "Registration";   //系統名稱
     private final long REFRASH_TIME = 3000; //自度刷新跨號資訊時間
     private final int MAX_FINGERPRINT_COUNT = 5000;
-    private final int MAX_SEARCH_ROWS = 50;
+    private final int MAX_SEARCH_ROWS = 10;
     private final String POLINAME_DM = Constant.POLINAME_DM;
     private String m_RegShiftGuid; //條件班表
     private String m_RegtGuid;  //修改掛號需要
@@ -70,6 +75,9 @@ public class Frm_Registration extends javax.swing.JFrame implements FingerPrintV
     private boolean IsConnGPS = false;
     private boolean DEAD=false;
 
+    //access DB
+    private PatientsInfoDao patientsInfoDao;
+    private List<PatientsInfo> patientsInfo;    
     
     public Frm_Registration() {
         // 是否啟動GPS
@@ -144,6 +152,8 @@ public class Frm_Registration extends javax.swing.JFrame implements FingerPrintV
 
     /** 初始化*/
     private void init(){
+    	patientsInfoDao = new PatientsInfoDao();
+    	
         this.setExtendedState(Frm_Registration.MAXIMIZED_BOTH);  // 最大化
         FingerPrintScanner.setParentFrame(this);
         this.setLocationRelativeTo(this);
@@ -358,10 +368,22 @@ public class Frm_Registration extends javax.swing.JFrame implements FingerPrintV
 
     /** 設定病患清單*/
     private void showPatientList(){
+    	
         ResultSet rs = null;
-        String sql = "";
+        String target = txt_Search.getText();
+        patientsInfo = patientsInfoDao.getPatientsBySearch(target,MAX_SEARCH_ROWS);
+        int page = patientsInfo.size() / MAX_SEARCH_ROWS
+				+ ((patientsInfo.size() % MAX_SEARCH_ROWS == 0) ? 0 : 1);
+        if(page!=0){
+        	tab_PatientsList.setModel(new PatientsInfoJPATable(patientsInfo));
+        }
+        else{
+            tab_PatientsList.setModel(getModle(new String[]{"Message"},new String[][]{{"No Information."}}));
+        }
+        /*
         try {
-
+    		
+        	
             sql = "SELECT p_no AS 'Patient No.', " +
                         "concat(FirstName,' ',LastName) AS '"+paragraph.getLanguage(line, "COL_NAME")+"', " +
                         "Gender AS '"+paragraph.getLanguage(line, "COL_GENDER")+"', " +
@@ -377,6 +399,7 @@ public class Frm_Registration extends javax.swing.JFrame implements FingerPrintV
 
             rs = DBC.executeQuery(sql);
             rs.last();
+            
             if(rs.getRow() >= MAX_SEARCH_ROWS){
                 this.lab_msg.setText("<html><font color='FF0000'>"+paragraph.getLanguage(message ,"MOREINFORMATION")+
                                      "</font></html>");
@@ -403,6 +426,7 @@ public class Frm_Registration extends javax.swing.JFrame implements FingerPrintV
                 tab_PatientsList.setModel(getModle(new String[]{"Message"},new String[][]{{"No Information."}}));
             }
             this.tpan_List.setSelectedIndex(0);
+            
         } catch (SQLException e) {
             ErrorMessage.setData("Registration", "Frm_Registration" ,"showPatientList()",
                 e.toString().substring(e.toString().lastIndexOf(".")+1, e.toString().length()));
@@ -413,6 +437,7 @@ public class Frm_Registration extends javax.swing.JFrame implements FingerPrintV
                 e.toString().substring(e.toString().lastIndexOf(".")+1, e.toString().length()));
             }
         }
+        */
         txt_Search.setFocusable(true);
     }
 

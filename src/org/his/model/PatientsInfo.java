@@ -19,7 +19,10 @@ import java.util.List;
         query="SELECT COUNT(pinfo) FROM PatientsInfo pinfo WHERE pinfo.exist = 1"),
     @NamedQuery(
         name="DeleteAutoGenUser",
-        query="DELETE FROM PatientsInfo p WHERE p.firstname = :uuid AND p.exist = 0")
+        query="DELETE FROM PatientsInfo p WHERE p.firstname = :uuid AND p.exist = 0"),
+    @NamedQuery(
+        name="QueryPatientBySearch",
+        query="SELECT pinfo FROM PatientsInfo pinfo WHERE pinfo.exist = 1")
 })
 
 @Entity
