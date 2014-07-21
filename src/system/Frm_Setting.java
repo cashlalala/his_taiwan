@@ -1,6 +1,7 @@
 package system;
 
 import cc.johnwu.sql.DBC;
+
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -10,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
@@ -35,26 +37,58 @@ public class Frm_Setting extends javax.swing.JFrame {
 
     // 初始化
     private void init() {
-        try{
-           ResultSet rs = DBC.executeQuery("SELECT * FROM setting WHERE id = 1");
-           if(rs.next()){
-               this.txt_MorningS.setText(rs.getString("morning_shift_s"));
-               this.txt_MorningE.setText(rs.getString("morning_shift_e"));
-               this.txt_NoonS.setText(rs.getString("noon_shift_s"));
-               this.txt_NoonE.setText(rs.getString("noon_shift_e"));
-               this.txt_NightS.setText(rs.getString("evening_shift_s"));
-               this.txt_NightE.setText(rs.getString("evening_shift_e"));
-               this.txt_NightE.setText(rs.getString("evening_shift_e"));
-           }
-           reLoad();
-
-           
-        }
-        catch (SQLException ex){
-            Logger.getLogger(Frm_Setting.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    	reloadSystemSetting();
+    	reloadShiftSetting();
+    	reloadPriceSetting();
+    }
+    
+    private void reloadSystemSetting() {
+    	try{
+            ResultSet rs = DBC.executeQuery("SELECT * FROM setting WHERE id = 1");
+            if(rs.next()){
+                this.txt_HosName.setText(rs.getString("hos_name"));
+                this.txt_HosPhone.setText(rs.getString("hos_phone"));
+                this.txt_HosAddr.setText(rs.getString("hos_address"));
+            }
+         }
+         catch (SQLException ex){
+             Logger.getLogger(Frm_Setting.class.getName()).log(Level.SEVERE, null, ex);
+         }
     }
 
+    private void reloadShiftSetting() {
+    	try{
+            ResultSet rs = DBC.executeQuery("SELECT * FROM setting WHERE id = 1");
+            if(rs.next()){
+                this.txt_MorningS.setText(rs.getString("morning_shift_s"));
+                this.txt_MorningE.setText(rs.getString("morning_shift_e"));
+                this.txt_NoonS.setText(rs.getString("noon_shift_s"));
+                this.txt_NoonE.setText(rs.getString("noon_shift_e"));
+                this.txt_NightS.setText(rs.getString("evening_shift_s"));
+                this.txt_NightE.setText(rs.getString("evening_shift_e"));
+                this.txt_NightE.setText(rs.getString("evening_shift_e"));
+            }
+            reLoad();
+         }
+         catch (SQLException ex){
+             Logger.getLogger(Frm_Setting.class.getName()).log(Level.SEVERE, null, ex);
+         }
+    }
+    
+    private void reloadPriceSetting() {
+    	try{
+            ResultSet rs = DBC.executeQuery("SELECT * FROM setting WHERE id = 1");
+            if(rs.next()){
+                this.txt_RegPrice.setText(rs.getString("registration_price"));
+                this.txt_BedPrice.setText(rs.getString("bed_price"));
+                this.txt_DiagnosisPrice.setText(rs.getString("diagnosis_price"));
+            }
+         }
+         catch (SQLException ex){
+             Logger.getLogger(Frm_Setting.class.getName()).log(Level.SEVERE, null, ex);
+         }
+    }
+    
     private void reLoad() {
         btn_ReLoad.setEnabled(false);
         btn_Save.setEnabled(false);
@@ -80,6 +114,18 @@ public class Frm_Setting extends javax.swing.JFrame {
 
     }
 
+ // 判斷藥品輸入的值是否為數字
+    public boolean isFloat(String str) {
+    	Pattern pattern = Pattern.compile("[0-9.]*");
+        Matcher isNum = pattern.matcher(str);
+        if (!isNum.matches() || str.trim().equals("")) {
+            System.out.println("FALSE");
+            return false;
+        } else {
+            System.out.println("TRUE");
+            return true;
+        }
+}
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -103,9 +149,12 @@ public class Frm_Setting extends javax.swing.JFrame {
         pan_under = new javax.swing.JPanel();
         btn_Save = new javax.swing.JButton();
         btn_ReLoad = new javax.swing.JButton();
-        btn_Default = new javax.swing.JButton();
+        //btn_Default = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         btn_EnterHL7 = new javax.swing.JButton();
+        jPanel3 = new javax.swing.JPanel();
+        jPanel4 = new javax.swing.JPanel();
+        jPanel5 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         txt_Pno = new javax.swing.JTextField();
         btn_Close = new javax.swing.JButton();
@@ -114,13 +163,110 @@ public class Frm_Setting extends javax.swing.JFrame {
         setTitle("Setting");
         setMinimumSize(new java.awt.Dimension(800, 600));
 
+        // start of tab system setting    
+        btn_SaveSystemSetting = new javax.swing.JButton();
+        btn_ReloadSystemSetting = new javax.swing.JButton();
+        txt_HosName = new javax.swing.JTextField();
+        txt_HosPhone = new javax.swing.JTextField();
+        txt_HosAddr = new javax.swing.JTextField();
+        jLabelHosName = new javax.swing.JLabel();
+        jLabelHosPhone = new javax.swing.JLabel();
+        jLabelHosAddr = new javax.swing.JLabel();
+        pan_SystemSettingButton = new javax.swing.JPanel();
+        
+        btn_SaveSystemSetting.setText("Save");
+        btn_SaveSystemSetting.setEnabled(true);
+        btn_ReloadSystemSetting.setText("Reload");
+        btn_ReloadSystemSetting.setEnabled(true);
+        jLabelHosName.setText("Hospital Name :");
+        jLabelHosPhone.setText("Hospital Phone :");
+        jLabelHosAddr.setText("Hospital Address :");
+        
+        btn_ReloadSystemSetting.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+            	reloadSystemSetting();
+            }
+        });
+        btn_SaveSystemSetting.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_SaveSystemSettingActionPerformed(evt);
+            }
+        });
+        
+        javax.swing.GroupLayout pan_SystemSettingButtonLayout = new javax.swing.GroupLayout(pan_SystemSettingButton);
+        pan_SystemSettingButton.setLayout(pan_SystemSettingButtonLayout);
+        pan_SystemSettingButtonLayout.setHorizontalGroup(
+        		pan_SystemSettingButtonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pan_SystemSettingButtonLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btn_ReloadSystemSetting, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btn_SaveSystemSetting, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        pan_SystemSettingButtonLayout.setVerticalGroup(
+        		pan_SystemSettingButtonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pan_SystemSettingButtonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(btn_ReloadSystemSetting)
+                .addComponent(btn_SaveSystemSetting)
+                )
+        );
+        
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        
+        jPanel4Layout.setHorizontalGroup(
+        		jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel4Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel4Layout.createSequentialGroup()
+                        		.addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jLabelHosName, javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(jLabelHosPhone, javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(jLabelHosAddr, javax.swing.GroupLayout.Alignment.TRAILING)
+                                ).addGap(10, 10, 10)
+                        		.addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(txt_HosName, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(txt_HosPhone, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(txt_HosAddr, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                ).addContainerGap(491, Short.MAX_VALUE))
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                            .addComponent(pan_SystemSettingButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addContainerGap())
+                            
+                    ))
+            );
+
+        jPanel4Layout.setVerticalGroup(
+        		jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel4Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    		.addComponent(jLabelHosName)
+                    		.addComponent(txt_HosName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    ).addGap(18, 18, 18)
+                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    		.addComponent(jLabelHosPhone)
+                    		.addComponent(txt_HosPhone, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    ).addGap(18, 18, 18)
+                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabelHosAddr)
+                            .addComponent(txt_HosAddr, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    )
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 376, Short.MAX_VALUE)
+                    .addComponent(pan_SystemSettingButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap())
+            );
+
+        jTabbedPane1.addTab("System", jPanel4);
+        // end of tab system setting
+        
         jPanel1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
-        jLabel1.setText("Morning Shift : ");
-
-        jLabel2.setText("Afternoon Shift : ");
-
-        jLabel3.setText("Night Shift : ");
+        jLabel1.setText("Morning Shift : from ");
+        jLabel2.setText("Afternoon Shift : from ");
+        jLabel3.setText("Night Shift : from ");
 
         txt_MorningS.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
@@ -191,16 +337,16 @@ public class Frm_Setting extends javax.swing.JFrame {
         btn_ReLoad.setEnabled(false);
         btn_ReLoad.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_ReLoadActionPerformed(evt);
+            	reloadShiftSetting();
             }
         });
 
-        btn_Default.setText("Default");
-        btn_Default.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_DefaultActionPerformed(evt);
-            }
-        });
+        //btn_Default.setText("Default");
+        //btn_Default.addActionListener(new java.awt.event.ActionListener() {
+        //    public void actionPerformed(java.awt.event.ActionEvent evt) {
+        //        btn_DefaultActionPerformed(evt);
+        //    }
+        //});
 
         javax.swing.GroupLayout pan_underLayout = new javax.swing.GroupLayout(pan_under);
         pan_under.setLayout(pan_underLayout);
@@ -208,8 +354,8 @@ public class Frm_Setting extends javax.swing.JFrame {
             pan_underLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pan_underLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btn_Default, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                //.addComponent(btn_Default, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
+                //.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btn_ReLoad, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btn_Save, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -220,7 +366,8 @@ public class Frm_Setting extends javax.swing.JFrame {
             .addGroup(pan_underLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                 .addComponent(btn_Save)
                 .addComponent(btn_ReLoad)
-                .addComponent(btn_Default))
+                //.addComponent(btn_Default)
+                )
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -281,7 +428,7 @@ public class Frm_Setting extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jTabbedPane1.addTab("Shift Setting", jPanel1);
+        jTabbedPane1.addTab("Shift", jPanel1);
 
         btn_EnterHL7.setText("Enter");
         btn_EnterHL7.addActionListener(new java.awt.event.ActionListener() {
@@ -289,7 +436,137 @@ public class Frm_Setting extends javax.swing.JFrame {
                 btn_EnterHL7ActionPerformed(evt);
             }
         });
+        
+        // start of tab policlinic setting
+        //jLabel4.setText("Patient No.:");
 
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+        		jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                //.addComponent(jLabel4)
+                //.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                //.addComponent(txt_Pno, javax.swing.GroupLayout.PREFERRED_SIZE, 202, javax.swing.GroupLayout.PREFERRED_SIZE)
+                //.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                //.addComponent(btn_EnterHL7)
+                .addContainerGap(449, Short.MAX_VALUE))
+        );
+        jPanel3Layout.setVerticalGroup(
+        		jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    //.addComponent(btn_EnterHL7)
+                    //.addComponent(jLabel4)
+                    //.addComponent(txt_Pno, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                ).addContainerGap(491, Short.MAX_VALUE))
+        );
+
+        jTabbedPane1.addTab("Division", jPanel3);
+        // end of tab policlinic setting
+
+        // start of tab Price setting
+        btn_SavePrice = new javax.swing.JButton();
+        btn_ReloadPrice = new javax.swing.JButton();
+        txt_RegPrice = new javax.swing.JTextField();
+        txt_BedPrice = new javax.swing.JTextField();
+        txt_DiagnosisPrice = new javax.swing.JTextField();
+        
+        jLabelPriceRegistration = new javax.swing.JLabel();
+        jLabelPriceBed = new javax.swing.JLabel();
+        jLabelPriceDiagnosis = new javax.swing.JLabel();
+        pan_PriceButton = new javax.swing.JPanel();
+        
+        btn_SavePrice.setText("Save");
+        btn_SavePrice.setEnabled(true);
+        btn_ReloadPrice.setText("Reload");
+        btn_ReloadPrice.setEnabled(true);
+        jLabelPriceRegistration.setText("Registration Price :");
+        jLabelPriceBed.setText("Bed Price :");
+        jLabelPriceDiagnosis.setText("Diagnosis Price :");
+        
+        btn_ReloadPrice.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+            	reloadPriceSetting();
+            }
+        });
+        btn_SavePrice.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_SavePriceActionPerformed(evt);
+            }
+        });
+        
+        javax.swing.GroupLayout pan_PriceButtonLayout = new javax.swing.GroupLayout(pan_PriceButton);
+        pan_PriceButton.setLayout(pan_PriceButtonLayout);
+        pan_PriceButtonLayout.setHorizontalGroup(
+        		pan_PriceButtonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pan_PriceButtonLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btn_ReloadPrice, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btn_SavePrice, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        pan_PriceButtonLayout.setVerticalGroup(
+        		pan_PriceButtonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pan_PriceButtonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(btn_ReloadPrice)
+                .addComponent(btn_SavePrice)
+                )
+        );
+        
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        
+        jPanel5Layout.setHorizontalGroup(
+        		jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel5Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel5Layout.createSequentialGroup()
+                        		.addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jLabelPriceRegistration, javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(jLabelPriceBed, javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(jLabelPriceDiagnosis, javax.swing.GroupLayout.Alignment.TRAILING)
+                                ).addGap(10, 10, 10)
+                        		.addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(txt_RegPrice, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(txt_BedPrice, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(txt_DiagnosisPrice, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                ).addContainerGap(491, Short.MAX_VALUE))
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+                            .addComponent(pan_PriceButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addContainerGap())
+                            
+                    ))
+            );
+
+        jPanel5Layout.setVerticalGroup(
+        		jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel5Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    		.addComponent(jLabelPriceRegistration)
+                    		.addComponent(txt_RegPrice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    ).addGap(18, 18, 18)
+                    .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    		.addComponent(jLabelPriceBed)
+                    		.addComponent(txt_BedPrice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    ).addGap(18, 18, 18)
+                    .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabelPriceDiagnosis)
+                            .addComponent(txt_DiagnosisPrice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    )
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 376, Short.MAX_VALUE)
+                    .addComponent(pan_PriceButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap())
+            );
+        
+        jTabbedPane1.addTab("Default Price", jPanel5);
+        // end of tab Price setting
+        
         jLabel4.setText("Patient No.:");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -348,7 +625,40 @@ public class Frm_Setting extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+    
+    private void btn_SaveSystemSettingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_SaveActionPerformed
+        try {
+            DBC.executeUpdate("UPDATE setting SET " +
+            	"hos_name = '"+txt_HosName.getText()+"'," +
+            	"hos_phone = '"+txt_HosPhone.getText()+"'," +
+                "hos_address = '"+txt_HosAddr.getText()+"' WHERE id = 1");
+            JOptionPane.showMessageDialog(null, "Save Completed.");
+	    } catch (SQLException ex) {
+	        Logger.getLogger(Frm_Setting.class.getName()).log(Level.SEVERE, null, ex);
+	        JOptionPane.showMessageDialog(null, "db: Input System Setting Error.");
+	    }
+}
 
+    private void btn_SavePriceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_SaveActionPerformed
+        try {
+                if (isFloat(txt_RegPrice.getText())
+                		&& isFloat(txt_BedPrice.getText())
+                		&& isFloat(txt_DiagnosisPrice.getText()) ) {
+                	
+                        DBC.executeUpdate("UPDATE setting SET " +
+                        	"bed_price = '"+txt_BedPrice.getText()+"'," +
+                        	"diagnosis_price = '"+txt_DiagnosisPrice.getText()+"'," +
+                            "registration_price = '"+txt_RegPrice.getText()+"' WHERE id = 1");
+                        JOptionPane.showMessageDialog(null, "Save Completed.");
+                } else {
+                    JOptionPane.showMessageDialog(null, "Input Price Error.");
+                }
+        } catch (SQLException ex) {
+            Logger.getLogger(Frm_Setting.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, "db: Input Price Error.");
+        }
+    }
+    
     private void btn_SaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_SaveActionPerformed
         try {
 
@@ -363,29 +673,22 @@ public class Frm_Setting extends javax.swing.JFrame {
                             "evening_shift_s ='"+txt_NightS.getText()+"'," +
                             "evening_shift_e ='"+txt_NightE.getText()+"'" +
                             " WHERE id = 1");
-                        JOptionPane.showMessageDialog(null, "Save Completeadmin .");
+                        JOptionPane.showMessageDialog(null, "Save Completed.");
                         reLoad();
                 } else {
-                    JOptionPane.showMessageDialog(null, "Input Time Error.");
+                    JOptionPane.showMessageDialog(null, "db: Input Time Error.");
                 }
-          
-
-    
-            
 
         } catch (SQLException ex) {
             Logger.getLogger(Frm_Setting.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, "Input Time Error.");
         }
 }//GEN-LAST:event_btn_SaveActionPerformed
 
     private void btn_CloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_CloseActionPerformed
         new main.Frm_Main().setVisible(true);
         this.dispose();
-}//GEN-LAST:event_btn_CloseActionPerformed
-
-    private void btn_ReLoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_ReLoadActionPerformed
-         init();
-}//GEN-LAST:event_btn_ReLoadActionPerformed
+    }//GEN-LAST:event_btn_CloseActionPerformed
 
     private void txt_NightSActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_NightSActionPerformed
         // TODO add your handling code here:
@@ -429,14 +732,14 @@ public class Frm_Setting extends javax.swing.JFrame {
         btn_Save.setEnabled(true);
     }//GEN-LAST:event_txt_NightEKeyReleased
 
-    private void btn_DefaultActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_DefaultActionPerformed
-        this.txt_MorningS.setText("800");
-        this.txt_MorningE.setText("1159");
-        this.txt_NoonS.setText("1200");
-        this.txt_NoonE.setText("1759");
-        this.txt_NightS.setText("1800");
-        this.txt_NightE.setText("2359");
-    }//GEN-LAST:event_btn_DefaultActionPerformed
+    //private void btn_DefaultActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_DefaultActionPerformed
+    //    this.txt_MorningS.setText("800");
+    //    this.txt_MorningE.setText("1159");
+    //    this.txt_NoonS.setText("1200");
+    //    this.txt_NoonE.setText("1759");
+    //    this.txt_NightS.setText("1800");
+    //    this.txt_NightE.setText("2359");
+    //}//GEN-LAST:event_btn_DefaultActionPerformed
 
     private void btn_EnterHL7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_EnterHL7ActionPerformed
         try {
@@ -451,7 +754,7 @@ public class Frm_Setting extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_Close;
-    private javax.swing.JButton btn_Default;
+    //private javax.swing.JButton btn_Default;
     private javax.swing.JButton btn_EnterHL7;
     private javax.swing.JButton btn_ReLoad;
     private javax.swing.JButton btn_Save;
@@ -465,6 +768,9 @@ public class Frm_Setting extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JPanel pan_under;
     private javax.swing.JTextField txt_MorningE;
@@ -474,5 +780,28 @@ public class Frm_Setting extends javax.swing.JFrame {
     private javax.swing.JTextField txt_NoonE;
     private javax.swing.JTextField txt_NoonS;
     private javax.swing.JTextField txt_Pno;
+    
+    // for price tab
+    private javax.swing.JButton btn_SavePrice;
+    private javax.swing.JButton btn_ReloadPrice;
+    private javax.swing.JLabel jLabelPriceRegistration;
+    private javax.swing.JLabel jLabelPriceBed;
+    private javax.swing.JLabel jLabelPriceDiagnosis;
+    private javax.swing.JTextField txt_BedPrice;
+    private javax.swing.JTextField txt_RegPrice;
+    private javax.swing.JTextField txt_DiagnosisPrice;
+    private javax.swing.JPanel pan_PriceButton;
+    
+    // for system setting tab
+    private javax.swing.JButton btn_SaveSystemSetting;
+    private javax.swing.JButton btn_ReloadSystemSetting;
+    private javax.swing.JLabel jLabelHosName;
+    private javax.swing.JLabel jLabelHosPhone;
+    private javax.swing.JLabel jLabelHosAddr;
+    private javax.swing.JTextField txt_HosName;
+    private javax.swing.JTextField txt_HosPhone;
+    private javax.swing.JTextField txt_HosAddr;
+    private javax.swing.JPanel pan_SystemSettingButton;
+    
     // End of variables declaration//GEN-END:variables
 }

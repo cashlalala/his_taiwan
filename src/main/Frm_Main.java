@@ -329,7 +329,7 @@ public class Frm_Main extends javax.swing.JFrame {
             }
         });
 
-        btn_System.setText("System");
+        btn_System.setText("Setting");
         btn_System.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_SystemActionPerformed(evt);
