@@ -1,3 +1,8 @@
+// dont know how to use .form to make UI component...
+// multi-language yet 
+// put a reason input field for "retired"/"suspended"/"dismissed"
+// how to bring an staff other than "normal" status back?
+
 package staff;
 
 import cc.johnwu.sql.*;
@@ -16,6 +21,39 @@ import javax.swing.table.TableColumn;
 
 import errormessage.StoredErrorMessage;
 
+
+
+class SelectOption {
+    private String code;
+    private String value;
+
+    public SelectOption(String c, String v)  {
+    	setCode(c);
+    	setValue(v);
+    }
+     
+    public SelectOption() {
+    	this("", "");
+    }
+   
+
+	public String getCode() {
+        return code;
+    }
+ 
+    public void setCode(String c) {
+        code = c;
+    }
+     
+    public String getValue() {
+        return value;
+    }
+     
+    public void setValue(String v) {
+        value = v;
+    }
+}
+
 /**
  *
  * @author steven
@@ -24,6 +62,7 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
     private StoredErrorMessage ErrorMessage = new StoredErrorMessage() ;
     private int m_Sno = 0;
     private String m_UUID = null;
+    private SelectOption[] LeaveOption;
 
      /*多國語言變數*/
 //    private language paragraph = language.getInstance();
@@ -68,7 +107,7 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
         ResultSet rs = null;
         try {
             m_UUID = UUID.randomUUID().toString();
-            String sql = "INSERT INTO staff_info (s_no,firstname,lastname,sex,bloodgroup,rh_type,marital_status,staff_type,staff_category,employee_status,training_type,sponsorship,commitment,entitlement,type,exist) " +
+            String sql = "INSERT INTO staff_info (s_no,firstname,lastname,sex,bloodgroup,rh_type,marital_status,staff_type,staff_category,employee_status,training_type,sponsorship,commitment,entitlement,status,exist) " +
                 "SELECT MAX(s_no)+1, " +// s_no
                 "'"+m_UUID+"', " +      // firstname
                 "'"+m_UUID+"', " +      // lastname
@@ -83,7 +122,7 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
                 "0, " +
                 "0, " +
                 "0, " +
-                "0, " +
+                "'N', " +					// status
                 "false " +              // exist
                 "FROM staff_info ";
             DBC.executeUpdate(sql);
@@ -203,6 +242,16 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
             }
 
         }
+        
+        // setup combobox of leave status
+        LeaveOption = new SelectOption[4];
+        LeaveOption[0] = new SelectOption("N", "Normal");
+        LeaveOption[1] = new SelectOption("R", "Retired");
+        LeaveOption[2] = new SelectOption("S", "Suspended");
+        LeaveOption[3] = new SelectOption("D", "Dismissed");
+        
+        for(int i = 0; i < LeaveOption.length; i++)
+        	this.cob_Leave.addItem(LeaveOption[i].getValue());
     }
 
      private void initWorkCob() {
@@ -211,22 +260,40 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
             ResultSet rs_staffInfo = DBC.executeQuery("SELECT * FROM staff_info WHERE s_no = " + m_Sno);
             ResultSet rs_dep = DBC.executeQuery("SELECT * FROM department GROUP BY name");
             ResultSet rs_pos = DBC.executeQuery("SELECT * FROM position GROUP BY name");
-            ResultSet rs_permission = DBC.executeQuery("SELECT * FROM permission_info GROUP BY grp_name");
+            //ResultSet rs_permission = DBC.executeQuery("SELECT * FROM permission_info GROUP BY grp_name");
             ResultSet rs_poli = DBC.executeQuery("SELECT * FROM policlinic GROUP BY name");
             rs_staffInfo.next();
             rs_dep.next();
             rs_pos.next();
-            rs_permission.next();
+            //rs_permission.next();
             rs_poli.next();
+            
+            // init date of birth
+            dateChooser_PersonalDateBirth.setValue(rs_staffInfo.getString("date_birth"));
+            
+            // init leave status
+            for (int i = 0; i < cob_Leave.getItemCount(); i++) { //LeaveOption
+                if (rs_staffInfo.getString("status") != null) {
+                    if (rs_staffInfo.getString("status").equals(LeaveOption[i].getCode() )) {
+                    	cob_Leave.setSelectedIndex(i);
+                        break;
+                    }// else {
+                    //    rs_permission.next();
+                    //}
+                } else {	// should not coming to this else if DB data is correct (status is a forced input field)
+                	cob_Leave.setSelectedIndex(0);
+                }
+            }
+            
             /*將combobox設定為員工所屬群組 */
             for (int i = 0; i < cob_Permission.getItemCount(); i++) {
-                if (rs_staffInfo.getString("gp_guid") != null) {
-                    if (rs_staffInfo.getString("gp_guid").equals(rs_permission.getString("guid"))) {
+                if (rs_staffInfo.getString("grp_name") != null) {
+                    if (rs_staffInfo.getString("grp_name").equals(cob_Permission.getItemAt(i+1).toString() )) {
                         cob_Permission.setSelectedIndex(i + 1);
                         break;
-                    } else {
-                        rs_permission.next();
-                    }
+                    }// else {
+                    //    rs_permission.next();
+                    //}
                 } else {
                     cob_Permission.setSelectedIndex(0);
                 }
@@ -366,6 +433,8 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
         txt_CellPhone = new javax.swing.JTextField();
         lab_PassWord = new javax.swing.JLabel();
         txt_UserId = new javax.swing.JTextField();
+        lab_Leave = new javax.swing.JLabel();
+        cob_Leave = new javax.swing.JComboBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Employee Information");
@@ -379,7 +448,7 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
             }
         });
 
-        btn_Cancel.setText("Cancle");
+        btn_Cancel.setText("Cancel");
         btn_Cancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_CancelActionPerformed(evt);
@@ -450,7 +519,7 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
 
         lab_cellphone.setText("Contact Number :");
 
-        lab_Posi.setText("Position of Staff :");
+        lab_Posi.setText("Department :");
 
         lab_mail.setText("Email Address :");
 
@@ -467,17 +536,19 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
         txt_No.setText("00000000");
         txt_No.setEnabled(false);
 
-        lab_Group.setText("Permmision Group :");
+        lab_Group.setText("Position/Permission :");
 
         lab_No.setText("Staff No. :");
 
-        lab_ToDepartment.setText("Depart/Clinic:");
+        lab_ToDepartment.setText("Division :");
 
         lab_FirstName.setText("* First Name :");
 
         lab_LastName.setText("* Last Name :");
 
         lab_HssNo.setText("HSS NO. :");
+        
+        lab_Leave.setText("Current Status :");
 
         txt_HssNo.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
@@ -532,7 +603,8 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
                     .addComponent(lab_HssNo)
                     .addComponent(lab_Confirmation)
                     .addComponent(lab_PassWord)
-                    .addComponent(lab_ToDepartment))
+                    .addComponent(lab_ToDepartment)
+                    .addComponent(lab_Leave))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(txt_FirstName, javax.swing.GroupLayout.DEFAULT_SIZE, 329, Short.MAX_VALUE)
@@ -548,7 +620,8 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
                     .addComponent(pwd_Confirmation, javax.swing.GroupLayout.DEFAULT_SIZE, 329, Short.MAX_VALUE)
                     .addComponent(txt_Email, javax.swing.GroupLayout.DEFAULT_SIZE, 329, Short.MAX_VALUE)
                     .addComponent(txt_CellPhone, javax.swing.GroupLayout.DEFAULT_SIZE, 329, Short.MAX_VALUE)
-                    .addComponent(txt_UserId, javax.swing.GroupLayout.DEFAULT_SIZE, 329, Short.MAX_VALUE))
+                    .addComponent(txt_UserId, javax.swing.GroupLayout.DEFAULT_SIZE, 329, Short.MAX_VALUE)
+                    .addComponent(cob_Leave, 0, 329, Short.MAX_VALUE))
                 .addContainerGap(78, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -611,6 +684,10 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cob_Poli, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lab_ToDepartment))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cob_Leave, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lab_Leave))
                 .addGap(148, 148, 148))
         );
 
@@ -702,10 +779,11 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
 //            }
 
             if(this.cob_Permission.getSelectedIndex()!=0){
-                rsPermission = DBC.executeQuery("SELECT guid FROM permission_info WHERE grp_name = '" + cob_Permission.getSelectedItem().toString() + "'" );
-                if(rsPermission.next()){
-                    Permission = "'" + rsPermission.getString("guid") + "'";
-                }
+            	Permission = "'" + cob_Permission.getSelectedItem().toString() + "'";
+                //rsPermission = DBC.executeQuery("SELECT guid FROM permission_info WHERE grp_name = '" + cob_Permission.getSelectedItem().toString() + "'" );
+                //if(rsPermission.next()){
+                //    Permission = "'" + rsPermission.getString("guid") + "'";
+                //}
             }
 
             if(this.cob_Administrative.getSelectedIndex()!=0){
@@ -731,10 +809,11 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
                     "place_birth = '"+this.txt_PlaceOfBirth.getText()+"', " +
                     "cellphone = '"+this.txt_CellPhone.getText()+"', " +
                     "email = '"+this.txt_Email.getText()+"', " +
-                    "gp_guid = "+ Permission + ", "+
+                    "grp_name = "+ Permission + ", "+
                     "poli_guid ="+ Poli + ", "+
                     "posi_guid = "+ Posi + ", "+
                     "dep_guid = "+ Dep + ", "+
+                    "status = '" + LeaveOption[cob_Leave.getSelectedIndex()].getCode() + "', " +
                     "exist = true "+
                     "WHERE s_no = '"+this.txt_No.getText()+"' ";
             DBC.executeUpdate(sql);
@@ -806,6 +885,7 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
     private javax.swing.JComboBox cob_Administrative;
     private javax.swing.JComboBox cob_Permission;
     private javax.swing.JComboBox cob_Poli;
+    private javax.swing.JComboBox cob_Leave;
     private cc.johnwu.date.DateComboBox dateChooser_PersonalDateBirth;
     private cc.johnwu.finger.FingerPrintViewer fingerPrintViewer;
     private javax.swing.JPanel jPanel1;
@@ -823,6 +903,7 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
     private javax.swing.JLabel lab_UserId;
     private javax.swing.JLabel lab_cellphone;
     private javax.swing.JLabel lab_mail;
+    private javax.swing.JLabel lab_Leave;
     private javax.swing.JPanel pan_Fingerprint1;
     private javax.swing.JPanel pan_Personal_Personal;
     private javax.swing.JPasswordField pwd_Confirmation;

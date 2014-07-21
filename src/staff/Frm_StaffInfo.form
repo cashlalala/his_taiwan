@@ -1,4 +1,4 @@
-<?xml version="1.1" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 
 <Form version="1.5" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <Properties>
@@ -25,7 +25,7 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="1" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="tabp_StaffInfo" pref="656" max="32767" attributes="0"/>
+              <Component id="tabp_StaffInfo" pref="495" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jPanel8" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
@@ -73,12 +73,12 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jPanel3" alignment="0" pref="631" max="32767" attributes="2"/>
-                          <Component id="spn_PatientsList" alignment="0" pref="631" max="32767" attributes="2"/>
+                          <Component id="jPanel3" alignment="0" pref="463" max="32767" attributes="2"/>
+                          <Component id="spn_PatientsList" alignment="0" pref="463" max="32767" attributes="2"/>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="cob_GeneralSearch" min="-2" pref="105" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="txt_GeneralSearch" pref="414" max="32767" attributes="0"/>
+                              <Component id="txt_GeneralSearch" pref="246" max="32767" attributes="0"/>
                               <EmptySpace min="-2" max="-2" attributes="0"/>
                               <Component id="btn_GeneralSearch" min="-2" pref="100" max="-2" attributes="0"/>
                           </Group>
@@ -99,7 +99,7 @@
                           <Component id="cob_GeneralSearch" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="spn_PatientsList" pref="463" max="32767" attributes="0"/>
+                      <Component id="spn_PatientsList" pref="438" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jPanel3" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
@@ -231,15 +231,15 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="spn_PatientsList1" alignment="0" pref="631" max="32767" attributes="2"/>
+                          <Component id="spn_PatientsList1" alignment="0" pref="463" max="32767" attributes="2"/>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="cob_DoctorSearch" min="-2" pref="105" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="txt_DoctorSearch" pref="414" max="32767" attributes="0"/>
+                              <Component id="txt_DoctorSearch" pref="246" max="32767" attributes="0"/>
                               <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
                               <Component id="btn_DoctorSearch" min="-2" pref="100" max="-2" attributes="0"/>
                           </Group>
-                          <Component id="jPanel5" alignment="0" pref="631" max="32767" attributes="2"/>
+                          <Component id="jPanel5" alignment="0" pref="463" max="32767" attributes="2"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -255,7 +255,7 @@
                           <Component id="cob_DoctorSearch" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="spn_PatientsList1" pref="463" max="32767" attributes="0"/>
+                      <Component id="spn_PatientsList1" pref="438" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jPanel5" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
@@ -377,24 +377,27 @@
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
-                  <EmptySpace max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="1" attributes="0">
-                      <Component id="lab_FingerprintSearch" alignment="0" pref="100" max="32767" attributes="1"/>
+                  <EmptySpace min="-2" pref="120" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Component id="cbs_ShowDismissedEmployee" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Component id="lab_FingerprintSearch" alignment="0" pref="153" max="32767" attributes="1"/>
                       <Group type="103" alignment="0" groupAlignment="0" max="-2" attributes="0">
                           <Component id="btn_GeneralBack" alignment="1" max="32767" attributes="1"/>
                           <Component id="btn_GeneralEdit" alignment="0" max="32767" attributes="1"/>
                           <Component id="btn_GeneralAdd" alignment="0" max="32767" attributes="1"/>
                           <Component id="btn_GeneralDelete" alignment="0" pref="100" max="32767" attributes="1"/>
-                          <Component id="fingerPrintViewer1" alignment="0" max="32767" attributes="1"/>
                       </Group>
+                      <Component id="cbx_ShowCurrentEmployee" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Component id="cbx_ShowRetiredEmployee" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Component id="cbx_ShowSuspendedEmployee" alignment="0" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace max="32767" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="102" alignment="0" attributes="0">
+              <Group type="102" attributes="0">
                   <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
                   <Component id="btn_GeneralAdd" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
@@ -404,10 +407,16 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="btn_GeneralBack" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="fingerPrintViewer1" min="-2" max="-2" attributes="0"/>
+                  <Component id="cbx_ShowCurrentEmployee" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="cbx_ShowRetiredEmployee" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="cbx_ShowSuspendedEmployee" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
+                  <Component id="cbs_ShowDismissedEmployee" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="lab_FingerprintSearch" min="-2" pref="24" max="-2" attributes="0"/>
-                  <EmptySpace pref="257" max="32767" attributes="0"/>
+                  <EmptySpace pref="266" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -447,25 +456,33 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btn_GeneralDeleteActionPerformed"/>
           </Events>
         </Component>
-        <Container class="cc.johnwu.finger.FingerPrintViewer" name="fingerPrintViewer1">
-          <Properties>
-            <Property name="visible" type="boolean" value="true"/>
-          </Properties>
-
-          <Layout>
-            <DimensionLayout dim="0">
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="78" max="32767" attributes="0"/>
-              </Group>
-            </DimensionLayout>
-            <DimensionLayout dim="1">
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="111" max="32767" attributes="0"/>
-              </Group>
-            </DimensionLayout>
-          </Layout>
-        </Container>
         <Component class="javax.swing.JLabel" name="lab_FingerprintSearch">
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="cbx_ShowCurrentEmployee">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Current Employed"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cbx_ShowCurrentEmployeeActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="cbx_ShowRetiredEmployee">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Retired"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="cbx_ShowSuspendedEmployee">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Suspended"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cbx_ShowSuspendedEmployeeActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="cbs_ShowDismissedEmployee">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Dismissed"/>
+          </Properties>
         </Component>
       </SubComponents>
     </Container>

@@ -533,7 +533,7 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
                 .addComponent(btn_ReLoad))
         );
 
-        lab_Policlinic.setText("Depart/Clinic ");
+        lab_Policlinic.setText("Division ");
 
         cob_Policlinic.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
