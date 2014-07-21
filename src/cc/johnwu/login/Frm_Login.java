@@ -106,7 +106,7 @@ public class Frm_Login extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void initLanguage() {
+    public void initLanguage() {
         this.lab_Id.setText(paragraph.getLanguage(line, "ID"));
         this.lab_Passwd.setText(paragraph.getLanguage(line, "PASSWD"));
         this.btn_Login.setText(paragraph.getLanguage(line, "LOGIN"));

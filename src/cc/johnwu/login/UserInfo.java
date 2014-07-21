@@ -1,14 +1,17 @@
 package cc.johnwu.login;
 
 
-import cc.johnwu.sql.*;
-import java.awt.*;
-import java.sql.*;
+import java.awt.Frame;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.UUID;
-import javax.swing.*;
 
+import javax.swing.JOptionPane;
+
+import main.Frm_Main;
+import cc.johnwu.sql.DBC;
 
 public class UserInfo {
 
@@ -41,6 +44,7 @@ public class UserInfo {
 
     protected boolean setOnLine(String userID){
         if(setUserInfo(userID)){
+        	((Frm_Main) m_EnteredFrm).initLanguage();
             m_EnteredFrm.setVisible(true);
 
             ((main.Frm_Main)m_EnteredFrm).initPermission();

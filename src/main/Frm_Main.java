@@ -1,12 +1,5 @@
 package main;
 
-import cashier.Frm_CashierList;
-import cc.johnwu.loading.Frm_Loading;
-import cc.johnwu.login.UserInfo;
-import cc.johnwu.login.Frm_Login;
-import cc.johnwu.login.SysInfo;
-import cc.johnwu.sql.DBC;
-
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -15,15 +8,18 @@ import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 
+import mobilehealth.Frm_MobileHealth;
+import multilingual.Language;
+
 import org.his.JPAUtil;
 
 import statistic.Frm_Statistic;
 import system.Frm_Setting;
-import test.Frm_PoliManage;
-import test.Frm_Test;
+import cashier.Frm_CashierList;
+import cc.johnwu.loading.Frm_Loading;
+import cc.johnwu.login.Frm_Login;
+import cc.johnwu.login.UserInfo;
 import errormessage.StoredErrorMessage;
-import mobilehealth.Frm_MobileHealth;
-import multilingual.Language;
 
 
 public class Frm_Main extends javax.swing.JFrame {
@@ -54,7 +50,77 @@ public class Frm_Main extends javax.swing.JFrame {
         btn_DepartmentManagement.setVisible(true);
         btn_PositionManagement.setVisible(true);
         
-        this.btn_MedicineStock.setText(paragraph.getString("MEDICINE_STOCK"));
+        initLanguage();
+    
+    }
+
+	public void initLanguage() {
+        pan_PersonalManagement.setBorder(javax.swing.BorderFactory.createTitledBorder(paragraph.getString("PERSONAL")));
+
+        btn_StaffManagement.setText(paragraph.getString("STAFF_MANAGEMENT"));
+        
+        pan_PersonalManagement.setBorder(javax.swing.BorderFactory.createTitledBorder(paragraph.getString("PERSONAL")));
+
+        btn_StaffManagement.setText(paragraph.getString("STAFF_MANAGEMENT"));
+
+        btn_ShiftManagement.setText(paragraph.getString("SHIFT_MANAGEMENT"));
+
+        pan_Registration.setBorder(javax.swing.BorderFactory.createTitledBorder(paragraph.getString("REGISTRATION")));
+
+        btn_Register.setText(paragraph.getString("REGISTRATION"));
+
+        pan_Anamnesis.setBorder(javax.swing.BorderFactory.createTitledBorder(paragraph.getString("MEDICAL_HISTORYT")));
+
+        btn_AnamnesisReturn.setText(paragraph.getString("FORDER_RETURN"));
+
+        btn_Anamnesis.setText(paragraph.getString("MEDICAL_HISTORYT"));
+
+        pan_Doctor.setBorder(javax.swing.BorderFactory.createTitledBorder(paragraph.getString("CLINIC")));
+
+        btn_Diagnosis.setText(paragraph.getString("DIAGNOSIS"));
+
+        btn_Patients.setText(paragraph.getString("PATIENT_INFORMATION"));
+
+        pan_Pharmacy.setBorder(javax.swing.BorderFactory.createTitledBorder(paragraph.getString("PHARMACY")));
+
+        btn_Pharmacy.setText(paragraph.getString("PHARMACY"));
+
+        pan_SystemManagement.setBorder(javax.swing.BorderFactory.createTitledBorder(paragraph.getString("MANAGEMENT")));
+
+        btn_Premission.setText(paragraph.getString("PERMISSION"));
+        
+        btn_System.setText(paragraph.getString("SYSTEM"));
+
+        btn_Statistic.setText(paragraph.getString("STATISTIC"));
+
+        btn_Cashier.setText(paragraph.getString("CASHIER"));
+
+        pan_Investgations.setBorder(javax.swing.BorderFactory.createTitledBorder(paragraph.getString("INVESTGATIONS")));
+
+        btn_Laboratory.setText(paragraph.getString("LABORATORY"));
+
+        btn_Radiology.setText(paragraph.getString("RADIOLOGY(X-RAY)"));
+
+        btn_PositionManagement.setText(paragraph.getString("POSITION_MANAGEMENT"));
+
+        btn_DepartmentManagement.setText(paragraph.getString("POLINLIC_MANAGEMENT"));
+
+        btn_MedicineStock.setText(paragraph.getString("MEDICINE_STOCK"));
+
+        pan_Case.setBorder(javax.swing.BorderFactory.createTitledBorder(paragraph.getString("CASE_MANAGEMENT")));
+
+        btn_Case.setText(paragraph.getString("CASE_MANAGEMENT"));
+
+        btn_Sms.setText(paragraph.getString("MOBILE_HEALTH"));
+
+
+        jMenu1.setText(paragraph.getString("FILE"));
+
+        mnit_Logout.setText(paragraph.getString("LOGOUT"));
+
+        mnit_Exit.setText(paragraph.getString("EXIT"));
+		
+		this.btn_MedicineStock.setText(paragraph.getString("MEDICINE_STOCK"));
         this.btn_Pharmacy.setText(paragraph.getString("PHARMACY"));
         this.btn_PositionManagement.setText(paragraph.getString("POSITION_MANAGEMENT"));
         this.btn_DepartmentManagement.setText(paragraph.getString("DEPARTMENT_MANAGEMENT"));
@@ -78,8 +144,7 @@ public class Frm_Main extends javax.swing.JFrame {
         this.pan_Anamnesis.setBorder(javax.swing.BorderFactory.createTitledBorder(paragraph.getString("MEDICAL_HISTORYT")));
 
         this.setTitle(paragraph.getString("MAIN"));
-    
-    }
+	}
     
     public void initPermission(){
         btn_Register.setEnabled(UserInfo.getSelectPow("Registration"));

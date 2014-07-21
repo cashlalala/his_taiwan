@@ -90,6 +90,7 @@ public class DBC {
             }
             
             if(s_EnteredFrm!=null){
+            	((cc.johnwu.login.Frm_Login)s_EnteredFrm).initLanguage();
                 s_EnteredFrm.setVisible(true);
                 s_EnteredFrm = null;
             }
