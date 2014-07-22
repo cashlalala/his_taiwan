@@ -1,19 +1,25 @@
 package system;
 
-import cc.johnwu.sql.DBC;
-
 import java.awt.Frame;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
-import java.sql.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
+import cc.johnwu.sql.DBC;
 
 /**
  *
@@ -37,10 +43,35 @@ public class Frm_Setting extends javax.swing.JFrame {
 
     // 初始化
     private void init() {
+    	cob_Language.setModel(new javax.swing.DefaultComboBoxModel(
+	                new String[] { "en", "fr", "sp"}
+	            )
+	    );
+    	cob_ICDVersion.setModel(new javax.swing.DefaultComboBoxModel(
+	                new String[] { "ICD-9", "ICD-10"}
+	            )
+	    );
     	reloadSystemSetting();
     	reloadShiftSetting();
     	reloadPriceSetting();
     }
+    
+    private ImageIcon scaledIcon(String absolutePath, int width) {
+    	String path;
+    	File file = new File(absolutePath);
+        if(file.exists()) path = absolutePath;
+        else path = "./img/nofile.png";
+
+    	ImageIcon image = new ImageIcon(path);
+        Image img = image.getImage();
+        BufferedImage bi = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+        Graphics g = bi.createGraphics();
+        int scaledX = width;
+        int scaledY = (scaledX * img.getHeight(null))/img.getWidth(null);
+        g.drawImage(img, 0, 0, scaledX, scaledY, null);
+        ImageIcon newIcon = new ImageIcon(bi);
+        return newIcon;
+    } 
     
     private void reloadSystemSetting() {
     	try{
@@ -49,6 +80,20 @@ public class Frm_Setting extends javax.swing.JFrame {
                 this.txt_HosName.setText(rs.getString("hos_name"));
                 this.txt_HosPhone.setText(rs.getString("hos_phone"));
                 this.txt_HosAddr.setText(rs.getString("hos_address"));
+                this.txt_HosIcon.setText(rs.getString("hos_icon_path"));
+                for (int i = 0; i < cob_Language.getItemCount(); i++) { 
+                    if (rs.getString("language").equals(cob_Language.getItemAt(i).toString() )) {
+                    	cob_Language.setSelectedIndex(i);
+                        break;
+                    }
+                }
+                for (int i = 0; i < cob_ICDVersion.getItemCount(); i++) { 
+                    if (rs.getString("ICDVersion").equals(cob_ICDVersion.getItemAt(i).toString() )) {
+                    	cob_ICDVersion.setSelectedIndex(i);
+                        break;
+                    }
+                }
+    			jLabelHosIconImg.setIcon(scaledIcon(rs.getString("hos_icon_path"), 40));
             }
          }
          catch (SQLException ex){
@@ -131,7 +176,6 @@ public class Frm_Setting extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jFileChooser1 = new javax.swing.JFileChooser();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -166,21 +210,35 @@ public class Frm_Setting extends javax.swing.JFrame {
         // start of tab system setting    
         btn_SaveSystemSetting = new javax.swing.JButton();
         btn_ReloadSystemSetting = new javax.swing.JButton();
+        btn_SelectHosIcon = new javax.swing.JButton();
         txt_HosName = new javax.swing.JTextField();
         txt_HosPhone = new javax.swing.JTextField();
         txt_HosAddr = new javax.swing.JTextField();
+        txt_HosIcon = new javax.swing.JTextField();
+        //txt_Language = new javax.swing.JTextField();
+        cob_Language = new javax.swing.JComboBox();
+        cob_ICDVersion = new javax.swing.JComboBox();
         jLabelHosName = new javax.swing.JLabel();
         jLabelHosPhone = new javax.swing.JLabel();
         jLabelHosAddr = new javax.swing.JLabel();
+        jLabelHosIcon = new javax.swing.JLabel();
+        jLabelHosIconImg = new javax.swing.JLabel();
+        jLabelLanguage = new javax.swing.JLabel();
+        jLabelICDVersion = new javax.swing.JLabel();
         pan_SystemSettingButton = new javax.swing.JPanel();
         
         btn_SaveSystemSetting.setText("Save");
         btn_SaveSystemSetting.setEnabled(true);
         btn_ReloadSystemSetting.setText("Reload");
         btn_ReloadSystemSetting.setEnabled(true);
+        btn_SelectHosIcon.setText("choose...");
+        btn_SelectHosIcon.setEnabled(true);
         jLabelHosName.setText("Hospital Name :");
         jLabelHosPhone.setText("Hospital Phone :");
         jLabelHosAddr.setText("Hospital Address :");
+        jLabelHosIcon.setText("Hospital Icon :");
+        jLabelLanguage.setText("System Language :");
+        jLabelICDVersion.setText("ICD version :");
         
         btn_ReloadSystemSetting.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -190,6 +248,19 @@ public class Frm_Setting extends javax.swing.JFrame {
         btn_SaveSystemSetting.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_SaveSystemSettingActionPerformed(evt);
+            }
+        });
+        
+        btn_SelectHosIcon.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jFileChooser1 = new javax.swing.JFileChooser();
+                FileNameExtensionFilter filter = new FileNameExtensionFilter("JPG, GIF and PNG Images", "jpg", "jpeg", "gif", "png");
+                jFileChooser1.setFileFilter(filter);
+        		int returnVal = jFileChooser1.showOpenDialog(null);
+        		if(returnVal == JFileChooser.APPROVE_OPTION) {
+        			txt_HosIcon.setText(jFileChooser1.getSelectedFile().getAbsolutePath());
+        			jLabelHosIconImg.setIcon(scaledIcon(jFileChooser1.getSelectedFile().getAbsolutePath(), 40));
+        		}
             }
         });
         
@@ -225,11 +296,23 @@ public class Frm_Setting extends javax.swing.JFrame {
                                         .addComponent(jLabelHosName, javax.swing.GroupLayout.Alignment.TRAILING)
                                         .addComponent(jLabelHosPhone, javax.swing.GroupLayout.Alignment.TRAILING)
                                         .addComponent(jLabelHosAddr, javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(jLabelLanguage, javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(jLabelICDVersion, javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(jLabelHosIcon, javax.swing.GroupLayout.Alignment.TRAILING)
                                 ).addGap(10, 10, 10)
                         		.addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(txt_HosName, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(txt_HosPhone, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(txt_HosAddr, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(txt_HosName, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(txt_HosPhone, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(txt_HosAddr, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(cob_Language, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(cob_ICDVersion, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(txt_HosIcon, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                ).addGap(10, 10, 10)
+                        		.addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(btn_SelectHosIcon, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                ).addGap(10, 10, 10)
+                        		.addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jLabelHosIconImg)
                                 ).addContainerGap(491, Short.MAX_VALUE))
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
                             .addComponent(pan_SystemSettingButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -253,12 +336,25 @@ public class Frm_Setting extends javax.swing.JFrame {
                     .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabelHosAddr)
                             .addComponent(txt_HosAddr, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    ).addGap(18, 18, 18)
+                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabelLanguage)
+                            .addComponent(cob_Language, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    ).addGap(18, 18, 18)
+                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabelICDVersion)
+                            .addComponent(cob_ICDVersion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    ).addGap(18, 18, 18)
+                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabelHosIcon)
+                            .addComponent(txt_HosIcon, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btn_SelectHosIcon)
+                            .addComponent(jLabelHosIconImg)
                     )
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 376, Short.MAX_VALUE)
                     .addComponent(pan_SystemSettingButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addContainerGap())
             );
-
         jTabbedPane1.addTab("System", jPanel4);
         // end of tab system setting
         
@@ -629,9 +725,13 @@ public class Frm_Setting extends javax.swing.JFrame {
     private void btn_SaveSystemSettingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_SaveActionPerformed
         try {
             DBC.executeUpdate("UPDATE setting SET " +
-            	"hos_name = '"+txt_HosName.getText()+"'," +
-            	"hos_phone = '"+txt_HosPhone.getText()+"'," +
+            	"hos_name = '"+txt_HosName.getText()+"', " +
+            	"hos_phone = '"+txt_HosPhone.getText()+"', " +
+            	"hos_icon_path = '"+txt_HosIcon.getText()+"', " +
+            	"language = '"+cob_Language.getSelectedItem().toString()+"', " +
+            	"ICDVersion = '"+cob_ICDVersion.getSelectedItem().toString()+"', " +
                 "hos_address = '"+txt_HosAddr.getText()+"' WHERE id = 1");
+            reloadSystemSetting();
             JOptionPane.showMessageDialog(null, "Save Completed.");
 	    } catch (SQLException ex) {
 	        Logger.getLogger(Frm_Setting.class.getName()).log(Level.SEVERE, null, ex);
@@ -649,6 +749,7 @@ public class Frm_Setting extends javax.swing.JFrame {
                         	"bed_price = '"+txt_BedPrice.getText()+"'," +
                         	"diagnosis_price = '"+txt_DiagnosisPrice.getText()+"'," +
                             "registration_price = '"+txt_RegPrice.getText()+"' WHERE id = 1");
+                    	reloadPriceSetting();
                         JOptionPane.showMessageDialog(null, "Save Completed.");
                 } else {
                     JOptionPane.showMessageDialog(null, "Input Price Error.");
@@ -673,6 +774,7 @@ public class Frm_Setting extends javax.swing.JFrame {
                             "evening_shift_s ='"+txt_NightS.getText()+"'," +
                             "evening_shift_e ='"+txt_NightE.getText()+"'" +
                             " WHERE id = 1");
+                    	reloadShiftSetting();
                         JOptionPane.showMessageDialog(null, "Save Completed.");
                         reLoad();
                 } else {
@@ -795,12 +897,21 @@ public class Frm_Setting extends javax.swing.JFrame {
     // for system setting tab
     private javax.swing.JButton btn_SaveSystemSetting;
     private javax.swing.JButton btn_ReloadSystemSetting;
+    private javax.swing.JButton btn_SelectHosIcon;
     private javax.swing.JLabel jLabelHosName;
     private javax.swing.JLabel jLabelHosPhone;
     private javax.swing.JLabel jLabelHosAddr;
+    private javax.swing.JLabel jLabelHosIcon;
+    private javax.swing.JLabel jLabelHosIconImg;
+    private javax.swing.JLabel jLabelLanguage;
+    private javax.swing.JLabel jLabelICDVersion;
     private javax.swing.JTextField txt_HosName;
     private javax.swing.JTextField txt_HosPhone;
     private javax.swing.JTextField txt_HosAddr;
+    private javax.swing.JTextField txt_HosIcon;
+    //private javax.swing.JTextField txt_Language;
+    private javax.swing.JComboBox cob_Language;
+    private javax.swing.JComboBox cob_ICDVersion;
     private javax.swing.JPanel pan_SystemSettingButton;
     
     // End of variables declaration//GEN-END:variables
