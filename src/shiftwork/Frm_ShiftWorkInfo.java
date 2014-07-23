@@ -27,7 +27,7 @@ import errormessage.StoredErrorMessage;
 import multilingual.Language;
 
 public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
-    private final String DOCTOR_DEPARTMENT = "Doctor"; // 排班只限醫生群組
+    //private final String DOCTOR_DEPARTMENT = "Doctor"; // 排班只限醫生群組
     private Calendar m_Cal = Calendar.getInstance();  //時間用
     private int m_ReLoad = 1;                         //避免combobox更改造成重複讀取資料庫 0為可讀取   1為已讀取
     private JComboBox m_ComboBox = new JComboBox();   //醫生姓名combobox
@@ -173,8 +173,8 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
         ResultSet rs = null;
         try {
             String sql = "SELECT concat(staff_info.firstname,'  ',staff_info.lastname) AS name, staff_info.s_id " +
-                         "FROM staff_info, policlinic, department " +
-                         "WHERE department.name = '"+DOCTOR_DEPARTMENT+"' " +
+                         "FROM staff_info, policlinic " +
+                         "WHERE staff_info.grp_name = 'Doctor' " +
                          "AND policlinic.name = '"+this.cob_Policlinic.getSelectedItem() +"' " +
                          "AND staff_info.poli_guid = policlinic.guid " +
                          //"AND staff_info.dep_guid = '2199fe84-f496-102c-b00f-0013d35816f7' "+
@@ -670,9 +670,9 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
                     staff = null;
                 }
                 
-                String sqlGetStaffSid = "SELECT s_id FROM staff_info,department " +
+                String sqlGetStaffSid = "SELECT s_id FROM staff_info " +
                                         "WHERE concat(staff_info.firstname,'  ',staff_info.lastname) = '"+staff+"' " +
-                                        "AND department.name = '"+DOCTOR_DEPARTMENT+"' " ;
+                                        "AND staff_info.grp_name = 'Doctor' " ;
                                       //  "AND dep_guid = '2199fe84-f496-102c-b00f-0013d35816f7'";
                 String sqlGetRoomGuid = "SELECT poli_room.guid FROM poli_room, policlinic " +
                                         "WHERE poli_room.name = '"+poliRoom+"' " +
