@@ -132,13 +132,13 @@ public class Frm_Setting extends javax.swing.JFrame {
    		dtm.setRowCount(0);
        	
    		try{
-            ResultSet rs = DBC.executeQuery("SELECT * FROM hospital.poli_room where poli_guid = '" + divisionGUID + "' order by name asc");
+            ResultSet rs = DBC.executeQuery("SELECT * FROM poli_room where poli_guid = '" + divisionGUID + "' order by name asc");
             String[] rowData = new String[4];
             while(rs.next()){
             	rowData[0] = rs.getString("guid");
             	rowData[1] = rs.getString("poli_guid");
             	rowData[2] = rs.getString("name");
-            	rowData[3] = (rs.getString("type").compareTo("N") == 0 ? "Normal" : "Disabled");
+            	rowData[3] = (rs.getString("status").compareTo("N") == 0 ? "Normal" : "Disabled");
             	dtm.addRow(rowData);
             }
          }
@@ -166,12 +166,12 @@ public class Frm_Setting extends javax.swing.JFrame {
    		dtm.setRowCount(0);
        	
    		try{
-            ResultSet rs = DBC.executeQuery("SELECT * FROM hospital.policlinic order by name asc");
+            ResultSet rs = DBC.executeQuery("SELECT * FROM policlinic order by name asc");
             String[] rowData = new String[3];
             while(rs.next()){
             	rowData[0] = rs.getString("guid");
             	rowData[1] = rs.getString("name");
-            	rowData[2] = (rs.getString("type").compareTo("N") == 0 ? "Normal" : "Disabled");
+            	rowData[2] = (rs.getString("status").compareTo("N") == 0 ? "Normal" : "Disabled");
             	//rowData[3] = rs.getString("room_num");
             	dtm.addRow(rowData);
             }
@@ -996,7 +996,7 @@ public class Frm_Setting extends javax.swing.JFrame {
     }
     private void addDivision() {
     	try {
-    		String sql = "INSERT INTO hospital.policlinic (`guid`, `name`, `type`, `room_num`) VALUES (" +
+    		String sql = "INSERT INTO policlinic (`guid`, `name`, `status`, `room_num`) VALUES (" +
         			"uuid(), '__temp', 'N', 0)";
     		DBC.executeUpdate(sql);
             JOptionPane.showMessageDialog(null, "Add division completed.");
@@ -1010,7 +1010,7 @@ public class Frm_Setting extends javax.swing.JFrame {
     
     private void AddDivisionClinic(String divisionGUID) {
     	try {
-    		String sql = "INSERT INTO hospital.poli_room (`guid`, `poli_guid`, `name`, `type`) VALUES (" +
+    		String sql = "INSERT INTO poli_room (`guid`, `poli_guid`, `name`, `status`) VALUES (" +
         			"uuid(), '" + divisionGUID + "', '__temp', 'N')";
             DBC.executeUpdate(sql);
             JOptionPane.showMessageDialog(null, "Add division clinic completed.");
@@ -1038,7 +1038,7 @@ public class Frm_Setting extends javax.swing.JFrame {
     	      try {
     	    	  	String sql2 = "UPDATE poli_room SET " +
         	            	"name = '"+name+"', " +
-        	                "type = '"+status+"' WHERE guid = '" + guid + "'";
+        	                "status = '"+status+"' WHERE guid = '" + guid + "'";
     	            DBC.executeUpdate(sql2);
     	    	  	//System.out.println(sql2);
     		    } catch (SQLException ex) {
@@ -1058,9 +1058,8 @@ public class Frm_Setting extends javax.swing.JFrame {
     	      try {
     	    	  	String sql = "UPDATE policlinic SET " +
         	            	"name = '"+name+"', " +
-        	            	"type = '"+status+"' WHERE guid = '" + guid + "'";
+        	            	"status = '"+status+"' WHERE guid = '" + guid + "'";
     	            DBC.executeUpdate(sql);
-    	            //System.out.println(sql);
     		    } catch (SQLException ex) {
     		        Logger.getLogger(Frm_Setting.class.getName()).log(Level.SEVERE, null, ex);
     		        JOptionPane.showMessageDialog(null, "db: Save Division Error.");
