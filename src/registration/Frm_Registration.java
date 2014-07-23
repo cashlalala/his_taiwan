@@ -281,8 +281,8 @@ public class Frm_Registration extends javax.swing.JFrame implements FingerPrintV
     /** 初始化表單*/
     private void initTables(){
         showShiftList();
-        tab_PatientsList.setModel(getModle(new String[]{"Message"},new String[][]{{"You need to give more keywords."}}));
-        tab_RegistrationList.setModel(getModle(new String[]{"Message"},new String[][]{{"No Information."}}));
+        tab_PatientsList.setModel(getModel(new String[]{"Message"},new String[][]{{"You need to give more keywords."}}));
+        tab_RegistrationList.setModel(getModel(new String[]{"Message"},new String[][]{{"No Information."}}));
         m_RefrashRecord = new RefrashRecord(tab_RegistrationList,REFRASH_TIME);
         m_RefrashRecord.start();
         this.lab_msg.setText("");
@@ -322,7 +322,7 @@ public class Frm_Registration extends javax.swing.JFrame implements FingerPrintV
                 && cob_Shift.getSelectedIndex()<DateMethod.getNowShiftNum()
                 && cob_Shift.getSelectedIndex()!=0)
             ){
-                tab_ShiftList.setModel(getModle(new String[]{"Message"},new String[][]{{"Has expired."}}));
+                tab_ShiftList.setModel(getModel(new String[]{"Message"},new String[][]{{"Has expired."}}));
                 return;
             }
             //科別搜尋條件
@@ -356,7 +356,7 @@ public class Frm_Registration extends javax.swing.JFrame implements FingerPrintV
                 colShift.setMaxWidth(130);
                 colShift.setMinWidth(130);
             }else{
-                tab_ShiftList.setModel(getModle(new String[]{paragraph.getLanguage(message, "Message")},new String[][]{{"No Information."}}));
+                tab_ShiftList.setModel(getModel(new String[]{paragraph.getLanguage(message, "Message")},new String[][]{{"No Information."}}));
             }
             DBC.closeConnection(rs);
         } catch (SQLException e) {
@@ -371,73 +371,14 @@ public class Frm_Registration extends javax.swing.JFrame implements FingerPrintV
     	
         ResultSet rs = null;
         String target = txt_Search.getText();
-        patientsInfo = patientsInfoDao.getPatientsBySearch(target,MAX_SEARCH_ROWS);
-        int page = patientsInfo.size() / MAX_SEARCH_ROWS
-				+ ((patientsInfo.size() % MAX_SEARCH_ROWS == 0) ? 0 : 1);
-        if(page!=0){
+        patientsInfo = patientsInfoDao.getPatientsBySearch(target);
+        if(patientsInfo.size()!=0){
         	tab_PatientsList.setModel(new PatientsInfoJPATable(patientsInfo));
         }
         else{
-            tab_PatientsList.setModel(getModle(new String[]{"Message"},new String[][]{{"No Information."}}));
+            tab_PatientsList.setModel(getModel(new String[]{"Message"},new String[][]{{"No Information."}}));
+            JOptionPane.showMessageDialog(new Frame(),paragraph.getString("ISNODATEATALL"));
         }
-        /*
-        try {
-    		
-        	
-            sql = "SELECT p_no AS 'Patient No.', " +
-                        "concat(FirstName,' ',LastName) AS '"+paragraph.getLanguage(line, "COL_NAME")+"', " +
-                        "Gender AS '"+paragraph.getLanguage(line, "COL_GENDER")+"', " +
-                        "(DATE_FORMAT(now(),'%Y')-DATE_FORMAT(birth,'%Y')) AS '"+paragraph.getLanguage(line, "COL_AGE")+"', " +
-                        "concat(bloodtype,' ',rh_type) AS '"+paragraph.getLanguage(line, "COL_BLOODTYPE")+"' " +
-                  "FROM patients_info " +
-                  "WHERE exist =  1 " +
-                  "AND (UPPER(p_no) LIKE UPPER('%" + txt_Search.getText().replace(" ", "%") + "%') " +
-                  "OR UPPER(nhis_no) LIKE UPPER('%" + txt_Search.getText().replace(" ", "%") + "%') " +
-                  "OR UPPER(nia_no) LIKE UPPER('%" + txt_Search.getText().replace(" ", "%") + "%') " +
-                  "OR UPPER(concat(firstname,' ',lastname)) LIKE UPPER('%" + txt_Search.getText().replace(" ", "%") + "%')" +
-                  ")";
-
-            rs = DBC.executeQuery(sql);
-            rs.last();
-            
-            if(rs.getRow() >= MAX_SEARCH_ROWS){
-                this.lab_msg.setText("<html><font color='FF0000'>"+paragraph.getLanguage(message ,"MOREINFORMATION")+
-                                     "</font></html>");
-                JOptionPane.showMessageDialog(new Frame(), paragraph.getLanguage(message , "GIVEMOREKEYWORDS"));
-                tab_PatientsList.setModel(HISModel.getModel(rs,1,MAX_SEARCH_ROWS));
-                return;
-            }
-            rs.beforeFirst();
-            if(rs.next()){
-                tab_PatientsList.setModel(HISModel.getModel(rs));
-                TableColumn tc = tab_PatientsList.getColumnModel().getColumn(0);
-                tc.setMaxWidth(80);
-                tc.setMinWidth(80);
-                tc = tab_PatientsList.getColumnModel().getColumn(2);
-                tc.setMaxWidth(40);
-                tc.setMinWidth(40);
-                tc = tab_PatientsList.getColumnModel().getColumn(3);
-                tc.setMaxWidth(40);
-                tc.setMinWidth(40);
-                tc = tab_PatientsList.getColumnModel().getColumn(4);
-                tc.setMaxWidth(40);
-                tc.setMinWidth(40);
-            }else{
-                tab_PatientsList.setModel(getModle(new String[]{"Message"},new String[][]{{"No Information."}}));
-            }
-            this.tpan_List.setSelectedIndex(0);
-            
-        } catch (SQLException e) {
-            ErrorMessage.setData("Registration", "Frm_Registration" ,"showPatientList()",
-                e.toString().substring(e.toString().lastIndexOf(".")+1, e.toString().length()));
-        } finally {
-            try{DBC.closeConnection(rs);}
-            catch (SQLException e) {
-                ErrorMessage.setData("Registration", "Frm_Registration" ,"showPatientList() - DBC.closeConnection",
-                e.toString().substring(e.toString().lastIndexOf(".")+1, e.toString().length()));
-            }
-        }
-        */
         txt_Search.setFocusable(true);
     }
 
@@ -626,7 +567,7 @@ public void ShowGpsFrom() {
 
 
     /** 設定表單預設模型。*/
-    private DefaultTableModel getModle(String[] title,String[][] data){
+    private DefaultTableModel getModel(String[] title,String[][] data){
         return new DefaultTableModel(data,title){
                     @Override
                     public boolean isCellEditable(int r, int c){
@@ -1221,7 +1162,7 @@ public void ShowGpsFrom() {
         pan_Bottom.setMinimumSize(new java.awt.Dimension(432, 91));
 
         btn_Save.setText("Register");
-        btn_Save.setEnabled(false);
+        btn_Save.setEnabled(true);
         btn_Save.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_SaveActionPerformed(evt);
@@ -1607,7 +1548,7 @@ public void ShowGpsFrom() {
 
            DBC.closeConnection(rs);
            reLoad();
-           tab_PatientsList.setModel(getModle(new String[]{"Message"},new String[][]{{"You need to give more keywords."}}));
+           tab_PatientsList.setModel(getModel(new String[]{"Message"},new String[][]{{"You need to give more keywords."}}));
         } catch (SQLException e) {
             Logger.getLogger(Frm_Registration.class.getName()).log(Level.SEVERE, null, e);
                 ErrorMessage.setData("Registration", "Frm_Registration" ,"btn_SaveActionPerformed()",

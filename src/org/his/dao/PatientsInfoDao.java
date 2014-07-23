@@ -81,7 +81,7 @@ public class PatientsInfoDao {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<PatientsInfo> getPatientsBySearch(String target, int perpage){
+	public List<PatientsInfo> getPatientsBySearch(String target){
 		try{
 			String sql = "SELECT * FROM patients_info " +
 					"WHERE exist =  1 " +
@@ -91,9 +91,6 @@ public class PatientsInfoDao {
 	                "OR UPPER(concat(firstname,' ',lastname)) LIKE UPPER('%" + target.replace(" ", "%") + "%')"+
 	                ")";
 			Query query = em.createNativeQuery(sql, PatientsInfo.class);
-			if (perpage != 0) {
-				query.setMaxResults(perpage);
-			}
 			return query.getResultList();
 		}
 		catch(Exception e){
