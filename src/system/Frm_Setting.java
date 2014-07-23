@@ -1,5 +1,6 @@
 package system;
 
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -14,19 +15,75 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.DefaultCellEditor;
+import javax.swing.DefaultListSelectionModel;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 
 import cc.johnwu.sql.DBC;
+
 
 /**
  *
  * @author Steven
  */
 public class Frm_Setting extends javax.swing.JFrame {
-    public Frm_Setting() {
+
+	public class ForcedListSelectionModel extends DefaultListSelectionModel {
+
+	    public ForcedListSelectionModel () {
+	        setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+	    }
+
+	    @Override
+	    public void clearSelection() {
+	    }
+
+	    @Override
+	    public void removeSelectionInterval(int index0, int index1) {
+	    }
+
+	}
+	
+	class SharedListSelectionHandler implements ListSelectionListener {
+        public void valueChanged(ListSelectionEvent e) { 
+            ListSelectionModel lsm = (ListSelectionModel)e.getSource();
+ 
+            //int firstIndex = e.getFirstIndex();
+            //int lastIndex = e.getLastIndex();
+            boolean isAdjusting = e.getValueIsAdjusting(); 
+            if(isAdjusting) return;
+            
+/*            System.out.println("Event for indexes "
+                          + firstIndex + " - " + lastIndex
+                          + "; isAdjusting is " + isAdjusting
+                          + "; selected indexes:");
+*/ 
+            if (lsm.isSelectionEmpty()) {
+//            	System.out.println(" <none>");
+            } else {
+                // Find out which indexes are selected.
+                int minIndex = lsm.getMinSelectionIndex();
+                int maxIndex = lsm.getMaxSelectionIndex();
+                for (int i = minIndex; i <= maxIndex; i++) {
+                    if (lsm.isSelectedIndex(i)) {
+                    	//System.out.println(" " + i);
+                    	reloadPoliRoomTable(poliRoomTableModel, tb_division.getValueAt(i, 0).toString(), tb_division.getValueAt(i, 1).toString());
+                    }
+                }
+            }
+
+        }
+    }
+	
+	public Frm_Setting() {
         initComponents();
         addWindowListener(new WindowAdapter() {                                // 畫面關閉原視窗enable
             @Override
@@ -41,6 +98,93 @@ public class Frm_Setting extends javax.swing.JFrame {
 
     }
 
+	public void setUpStatusColumn(javax.swing.JTable table, TableColumn sportColumn) {
+		//Set up the editor for the sport cells.
+		javax.swing.JComboBox comboBox = new javax.swing.JComboBox();
+		comboBox.addItem("Normal");
+		comboBox.addItem("Disabled");
+		sportColumn.setCellEditor(new DefaultCellEditor(comboBox));
+	}
+		
+    private DefaultTableModel divisionTableModel = new DefaultTableModel(){
+    	public boolean isCellEditable(int rowIndex, int columnIndex){
+    		if (columnIndex == 1 || columnIndex == 2) {
+                return true;
+            } else {
+                return false;
+            }
+    	}
+   	};
+   	
+   	private DefaultTableModel poliRoomTableModel = new DefaultTableModel(){
+    	public boolean isCellEditable(int rowIndex, int columnIndex){
+    		if (columnIndex == 2 || columnIndex == 3) {
+                return true;
+            } else {
+                return false;
+            }
+    	}
+   	};
+   	
+   	private void reloadPoliRoomTable(DefaultTableModel dtm, String divisionGUID, String divisionName) {
+   		String s[]={"guid", "poli_guid", "Name","status"};
+   		dtm.setColumnIdentifiers(s);
+   		dtm.setRowCount(0);
+       	
+   		try{
+            ResultSet rs = DBC.executeQuery("SELECT * FROM hospital.poli_room where poli_guid = '" + divisionGUID + "' order by name asc");
+            String[] rowData = new String[4];
+            while(rs.next()){
+            	rowData[0] = rs.getString("guid");
+            	rowData[1] = rs.getString("poli_guid");
+            	rowData[2] = rs.getString("name");
+            	rowData[3] = (rs.getString("type").compareTo("N") == 0 ? "Normal" : "Disabled");
+            	dtm.addRow(rowData);
+            }
+         }
+         catch (SQLException ex){
+             Logger.getLogger(Frm_Setting.class.getName()).log(Level.SEVERE, null, ex);
+         }
+        tb_poliRoom.getColumnModel().getColumn(0).setMinWidth(0);
+        tb_poliRoom.getColumnModel().getColumn(0).setMaxWidth(0);
+        tb_poliRoom.getColumnModel().getColumn(1).setMinWidth(0);
+        tb_poliRoom.getColumnModel().getColumn(1).setMaxWidth(0);
+        
+        // setup status combobox
+        setUpStatusColumn(tb_poliRoom, tb_poliRoom.getColumnModel().getColumn(3));
+        
+        // refresh btn_AddRoom text
+        btn_AddRoom.setText("Add clinic for " + divisionName);
+        
+        // refresh jLabelRoom text
+        jLabelRoom.setText("clinic list of Division " + divisionName);
+   	}
+   	
+   	private void reloadDivisionTable(DefaultTableModel dtm) {
+   		String s[]={"guid", "Name","status"};
+   		dtm.setColumnIdentifiers(s);
+   		dtm.setRowCount(0);
+       	
+   		try{
+            ResultSet rs = DBC.executeQuery("SELECT * FROM hospital.policlinic order by name asc");
+            String[] rowData = new String[3];
+            while(rs.next()){
+            	rowData[0] = rs.getString("guid");
+            	rowData[1] = rs.getString("name");
+            	rowData[2] = (rs.getString("type").compareTo("N") == 0 ? "Normal" : "Disabled");
+            	//rowData[3] = rs.getString("room_num");
+            	dtm.addRow(rowData);
+            }
+         }
+         catch (SQLException ex){
+             Logger.getLogger(Frm_Setting.class.getName()).log(Level.SEVERE, null, ex);
+         }
+        tb_division.getColumnModel().getColumn(0).setMinWidth(0);
+        tb_division.getColumnModel().getColumn(0).setMaxWidth(0);
+        // setup status combobox
+        setUpStatusColumn(tb_division, tb_division.getColumnModel().getColumn(2));
+   	}
+   	
     // 初始化
     private void init() {
     	cob_Language.setModel(new javax.swing.DefaultComboBoxModel(
@@ -54,6 +198,8 @@ public class Frm_Setting extends javax.swing.JFrame {
     	reloadSystemSetting();
     	reloadShiftSetting();
     	reloadPriceSetting();
+        reloadDivisionTable(divisionTableModel);
+        reloadPoliRoomTable(poliRoomTableModel, tb_division.getValueAt(0, 0).toString(), tb_division.getValueAt(0, 1).toString());
     }
     
     private ImageIcon scaledIcon(String absolutePath, int width) {
@@ -61,13 +207,12 @@ public class Frm_Setting extends javax.swing.JFrame {
     	File file = new File(absolutePath);
         if(file.exists()) path = absolutePath;
         else path = "./img/nofile.png";
-
     	ImageIcon image = new ImageIcon(path);
         Image img = image.getImage();
-        BufferedImage bi = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
-        Graphics g = bi.createGraphics();
         int scaledX = width;
         int scaledY = (scaledX * img.getHeight(null))/img.getWidth(null);
+        BufferedImage bi = new BufferedImage(scaledX, scaledY, BufferedImage.TYPE_INT_ARGB);
+        Graphics g = bi.createGraphics();
         g.drawImage(img, 0, 0, scaledX, scaledY, null);
         ImageIcon newIcon = new ImageIcon(bi);
         return newIcon;
@@ -118,6 +263,11 @@ public class Frm_Setting extends javax.swing.JFrame {
          catch (SQLException ex){
              Logger.getLogger(Frm_Setting.class.getName()).log(Level.SEVERE, null, ex);
          }
+    }
+    
+    private void reloadDivisionSetting() {
+        reloadDivisionTable(divisionTableModel);
+        reloadPoliRoomTable(poliRoomTableModel, tb_division.getValueAt(0, 0).toString(), tb_division.getValueAt(0, 1).toString());
     }
     
     private void reloadPriceSetting() {
@@ -206,6 +356,7 @@ public class Frm_Setting extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Setting");
         setMinimumSize(new java.awt.Dimension(800, 600));
+        jPanel1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         // start of tab system setting    
         btn_SaveSystemSetting = new javax.swing.JButton();
@@ -358,8 +509,6 @@ public class Frm_Setting extends javax.swing.JFrame {
         jTabbedPane1.addTab("System", jPanel4);
         // end of tab system setting
         
-        jPanel1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-
         jLabel1.setText("Morning Shift : from ");
         jLabel2.setText("Afternoon Shift : from ");
         jLabel3.setText("Night Shift : from ");
@@ -533,35 +682,139 @@ public class Frm_Setting extends javax.swing.JFrame {
             }
         });
         
-        // start of tab policlinic setting
-        //jLabel4.setText("Patient No.:");
+        // start of tab division setting
+        
+        btn_SaveDivisionSetting = new javax.swing.JButton();
+        btn_ReloadDivisionSetting = new javax.swing.JButton();
+        btn_AddDivision = new javax.swing.JButton();
+        btn_AddRoom = new javax.swing.JButton();
+        pan_DivisionSettingButton = new javax.swing.JPanel();
+        jLabelDivision = new javax.swing.JLabel();
+        jLabelRoom = new javax.swing.JLabel();
+        
+        jLabelDivision.setText("Division list");
+        btn_SaveDivisionSetting.setText("Save");
+        btn_SaveDivisionSetting.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveDivisionSetting();
+            }
+        });
+        
+        btn_ReloadDivisionSetting.setText("Reload");
+        btn_ReloadDivisionSetting.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+            	reloadDivisionSetting();
+            }
+        });
+        btn_AddDivision.setText("Add division");
+        btn_AddDivision.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addDivision();
+            }
+        });
+        
+        btn_AddRoom.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+            	int selectedDivisionIndex = tb_division.getSelectedRow(); 
+            	if(selectedDivisionIndex == -1) JOptionPane.showMessageDialog(null, "Please select a division first.");
+                AddDivisionClinic(tb_division.getValueAt(selectedDivisionIndex, 0).toString());
+            }
+        });
+        
+        tb_division = new javax.swing.JTable();
+        tb_division.setRowHeight(30);
+        tb_division.setSelectionModel(new ForcedListSelectionModel());
+        sp_division = new javax.swing.JScrollPane();
+        sp_division.setViewportView(tb_division);
+        //sp_division.setPreferredSize(new Dimension(200,50));
+        tb_division.setModel(divisionTableModel);
+                
+        // listener when selected row changed
+        ListSelectionModel listSelectionModel = tb_division.getSelectionModel();
+        listSelectionModel.addListSelectionListener(new SharedListSelectionHandler());
+        tb_division.setSelectionModel(listSelectionModel);
+        
+        tb_poliRoom = new javax.swing.JTable();
+        tb_poliRoom.setRowHeight(30);
+        tb_poliRoom.setSelectionModel(new ForcedListSelectionModel());
+        sp_poliRoom = new javax.swing.JScrollPane();
+        sp_poliRoom.setViewportView(tb_poliRoom);
+        //sp_division.setPreferredSize(new Dimension(200,50));
+        tb_poliRoom.setModel(poliRoomTableModel);
 
+        javax.swing.GroupLayout pan_DivisionSettingButtonLayout = new javax.swing.GroupLayout(pan_DivisionSettingButton);
+        pan_DivisionSettingButton.setLayout(pan_DivisionSettingButtonLayout);
+        pan_DivisionSettingButtonLayout.setHorizontalGroup(
+        		pan_DivisionSettingButtonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pan_DivisionSettingButtonLayout.createSequentialGroup()
+        		.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btn_AddDivision, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btn_AddRoom, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btn_ReloadDivisionSetting, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btn_SaveDivisionSetting, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        pan_DivisionSettingButtonLayout.setVerticalGroup(
+        		pan_DivisionSettingButtonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pan_DivisionSettingButtonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+        		.addComponent(btn_AddDivision)
+                .addComponent(btn_AddRoom)
+                .addComponent(btn_ReloadDivisionSetting)
+                .addComponent(btn_SaveDivisionSetting)
+                )
+        );
+        
+        
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
+
         jPanel3Layout.setHorizontalGroup(
         		jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                //.addComponent(jLabel4)
-                //.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                //.addComponent(txt_Pno, javax.swing.GroupLayout.PREFERRED_SIZE, 202, javax.swing.GroupLayout.PREFERRED_SIZE)
-                //.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                //.addComponent(btn_EnterHL7)
-                .addContainerGap(449, Short.MAX_VALUE))
-        );
+                .addGroup(jPanel3Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel3Layout.createSequentialGroup()
+                        		.addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        				.addComponent(jLabelDivision, javax.swing.GroupLayout.Alignment.LEADING)
+                        				.addComponent(sp_division, javax.swing.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
+                                        .addComponent(jLabelRoom, javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(sp_poliRoom, javax.swing.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
+                                )
+                                .addContainerGap(10, Short.MAX_VALUE))
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                            .addComponent(pan_DivisionSettingButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addContainerGap())
+                            
+                    ))
+            );
+
         jPanel3Layout.setVerticalGroup(
         		jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    //.addComponent(btn_EnterHL7)
-                    //.addComponent(jLabel4)
-                    //.addComponent(txt_Pno, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                ).addContainerGap(491, Short.MAX_VALUE))
-        );
-
+                .addGroup(jPanel3Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGap(10, 10, 10)
+                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    		.addComponent(jLabelDivision)
+                    )
+                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    		.addComponent(sp_division, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
+                    ).addGap(30, 30, 30)
+                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    		.addComponent(jLabelRoom)
+                    ).addGap(10, 10, 10)
+                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    		.addComponent(sp_poliRoom, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
+                    )
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 376, Short.MAX_VALUE)
+                    .addComponent(pan_DivisionSettingButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap())
+            );
+        
         jTabbedPane1.addTab("Division", jPanel3);
-        // end of tab policlinic setting
+        // end of tab division setting
 
         // start of tab Price setting
         btn_SavePrice = new javax.swing.JButton();
@@ -720,6 +973,9 @@ public class Frm_Setting extends javax.swing.JFrame {
         );
 
         pack();
+        
+        
+         
     }// </editor-fold>//GEN-END:initComponents
     
     private void btn_SaveSystemSettingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_SaveActionPerformed
@@ -737,7 +993,95 @@ public class Frm_Setting extends javax.swing.JFrame {
 	        Logger.getLogger(Frm_Setting.class.getName()).log(Level.SEVERE, null, ex);
 	        JOptionPane.showMessageDialog(null, "db: Input System Setting Error.");
 	    }
-}
+    }
+    private void addDivision() {
+    	try {
+    		String sql = "INSERT INTO hospital.policlinic (`guid`, `name`, `type`, `room_num`) VALUES (" +
+        			"uuid(), '__temp', 'N', 0)";
+    		DBC.executeUpdate(sql);
+            JOptionPane.showMessageDialog(null, "Add division completed.");
+            reloadDivisionTable(divisionTableModel);
+            reloadPoliRoomTable(poliRoomTableModel, tb_division.getValueAt(0, 0).toString(), tb_division.getValueAt(0, 1).toString());
+	    } catch (SQLException ex) {
+	        Logger.getLogger(Frm_Setting.class.getName()).log(Level.SEVERE, null, ex);
+	        JOptionPane.showMessageDialog(null, "db: Add Division Error.");
+	    }
+    }
+    
+    private void AddDivisionClinic(String divisionGUID) {
+    	try {
+    		String sql = "INSERT INTO hospital.poli_room (`guid`, `poli_guid`, `name`, `type`) VALUES (" +
+        			"uuid(), '" + divisionGUID + "', '__temp', 'N')";
+            DBC.executeUpdate(sql);
+            JOptionPane.showMessageDialog(null, "Add division clinic completed.");
+            reloadDivisionTable(divisionTableModel);
+            reloadPoliRoomTable(poliRoomTableModel, tb_division.getValueAt(0, 0).toString(), tb_division.getValueAt(0, 1).toString());
+	    } catch (SQLException ex) {
+	        Logger.getLogger(Frm_Setting.class.getName()).log(Level.SEVERE, null, ex);
+	        JOptionPane.showMessageDialog(null, "db: Add division clinic Error.");
+	    }
+    }
+    
+    private void saveDivisionSetting() {
+    	
+    	int activeRoomNum = 0;
+    	String poli_guid = "";
+    	DefaultTableModel dtm2 =(DefaultTableModel) tb_poliRoom.getModel();
+    	for ( int i = 0 ;i < dtm2.getRowCount(); i++){
+    	      String guid = (String) dtm2.getValueAt(i, 0);
+    	      String name = (String) dtm2.getValueAt(i, 2);
+    	      String status = (String) dtm2.getValueAt(i, 3);
+    	      poli_guid = (String) dtm2.getValueAt(i, 1);
+    	      if(status.compareTo("Normal") == 0) {status = "N"; activeRoomNum++;}
+    	      else status = "D";
+    	      
+    	      try {
+    	    	  	String sql2 = "UPDATE poli_room SET " +
+        	            	"name = '"+name+"', " +
+        	                "type = '"+status+"' WHERE guid = '" + guid + "'";
+    	            DBC.executeUpdate(sql2);
+    	    	  	//System.out.println(sql2);
+    		    } catch (SQLException ex) {
+    		        Logger.getLogger(Frm_Setting.class.getName()).log(Level.SEVERE, null, ex);
+    		        JOptionPane.showMessageDialog(null, "db: Save Division Error.");
+    		    }
+    	}
+    	
+    	DefaultTableModel dtm =(DefaultTableModel) tb_division.getModel();
+    	for ( int i = 0 ;i < dtm.getRowCount(); i++){
+    	      String guid = (String) dtm.getValueAt(i, 0);
+    	      String name = (String) dtm.getValueAt(i, 1);
+    	      String status = (String) dtm.getValueAt(i, 2);
+    	      if(status.compareTo("Normal") == 0) status = "N";
+    	      else status = "D";
+    	      
+    	      try {
+    	    	  	String sql = "UPDATE policlinic SET " +
+        	            	"name = '"+name+"', " +
+        	            	"type = '"+status+"' WHERE guid = '" + guid + "'";
+    	            DBC.executeUpdate(sql);
+    	            //System.out.println(sql);
+    		    } catch (SQLException ex) {
+    		        Logger.getLogger(Frm_Setting.class.getName()).log(Level.SEVERE, null, ex);
+    		        JOptionPane.showMessageDialog(null, "db: Save Division Error.");
+    		    }
+    	}
+    	
+    	try {
+    	  	String sql3 = "UPDATE policlinic SET " +
+	                "room_num = '"+activeRoomNum+"' WHERE guid = '" + poli_guid + "'";
+            DBC.executeUpdate(sql3);
+            //System.out.println(sql);
+	    } catch (SQLException ex) {
+	        Logger.getLogger(Frm_Setting.class.getName()).log(Level.SEVERE, null, ex);
+	        JOptionPane.showMessageDialog(null, "db: Save Division Error.");
+	    }
+    	
+    	reloadDivisionTable(divisionTableModel);
+        reloadPoliRoomTable(poliRoomTableModel, tb_division.getValueAt(0, 0).toString(), tb_division.getValueAt(0, 1).toString());
+        JOptionPane.showMessageDialog(null, "Save Completed.");
+
+    }
 
     private void btn_SavePriceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_SaveActionPerformed
         try {
@@ -913,6 +1257,20 @@ public class Frm_Setting extends javax.swing.JFrame {
     private javax.swing.JComboBox cob_Language;
     private javax.swing.JComboBox cob_ICDVersion;
     private javax.swing.JPanel pan_SystemSettingButton;
+    
+    // for division tab
+
+    private javax.swing.JTable tb_division;
+    private javax.swing.JScrollPane sp_division;
+    private javax.swing.JTable tb_poliRoom;
+    private javax.swing.JScrollPane sp_poliRoom;
+    private javax.swing.JButton btn_SaveDivisionSetting;
+    private javax.swing.JButton btn_ReloadDivisionSetting;
+    private javax.swing.JButton btn_AddDivision;
+    private javax.swing.JButton btn_AddRoom;
+    private javax.swing.JPanel pan_DivisionSettingButton;
+    private javax.swing.JLabel jLabelDivision;
+    private javax.swing.JLabel jLabelRoom;
     
     // End of variables declaration//GEN-END:variables
 }
