@@ -109,9 +109,9 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
         if(cbx_ShowSuspendedEmployee.isSelected()) statusCondition += "'S',";
         if(cbx_ShowDismissedEmployee.isSelected()) statusCondition += "'D',";
         if(statusCondition.length() > 0)
-        	statusCondition = " AND status in (" + statusCondition.substring(0, statusCondition.length() - 1) + ")";
+        	statusCondition = " AND staff_info.status in (" + statusCondition.substring(0, statusCondition.length() - 1) + ")";
         else
-        	statusCondition = " AND status not in ('N','R','S','D') ";
+        	statusCondition = " AND staff_info.status not in ('N','R','S','D') ";
         
         try {
             switch(searchCondition){
