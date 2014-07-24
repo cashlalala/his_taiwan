@@ -67,7 +67,12 @@ public class Frm_DiagnosisTherapy extends javax.swing.JFrame {
         String[] icdCob = null ;
         ResultSet rs = null;
         try {
-            String sql = "SELECT icd_code, name FROM Diagnosis_Code ";
+        	String sql = "SELECT ICDVersion FROM setting";
+        	rs = DBC.executeQuery(sql);
+        	rs.first();
+        	String icdVer = rs.getString("ICDVersion");
+        	
+            sql = "SELECT * FROM diagnosis_code where ICDVersion = '" + icdVer + "'";
             rs = DBC.localExecuteQuery(sql);
             rs.last();
             icdCob = new String[rs.getRow()+1];

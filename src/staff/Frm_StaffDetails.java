@@ -291,6 +291,7 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
             /*將combobox設定為員工所屬群組 */
             for (int i = 0; i < cob_Permission.getItemCount(); i++) {
                 if (rs_staffInfo.getString("grp_name") != null) {
+                	if (cob_Permission.getItemAt(i+1) == null) continue;
                     if (rs_staffInfo.getString("grp_name").equals(cob_Permission.getItemAt(i+1).toString() )) {
                         cob_Permission.setSelectedIndex(i + 1);
                         break;

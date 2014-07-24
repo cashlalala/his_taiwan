@@ -292,8 +292,6 @@ public class PrintTools {
                                     "AND shift_table.s_id = staff_info.s_id "+
                                     "AND registration_info.p_no = patients_info.p_no "+
                                     "AND registration_info.guid = '"+m_RegGuid+"' "+
-                                  
-                                    "AND medicine_stock.os_guid = outpatient_services.guid "+
                                     "GROUP BY registration_info.guid "+
                                     "ORDER BY 'No.' ";
                             System.out.println(sqlData);
@@ -490,11 +488,10 @@ public class PrintTools {
                     case 8:
                         // 8.領藥單(給病患)
                          sqlData = "SELECT medicines.code, medicines.item, medicine_stock.dosage, medicines.unit, medicines.injection,medicine_stock.usage, " +
-                                    "medicine_stock.way, medicine_stock.day, medicine_stock.quantity, medicine_stock.urgent, " +
+                                    "medicine_stock.way, medicine_stock.repeat_number, medicine_stock.quantity, medicine_stock.urgent, " +
                                    "medicine_stock.powder, medicine_stock.ps " +
                             "FROM medicines, medicine_stock, outpatient_services, registration_info " +
                             "WHERE registration_info.guid = '"+m_RegGuid+"' " +
-                                "AND medicine_stock.os_guid = outpatient_services.guid " +
                                 "AND outpatient_services.reg_guid = registration_info.guid " +
                                 "AND medicines.code = medicine_stock.m_code";
 
@@ -520,7 +517,7 @@ public class PrintTools {
                             g2.drawString(m_RsData.getString("dosage"), x + 535, y + 40);
                             g2.drawString(m_RsData.getString("usage"), x + 705, y + 40);
                             g2.drawString(m_RsData.getString("way"), x + 1025, y + 40);
-                            g2.drawString(m_RsData.getString("day"), x + 1155, y + 40);
+                            g2.drawString(m_RsData.getString("repeat_number"), x + 1155, y + 40);
                             g2.drawString(m_RsData.getString("quantity"), x + 1285, y + 40);
                             g2.drawString(m_RsData.getString("powder"), x + 1425, y + 40);
                             y += space;
@@ -531,11 +528,10 @@ public class PrintTools {
                         // 9.藥單(藥袋上)
                         String sqlMedicines =
                                 "SELECT medicines.code,medicines.injection, medicines.item, medicine_stock.dosage, medicines.unit, medicine_stock.usage, " +
-                                       "medicine_stock.way, medicine_stock.day, medicine_stock.quantity, medicine_stock.urgent, " +
+                                       "medicine_stock.way, medicine_stock.repeat_number, medicine_stock.quantity, medicine_stock.urgent, " +
                                        "medicine_stock.powder, medicine_stock.ps " +
                                 "FROM medicines, medicine_stock, outpatient_services, registration_info " +
                                 "WHERE registration_info.guid = '"+m_RegGuid+"' " +
-                                    "AND medicine_stock.os_guid = outpatient_services.guid " +
                                     "AND outpatient_services.reg_guid = registration_info.guid " +
                                     "AND medicines.code = medicine_stock.m_code";
 
@@ -569,7 +565,7 @@ public class PrintTools {
                             g2.drawString(m_RsData.getString("dosage"), x + 535, y + 40);
                             g2.drawString(m_RsData.getString("usage"), x + 705, y + 40);
                             g2.drawString(m_RsData.getString("way"), x + 1025, y + 40);
-                            g2.drawString(m_RsData.getString("day"), x + 1155, y + 40);
+                            g2.drawString(m_RsData.getString("repeat_number"), x + 1155, y + 40);
                             g2.drawString(m_RsData.getString("quantity"), x + 1285, y + 40);
                             g2.drawString(m_RsData.getString("powder"), x + 1425, y + 40);
                             y += space;
@@ -609,9 +605,8 @@ public class PrintTools {
                             "SELECT diagnosis_code.icd_code, diagnosis_code.name " +
                               "FROM  diagnosis_code, diagnostic, outpatient_services, registration_info " +
                               "WHERE registration_info.guid = '"+m_RegGuid+"' " +
-                              "AND diagnostic.os_guid = outpatient_services.guid " +
                               "AND outpatient_services.reg_guid = registration_info.guid " +
-                              "AND diagnosis_code.icd_code = diagnostic.dia_code";
+                              "AND diagnosis_code.dia_code = diagnostic.dia_code";
                         rs = DBC.executeQuery(sqlDia);
                         if (rs.next()) {
                             g2.setFont(new Font("Serif", Font.BOLD, 28)); // 表頭
@@ -690,11 +685,10 @@ public class PrintTools {
                         
                         sql =
                             "SELECT medicines.code, medicines.item, medicine_stock.dosage, medicines.unit, medicines.injection,medicine_stock.usage, " +
-                                   "medicine_stock.way, medicine_stock.day, medicine_stock.quantity, medicine_stock.urgent, " +
+                                   "medicine_stock.way, medicine_stock.repeat_number, medicine_stock.quantity, medicine_stock.urgent, " +
                                    "medicine_stock.powder, medicine_stock.ps " +
                             "FROM medicines, medicine_stock, outpatient_services, registration_info " +
                             "WHERE registration_info.guid = '"+m_RegGuid+"' " +
-                                "AND medicine_stock.os_guid = outpatient_services.guid " +
                                 "AND outpatient_services.reg_guid = registration_info.guid " +
                                 "AND medicines.code = medicine_stock.m_code";
                         rs = DBC.executeQuery(sql);
@@ -760,7 +754,6 @@ public class PrintTools {
                                     "medicine_stock.price AS 'Cost' " +
                                     "FROM medicines, medicine_stock, outpatient_services, registration_info " +
                                     "WHERE registration_info.guid = '" + m_RegGuid + "' " +
-                                    "AND medicine_stock.os_guid = outpatient_services.guid " +
                                     "AND outpatient_services.reg_guid = registration_info.guid " +
                                     "AND medicines.code = medicine_stock.m_code";
                         } else if (sys.equals("Laboratory")) {

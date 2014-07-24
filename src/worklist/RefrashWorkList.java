@@ -274,7 +274,7 @@ public class RefrashWorkList extends Thread{
                     ((DefaultTableModel)m_Tab.getModel()).setRowCount(rs.getRow());
                     rs.beforeFirst();
                     while(rs.next()){
-                        for(int col=0; col<12; col++)
+                        for(int col=0; col<11; col++)
                             m_Tab.setValueAt(rs.getString(col+1), row, col);
                         row++;
                     }

@@ -167,14 +167,14 @@ public class Frm_WorkList extends javax.swing.JFrame {
     public void setEnter(boolean finishState) {
          m_RefrashWorkList.interrupt();  // 終止重複讀取掛號表單
          m_Clock.interrupt();
-         m_Pno = (String)this.tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 5);
-         m_RegGuid = (String)this.tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 11);
+         m_Pno = (String)this.tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 4);
+         m_RegGuid = (String)this.tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 10);
          int getSelectRow = this.tab_WorkList.getSelectedRow();
 
          if (m_SysName.equals("dia")) {
              boolean getFirst = false;  // 是否為初診(用於彈出過敏設定)
-             if (tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 2) != null &&
-                 tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 2).toString().equals("*")) {
+             if (tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 1) != null &&
+                 tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 1).toString().equals("*")) {
                  getFirst = true;
              }
              new Frm_DiagnosisInfo(m_Pno, m_RegGuid, getSelectRow, finishState,getFirst ).setVisible(true);
@@ -490,8 +490,8 @@ public class Frm_WorkList extends javax.swing.JFrame {
     private void btn_EnterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_EnterActionPerformed
 
         boolean finishState = false;
-        if (tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 3) != null
-                && tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 3).equals("F")) {
+        if (tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 2) != null
+                && tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 2).equals("F")) {
 
         Object[] options = {paragraph.getLanguage(message , "YES"),paragraph.getLanguage(message , "NO")};
         int dialog = JOptionPane.showOptionDialog(
@@ -510,7 +510,7 @@ public class Frm_WorkList extends javax.swing.JFrame {
                 m_RefrashWorkList.interrupt();  // 終止重複讀取掛號表單
                 setEnter(finishState);
             }
-        } else if(tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 3) == null) {
+        } else if(tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 2) == null) {
             m_RefrashWorkList.interrupt();  // 終止重複讀取掛號表單
             setEnter(finishState);
         }
@@ -598,7 +598,7 @@ public class Frm_WorkList extends javax.swing.JFrame {
 
             String sqlMedicines =
                     "SELECT medicines.code, medicines.item, medicine_stock.dosage, medicines.unit, medicine_stock.usage, " +
-                           "medicine_stock.way, medicine_stock.day, medicine_stock.quantity, medicine_stock.urgent, " +
+                           "medicine_stock.way, medicine_stock.repeat_number, medicine_stock.quantity, medicine_stock.urgent, " +
                            "medicine_stock.powder, medicine_stock.ps " +
                     "FROM medicines, medicine_stock, outpatient_services, registration_info " +
                     "WHERE registration_info.guid = '"+regGuid+"' " +

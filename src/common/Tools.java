@@ -151,7 +151,7 @@ public class Tools {
                     "WHERE registration_info.p_no = patients_info.p_no " +
                     "AND prescription_code.code =  prescription.code " +
                     "AND (outpatient_services.reg_guid = registration_info.guid " +
-                    "OR prescription.case_guid = registration_info.guid) " +
+                    "OR prescription.reg_guid = registration_info.guid) " +
                     "AND prescription_code.name = '" + name + "' " +
                     "AND patients_info.p_no = '" + pno + "' " +
                     "AND prescription.result IS NOT NULL " +

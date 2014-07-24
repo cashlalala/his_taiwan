@@ -1205,11 +1205,16 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements DiagnosisIn
                 //新增資料到看診 outpatient_services
                 DBC.executeUpdate("INSERT outpatient_services(guid, reg_guid, summary, ps, state ) " +
                                   "VALUES ('"+os_uuid+"', '"+m_RegistrationGuid+"', '"+txta_Summary.getText().trim()+"','"+txt_Message.getText().trim()+"', 0)");
+                
+                ResultSet setting = DBC.executeQuery("Select icdversion from setting");
+                String icdVer = (setting.first())? setting.getString("icdversion").split("-")[1] : "10";
+                
                 //存入icd code診斷碼
                 if (tab_Diagnosis.getValueAt(0, 2) != null) {
                     for (int i = 0 ; i < this.tab_Diagnosis.getRowCount() ; i++) {
                         if (this.tab_Diagnosis.getValueAt(i, 2) != null) {
-                            DBC.executeUpdate("INSERT diagnostic(guid, os_guid, dia_code , state) VALUES (uuid(), '"+os_uuid+"', '"+this.tab_Diagnosis.getValueAt(i, 1).toString().trim()+"' , 0)");
+                        	String sql = "INSERT diagnostic(guid, reg_guid, dia_code , state) VALUES (uuid(), '"+m_RegistrationGuid+"', '"+this.tab_Diagnosis.getValueAt(i, 1).toString().trim() + "-" + icdVer +"' , 0)";
+                            DBC.executeUpdate(sql);
                         }
                     }
                 }
@@ -1231,7 +1236,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements DiagnosisIn
                        }
 
 
-                        DBC.executeUpdate("INSERT prescription(guid, os_guid, case_guid, code , place, state) VALUES (uuid(), '"+os_uuid+"', NULL, " +
+                        DBC.executeUpdate("INSERT prescription(guid, os_guid, reg_guid, code , place, state) VALUES (uuid(), '"+os_uuid+"', NULL, " +
                                 "'"+this.tab_Prescription.getValueAt(i, 1).toString().trim()+"', " +
                                 "'"+this.tab_Prescription.getValueAt(i, 3).toString().trim()+"', 1)");
                     }
@@ -1251,18 +1256,17 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements DiagnosisIn
                             ps = "'"+this.tab_Medicine.getValueAt(i, 12).toString().trim()+"'";
                         }
 
-                        String sql = "INSERT medicine_stock(guid, os_guid, m_code," +
+                        String sql = "INSERT medicine_stock(guid, m_code," +
                                 "dosage, `usage`, way," +
-                                "`day`, quantity, urgent," +
+                                "`repeat_number`, quantity, urgent," +
                                 "powder, ps, exist," +
                                 "s_id, teach_complete) " +
                                 "VALUES (uuid(), " +
-                                "'"+os_uuid+"', " +
                                 "'"+this.tab_Medicine.getValueAt(i, 2).toString().trim()+"', " +  // 藥品代碼
                                 "'"+Double.parseDouble(this.tab_Medicine.getValueAt(i, 4).toString())+"', " +  // 次劑量
                                 "'"+this.tab_Medicine.getValueAt(i, 6).toString().trim()+"', " +  // 服法
                                 "'"+this.tab_Medicine.getValueAt(i, 7).toString().trim()+"', " +  // 途徑
-                                ""+Double.parseDouble(this.tab_Medicine.getValueAt(i, 8).toString())+", " +  // 天數
+                                ""+Integer.valueOf(this.tab_Medicine.getValueAt(i, 8).toString())+", " +  // 天數
                                 ""+Double.parseDouble(this.tab_Medicine.getValueAt(i, 9).toString())+", " +  // 總量
                                 "'"+this.tab_Medicine.getValueAt(i, 10)+"', " +   // 急
                                 "'"+this.tab_Medicine.getValueAt(i, 11)+"', " +   // 磨
@@ -1486,9 +1490,8 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements DiagnosisIn
               "SELECT diagnosis_code.icd_code, diagnosis_code.name " +
               "FROM  diagnosis_code, diagnostic, outpatient_services, registration_info " +
               "WHERE registration_info.guid = '"+guid+"' " +
-              "AND diagnostic.os_guid = outpatient_services.guid " +
               "AND outpatient_services.reg_guid = registration_info.guid " +
-              "AND diagnosis_code.icd_code = diagnostic.dia_code";
+              "AND diagnosis_code.dia_code = diagnostic.dia_code";
          rsDiagnosis = DBC.executeQuery(sqlDiagnosis);
          int rowDiagnosis = 0;
          while (rsDiagnosis.next()) {
@@ -1527,11 +1530,10 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements DiagnosisIn
         // 取出藥品
         String sqlMedicines =
             "SELECT medicines.code,medicines.injection, medicines.item, medicine_stock.dosage, medicines.unit, medicine_stock.usage, " +
-                   "medicine_stock.way, medicine_stock.day, medicine_stock.quantity,medicine_stock.urgent, " +
+                   "medicine_stock.way, medicine_stock.repeat_number, medicine_stock.quantity,medicine_stock.urgent, " +
                    "medicine_stock.powder ,medicine_stock.ps " +
             "FROM medicines, medicine_stock, outpatient_services, registration_info " +
             "WHERE registration_info.guid = '"+guid+"' " +
-            "AND medicine_stock.os_guid = outpatient_services.guid " +
             "AND outpatient_services.reg_guid = registration_info.guid " +
             "AND medicines.code = medicine_stock.m_code";
             rsMedicines = DBC.executeQuery(sqlMedicines);
@@ -1544,7 +1546,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements DiagnosisIn
                 tab_Medicine.setValueAt(rsMedicines.getString("unit"), rowMedicine, 5);
                 tab_Medicine.setValueAt(rsMedicines.getString("usage"), rowMedicine, 6);
                 tab_Medicine.setValueAt(rsMedicines.getString("way"), rowMedicine, 7);
-                tab_Medicine.setValueAt(rsMedicines.getString("day"), rowMedicine, 8);
+                tab_Medicine.setValueAt(rsMedicines.getString("repeat_number"), rowMedicine, 8);
                 tab_Medicine.setValueAt(rsMedicines.getFloat("quantity"), rowMedicine,9);
                 if (rsMedicines.getString("urgent").equals("Y")) {
                     tab_Medicine.setValueAt("Y", rowMedicine, 10);
