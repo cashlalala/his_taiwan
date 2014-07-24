@@ -390,7 +390,7 @@ public class Frm_Registration extends javax.swing.JFrame implements FingerPrintV
         }
         else{
             tab_PatientsList.setModel(getModel(new String[]{"Message"},new String[][]{{"No Information."}}));
-            JOptionPane.showMessageDialog(new Frame(),paragraph.getString("ISNODATEATALL"));
+            JOptionPane.showMessageDialog(new Frame(),paragraph.getString("FIRSTTIMEVISIT"));
         }
         txt_Search.setFocusable(true);
     }
