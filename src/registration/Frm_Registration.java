@@ -14,12 +14,14 @@ import java.awt.image.BufferedImage;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.persistence.EntityTransaction;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,9 +29,12 @@ import javax.swing.InputVerifier;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
 
+import org.his.JPAUtil;
 import org.his.bind.PatientsInfoJPATable;
 import org.his.dao.PatientsInfoDao;
+import org.his.dao.RegistrationInfoDao;
 import org.his.model.PatientsInfo;
+import org.his.model.RegistrationInfo;
 
 import patients.*;
 import system.Setting;
@@ -78,8 +83,16 @@ public class Frm_Registration extends javax.swing.JFrame implements FingerPrintV
     //access DB
     private PatientsInfoDao patientsInfoDao;
     private List<PatientsInfo> patientsInfo;    
+    private RegistrationInfo registrationInfo;
+    private RegistrationInfoDao registrationInfoDao;
+    private PatientsInfo patientInfo;
+    private EntityTransaction etx;
+    
     
     public Frm_Registration() {
+    	etx = JPAUtil.getTransaction();;
+    	etx.begin();
+    	
         // 是否啟動GPS
         if (set.getSetting(lineSet, "ISSTART").equals("1")) {
             IsConnGPS=true;
@@ -263,8 +276,8 @@ public class Frm_Registration extends javax.swing.JFrame implements FingerPrintV
     }
 
     /** 初始化病患資料*/
-    private void initPatientsInfo(){
-        this.lab_PNo.setText("");
+    private void initPatientsInfo(){    
+    	this.lab_PNo.setText("");
         this.lab_NhisNo.setText("");
         this.lab_NiaNo.setText("");
         this.lab_FirstName.setText("");
@@ -494,6 +507,7 @@ public class Frm_Registration extends javax.swing.JFrame implements FingerPrintV
         this.btn_NewPatient.setVisible(!flag);
         this.btn_NewPatient.setEnabled(!flag);
         this.btn_Save.setVisible(!flag);
+        //this.btn_Save.setEnabled(true);
         this.btn_Save.setEnabled(!flag && isCanRegistration());
         this.btn_Back.setVisible(!flag);
         this.btn_Back.setEnabled(!flag);
@@ -1063,7 +1077,7 @@ public void ShowGpsFrom() {
         lab_TitleVisits.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         lab_TitleVisits.setText("Registered Method :");
 
-        lab_TitlePoliclinic.setText("Depart/Clinic :");
+        lab_TitlePoliclinic.setText("Division :");
 
         cob_Policlinic.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -1162,7 +1176,7 @@ public void ShowGpsFrom() {
         pan_Bottom.setMinimumSize(new java.awt.Dimension(432, 91));
 
         btn_Save.setText("Register");
-        btn_Save.setEnabled(true);
+        btn_Save.setEnabled(false);
         btn_Save.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_SaveActionPerformed(evt);
@@ -1425,58 +1439,70 @@ public void ShowGpsFrom() {
         Frm_PatientMod patientMod = new Frm_PatientMod(this,true);
         patientMod.setVisible(true);
         this.setEnabled(false);
-}//GEN-LAST:event_btn_NewPatientActionPerformed
+    }//GEN-LAST:event_btn_NewPatientActionPerformed
 
     private void btn_BackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_BackActionPerformed
         FingerPrintScanner.stop();
-         if (IsConnGPS) {
-            m_ReSearchGps.SetGpsConnClose();
-         }
+	    if (IsConnGPS) {
+	    	m_ReSearchGps.SetGpsConnClose();
+	    }
+ 		if (etx.isActive())
+			etx.rollback();         
         new Frm_Main().setVisible(true);
         this.dispose();
-}//GEN-LAST:event_btn_BackActionPerformed
+    }//GEN-LAST:event_btn_BackActionPerformed
 
     private void btn_SaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_SaveActionPerformed
-        String sql = "";
+    	String sql = "";
         m_Number = 0;
         try {
-            sql = "INSERT INTO registration_info " +
-                  "SELECT uuid(), " +
-                        "'"+this.lab_PNo.getText()+"', " +
-                        "now(), " +
-                        "NULL, " + // GIS欄位
-                        "'"+m_RegShiftGuid+"', " +
-                        "'"+lab_Register.getText().charAt(0) +"', " +
-                        "NULL, " +
-                        "NULL, " +
-                        "NULL, " +
-                        "NULL, " +
-                        "NULL, " +
-                        "NULL, " +
-                        "NULL, " +
-                        "NULL, " +
-                        "NULL, " +
-                        "COUNT(shift_guid)+1, " +
-                        "NULL, " +
-                        "RPAD((SELECT CASE " +
-                            "WHEN MAX(B.touchtime) >= DATE_FORMAT(now(),'%Y%m%d%H%i%S') " +
-                                "THEN concat(DATE_FORMAT(now(),'%Y%m%d%H%i%S'),COUNT(B.touchtime)) " +
-                            "ELSE DATE_FORMAT(now(),'%Y%m%d%H%i%S') " +
-                            "END touchtime " +
-                        "FROM (SELECT touchtime FROM registration_info) AS B " +
-                        "WHERE B.touchtime LIKE concat(DATE_FORMAT(now(),'%Y%m%d%H%i%S'),'%')),20,'000000'), " +
-                        "NULL, " +
-                        "RPAD((SELECT CASE WHEN MAX(C.record_touchtime) >= DATE_FORMAT(now(),'%Y%m%d%H%i%S') " +
-                                "THEN concat(DATE_FORMAT(now(),'%Y%m%d%H%i%S'), COUNT(C.record_touchtime)) " +
-                                "ELSE DATE_FORMAT(now(),'%Y%m%d%H%i%S') " +
-                                "END record_touchtime FROM (SELECT record_touchtime FROM registration_info) AS C " +
-                                "WHERE C.record_touchtime LIKE " +
-                                "concat(DATE_FORMAT(now(),'%Y%m%d%H%i%S'),'%')),20,'000000') " +
-                  "FROM registration_info "+
-                  "WHERE shift_guid = '"+m_RegShiftGuid+"'";
+        	
+        	sql="INSERT INTO registration_info SELECT "+
+        	"uuid(),"+                                     //guid 
+        	"NULL,"+                                       //bed_guid
+        	"'"+this.lab_PNo.getText()+"',"+               //p_no
+        	"now(),"+                                      //reg_time
+        	"NULL,"+                                       //gis_guid 
+        	"'"+m_RegShiftGuid+"',"+                       //shift_guid
+        	//first visit start
+        	"(SELECT CASE "+
+        		"WHEN (SELECT COUNT(*) from registration_info WHERE p_no='"+m_RegShiftGuid+"')=0 "+
+        		"THEN 'Y' "+
+        		"ELSE 'N' END),"+
+        	//first visit end
+        	"NULL,"+ 
+        	"'O',"+                                        //type
+        	"NULL,"+ 
+        	"NULL,"+                                       //finish
+        	"NULL,"+ 
+        	"NULL,"+ 
+        	"100,"+                                        //reg_cost 
+        	"100,"+                                        //dia_cost
+        	"'F',"+                                        //registration_payment 
+        	"'F',"+                                        //diagnosis_payment 
+        	"'F',"+                                        //pharmacy_payment 
+        	"'Z',"+                                        //lab_payment
+        	"'Z',"+                                        //radiology_payment
+        	"'Z',"+                                        //bed_payment
+        	//visit_no_start
+        	"(SELECT COUNT(*) from registration_info " +   
+        		"WHERE shift_guid='"+m_RegShiftGuid+"')+1,"+ 
+        	//visit_no_end
+        	"NULL,"+ 
+        	//touchtime start
+        	"RPAD((SELECT CASE "+
+        		"WHEN MAX(B.touchtime) >= DATE_FORMAT(now(),'%Y%m%d%H%i%S') " +
+        		"THEN concat(DATE_FORMAT(now(),'%Y%m%d%H%i%S'),COUNT(B.touchtime)) " +
+        		"ELSE DATE_FORMAT(now(),'%Y%m%d%H%i%S') " +
+        		"END touchtime " +
+        	"FROM (SELECT touchtime FROM registration_info) AS B " +
+        	"WHERE B.touchtime LIKE concat(DATE_FORMAT(now(),'%Y%m%d%H%i%S'),'%')),20,'000000'), " +
+        	//touchtime end
+        	"NULL,"+ 
+        	"NULL;";
 
             DBC.executeUpdate(sql);
-
+			
             sql = "SELECT visits_no, guid FROM registration_info " +
                   "WHERE shift_guid = '"+m_RegShiftGuid+"' " +
                   "AND p_no ='"+this.lab_PNo.getText()+"' " +
@@ -1487,7 +1513,7 @@ public void ShowGpsFrom() {
                 m_Number = rs.getInt(1);
                 m_Guid = rs.getString("guid");
             }
-
+            
 
           
             String html = "<html><font size='6'>";
@@ -1516,9 +1542,11 @@ public void ShowGpsFrom() {
             rs = DBC.executeQuery(sql);
             rs.next();
             pt = new PrintTools();
-            pt.DoPrint(1, rs);
+            //pt.DoPrint(1, rs);
 
+            System.out.println("aaaaaaaaaaaaaaaaa\n");
             System.out.println(cob_Policlinic.getSelectedItem().toString());
+            
             if (cob_Policlinic.getSelectedItem().toString().equals(POLINAME_DM)) {
                 sql = "SELECT p_no, firstname, lastname,'"+dateChooser1.getValue()+"' AS date, " +
                         "'"+cob_Shift.getSelectedItem().toString()+"' AS shift, " +
@@ -1530,7 +1558,7 @@ public void ShowGpsFrom() {
                 rs = DBC.executeQuery(sql);
                 rs.next();
                 pt = new PrintTools();
-                pt.DoPrint(2, rs);
+                //pt.DoPrint(2, rs);
             }
             JOptionPane.showMessageDialog(null, html + paragraph.getLanguage(line, "PATIENTNAME") + 
                     this.lab_FirstName.getText() + " " +
@@ -1547,6 +1575,7 @@ public void ShowGpsFrom() {
             //******************************************//
 
            DBC.closeConnection(rs);
+           
            reLoad();
            tab_PatientsList.setModel(getModel(new String[]{"Message"},new String[][]{{"You need to give more keywords."}}));
         } catch (SQLException e) {
@@ -1555,7 +1584,7 @@ public void ShowGpsFrom() {
                 e.toString().substring(e.toString().lastIndexOf(".")+1, e.toString().length()));
         }
         
-}//GEN-LAST:event_btn_SaveActionPerformed
+    }//GEN-LAST:event_btn_SaveActionPerformed
 
     private void tab_ShiftListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tab_ShiftListMouseClicked
         if(tab_ShiftList.getSelectedRow()<0 || tab_ShiftList.getColumnCount()==1) return ;
@@ -1569,7 +1598,7 @@ public void ShowGpsFrom() {
         this.lab_Doctor.setText(str[3]);
         this.showRoomInfo();
         m_SelectShift = false;
-}//GEN-LAST:event_tab_ShiftListMouseClicked
+    }//GEN-LAST:event_tab_ShiftListMouseClicked
 
     private void btn_CancelRegistrationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_CancelRegistrationActionPerformed
         try {
@@ -1932,9 +1961,9 @@ public void ShowGpsFrom() {
         this.fingerPrintViewer1.showImage(bufferedimage);
         this.fingerPrintViewer1.setTitle(msg);
     }
-  public void reLoadIfAppointment(){
-
-  if (m_isCanClear) {
+    
+    public void reLoadIfAppointment(){
+    	if (m_isCanClear) {
             initShiftInfo();
             initPermission();
             initPatientsInfo();
