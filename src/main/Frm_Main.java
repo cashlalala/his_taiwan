@@ -1,12 +1,5 @@
 package main;
 
-import cashier.Frm_CashierList;
-import cc.johnwu.loading.Frm_Loading;
-import cc.johnwu.login.UserInfo;
-import cc.johnwu.login.Frm_Login;
-import cc.johnwu.login.SysInfo;
-import cc.johnwu.sql.DBC;
-
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -15,20 +8,25 @@ import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 
+import mobilehealth.Frm_MobileHealth;
+import multilingual.Language;
+
 import org.his.JPAUtil;
 
 import statistic.Frm_Statistic;
 import system.Frm_Setting;
-import test.Frm_PoliManage;
-import test.Frm_Test;
+import cashier.Frm_CashierList;
+import cc.johnwu.loading.Frm_Loading;
+import cc.johnwu.login.Frm_Login;
+import cc.johnwu.login.UserInfo;
 import errormessage.StoredErrorMessage;
-import mobilehealth.Frm_MobileHealth;
-import multilingual.Language;
 
 
 public class Frm_Main extends javax.swing.JFrame {
     /*輸出錯誤資訊變數*/
     StoredErrorMessage ErrorMessage = new StoredErrorMessage() ;
+    
+    private Language paragraph = Language.getInstance();;
 
     public Frm_Main() {
         initComponents();
@@ -51,38 +49,102 @@ public class Frm_Main extends javax.swing.JFrame {
         btn_MedicineStock.setVisible(true);
         btn_DepartmentManagement.setVisible(true);
         btn_PositionManagement.setVisible(true);
-        Language paragraph = Language.getInstance();
         
-        String[] line = paragraph.setlanguage("MAIN").split("\n") ;
-        for(int j = 1 ; j<line.length ; j++){
-            String[] col = line[j].split("=");
-            if(col[0].equals("MEDICINE_STOCK")) this.btn_MedicineStock.setText(col[1]);
-            if(col[0].equals("PHARMACY")) this.btn_Pharmacy.setText(col[1]);
-            if(col[0].equals("POSITION_MANAGEMENT")) this.btn_PositionManagement.setText(col[1]);
-            if(col[0].equals("DEPARTMENT_MANAGEMENT")) this.btn_DepartmentManagement.setText(col[1]);
-            if(col[0].equals("SHIFT_MANAGEMENT")) this.btn_ShiftManagement.setText(col[1]);
-            if(col[0].equals("STAFF_MANAGEMENT")) this.btn_StaffManagement.setText(col[1]);
-           // if(col[0].equals("REVIEW")) this.btn_AnamnesisReturn.setText(col[1]);
-            if(col[0].equals("MEDICAL HISTORYT")) this.btn_Anamnesis.setText(col[1]);
-            if(col[0].equals("PATIENT_INFORMATION")) this.btn_Patients.setText(col[1]);
-            if(col[0].equals("DIAGNOSIS")) this.btn_Diagnosis.setText(col[1]);
-            if(col[0].equals("REGISTRATION")) this.btn_Register.setText(col[1]);
-            if(col[0].equals("SHIFT_MANAGEMENT")) this.btn_ShiftManagement.setText(col[1]);
-
-            if(col[0].equals("DOCTOR")) this.pan_Doctor.setBorder(javax.swing.BorderFactory.createTitledBorder(col[1]));
-            if(col[0].equals("PERSONAL")) this.pan_PersonalManagement.setBorder(javax.swing.BorderFactory.createTitledBorder(col[1]));
-            if(col[0].equals("PHARMACY")) this.pan_Pharmacy.setBorder(javax.swing.BorderFactory.createTitledBorder(col[1]));
-            if(col[0].equals("MANAGEMENT")) this.pan_SystemManagement.setBorder(javax.swing.BorderFactory.createTitledBorder(col[1]));
-            if(col[0].equals("LABORATORY")) this.btn_Laboratory.setText(col[1]);
-            if(col[0].equals("INVESTGATIONS")) this.pan_Investgations.setBorder(javax.swing.BorderFactory.createTitledBorder(col[1]));
-            if(col[0].equals("REGISTRATION")) this.pan_Registration.setBorder(javax.swing.BorderFactory.createTitledBorder(col[1]));
-            if(col[0].equals("PERMISSION")) this.btn_Premission.setText(col[1]);
-            if(col[0].equals("MEDICAL HISTORYT")) this.pan_Anamnesis.setBorder(javax.swing.BorderFactory.createTitledBorder(col[1]));
-            //if(col[0].equals("RADIOLOGY(X-RAY)")) this.btn_Radiology.setText(col[1]);
-            if(col[0].equals("MAIN")) this.setTitle(col[1]);
-        }
+        initLanguage();
     
     }
+
+	public void initLanguage() {
+        pan_PersonalManagement.setBorder(javax.swing.BorderFactory.createTitledBorder(paragraph.getString("PERSONAL")));
+
+        btn_StaffManagement.setText(paragraph.getString("STAFF_MANAGEMENT"));
+        
+        pan_PersonalManagement.setBorder(javax.swing.BorderFactory.createTitledBorder(paragraph.getString("PERSONAL")));
+
+        btn_StaffManagement.setText(paragraph.getString("STAFF_MANAGEMENT"));
+
+        btn_ShiftManagement.setText(paragraph.getString("SHIFT_MANAGEMENT"));
+
+        pan_Registration.setBorder(javax.swing.BorderFactory.createTitledBorder(paragraph.getString("REGISTRATION")));
+
+        btn_Register.setText(paragraph.getString("REGISTRATION"));
+
+        pan_Anamnesis.setBorder(javax.swing.BorderFactory.createTitledBorder(paragraph.getString("MEDICAL_HISTORYT")));
+
+        btn_AnamnesisReturn.setText(paragraph.getString("FORDER_RETURN"));
+
+        btn_Anamnesis.setText(paragraph.getString("MEDICAL_HISTORYT"));
+
+        pan_Doctor.setBorder(javax.swing.BorderFactory.createTitledBorder(paragraph.getString("CLINIC")));
+
+        btn_Diagnosis.setText(paragraph.getString("DIAGNOSIS"));
+
+        btn_Patients.setText(paragraph.getString("PATIENT_INFORMATION"));
+
+        pan_Pharmacy.setBorder(javax.swing.BorderFactory.createTitledBorder(paragraph.getString("PHARMACY")));
+
+        btn_Pharmacy.setText(paragraph.getString("PHARMACY"));
+
+        pan_SystemManagement.setBorder(javax.swing.BorderFactory.createTitledBorder(paragraph.getString("MANAGEMENT")));
+
+        btn_Premission.setText(paragraph.getString("PERMISSION"));
+        
+        btn_System.setText(paragraph.getString("SYSTEM"));
+
+        btn_Statistic.setText(paragraph.getString("STATISTIC"));
+
+        btn_Cashier.setText(paragraph.getString("CASHIER"));
+
+        pan_Investgations.setBorder(javax.swing.BorderFactory.createTitledBorder(paragraph.getString("INVESTGATIONS")));
+
+        btn_Laboratory.setText(paragraph.getString("LABORATORY"));
+
+        btn_Radiology.setText(paragraph.getString("RADIOLOGY(X-RAY)"));
+
+        btn_PositionManagement.setText(paragraph.getString("POSITION_MANAGEMENT"));
+
+        btn_DepartmentManagement.setText(paragraph.getString("POLINLIC_MANAGEMENT"));
+
+        btn_MedicineStock.setText(paragraph.getString("MEDICINE_STOCK"));
+
+        pan_Case.setBorder(javax.swing.BorderFactory.createTitledBorder(paragraph.getString("CASE_MANAGEMENT")));
+
+        btn_Case.setText(paragraph.getString("CASE_MANAGEMENT"));
+
+        btn_Sms.setText(paragraph.getString("MOBILE_HEALTH"));
+
+
+        jMenu1.setText(paragraph.getString("FILE"));
+
+        mnit_Logout.setText(paragraph.getString("LOGOUT"));
+
+        mnit_Exit.setText(paragraph.getString("EXIT"));
+		
+		this.btn_MedicineStock.setText(paragraph.getString("MEDICINE_STOCK"));
+        this.btn_Pharmacy.setText(paragraph.getString("PHARMACY"));
+        this.btn_PositionManagement.setText(paragraph.getString("POSITION_MANAGEMENT"));
+        this.btn_DepartmentManagement.setText(paragraph.getString("DEPARTMENT_MANAGEMENT"));
+        this.btn_ShiftManagement.setText(paragraph.getString("SHIFT_MANAGEMENT"));
+        this.btn_StaffManagement.setText(paragraph.getString("STAFF_MANAGEMENT"));
+        
+        this.btn_Anamnesis.setText(paragraph.getString("MEDICAL_HISTORYT"));
+        this.btn_Patients.setText(paragraph.getString("PATIENT_INFORMATION"));
+        this.btn_Diagnosis.setText(paragraph.getString("DIAGNOSIS"));
+        this.btn_Register.setText(paragraph.getString("REGISTRATION"));
+        this.btn_ShiftManagement.setText(paragraph.getString("SHIFT_MANAGEMENT"));
+
+        this.pan_Doctor.setBorder(javax.swing.BorderFactory.createTitledBorder(paragraph.getString("DOCTOR")));
+        this.pan_PersonalManagement.setBorder(javax.swing.BorderFactory.createTitledBorder(paragraph.getString("PERSONAL")));
+        this.pan_Pharmacy.setBorder(javax.swing.BorderFactory.createTitledBorder(paragraph.getString("PHARMACY")));
+        this.pan_SystemManagement.setBorder(javax.swing.BorderFactory.createTitledBorder(paragraph.getString("MANAGEMENT")));
+        this.btn_Laboratory.setText(paragraph.getString("LABORATORY"));
+        this.pan_Investgations.setBorder(javax.swing.BorderFactory.createTitledBorder(paragraph.getString("INVESTGATIONS")));
+        this.pan_Registration.setBorder(javax.swing.BorderFactory.createTitledBorder(paragraph.getString("REGISTRATION")));
+        this.btn_Premission.setText(paragraph.getString("PERMISSION"));
+        this.pan_Anamnesis.setBorder(javax.swing.BorderFactory.createTitledBorder(paragraph.getString("MEDICAL_HISTORYT")));
+
+        this.setTitle(paragraph.getString("MAIN"));
+	}
     
     public void initPermission(){
         btn_Register.setEnabled(UserInfo.getSelectPow("Registration"));
@@ -149,9 +211,9 @@ public class Frm_Main extends javax.swing.JFrame {
         setResizable(false);
 
         pan_PersonalManagement.setBackground(new java.awt.Color(240, 246, 255));
-        pan_PersonalManagement.setBorder(javax.swing.BorderFactory.createTitledBorder("Personel Management "));
+        pan_PersonalManagement.setBorder(javax.swing.BorderFactory.createTitledBorder(paragraph.getString("PERSONAL")));
 
-        btn_StaffManagement.setText("Staff Management");
+        btn_StaffManagement.setText(paragraph.getString("STAFF_MANAGEMENT"));
         btn_StaffManagement.setPreferredSize(new java.awt.Dimension(75, 29));
         btn_StaffManagement.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -159,7 +221,7 @@ public class Frm_Main extends javax.swing.JFrame {
             }
         });
 
-        btn_ShiftManagement.setText("Shift Management");
+        btn_ShiftManagement.setText(paragraph.getString("SHIFT_MANAGEMENT"));
         btn_ShiftManagement.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_ShiftManagementActionPerformed(evt);
@@ -188,9 +250,9 @@ public class Frm_Main extends javax.swing.JFrame {
         );
 
         pan_Registration.setBackground(new java.awt.Color(240, 246, 255));
-        pan_Registration.setBorder(javax.swing.BorderFactory.createTitledBorder("Registration"));
+        pan_Registration.setBorder(javax.swing.BorderFactory.createTitledBorder(paragraph.getString("REGISTRATION")));
 
-        btn_Register.setText("Registration");
+        btn_Register.setText(paragraph.getString("REGISTRATION"));
         btn_Register.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_RegisterActionPerformed(evt);
@@ -215,9 +277,9 @@ public class Frm_Main extends javax.swing.JFrame {
         );
 
         pan_Anamnesis.setBackground(new java.awt.Color(240, 246, 255));
-        pan_Anamnesis.setBorder(javax.swing.BorderFactory.createTitledBorder("Medical History"));
+        pan_Anamnesis.setBorder(javax.swing.BorderFactory.createTitledBorder(paragraph.getString("MEDICAL_HISTORYT")));
 
-        btn_AnamnesisReturn.setText("Forder Return");
+        btn_AnamnesisReturn.setText(paragraph.getString("FORDER_RETURN"));
         btn_AnamnesisReturn.setPreferredSize(new java.awt.Dimension(200, 60));
         btn_AnamnesisReturn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -225,7 +287,7 @@ public class Frm_Main extends javax.swing.JFrame {
             }
         });
 
-        btn_Anamnesis.setText("Medical History");
+        btn_Anamnesis.setText(paragraph.getString("MEDICAL_HISTORYT"));
         btn_Anamnesis.setPreferredSize(new java.awt.Dimension(200, 60));
         btn_Anamnesis.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -255,16 +317,16 @@ public class Frm_Main extends javax.swing.JFrame {
         );
 
         pan_Doctor.setBackground(new java.awt.Color(240, 246, 255));
-        pan_Doctor.setBorder(javax.swing.BorderFactory.createTitledBorder("Clinic"));
+        pan_Doctor.setBorder(javax.swing.BorderFactory.createTitledBorder(paragraph.getString("CLINIC")));
 
-        btn_Diagnosis.setText("Diagnosis");
+        btn_Diagnosis.setText(paragraph.getString("DIAGNOSIS"));
         btn_Diagnosis.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_DiagnosisActionPerformed(evt);
             }
         });
 
-        btn_Patients.setText("Patient Information");
+        btn_Patients.setText(paragraph.getString("PATIENT_INFORMATION"));
         btn_Patients.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_PatientsActionPerformed(evt);
@@ -293,9 +355,9 @@ public class Frm_Main extends javax.swing.JFrame {
         );
 
         pan_Pharmacy.setBackground(new java.awt.Color(240, 246, 255));
-        pan_Pharmacy.setBorder(javax.swing.BorderFactory.createTitledBorder("Pharmacy"));
+        pan_Pharmacy.setBorder(javax.swing.BorderFactory.createTitledBorder(paragraph.getString("PHARMACY")));
 
-        btn_Pharmacy.setText("Pharmacy");
+        btn_Pharmacy.setText(paragraph.getString("PHARMACY"));
         btn_Pharmacy.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_PharmacyActionPerformed(evt);
@@ -320,30 +382,30 @@ public class Frm_Main extends javax.swing.JFrame {
         );
 
         pan_SystemManagement.setBackground(new java.awt.Color(240, 246, 255));
-        pan_SystemManagement.setBorder(javax.swing.BorderFactory.createTitledBorder("System Management"));
+        pan_SystemManagement.setBorder(javax.swing.BorderFactory.createTitledBorder(paragraph.getString("MANAGEMENT")));
 
-        btn_Premission.setText("Permission");
+        btn_Premission.setText(paragraph.getString("PERMISSION"));
         btn_Premission.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_PremissionActionPerformed(evt);
             }
         });
 
-        btn_System.setText("Setting");
+        btn_System.setText(paragraph.getString("SYSTEM"));
         btn_System.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_SystemActionPerformed(evt);
             }
         });
 
-        btn_Statistic.setText("Statistic");
+        btn_Statistic.setText(paragraph.getString("STATISTIC"));
         btn_Statistic.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_StatisticActionPerformed(evt);
             }
         });
 
-        btn_Cashier.setText("Cashier");
+        btn_Cashier.setText(paragraph.getString("CASHIER"));
         btn_Cashier.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_CashierActionPerformed(evt);
@@ -377,16 +439,16 @@ public class Frm_Main extends javax.swing.JFrame {
         );
 
         pan_Investgations.setBackground(new java.awt.Color(240, 246, 255));
-        pan_Investgations.setBorder(javax.swing.BorderFactory.createTitledBorder("Investgations"));
+        pan_Investgations.setBorder(javax.swing.BorderFactory.createTitledBorder(paragraph.getString("INVESTGATIONS")));
 
-        btn_Laboratory.setText("Laboratory");
+        btn_Laboratory.setText(paragraph.getString("LABORATORY"));
         btn_Laboratory.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_LaboratoryActionPerformed(evt);
             }
         });
 
-        btn_Radiology.setText("Radiology(X-RAY)");
+        btn_Radiology.setText(paragraph.getString("RADIOLOGY(X-RAY)"));
         btn_Radiology.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_RadiologyActionPerformed(evt);
@@ -414,7 +476,7 @@ public class Frm_Main extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        btn_PositionManagement.setText("Position Management");
+        btn_PositionManagement.setText(paragraph.getString("POSITION_MANAGEMENT"));
         btn_PositionManagement.setPreferredSize(new java.awt.Dimension(200, 60));
         btn_PositionManagement.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -422,7 +484,7 @@ public class Frm_Main extends javax.swing.JFrame {
             }
         });
 
-        btn_DepartmentManagement.setText("Polinlic Management");
+        btn_DepartmentManagement.setText(paragraph.getString("POLINLIC_MANAGEMENT"));
         btn_DepartmentManagement.setPreferredSize(new java.awt.Dimension(200, 60));
         btn_DepartmentManagement.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -430,7 +492,7 @@ public class Frm_Main extends javax.swing.JFrame {
             }
         });
 
-        btn_MedicineStock.setText("Medicine Stock");
+        btn_MedicineStock.setText(paragraph.getString("MEDICINE_STOCK"));
         btn_MedicineStock.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_MedicineStockActionPerformed(evt);
@@ -438,16 +500,16 @@ public class Frm_Main extends javax.swing.JFrame {
         });
 
         pan_Case.setBackground(new java.awt.Color(240, 246, 255));
-        pan_Case.setBorder(javax.swing.BorderFactory.createTitledBorder("Case Management"));
+        pan_Case.setBorder(javax.swing.BorderFactory.createTitledBorder(paragraph.getString("CASE_MANAGEMENT")));
 
-        btn_Case.setText("Case Management");
+        btn_Case.setText(paragraph.getString("CASE_MANAGEMENT"));
         btn_Case.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_CaseActionPerformed(evt);
             }
         });
 
-        btn_Sms.setText("Mobile Health");
+        btn_Sms.setText(paragraph.getString("MOBILE_HEALTH"));
         btn_Sms.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_SmsActionPerformed(evt);
@@ -475,9 +537,9 @@ public class Frm_Main extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jMenu1.setText("File");
+        jMenu1.setText(paragraph.getString("FILE"));
 
-        mnit_Logout.setText("Logout");
+        mnit_Logout.setText(paragraph.getString("LOGOUT"));
         mnit_Logout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mnit_LogoutActionPerformed(evt);
@@ -485,7 +547,7 @@ public class Frm_Main extends javax.swing.JFrame {
         });
         jMenu1.add(mnit_Logout);
 
-        mnit_Exit.setText("Exit");
+        mnit_Exit.setText(paragraph.getString("EXIT"));
         mnit_Exit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mnit_ExitActionPerformed(evt);

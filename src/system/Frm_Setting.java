@@ -1,6 +1,5 @@
 package system;
 
-import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -27,6 +26,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
+import multilingual.Language;
 import cc.johnwu.sql.DBC;
 
 
@@ -36,6 +36,8 @@ import cc.johnwu.sql.DBC;
  */
 public class Frm_Setting extends javax.swing.JFrame {
 
+	private Language paragraph = Language.getInstance();
+	
 	public class ForcedListSelectionModel extends DefaultListSelectionModel {
 
 	    public ForcedListSelectionModel () {
@@ -187,6 +189,7 @@ public class Frm_Setting extends javax.swing.JFrame {
    	
     // 初始化
     private void init() {
+    	initLanguage() ;
     	cob_Language.setModel(new javax.swing.DefaultComboBoxModel(
 	                new String[] { "en", "fr", "sp"}
 	            )
@@ -200,6 +203,10 @@ public class Frm_Setting extends javax.swing.JFrame {
     	reloadPriceSetting();
         reloadDivisionTable(divisionTableModel);
         reloadPoliRoomTable(poliRoomTableModel, tb_division.getValueAt(0, 0).toString(), tb_division.getValueAt(0, 1).toString());
+    }
+    
+    private void initLanguage() {
+    	this.btn_SaveSystemSetting.setText(paragraph.getString("SAVE"));
     }
     
     private ImageIcon scaledIcon(String absolutePath, int width) {
@@ -239,6 +246,10 @@ public class Frm_Setting extends javax.swing.JFrame {
                     }
                 }
     			jLabelHosIconImg.setIcon(scaledIcon(rs.getString("hos_icon_path"), 40));
+    			
+    			String langCode = rs.getString("language");
+    			Language.getInstance().setLocale(langCode);
+    			initLanguage();
             }
          }
          catch (SQLException ex){
@@ -378,7 +389,7 @@ public class Frm_Setting extends javax.swing.JFrame {
         jLabelICDVersion = new javax.swing.JLabel();
         pan_SystemSettingButton = new javax.swing.JPanel();
         
-        btn_SaveSystemSetting.setText("Save");
+        btn_SaveSystemSetting.setText("Saveaaa");
         btn_SaveSystemSetting.setEnabled(true);
         btn_ReloadSystemSetting.setText("Reload");
         btn_ReloadSystemSetting.setEnabled(true);
