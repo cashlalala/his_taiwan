@@ -129,8 +129,6 @@ public class Frm_Setting extends javax.swing.JFrame {
    	};
    	
    	private void reloadPoliRoomTable(DefaultTableModel dtm, String divisionGUID, String divisionName) {
-   		String s[]={"guid", "poli_guid", "Name","status"};
-   		dtm.setColumnIdentifiers(s);
    		dtm.setRowCount(0);
        	
    		try{
@@ -147,26 +145,20 @@ public class Frm_Setting extends javax.swing.JFrame {
          catch (SQLException ex){
              Logger.getLogger(Frm_Setting.class.getName()).log(Level.SEVERE, null, ex);
          }
-        tb_poliRoom.getColumnModel().getColumn(0).setMinWidth(0);
-        tb_poliRoom.getColumnModel().getColumn(0).setMaxWidth(0);
-        tb_poliRoom.getColumnModel().getColumn(1).setMinWidth(0);
-        tb_poliRoom.getColumnModel().getColumn(1).setMaxWidth(0);
         
         // setup status combobox
         setUpStatusColumn(tb_poliRoom, tb_poliRoom.getColumnModel().getColumn(3));
         
         // refresh btn_AddRoom text
-        btn_AddRoom.setText("Add clinic for " + divisionName);
+        btn_AddRoom.setText(paragraph.getString("ADDCLINICFOR") + " " + divisionName);
         
         // refresh jLabelRoom text
-        jLabelRoom.setText("clinic list of Division " + divisionName);
+        jLabelRoom.setText(paragraph.getString("CLINICLISTOFDIVISION") + " " + divisionName);
    	}
    	
    	private void reloadDivisionTable(DefaultTableModel dtm) {
-   		String s[]={"guid", "Name","status"};
-   		dtm.setColumnIdentifiers(s);
    		dtm.setRowCount(0);
-       	
+
    		try{
             ResultSet rs = DBC.executeQuery("SELECT * FROM policlinic order by name asc");
             String[] rowData = new String[3];
@@ -181,8 +173,6 @@ public class Frm_Setting extends javax.swing.JFrame {
          catch (SQLException ex){
              Logger.getLogger(Frm_Setting.class.getName()).log(Level.SEVERE, null, ex);
          }
-        tb_division.getColumnModel().getColumn(0).setMinWidth(0);
-        tb_division.getColumnModel().getColumn(0).setMaxWidth(0);
         // setup status combobox
         setUpStatusColumn(tb_division, tb_division.getColumnModel().getColumn(2));
    	}
@@ -191,7 +181,7 @@ public class Frm_Setting extends javax.swing.JFrame {
     private void init() {
     	initLanguage() ;
     	cob_Language.setModel(new javax.swing.DefaultComboBoxModel(
-	                new String[] { "en", "fr", "sp"}
+	                new String[] { "en", "fr", "es"}
 	            )
 	    );
     	cob_ICDVersion.setModel(new javax.swing.DefaultComboBoxModel(
@@ -207,6 +197,44 @@ public class Frm_Setting extends javax.swing.JFrame {
     
     private void initLanguage() {
     	this.btn_SaveSystemSetting.setText(paragraph.getString("SAVE"));
+    	this.btn_ReloadSystemSetting.setText(paragraph.getString("RELOAD"));
+        this.btn_SelectHosIcon.setText(paragraph.getString("CHOOSE") + "...");
+        this.jLabelHosName.setText(paragraph.getString("HOSPITALNAME") + " :");
+        this.jLabelHosPhone.setText(paragraph.getString("HOSPITALPHONE") + " :");
+        this.jLabelHosAddr.setText(paragraph.getString("HOSPITALADDRESS") + " :");
+        this.jLabelHosIcon.setText(paragraph.getString("HOSPITALICON") + " :");
+        this.jLabelLanguage.setText(paragraph.getString("SYSTEMLANGUAGE") + " :");
+        this.jLabelICDVersion.setText(paragraph.getString("ICDVERSION") + " :");
+        this.jLabel1.setText(paragraph.getString("MORNING") + " " + paragraph.getString("SHIFT") + " : " + paragraph.getString("FROM") + " ");
+        this.jLabel2.setText(paragraph.getString("AFTERNOON") + " " + paragraph.getString("SHIFT") + " : " + paragraph.getString("FROM") + " ");
+        this.jLabel3.setText(paragraph.getString("NIGHT") + " " + paragraph.getString("SHIFT") + " : " + paragraph.getString("FROM") + " ");
+        this.jLabel8.setText(paragraph.getString("TO"));
+        this.jLabel9.setText(paragraph.getString("TO"));
+        this.jLabel10.setText(paragraph.getString("TO"));
+        this.btn_Save.setText(paragraph.getString("SAVE"));
+        this.btn_ReLoad.setText(paragraph.getString("RELOAD"));
+        this.jLabelDivision.setText(paragraph.getString("DIVISIONLIST"));
+        this.btn_SaveDivisionSetting.setText(paragraph.getString("SAVE"));
+        this.btn_ReloadDivisionSetting.setText(paragraph.getString("RELOAD"));
+        this.btn_AddDivision.setText(paragraph.getString("AddDivision"));
+        this.btn_SavePrice.setText(paragraph.getString("SAVE"));
+        this.btn_ReloadPrice.setText(paragraph.getString("RELOAD"));
+        this.jLabelPriceRegistration.setText(paragraph.getString("REGISTRATION") + " " + paragraph.getString("PRICE"));
+        this.jLabelPriceBed.setText(paragraph.getString("BED") + " " + paragraph.getString("PRICE"));
+        this.jLabelPriceDiagnosis.setText(paragraph.getString("DIAGNOSIS") + " " + paragraph.getString("PRICE"));
+        this.btn_Close.setText(paragraph.getString("CLOSE"));
+
+   		String s[]={"guid", paragraph.getString("COL_NAME"), paragraph.getString("STATUS")};
+   		divisionTableModel.setColumnIdentifiers(s);
+        tb_division.getColumnModel().getColumn(0).setMinWidth(0);
+        tb_division.getColumnModel().getColumn(0).setMaxWidth(0);
+        
+   		String s2[]={"guid", "poli_guid", paragraph.getString("COL_NAME"), paragraph.getString("STATUS")};
+   		poliRoomTableModel.setColumnIdentifiers(s2);
+        tb_poliRoom.getColumnModel().getColumn(0).setMinWidth(0);
+        tb_poliRoom.getColumnModel().getColumn(0).setMaxWidth(0);
+        tb_poliRoom.getColumnModel().getColumn(1).setMinWidth(0);
+        tb_poliRoom.getColumnModel().getColumn(1).setMaxWidth(0);
     }
     
     private ImageIcon scaledIcon(String absolutePath, int width) {
@@ -389,18 +417,9 @@ public class Frm_Setting extends javax.swing.JFrame {
         jLabelICDVersion = new javax.swing.JLabel();
         pan_SystemSettingButton = new javax.swing.JPanel();
         
-        btn_SaveSystemSetting.setText("Saveaaa");
         btn_SaveSystemSetting.setEnabled(true);
-        btn_ReloadSystemSetting.setText("Reload");
         btn_ReloadSystemSetting.setEnabled(true);
-        btn_SelectHosIcon.setText("choose...");
         btn_SelectHosIcon.setEnabled(true);
-        jLabelHosName.setText("Hospital Name :");
-        jLabelHosPhone.setText("Hospital Phone :");
-        jLabelHosAddr.setText("Hospital Address :");
-        jLabelHosIcon.setText("Hospital Icon :");
-        jLabelLanguage.setText("System Language :");
-        jLabelICDVersion.setText("ICD version :");
         
         btn_ReloadSystemSetting.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -517,13 +536,9 @@ public class Frm_Setting extends javax.swing.JFrame {
                     .addComponent(pan_SystemSettingButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addContainerGap())
             );
-        jTabbedPane1.addTab("System", jPanel4);
+        jTabbedPane1.addTab(paragraph.getString("SYSTEM"), jPanel4);
         // end of tab system setting
         
-        jLabel1.setText("Morning Shift : from ");
-        jLabel2.setText("Afternoon Shift : from ");
-        jLabel3.setText("Night Shift : from ");
-
         txt_MorningS.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 txt_MorningSKeyReleased(evt);
@@ -575,13 +590,6 @@ public class Frm_Setting extends javax.swing.JFrame {
             }
         });
 
-        jLabel8.setText("To");
-
-        jLabel9.setText("To");
-
-        jLabel10.setText("To");
-
-        btn_Save.setText("Save");
         btn_Save.setEnabled(false);
         btn_Save.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -589,7 +597,6 @@ public class Frm_Setting extends javax.swing.JFrame {
             }
         });
 
-        btn_ReLoad.setText("Re-read");
         btn_ReLoad.setEnabled(false);
         btn_ReLoad.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -684,15 +691,8 @@ public class Frm_Setting extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jTabbedPane1.addTab("Shift", jPanel1);
+        jTabbedPane1.addTab(paragraph.getString("SHIFT"), jPanel1);
 
-        btn_EnterHL7.setText("Enter");
-        btn_EnterHL7.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_EnterHL7ActionPerformed(evt);
-            }
-        });
-        
         // start of tab division setting
         
         btn_SaveDivisionSetting = new javax.swing.JButton();
@@ -703,21 +703,18 @@ public class Frm_Setting extends javax.swing.JFrame {
         jLabelDivision = new javax.swing.JLabel();
         jLabelRoom = new javax.swing.JLabel();
         
-        jLabelDivision.setText("Division list");
-        btn_SaveDivisionSetting.setText("Save");
         btn_SaveDivisionSetting.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 saveDivisionSetting();
             }
         });
         
-        btn_ReloadDivisionSetting.setText("Reload");
         btn_ReloadDivisionSetting.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
             	reloadDivisionSetting();
             }
         });
-        btn_AddDivision.setText("Add division");
+        
         btn_AddDivision.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addDivision();
@@ -727,7 +724,7 @@ public class Frm_Setting extends javax.swing.JFrame {
         btn_AddRoom.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
             	int selectedDivisionIndex = tb_division.getSelectedRow(); 
-            	if(selectedDivisionIndex == -1) JOptionPane.showMessageDialog(null, "Please select a division first.");
+            	if(selectedDivisionIndex == -1) JOptionPane.showMessageDialog(null, paragraph.getString("PLEASESELECTDIVISIONFIRST"));
                 AddDivisionClinic(tb_division.getValueAt(selectedDivisionIndex, 0).toString());
             }
         });
@@ -824,7 +821,7 @@ public class Frm_Setting extends javax.swing.JFrame {
                     .addContainerGap())
             );
         
-        jTabbedPane1.addTab("Division", jPanel3);
+        jTabbedPane1.addTab(paragraph.getString("DIVISION"), jPanel3);
         // end of tab division setting
 
         // start of tab Price setting
@@ -839,13 +836,8 @@ public class Frm_Setting extends javax.swing.JFrame {
         jLabelPriceDiagnosis = new javax.swing.JLabel();
         pan_PriceButton = new javax.swing.JPanel();
         
-        btn_SavePrice.setText("Save");
         btn_SavePrice.setEnabled(true);
-        btn_ReloadPrice.setText("Reload");
         btn_ReloadPrice.setEnabled(true);
-        jLabelPriceRegistration.setText("Registration Price :");
-        jLabelPriceBed.setText("Bed Price :");
-        jLabelPriceDiagnosis.setText("Diagnosis Price :");
         
         btn_ReloadPrice.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -924,10 +916,16 @@ public class Frm_Setting extends javax.swing.JFrame {
                     .addContainerGap())
             );
         
-        jTabbedPane1.addTab("Default Price", jPanel5);
+        jTabbedPane1.addTab(paragraph.getString("DEFAULT") + " " + paragraph.getString("PRICE"), jPanel5);
         // end of tab Price setting
         
-        jLabel4.setText("Patient No.:");
+/*        jLabel4.setText("Patient No.:");
+        btn_EnterHL7.setText("Enter");
+        btn_EnterHL7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_EnterHL7ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -954,8 +952,8 @@ public class Frm_Setting extends javax.swing.JFrame {
         );
 
         jTabbedPane1.addTab("HL7", jPanel2);
+*/
 
-        btn_Close.setText("Close");
         btn_Close.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_CloseActionPerformed(evt);
@@ -999,10 +997,10 @@ public class Frm_Setting extends javax.swing.JFrame {
             	"ICDVersion = '"+cob_ICDVersion.getSelectedItem().toString()+"', " +
                 "hos_address = '"+txt_HosAddr.getText()+"' WHERE id = 1");
             reloadSystemSetting();
-            JOptionPane.showMessageDialog(null, "Save Completed.");
+            JOptionPane.showMessageDialog(null, paragraph.getString("SAVECOMPLETE"));
 	    } catch (SQLException ex) {
 	        Logger.getLogger(Frm_Setting.class.getName()).log(Level.SEVERE, null, ex);
-	        JOptionPane.showMessageDialog(null, "db: Input System Setting Error.");
+	        JOptionPane.showMessageDialog(null, paragraph.getString("ERROR"));
 	    }
     }
     private void addDivision() {
@@ -1015,7 +1013,7 @@ public class Frm_Setting extends javax.swing.JFrame {
             reloadPoliRoomTable(poliRoomTableModel, tb_division.getValueAt(0, 0).toString(), tb_division.getValueAt(0, 1).toString());
 	    } catch (SQLException ex) {
 	        Logger.getLogger(Frm_Setting.class.getName()).log(Level.SEVERE, null, ex);
-	        JOptionPane.showMessageDialog(null, "db: Add Division Error.");
+	        JOptionPane.showMessageDialog(null, paragraph.getString("ERROR"));
 	    }
     }
     
@@ -1024,12 +1022,12 @@ public class Frm_Setting extends javax.swing.JFrame {
     		String sql = "INSERT INTO poli_room (`guid`, `poli_guid`, `name`, `status`) VALUES (" +
         			"uuid(), '" + divisionGUID + "', '__temp', 'N')";
             DBC.executeUpdate(sql);
-            JOptionPane.showMessageDialog(null, "Add division clinic completed.");
+            JOptionPane.showMessageDialog(null, paragraph.getString("ADDDIVISIONCLINICCOMPLETE"));
             reloadDivisionTable(divisionTableModel);
             reloadPoliRoomTable(poliRoomTableModel, tb_division.getValueAt(0, 0).toString(), tb_division.getValueAt(0, 1).toString());
 	    } catch (SQLException ex) {
 	        Logger.getLogger(Frm_Setting.class.getName()).log(Level.SEVERE, null, ex);
-	        JOptionPane.showMessageDialog(null, "db: Add division clinic Error.");
+	        JOptionPane.showMessageDialog(null, paragraph.getString("ERROR"));
 	    }
     }
     
@@ -1054,7 +1052,7 @@ public class Frm_Setting extends javax.swing.JFrame {
     	    	  	//System.out.println(sql2);
     		    } catch (SQLException ex) {
     		        Logger.getLogger(Frm_Setting.class.getName()).log(Level.SEVERE, null, ex);
-    		        JOptionPane.showMessageDialog(null, "db: Save Division Error.");
+    		        JOptionPane.showMessageDialog(null, paragraph.getString("ERROR"));
     		    }
     	}
     	
@@ -1073,7 +1071,7 @@ public class Frm_Setting extends javax.swing.JFrame {
     	            DBC.executeUpdate(sql);
     		    } catch (SQLException ex) {
     		        Logger.getLogger(Frm_Setting.class.getName()).log(Level.SEVERE, null, ex);
-    		        JOptionPane.showMessageDialog(null, "db: Save Division Error.");
+    		        JOptionPane.showMessageDialog(null, paragraph.getString("ERROR"));
     		    }
     	}
     	
@@ -1084,12 +1082,12 @@ public class Frm_Setting extends javax.swing.JFrame {
             //System.out.println(sql);
 	    } catch (SQLException ex) {
 	        Logger.getLogger(Frm_Setting.class.getName()).log(Level.SEVERE, null, ex);
-	        JOptionPane.showMessageDialog(null, "db: Save Division Error.");
+	        JOptionPane.showMessageDialog(null, paragraph.getString("ERROR"));
 	    }
     	
     	reloadDivisionTable(divisionTableModel);
         reloadPoliRoomTable(poliRoomTableModel, tb_division.getValueAt(0, 0).toString(), tb_division.getValueAt(0, 1).toString());
-        JOptionPane.showMessageDialog(null, "Save Completed.");
+        JOptionPane.showMessageDialog(null, paragraph.getString("SAVECOMPLETE"));
 
     }
 
@@ -1104,13 +1102,13 @@ public class Frm_Setting extends javax.swing.JFrame {
                         	"diagnosis_price = '"+txt_DiagnosisPrice.getText()+"'," +
                             "registration_price = '"+txt_RegPrice.getText()+"' WHERE id = 1");
                     	reloadPriceSetting();
-                        JOptionPane.showMessageDialog(null, "Save Completed.");
+                        JOptionPane.showMessageDialog(null, paragraph.getString("SAVECOMPLETE"));
                 } else {
-                    JOptionPane.showMessageDialog(null, "Input Price Error.");
+                    JOptionPane.showMessageDialog(null, paragraph.getString("ERROR"));
                 }
         } catch (SQLException ex) {
             Logger.getLogger(Frm_Setting.class.getName()).log(Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(null, "db: Input Price Error.");
+            JOptionPane.showMessageDialog(null, paragraph.getString("ERROR"));
         }
     }
     
@@ -1129,15 +1127,15 @@ public class Frm_Setting extends javax.swing.JFrame {
                             "evening_shift_e ='"+txt_NightE.getText()+"'" +
                             " WHERE id = 1");
                     	reloadShiftSetting();
-                        JOptionPane.showMessageDialog(null, "Save Completed.");
+                        JOptionPane.showMessageDialog(null, paragraph.getString("SAVECOMPLETE"));
                         reLoad();
                 } else {
-                    JOptionPane.showMessageDialog(null, "db: Input Time Error.");
+                    JOptionPane.showMessageDialog(null, paragraph.getString("ERROR"));
                 }
 
         } catch (SQLException ex) {
             Logger.getLogger(Frm_Setting.class.getName()).log(Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(null, "Input Time Error.");
+            JOptionPane.showMessageDialog(null, paragraph.getString("ERROR"));
         }
 }//GEN-LAST:event_btn_SaveActionPerformed
 
