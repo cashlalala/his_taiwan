@@ -192,7 +192,7 @@ public class Frm_Setting extends javax.swing.JFrame {
     	reloadShiftSetting();
     	reloadPriceSetting();
         reloadDivisionTable(divisionTableModel);
-        reloadPoliRoomTable(poliRoomTableModel, tb_division.getValueAt(0, 0).toString(), tb_division.getValueAt(0, 1).toString());
+        reloadPoliRoomTable(poliRoomTableModel, "", "");
     }
     
     private void initLanguage() {
@@ -238,10 +238,12 @@ public class Frm_Setting extends javax.swing.JFrame {
     }
     
     private ImageIcon scaledIcon(String absolutePath, int width) {
-    	String path;
-    	File file = new File(absolutePath);
-        if(file.exists()) path = absolutePath;
-        else path = "./img/nofile.png";
+    	String path = "./img/nofile.png";
+    	if(absolutePath != null) {
+    		File file = new File(absolutePath);
+        	if(file.exists()) path = absolutePath;
+    	}
+        
     	ImageIcon image = new ImageIcon(path);
         Image img = image.getImage();
         int scaledX = width;
@@ -725,7 +727,7 @@ public class Frm_Setting extends javax.swing.JFrame {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
             	int selectedDivisionIndex = tb_division.getSelectedRow(); 
             	if(selectedDivisionIndex == -1) JOptionPane.showMessageDialog(null, paragraph.getString("PLEASESELECTDIVISIONFIRST"));
-                AddDivisionClinic(tb_division.getValueAt(selectedDivisionIndex, 0).toString());
+            	else AddDivisionClinic(tb_division.getValueAt(selectedDivisionIndex, 0).toString());
             }
         });
         
@@ -787,9 +789,9 @@ public class Frm_Setting extends javax.swing.JFrame {
                         .addGroup(jPanel3Layout.createSequentialGroup()
                         		.addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         				.addComponent(jLabelDivision, javax.swing.GroupLayout.Alignment.LEADING)
-                        				.addComponent(sp_division, javax.swing.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
+                        				.addComponent(sp_division, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
                                         .addComponent(jLabelRoom, javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(sp_poliRoom, javax.swing.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
+                                        .addComponent(sp_poliRoom, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
                                 )
                                 .addContainerGap(10, Short.MAX_VALUE))
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
@@ -808,15 +810,15 @@ public class Frm_Setting extends javax.swing.JFrame {
                     		.addComponent(jLabelDivision)
                     )
                     .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    		.addComponent(sp_division, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
+                    		.addComponent(sp_division, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
                     ).addGap(30, 30, 30)
                     .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     		.addComponent(jLabelRoom)
                     ).addGap(10, 10, 10)
                     .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    		.addComponent(sp_poliRoom, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
+                    		.addComponent(sp_poliRoom, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
                     )
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 376, Short.MAX_VALUE)
+                    .addGap(10, 10, 10)
                     .addComponent(pan_DivisionSettingButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addContainerGap())
             );

@@ -44,8 +44,8 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
     private String m_UUID;
     /*多國語言變數*/
     private Language paragraph = Language.getInstance();
-    private String[] line = paragraph.setlanguage("STAFFINFO").split("\n") ;
-    private String[] message = paragraph.setlanguage("MESSAGE").split("\n") ;
+    //private String[] line = paragraph.setlanguage("STAFFINFO").split("\n") ;
+    //private String[] message = paragraph.setlanguage("MESSAGE").split("\n") ;
     /*輸出錯誤資訊變數*/
     StoredErrorMessage ErrorMessage = new StoredErrorMessage() ;
 
@@ -71,29 +71,39 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
         });
     }
     private void initLanguage() {
-        this.setTitle(paragraph.getLanguage(line, "STAFFINFOMATION"));
-        this.btn_GeneralSearch.setText(paragraph.getLanguage(message, "SEARCH"));
-        this.btn_GeneralAdd.setText(paragraph.getLanguage(line, "GENERALADD"));
-        this.btn_GeneralEdit.setText(paragraph.getLanguage(line, "GENERALEDIT"));
+        this.setTitle(paragraph.getString("STAFFINFOMATION"));
+        this.btn_GeneralSearch.setText(paragraph.getString("SEARCH"));
+        this.btn_GeneralAdd.setText(paragraph.getString("GENERALADD"));
+        this.btn_GeneralEdit.setText(paragraph.getString("GENERALEDIT"));
         //this.btn_GeneralDelete.setText(paragraph.getLanguage(line, "GENERALDELETE"));
-        this.btn_GeneralBack.setText(paragraph.getLanguage(line, "GENERALBACK"));
-        this.btn_DoctorSearch.setText(paragraph.getLanguage(message, "SEARCH"));
-        this.tabp_StaffInfo.setTitleAt(0,paragraph.getLanguage(line, "GENERAL"));
-        this.tabp_StaffInfo.setTitleAt(1,paragraph.getLanguage(line, "DOCTOR"));
+        this.btn_GeneralBack.setText(paragraph.getString("GENERALBACK"));
+        this.btn_DoctorSearch.setText(paragraph.getString("SEARCH"));
+        this.tabp_StaffInfo.setTitleAt(0,paragraph.getString("GENERAL"));
+        this.tabp_StaffInfo.setTitleAt(1,paragraph.getString("DOCTOR"));
         cob_GeneralSearch.setModel(new javax.swing.DefaultComboBoxModel(
-                    new String[] { paragraph.getLanguage(line, "ALL"), paragraph.getLanguage(line, "NO"),
-                                   paragraph.getLanguage(line, "NAME"), paragraph.getLanguage(line, "BIRTH"),
-                                   paragraph.getLanguage(line, "PHONE"), paragraph.getLanguage(line, "ADDRESS"),
-                                   "Department", "Division", "Position"}
+                    new String[] { paragraph.getString("ALL"), paragraph.getString("NO"),
+                                   paragraph.getString("NAME"), paragraph.getString("BIRTH"),
+                                   paragraph.getString("PHONE"), paragraph.getString("ADDRESS"),
+                                   paragraph.getString("DEPARTMENT"), paragraph.getString("DIVISION"), paragraph.getString("POSITION")}
                 )
         );
         cob_DoctorSearch.setModel(new javax.swing.DefaultComboBoxModel(
-                    new String[] { paragraph.getLanguage(line, "ALL"), paragraph.getLanguage(line, "NO"),
-                                   paragraph.getLanguage(line, "NAME"), paragraph.getLanguage(line, "BIRTH"),
-                                   paragraph.getLanguage(line, "PHONE"), paragraph.getLanguage(line, "ADDRESS"),
-                                   "Department", "Division"}
+                    new String[] { paragraph.getString("ALL"), paragraph.getString("NO"),
+                                   paragraph.getString("NAME"), paragraph.getString("BIRTH"),
+                                   paragraph.getString("PHONE"), paragraph.getString("ADDRESS"),
+                                   paragraph.getString("DEPARTMENT"), paragraph.getString("DIVISION")}
                 )
         );
+        btn_GeneralSearch.setText(paragraph.getString("SEARCH"));
+        btn_DoctorSearch.setText(paragraph.getString("SEARCH"));
+        btn_GeneralBack.setText(paragraph.getString("CLOSE"));
+        btn_GeneralAdd.setText(paragraph.getString("ADD"));
+        btn_GeneralEdit.setText(paragraph.getString("GENERALEDIT"));
+        cbx_ShowCurrentEmployee.setText(paragraph.getString("CURRENTEMPLOYED"));
+        cbx_ShowRetiredEmployee.setText(paragraph.getString("RETIRED"));
+        cbx_ShowSuspendedEmployee.setText(paragraph.getString("SUSPENDED"));
+        cbx_ShowDismissedEmployee.setText(paragraph.getString("DISMISSED"));
+        lab_FingerprintSearch.setText(paragraph.getString("SEARCH"));
     }
 
 
@@ -151,15 +161,15 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
                 	conditions = "AND (UPPER(grp_name) LIKE UPPER('%" + txt_Conditions.getText().replace(" ", "%") + "%'))";
                 	break;
             }
-            sql = "SELECT s_no AS '"+paragraph.getLanguage(line, "NO")+"', " +
-                        "concat(firstname,' ',lastname) AS '"+paragraph.getLanguage(line, "NAME")+"', " +
-                        "date_birth AS '"+paragraph.getLanguage(line, "BIRTH")+"', " +
-                        "phone AS '"+paragraph.getLanguage(line, "PHONE")+"', " +
-                        "cellphone AS '"+paragraph.getLanguage(line, "CELLPHONE")+"', " +
-                        "address AS '"+paragraph.getLanguage(line, "ADDRESS")+"', " +
-                        "department.name AS '"+paragraph.getLanguage(line, "DEPNAME")+"', " +
-                        "policlinic.name AS 'Division', " +
-                        "grp_name AS 'Position/Permission' " +
+            sql = "SELECT s_no AS '"+paragraph.getString("NO")+"', " +
+                        "concat(firstname,' ',lastname) AS '"+paragraph.getString("NAME")+"', " +
+                        "date_birth AS '"+paragraph.getString("BIRTH")+"', " +
+                        "phone AS '"+paragraph.getString("PHONE")+"', " +
+                        "cellphone AS '"+paragraph.getString("CELLPHONE")+"', " +
+                        "address AS '"+paragraph.getString("ADDRESS")+"', " +
+                        "department.name AS '"+paragraph.getString("DEPNAME")+"', " +
+                        "policlinic.name AS '" + paragraph.getString("DIVISION") + "', " +
+                        "grp_name AS '" + paragraph.getString("POSITION") + "/" + paragraph.getString("PERMISSION") + "' " +
                   "FROM staff_info " +
                   "LEFT JOIN department ON department.guid=staff_info.dep_guid LEFT JOIN policlinic ON policlinic.guid=staff_info.poli_guid " +
                   "WHERE exist = 1 " + statusCondition + " " + conditions;
@@ -187,7 +197,7 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
                 btn_Previous.setEnabled(false);
                 tab_List.setEnabled(true);
             }else{
-                tab_List.setModel(getModle(new String[]{"Message"},new String[][]{{"No Information."}}));
+                tab_List.setModel(getModle(new String[]{paragraph.getString("MESSAGE")},new String[][]{{paragraph.getString("NOINFORMATION")}}));
                 cob_Page.removeAllItems();
                 btn_Next.setEnabled(false);
                 tab_List.setEnabled(false);
@@ -337,7 +347,6 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
         });
         jPanel3.add(btn_GeneralNext, new java.awt.GridBagConstraints());
 
-        btn_GeneralSearch.setText("Search");
         btn_GeneralSearch.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_GeneralSearchActionPerformed(evt);
@@ -350,7 +359,7 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
             }
         });
 
-        cob_GeneralSearch.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "ALL", "No.", "Name", "Birth", "Phone", "Address" }));
+        //cob_GeneralSearch.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "ALL", "No.", "Name", "Birth", "Phone", "Address" }));
         cob_GeneralSearch.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cob_GeneralSearchActionPerformed(evt);
@@ -371,7 +380,7 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txt_GeneralSearch, javax.swing.GroupLayout.DEFAULT_SIZE, 414, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btn_GeneralSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(btn_GeneralSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         pan_GeneralLayout.setVerticalGroup(
@@ -449,8 +458,7 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
             }
         });
         jPanel5.add(btn_DoctorNext, new java.awt.GridBagConstraints());
-
-        btn_DoctorSearch.setText("Search");
+        
         btn_DoctorSearch.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
             	btn_DoctorSearchActionPerformed(evt);
@@ -483,7 +491,7 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txt_DoctorSearch, javax.swing.GroupLayout.DEFAULT_SIZE, 414, Short.MAX_VALUE)
                         .addGap(6, 6, 6)
-                        .addComponent(btn_DoctorSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(btn_DoctorSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, 631, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -529,21 +537,18 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
 				}
 			});
         
-        btn_GeneralBack.setText("Close");
         btn_GeneralBack.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_GeneralBackActionPerformed(evt);
             }
         });
-
-        btn_GeneralAdd.setText("Add");
+        
         btn_GeneralAdd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_GeneralAddActionPerformed(evt);
             }
         });
-
-        btn_GeneralEdit.setText("Details");
+        
         btn_GeneralEdit.setEnabled(false);
         btn_GeneralEdit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -558,24 +563,20 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
                 btn_GeneralDeleteActionPerformed(evt);
             }
         });*/
+        
+        //cbx_ShowCurrentEmployee.addActionListener(new java.awt.event.ActionListener() {
+        //    public void actionPerformed(java.awt.event.ActionEvent evt) {
+        //        cbx_ShowCurrentEmployeeActionPerformed(evt);
+        //    }
+        //});
+        
+        //cbx_ShowSuspendedEmployee.addActionListener(new java.awt.event.ActionListener() {
+        //    public void actionPerformed(java.awt.event.ActionEvent evt) {
+        //        cbx_ShowSuspendedEmployeeActionPerformed(evt);
+        //    }
+        //});
 
-        cbx_ShowCurrentEmployee.setText("Current Employed");
-        cbx_ShowCurrentEmployee.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cbx_ShowCurrentEmployeeActionPerformed(evt);
-            }
-        });
-
-        cbx_ShowRetiredEmployee.setText("Retired");
-
-        cbx_ShowSuspendedEmployee.setText("Suspended");
-        cbx_ShowSuspendedEmployee.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cbx_ShowSuspendedEmployeeActionPerformed(evt);
-            }
-        });
-
-        cbx_ShowDismissedEmployee.setText("Dismissed");
+        
         
         fingerPrintViewer1.setVisible(true);
 
@@ -835,13 +836,13 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
         tab_DoctorListMouseClicked(null);
     }//GEN-LAST:event_tab_DoctorListKeyPressed
 
-    private void cbx_ShowSuspendedEmployeeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbx_ShowSuspendedEmployeeActionPerformed
+    //private void cbx_ShowSuspendedEmployeeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbx_ShowSuspendedEmployeeActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_cbx_ShowSuspendedEmployeeActionPerformed
+    //}//GEN-LAST:event_cbx_ShowSuspendedEmployeeActionPerformed
 
-    private void cbx_ShowCurrentEmployeeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbx_ShowCurrentEmployeeActionPerformed
+    //private void cbx_ShowCurrentEmployeeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbx_ShowCurrentEmployeeActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_cbx_ShowCurrentEmployeeActionPerformed
+    //}//GEN-LAST:event_cbx_ShowCurrentEmployeeActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_DoctorNext;
@@ -888,16 +889,16 @@ public class Frm_StaffInfo extends javax.swing.JFrame implements FingerPrintView
 
             DBC.closeConnection(rs);
             start = System.currentTimeMillis();
-            lab_FingerprintSearch.setText(paragraph.getLanguage(line, "SEARCH"));
+            
             rs = DBC.executeQuery(sql_FingerSelect);
             String PatientsNO = FingerPrintScanner.identify(rs);
 
             finish = System.currentTimeMillis();
-            lab_FingerprintSearch.setText(paragraph.getLanguage(line, "ITTOOK")+((float)(finish-start)/(float)1000)+"/s");
+            lab_FingerprintSearch.setText(paragraph.getString("ITTOOK")+((float)(finish-start)/(float)1000)+"/s");
 
             if(PatientsNO.equals("")){
-                lab_FingerprintSearch.setText(paragraph.getLanguage(line, "NOTFOUND"));
-                JOptionPane.showMessageDialog(new Frame(), paragraph.getLanguage(line, "NOINFORMATION"));
+                lab_FingerprintSearch.setText(paragraph.getString("NOTFOUND"));
+                JOptionPane.showMessageDialog(new Frame(), paragraph.getString("NOINFORMATION"));
             }else{
                 FingerPrintScanner.stop();
                 new Frm_StaffDetails(rs.getInt("id")).setVisible(true);

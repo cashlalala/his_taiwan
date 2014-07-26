@@ -5,13 +5,11 @@
 
 package staff;
 
-import cc.johnwu.sql.*;
-import cc.johnwu.finger.FingerPrintScanner;
-import cc.johnwu.finger.FingerPrintViewerInterface;
-
-import java.awt.event.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
-import java.sql.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,6 +17,11 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.TableColumn;
 
+import multilingual.Language;
+import cc.johnwu.finger.FingerPrintScanner;
+import cc.johnwu.finger.FingerPrintViewerInterface;
+import cc.johnwu.sql.DBC;
+import cc.johnwu.sql.HISPassword;
 import errormessage.StoredErrorMessage;
 
 
@@ -64,8 +67,8 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
     private String m_UUID = null;
     private SelectOption[] LeaveOption;
 
-     /*多國語言變數*/
-//    private language paragraph = language.getInstance();
+    /*多國語言變數*/
+    private Language paragraph = Language.getInstance();
 //    private String[] line = paragraph.setlanguage("EMPLOYEE").split("\n") ;
 //    private String[] message = paragraph.setlanguage("MESSAGE").split("\n") ;
 
@@ -78,7 +81,7 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
         initComboBox();
         initWorkCob();
 
-        //initLanguage();
+        initLanguage();
     }
 
     // 新增資料
@@ -86,15 +89,14 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
         initComponents();
         initNew();
         initComboBox();
-
-        //initLanguage();
+        initLanguage();
     }
 
      /** 初始化  新增員工*/
     private void initNew(){
-         FingerPrintScanner.setParentFrame(this);//打開指紋機
+        FingerPrintScanner.setParentFrame(this);//打開指紋機
         this.setLocationRelativeTo(this);//視窗顯示至中
-        //this.setExtendedState(Frm_Employee.MAXIMIZED_BOTH);  // 最大化
+        this.setExtendedState(Frm_Employee.MAXIMIZED_BOTH);  // 最大化
         addWindowListener(new WindowAdapter() {//視窗關閉事件
             @Override
             public void windowClosing(WindowEvent windowevent)
@@ -153,8 +155,9 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
         } else {
             //this.setTitle(paragraph.getLanguage(line, "EMPLOYEEINFORMATION") +" ("+paragraph.getLanguage(line, "EDITSTAFFNO")+m_Sno +" )");
         }
-        //this.setExtendedState(Frm_Employee.MAXIMIZED_BOTH);  // 最大化
+        
         this.setLocationRelativeTo(this);//視窗顯示至中
+        this.setExtendedState(Frm_StaffDetails.MAXIMIZED_BOTH);  // 最大化
         addWindowListener(new WindowAdapter() {//視窗關閉事件
             @Override
             public void windowClosing(WindowEvent windowevent)
@@ -343,9 +346,9 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
     }
 
 
-/*
+
      private void initLanguage() {
-        this.Emp_List.setTitleAt(0,paragraph.getLanguage(line, "PERSONAL"));
+        /*this.Emp_List.setTitleAt(0,paragraph.getLanguage(line, "PERSONAL"));
         this.Emp_List.setTitleAt(1,paragraph.getLanguage(line, "CONTACTDETAILS"));
         this.Emp_List.setTitleAt(2, paragraph.getLanguage(line, "FAMILYINFORMATION"));
         this.pan_Fingerprint.setBorder(javax.swing.BorderFactory.createTitledBorder(paragraph.getLanguage(line, "FINGERPRINT")));
@@ -363,9 +366,27 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
         this.btn_Cancel.setText(paragraph.getLanguage(line,"CANCLE"));
 
         this.setTitle(paragraph.getLanguage(line, "EMPLOYEEINFORMATION"));
-
-
-      }*/
+		*/
+    	 
+    	 btn_Save.setText(paragraph.getString("SAVE"));
+         btn_Cancel.setText(paragraph.getString("CANCEL"));
+         btn_Enroll.setText(paragraph.getString("ENROLL"));
+         lab_UserId.setText("*" + paragraph.getString("USERID"));
+         lab_cellphone.setText(paragraph.getString("CONTACTNUMBER") + " :");
+         lab_Posi.setText(paragraph.getString("DEPARMENT") + " :");
+         lab_mail.setText(paragraph.getString("EMAIL"));
+         lab_PlaceOfBirth.setText(paragraph.getString("PLACEOFBIRTH"));
+         lab_DateOfBirth.setText(paragraph.getString("DATAOFBIRTH"));
+         lab_Group.setText(paragraph.getString("POSITION") + "/" + paragraph.getString("PERMISSION") + " :");
+         lab_No.setText(paragraph.getString("STAFFNO"));
+         lab_ToDepartment.setText(paragraph.getString("DIVISION") + " :");
+         lab_FirstName.setText("*" + paragraph.getString("FIRSTNAME"));
+         lab_LastName.setText("*" + paragraph.getString("LASTNAME"));
+         lab_HssNo.setText(paragraph.getString("HSSNO"));
+         lab_Leave.setText(paragraph.getString("STATUS") + " :");
+         lab_Confirmation.setText("*" + paragraph.getString("CONFIRMATION"));
+         lab_PassWord.setText("*" + paragraph.getString("PASSWORD"));
+      }
 
     /**隱藏欄位*/
      public void setHideColumn(javax.swing.JTable table,int index){
@@ -437,18 +458,16 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
         cob_Leave = new javax.swing.JComboBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Employee Information");
+        setTitle(paragraph.getString("EMPLOYEEINFORMATION"));
         setResizable(false);
 
-        btn_Save.setText("Save");
         btn_Save.setEnabled(false);
         btn_Save.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_SaveActionPerformed(evt);
             }
         });
-
-        btn_Cancel.setText("Cancel");
+        
         btn_Cancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_CancelActionPerformed(evt);
@@ -472,8 +491,7 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
             fingerPrintViewerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 119, Short.MAX_VALUE)
         );
-
-        btn_Enroll.setText("Enroll");
+        
         btn_Enroll.setEnabled(false);
         btn_Enroll.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -509,46 +527,20 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
             }
         });
 
-        lab_UserId.setText("* User ID :");
-
         cob_Permission.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cob_PermissionActionPerformed(evt);
             }
         });
-
-        lab_cellphone.setText("Contact Number :");
-
-        lab_Posi.setText("Department :");
-
-        lab_mail.setText("Email Address :");
-
+        
         txt_LastName.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 txt_LastNameKeyReleased(evt);
             }
         });
 
-        lab_PlaceOfBirth.setText("Place of Birth :");
-
-        lab_DateOfBirth.setText("Date of Birth :");
-
         txt_No.setText("00000000");
         txt_No.setEnabled(false);
-
-        lab_Group.setText("Position/Permission :");
-
-        lab_No.setText("Staff No. :");
-
-        lab_ToDepartment.setText("Division :");
-
-        lab_FirstName.setText("* First Name :");
-
-        lab_LastName.setText("* Last Name :");
-
-        lab_HssNo.setText("HSS NO. :");
-        
-        lab_Leave.setText("Current Status :");
 
         txt_HssNo.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
@@ -567,10 +559,6 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
                 pwd_ConfirmationKeyReleased(evt);
             }
         });
-
-        lab_Confirmation.setText("* Confirmation :");
-
-        lab_PassWord.setText("* Password :");
 
         txt_UserId.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
