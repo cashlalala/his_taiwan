@@ -18,9 +18,6 @@
 		<copy todir="${dist.dir}/lib/bin">
 			<fileset dir="${basedir}/lib/bin" includes="**"/>
 		</copy>
-		<copy todir="${dist.dir}/db">
-					<fileset dir="${basedir}/db" includes="**"/>
-		</copy>
 		<copy todir="${dist.dir}/lib" file="${basedir}/lib/setting"/>
 	</target>
 	
