@@ -36,8 +36,8 @@ public class Frm_Loading extends javax.swing.JFrame {
         pbar_Loading.setStringPainted(true);
         pbar_Loading.setMaximum(m_LoadingData.getServerDataCount()+m_LoadingData.getLocalDataCount());
         for(int i=0; i<THREADAMOUNT; i++){
-            new UpdateLDB(""+i).start();
-        	//new UpdateLDB().run();
+//            new UpdateLDB(""+i).start();
+        	new UpdateLDB("").run();
         }
         setVisible(true);
 
@@ -81,19 +81,19 @@ public class Frm_Loading extends javax.swing.JFrame {
         this.dispose();
     }
 
-    private class UpdateLDB extends Thread {
+    private class UpdateLDB {
     	//private String __n;
         UpdateLDB(String name){
-            super(name);
+//            super(name);
         }
-        @Override
+//        @Override
         public void run(){
             while(++s_UpdateCurrent <= pbar_Loading.getMaximum()-m_LoadingData.getLocalDataCount()){
                 m_LoadingData.download2LocalDB(m_TableName,s_UpdateCurrent);
                 pbar_Loading.setValue(s_UpdateCurrent+s_RemoveCurrent);
             }
-            synchronizeStop();
-            this.interrupt();
+//            synchronizeStop();
+//            this.interrupt();
         }
     }
 
