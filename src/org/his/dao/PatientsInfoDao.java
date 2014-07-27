@@ -79,5 +79,24 @@ public class PatientsInfoDao {
 		}
 		return query.getResultList();
 	}
+	
+	@SuppressWarnings("unchecked")
+	public List<PatientsInfo> getPatientsBySearch(String target){
+		try{
+			String sql = "SELECT * FROM patients_info " +
+					"WHERE exist =  1 " +
+					"AND ( UPPER(p_no) LIKE UPPER ('%" + target.replace(" ", "%") + "%') " +
+					"OR UPPER(nhis_no) LIKE UPPER('%" + target.replace(" ", "%") + "%') " +
+	                "OR UPPER(nia_no) LIKE UPPER('%" + target.replace(" ", "%") + "%') " +
+	                "OR UPPER(concat(firstname,' ',lastname)) LIKE UPPER('%" + target.replace(" ", "%") + "%')"+
+	                ")";
+			Query query = em.createNativeQuery(sql, PatientsInfo.class);
+			return query.getResultList();
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
+	}
 
 }
