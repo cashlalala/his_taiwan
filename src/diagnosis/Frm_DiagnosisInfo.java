@@ -1,22 +1,22 @@
 package diagnosis;
 
-import casemgmt.Frm_Case;
-import cc.johnwu.sql.*;
-
+import java.awt.Point;
 import java.awt.event.KeyEvent;
-import java.io.IOException;
-import java.text.ParseException;
-import java.util.Vector;
-
-import cc.johnwu.login.UserInfo;
-import cc.johnwu.date.DateMethod;
-
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.sql.*;
+import java.awt.print.PageFormat;
+import java.awt.print.Paper;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
+import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -31,22 +31,22 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
-import radiology.Frm_RadiologyHistory;
-import system.Setting;
-import worklist.Frm_WorkList;
-import common.*;
-import diagnosis.TableTriStateCell.TriStateCellEditor;
-import diagnosis.TableTriStateCell.TriStateCellRenderer;
-import errormessage.StoredErrorMessage;
 import laboratory.Frm_LabDM;
 import laboratory.Frm_LabHistory;
 import multilingual.Language;
+import radiology.Frm_RadiologyHistory;
+import worklist.Frm_WorkList;
+import casemgmt.Frm_Case;
+import cc.johnwu.date.DateMethod;
+import cc.johnwu.login.UserInfo;
+import cc.johnwu.sql.DBC;
 
-import java.awt.*;
-import java.awt.print.*;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
+import common.Constant;
+import common.PrintTools;
+import common.TabTools;
+import common.Tools;
+
+import errormessage.StoredErrorMessage;
 
 public class Frm_DiagnosisInfo extends javax.swing.JFrame implements DiagnosisInterface {
 
@@ -175,7 +175,13 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements DiagnosisIn
             this.txt_No.setText(rs.getString("p_no"));
             this.txt_Name.setText(rs.getString("firstname")+" "+rs.getString("lastname"));
             this.txt_Sex.setText(rs.getString("gender"));
-            this.txt_Age.setText(DateMethod.getAgeWithMonth(rs.getDate("birth")));
+            if (rs.getDate("birth") != null) {
+            	this.txt_Age.setText(DateMethod.getAgeWithMonth(rs.getDate("birth")));
+            }
+            else {
+            	this.txt_Age.setText("");
+            }
+            
             this.txt_Bloodtype.setText(rs.getString("bloodtype") + " " + rs.getString("rh_type"));
             this.txt_Height.setText(rs.getString("height"));
             this.txt_Weight.setText(rs.getString("weight"));
@@ -576,7 +582,8 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements DiagnosisIn
     }
 
     // 建立 TABLE
-    public void initTable() {
+    @SuppressWarnings("deprecation")
+	public void initTable() {
            Object getModelAndRowNo[] = new Object[1];  // getModelAndRowNo[0] get model   getModelAndRowNo[1] get rowNo
            //-----tab_Diagnosis----------------------------------------------------
            String[] diagnosisTitle = {" ",paragraph.getLanguage(line,"CODE"),paragraph.getLanguage(line,"DIAGNOSIS")};   // table表頭
@@ -609,7 +616,8 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements DiagnosisIn
     }
 
     // 設定 TABLE 攔寬
-    public void initTableColumn() {
+    @SuppressWarnings("unused")
+	public void initTableColumn() {
 
             TableColumn diagnosisColumnNo = tab_Diagnosis.getColumnModel().getColumn(0);
             TableColumn diagnosisColumnIcdCode = tab_Diagnosis.getColumnModel().getColumn(1);
@@ -669,7 +677,8 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements DiagnosisIn
             medicineColumnItem.setCellEditor(new DefaultCellEditor(m_AutoTxt));         // textField加入table
     }
 
-    private void initLanguage() {
+    @SuppressWarnings("deprecation")
+	private void initLanguage() {
         //this.lab_TitleNo.setText(paragraph.getLanguage(line, "TITLENO"));
         this.lab_TitleName.setText(paragraph.getLanguage(line, "TITLENAME"));
         this.lab_Height.setText(paragraph.getLanguage(line, "HEIGHT"));
@@ -1151,7 +1160,8 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements DiagnosisIn
     }
 
     // 儲存或修改病歷
-    public void setSaveDiagnosis() {
+    @SuppressWarnings("deprecation")
+	public void setSaveDiagnosis() {
         ResultSet rsOsGuid = null;
         ResultSet rsPharmacyNo = null;
         ResultSet rsModifyCount = null;
@@ -1475,7 +1485,8 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements DiagnosisIn
     }
 
     // 將過去病史帶入
-    public void getCasehistory(String summary ,String guid ) {
+    @SuppressWarnings("rawtypes")
+	public void getCasehistory(String summary ,String guid ) {
         TabTools.setClearTableValue(tab_Diagnosis);
         TabTools.setClearTableValue(tab_Prescription);
         TabTools.setClearTableValue(tab_Medicine);

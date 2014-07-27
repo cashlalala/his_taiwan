@@ -716,7 +716,7 @@ public class PrintTools {
                                 g2.drawString(rs.getString("dosage"), x + 535, y + 40);
                                 g2.drawString(rs.getString("usage"), x + 705, y + 40);
                                 g2.drawString(rs.getString("way"), x + 1025, y + 40);
-                                g2.drawString(rs.getString("day"), x + 1155, y + 40);
+                                g2.drawString(rs.getString("repeat_number"), x + 1155, y + 40);
                                 g2.drawString(rs.getString("quantity"), x + 1285, y + 40);
                                 g2.drawString(rs.getString("powder"), x + 1425, y + 40);
                                 y += space;
@@ -1002,8 +1002,19 @@ public class PrintTools {
                     g2.drawString(m_Rs.getString("p_no"), x+10, y += space);
                     g2.drawString(m_Rs.getString("name"), x - 65, y += space);
                     g2.drawString(m_Rs.getString("gender"), x - 45, y += space);
-                    g2.drawString(m_Rs.getString("birth"), x - 70, y += space);
-                    g2.drawString(m_Rs.getString("age"), x - 90, y += space);
+                    if (m_Rs.getString("birth") == null) {
+                    	g2.drawString("", x - 70, y += space);
+                    }
+                    else {
+                    	g2.drawString(m_Rs.getString("birth"), x - 70, y += space);
+                    }
+                    if (m_Rs.getString("age") == null) {
+                    	g2.drawString("", x - 90, y += space);
+                    }
+                    else {
+                    	g2.drawString(m_Rs.getString("age"), x - 90, y += space);
+                    }
+                    
                     x = 960;
                     y = 180;
                     g2.drawString(m_Rs.getString("date"), x - 30, y += space);
