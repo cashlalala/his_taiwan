@@ -109,8 +109,9 @@ public class Frm_DiagnosisTherapy extends javax.swing.JFrame {
         }
     }
 
-    private void initLanguage() {
-        lab_Therapy.setText(paragraph.getLanguage(line, "THERAPY"));
+    @SuppressWarnings("deprecation")
+	private void initLanguage() {
+        lab_Therapy.setText(paragraph.getLanguage(line, "DIAGNOSIS_THERAPY"));
         btn_Search.setText(paragraph.getLanguage(message, "SEARCH"));
         btn_Enter.setText(paragraph.getLanguage(message, "ENTER"));
         btn_Close.setText(paragraph.getLanguage(message, "CLOSE"));
@@ -120,7 +121,8 @@ public class Frm_DiagnosisTherapy extends javax.swing.JFrame {
     }
     // 取值條件變動進行model重設
     // 參數：condition 搜尋方式與條件  state KeyPress搜尋或是value change
-    public void setModel(String condition, String state) {
+    @SuppressWarnings("deprecation")
+	public void setModel(String condition, String state) {
         Object[][] dataArray = null;
         ResultSet rsTabTherapy = null;
         try {

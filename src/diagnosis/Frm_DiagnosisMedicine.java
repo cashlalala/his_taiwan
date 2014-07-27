@@ -113,8 +113,9 @@ public class Frm_DiagnosisMedicine extends javax.swing.JFrame {
     }
 
     // 多語系對應
-    private void initLanguage() {
-        lab_Medicine.setText(paragraph.getLanguage(line, "THERAPY"));
+    @SuppressWarnings("deprecation")
+	private void initLanguage() {
+        lab_Medicine.setText(paragraph.getLanguage(line, "MEDICINE_THERAPY"));
         btn_Search.setText(paragraph.getLanguage(message, "SEARCH"));
         btn_Enter.setText(paragraph.getLanguage(message, "ENTER"));
         btn_Close.setText(paragraph.getLanguage(message, "CLOSE"));
