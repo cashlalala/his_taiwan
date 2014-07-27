@@ -10,6 +10,29 @@
 <project name="touch-EMR_SOURCE" default="default" basedir=".">
     <description>Builds, tests, and runs the project touch-EMR SOURCE.</description>
     <import file="nbproject/build-impl.xml"/>
+	
+	<target name="-post-init">
+		<copy todir="${dist.dir}/${img.dir}">
+			<fileset dir="${img.dir}" includes="**"/> 
+		</copy>
+		<copy todir="${dist.dir}/lib/bin">
+			<fileset dir="${basedir}/lib/bin" includes="**"/>
+		</copy>
+		<copy todir="${dist.dir}/db">
+					<fileset dir="${basedir}/db" includes="**"/>
+		</copy>
+		<copy todir="${dist.dir}/lib" file="${basedir}/lib/setting"/>
+	</target>
+	
+	<target name="post-build">
+		 <tar compression="gzip" destfile="dist.tar.gz">
+		    <tarfileset dir="${dist.dir}">
+		      <include name="**" />
+		    </tarfileset>
+		  </tar>
+	</target>
+	
+		
     <!--
 
     There exist several targets which are by default empty and which can be 
