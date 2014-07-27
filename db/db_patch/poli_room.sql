@@ -1,0 +1,9 @@
+guid,poli_guid,name,type,status
+45fad8d5-c91c-11df-a9d1-aaf1b7c1a3e1,d693c3a8-ebse-102c-87fc-0013d35816f7,"Room 1",L,N
+45fad8d5-c91c-11df-a9d1-aaf1b7c1a3e2,d693c3a8-ebse-102c-87fc-0013d35816f7,"Room 2",L,N
+45fad8d5-c91c-11df-a9d1-aaf1b7c1a3e3,d693c3a8-ebse-102c-87fc-0013d35816f7,"Room 3",L,N
+d26c32ac-f4e3-102c-b00f-0013d3581610,03b57332-9b17-11e3-830e-e89a8fbc2471,"Room 1",L,N
+d26c32ac-f4e3-102c-b00f-0013d3581611,03b57332-9b17-11e3-830e-e89a8fbc2471,"Room 2",L,D
+d26c32ac-f4e3-102c-b00f-0013d35816fa,d693c3a8-ebse-102c-87fc-0013d35816f4,"Room 2",L,N
+d26c32ac-f4e3-102c-b00f-0013d35816fg,d693c3a8-ebse-102c-87fc-0013d35816f4,"Room 1",L,N
+e492e019-1266-11e4-bfdc-000c29285422,d083da9a-1266-11e4-bfdc-000c29285422,"Clinic 1",L,N

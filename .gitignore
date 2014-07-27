@@ -2,4 +2,6 @@
 .project
 .classpath
 .settings/
-./lib/errorMessage.txt
+lib/errorMessage.txt
+dist/
+build/

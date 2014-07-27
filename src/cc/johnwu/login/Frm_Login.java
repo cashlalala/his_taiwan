@@ -1,21 +1,25 @@
 package cc.johnwu.login;
 
 
-import Multilingual.language;
-import cc.johnwu.sql.*;
 import java.awt.BorderLayout;
-import java.awt.Frame;
-import java.sql.*;
+
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+
+import multilingual.Language;
+
+import org.his.dao.StaffInfoDao;
+import org.his.model.StaffInfo;
+
+import cc.johnwu.sql.HISPassword;
 
 
 public class Frm_Login extends javax.swing.JFrame {
     private UserInfo m_UserInfo;
 
     /*多國語言變數*/
-    private language paragraph = new language();
+    private Language paragraph = Language.getInstance();
     private String[] line = paragraph.setlanguage("LOGIN").split("\n") ;
 
     /** Creates new form Frm_Login */
@@ -102,7 +106,7 @@ public class Frm_Login extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void initLanguage() {
+    public void initLanguage() {
         this.lab_Id.setText(paragraph.getLanguage(line, "ID"));
         this.lab_Passwd.setText(paragraph.getLanguage(line, "PASSWD"));
         this.btn_Login.setText(paragraph.getLanguage(line, "LOGIN"));
@@ -110,23 +114,17 @@ public class Frm_Login extends javax.swing.JFrame {
 
     }
     private void btn_LoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_LoginActionPerformed
-        ResultSet rs = null;
-        String sql = "SELECT s_id, passwd " +
-                     "FROM staff_info " +
-                     "WHERE s_id = '"+ txt_Id.getText() +"' " +
-                     "AND passwd = '"+ HISPassword.enCode(new String(txt_Passwd.getPassword())) +"'";
 
         try {
-            rs = DBC.executeQuery(sql);
-            if(!rs.next() || !m_UserInfo.setOnLine(txt_Id.getText())){
+        	StaffInfoDao staffInfoDao = new StaffInfoDao();
+    		StaffInfo sInfo = staffInfoDao.QueryIfUserIsValid(txt_Id.getText(), 
+    								HISPassword.enCode(new String(txt_Passwd.getPassword())));
+    		if (sInfo == null || !m_UserInfo.setOnLine(txt_Id.getText())) {
                 this.txt_Passwd.setText("");
-                JOptionPane.showMessageDialog(this, paragraph.getLanguage(line, "LOGINFAILED"));
-            }
-        } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, paragraph.getString("LOGINFAILED"));
+    		}
+        } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, ex);
-        } finally {
-            try{DBC.closeConnection(rs);}
-            catch (SQLException ex) {}
         }
     }//GEN-LAST:event_btn_LoginActionPerformed
 
