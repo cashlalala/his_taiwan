@@ -16,6 +16,10 @@ public class Frm_Loading extends javax.swing.JFrame {
         m_TableName = tableName;
        
     }
+    
+    public boolean isLoading() {
+    	return !(s_UpdateCurrent > pbar_Loading.getMaximum());
+    }
 
     public void show_Loading() {
 
@@ -33,6 +37,7 @@ public class Frm_Loading extends javax.swing.JFrame {
         pbar_Loading.setMaximum(m_LoadingData.getServerDataCount()+m_LoadingData.getLocalDataCount());
         for(int i=0; i<THREADAMOUNT; i++){
             new UpdateLDB(""+i).start();
+        	//new UpdateLDB().run();
         }
         setVisible(true);
 
@@ -76,7 +81,8 @@ public class Frm_Loading extends javax.swing.JFrame {
         this.dispose();
     }
 
-    private class UpdateLDB extends Thread{
+    private class UpdateLDB extends Thread {
+    	//private String __n;
         UpdateLDB(String name){
             super(name);
         }
