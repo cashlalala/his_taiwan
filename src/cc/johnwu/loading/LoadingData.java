@@ -72,7 +72,7 @@ public class LoadingData {
             catch (SQLException ex) {}
         }
         try{
-            DBC.localExecuteQuery("DELECT FROM " + tableName);
+            DBC.localExecuteQuery("DELETE FROM " + tableName);
             DBC.localExecute("SHUTDOWN");
         } catch (SQLException sex) { }
         loadData(tableName);

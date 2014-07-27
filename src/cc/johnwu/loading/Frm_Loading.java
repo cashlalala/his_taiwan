@@ -31,15 +31,14 @@ public class Frm_Loading extends javax.swing.JFrame {
         //set this frame on center
         this.setLocationRelativeTo(this);
         m_LoadingData.rebuildingData(m_TableName);
-        pbar_Loading.setMinimum(0);
-        pbar_Loading.setValue(0);
-        pbar_Loading.setStringPainted(true);
-        pbar_Loading.setMaximum(m_LoadingData.getServerDataCount()+m_LoadingData.getLocalDataCount());
-        for(int i=0; i<THREADAMOUNT; i++){
-            new UpdateLDB(""+i).start();
-        	//new UpdateLDB().run();
-        }
-        setVisible(true);
+        //pbar_Loading.setMinimum(0);
+        //pbar_Loading.setValue(0);
+        //pbar_Loading.setStringPainted(true);
+        //pbar_Loading.setMaximum(m_LoadingData.getServerDataCount()+m_LoadingData.getLocalDataCount());
+        for(int i = 0; i < m_LoadingData.getServerDataCount()+m_LoadingData.getLocalDataCount(); i++)
+        	m_LoadingData.download2LocalDB(m_TableName,i);
+
+        //setVisible(true);
 
     }
 
