@@ -114,8 +114,9 @@ public class Frm_DiagnosisPrescription extends javax.swing.JFrame {
         }
     }
 
-    private void initLanguage() {
-        //this.lab_Therapy.setText(paragraph.getLanguage(line, "THERAPY"));
+    @SuppressWarnings("deprecation")
+	private void initLanguage() {
+        //this.lab_Therapy.setText(paragraph.getLanguage(line, "MEDICINE_THERAPY"));
         this.btn_Search.setText(paragraph.getLanguage(message, "SEARCH"));
         this.btn_Enter.setText(paragraph.getLanguage(message, "ENTER"));
         this.btn_Close.setText(paragraph.getLanguage(message, "CLOSE"));

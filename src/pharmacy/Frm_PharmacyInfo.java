@@ -102,7 +102,7 @@ public class Frm_PharmacyInfo extends javax.swing.JFrame {
         try {
             String sqlMedicines =
                 "SELECT medicines.code AS 'Code', medicines.item AS 'Item', medicine_stock.dosage AS 'Dosage', medicines.unit AS '"+paragraph.getLanguage(line, "UNIT")+"', medicine_stock.usage AS '"+paragraph.getLanguage(line, "USAGE")+"', " +
-                       "medicine_stock.way AS 'Frequency', medicine_stock.day AS 'Duration', medicine_stock.quantity AS 'Quantity', " +
+                       "medicine_stock.way AS 'Frequency', medicine_stock.repeat_number AS 'Duration', medicine_stock.quantity AS 'Quantity', " +
                        "medicine_stock.urgent AS '"+paragraph.getLanguage(line, "URGENT")+"', medicine_stock.powder AS '"+paragraph.getLanguage(line, "POWDER")+"', medicine_stock.ps AS '"+paragraph.getLanguage(line, "PS")+"' " +
                 "FROM medicines, medicine_stock, outpatient_services, registration_info " +
                 "WHERE registration_info.guid = '"+m_Guid+"' " +

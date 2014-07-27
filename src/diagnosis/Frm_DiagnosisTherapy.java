@@ -67,7 +67,12 @@ public class Frm_DiagnosisTherapy extends javax.swing.JFrame {
         String[] icdCob = null ;
         ResultSet rs = null;
         try {
-            String sql = "SELECT icd_code, name FROM Diagnosis_Code ";
+        	String sql = "SELECT ICDVersion FROM setting";
+        	rs = DBC.executeQuery(sql);
+        	rs.first();
+        	String icdVer = rs.getString("ICDVersion");
+        	
+            sql = "SELECT * FROM diagnosis_code where ICDVersion = '" + icdVer + "'";
             rs = DBC.localExecuteQuery(sql);
             rs.last();
             icdCob = new String[rs.getRow()+1];
@@ -104,8 +109,9 @@ public class Frm_DiagnosisTherapy extends javax.swing.JFrame {
         }
     }
 
-    private void initLanguage() {
-        lab_Therapy.setText(paragraph.getLanguage(line, "THERAPY"));
+    @SuppressWarnings("deprecation")
+	private void initLanguage() {
+        lab_Therapy.setText(paragraph.getLanguage(line, "DIAGNOSIS_THERAPY"));
         btn_Search.setText(paragraph.getLanguage(message, "SEARCH"));
         btn_Enter.setText(paragraph.getLanguage(message, "ENTER"));
         btn_Close.setText(paragraph.getLanguage(message, "CLOSE"));
@@ -115,7 +121,8 @@ public class Frm_DiagnosisTherapy extends javax.swing.JFrame {
     }
     // 取值條件變動進行model重設
     // 參數：condition 搜尋方式與條件  state KeyPress搜尋或是value change
-    public void setModel(String condition, String state) {
+    @SuppressWarnings("deprecation")
+	public void setModel(String condition, String state) {
         Object[][] dataArray = null;
         ResultSet rsTabTherapy = null;
         try {

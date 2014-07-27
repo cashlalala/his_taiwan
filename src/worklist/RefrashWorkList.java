@@ -41,7 +41,6 @@ public class RefrashWorkList extends Thread{
 
         if (SysName.equals("dia")) {
             sql = "SELECT A.visits_no AS '"+paragraph.getLanguage(line, "COL_NO")+"', "+
-                            "A.register AS '"+paragraph.getLanguage(line, "COL_REGISTER")+"', " +
                             "(SELECT CASE COUNT(registration_info.guid) "+
                                 "WHEN 0 THEN '*' "+
                                 "END  "+
@@ -197,7 +196,7 @@ public class RefrashWorkList extends Thread{
             if(SysName.equals("dia")) {
                 Object[][] array = {{"O",Constant.FINISH_COLOR}, {"F",Constant.FINISH_COLOR}};
                 TabTools.setTabColor(m_Tab, 3, array);
-                TabTools.setHideColumn(this.m_Tab,11);
+                TabTools.setHideColumn(this.m_Tab,10);
             } else if (SysName.equals("case")) {
                 Object[][] array = {{"F",Constant.FINISH_COLOR}};
                 TabTools.setTabColor(m_Tab, 3, array);
@@ -275,7 +274,7 @@ public class RefrashWorkList extends Thread{
                     ((DefaultTableModel)m_Tab.getModel()).setRowCount(rs.getRow());
                     rs.beforeFirst();
                     while(rs.next()){
-                        for(int col=0; col<12; col++)
+                        for(int col=0; col<11; col++)
                             m_Tab.setValueAt(rs.getString(col+1), row, col);
                         row++;
                     }

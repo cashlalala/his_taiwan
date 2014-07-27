@@ -330,7 +330,7 @@ public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
         try {
             String sqlMedicines =
                 "SELECT medicines.code, medicines.item, medicine_stock.dosage, medicines.unit, medicine_stock.usage, " +
-                       "medicine_stock.way, medicine_stock.day, medicine_stock.quantity, " +
+                       "medicine_stock.way, medicine_stock.repeat_number, medicine_stock.quantity, " +
                        "medicine_stock.urgent, medicine_stock.powder , medicine_stock.ps " +
                 "FROM medicines, medicine_stock, outpatient_services, registration_info " +
                 "WHERE registration_info.guid = '"+tab_Record.getValueAt(tab_Record.getSelectedRow(), 5)+"' " +
