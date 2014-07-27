@@ -32,7 +32,7 @@ import javax.swing.JTextField;
 import org.his.JPAUtil;
 import org.his.bind.PatientsInfoJPATable;
 import org.his.dao.PatientsInfoDao;
-import org.his.dao.RegistrationInfoDao;
+//import org.his.dao.RegistrationInfoDao;
 import org.his.model.PatientsInfo;
 import org.his.model.RegistrationInfo;
 
@@ -84,7 +84,7 @@ public class Frm_Registration extends javax.swing.JFrame implements FingerPrintV
     private PatientsInfoDao patientsInfoDao;
     private List<PatientsInfo> patientsInfo;    
     private RegistrationInfo registrationInfo;
-    private RegistrationInfoDao registrationInfoDao;
+    //private RegistrationInfoDao registrationInfoDao;
     private PatientsInfo patientInfo;
     private EntityTransaction etx;
     
@@ -1451,6 +1451,7 @@ public void ShowGpsFrom() {
         new Frm_Main().setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btn_BackActionPerformed
+
 
     private void btn_SaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_SaveActionPerformed
     	String sql = "";
