@@ -634,10 +634,15 @@ public class Frm_Main extends javax.swing.JFrame {
         //自動更新diagnosis_code資料
         Frm_Loading frm_Loading = new cc.johnwu.loading.Frm_Loading("diagnosis_code");
         frm_Loading.show_Loading();
+        frm_Loading.setVisible(false);
+
         Frm_Loading frm_Loading1 = new cc.johnwu.loading.Frm_Loading("prescription_code");
         frm_Loading1.show_Loading();
+        frm_Loading1.setVisible(false);
+
         Frm_Loading frm_Loading2 = new cc.johnwu.loading.Frm_Loading("medicines");
         frm_Loading2.show_Loading();
+        frm_Loading2.setVisible(false);
         //開啟看診 視窗
         new worklist.Frm_WorkList(0,"dia").setVisible(true);
         //關閉此視窗
