@@ -1,11 +1,5 @@
 package registration;
 
-import GPSConn.GPSPosition;
-import autocomplete.CompleterComboBox;
-import cc.johnwu.date.*;
-import cc.johnwu.finger.*;
-import cc.johnwu.sql.*;
-
 import java.awt.Frame;
 import java.awt.Point;
 import java.awt.event.WindowAdapter;
@@ -13,37 +7,42 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.persistence.EntityTransaction;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
-import java.text.SimpleDateFormat;
-import java.util.List;
-import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import main.Frm_Main;
+import multilingual.Language;
 
-import javax.swing.InputVerifier;
-import javax.swing.JComponent;
-import javax.swing.JTextField;
-
-import org.his.JPAUtil;
 import org.his.bind.PatientsInfoJPATable;
 import org.his.dao.PatientsInfoDao;
-//import org.his.dao.RegistrationInfoDao;
 import org.his.model.PatientsInfo;
 import org.his.model.RegistrationInfo;
 
-import patients.*;
+import patients.Frm_PatientMod;
+import patients.PatientsInterface;
 import system.Setting;
+import GPSConn.GPSPosition;
+import autocomplete.CompleterComboBox;
+import cc.johnwu.date.DateInterface;
+import cc.johnwu.date.DateMethod;
+import cc.johnwu.finger.FingerPrintScanner;
+import cc.johnwu.finger.FingerPrintViewerInterface;
+import cc.johnwu.sql.DBC;
+import cc.johnwu.sql.HISModel;
+
 import common.Constant;
 import common.PrintTools;
+
 import errormessage.StoredErrorMessage;
 import gpslog.GpsLog;
-import main.Frm_Main;
-import multilingual.Language;
+//import org.his.dao.RegistrationInfoDao;
 
 public class Frm_Registration extends javax.swing.JFrame implements FingerPrintViewerInterface, DateInterface, PatientsInterface {
 
@@ -90,8 +89,6 @@ public class Frm_Registration extends javax.swing.JFrame implements FingerPrintV
     
     
     public Frm_Registration() {
-    	etx = JPAUtil.getTransaction();;
-    	etx.begin();
     	
         // 是否啟動GPS
         if (set.getSetting(lineSet, "ISSTART").equals("1")) {
@@ -116,7 +113,8 @@ public class Frm_Registration extends javax.swing.JFrame implements FingerPrintV
     // 鎖定欄位
    
 
-     private void initLanguage() {
+     @SuppressWarnings("deprecation")
+	private void initLanguage() {
         //this.lab_TitlePNo.setText(paragraph.getLanguage(line, "TITLEPNO"));
         this.lab_TitleNhisNo.setText(paragraph.getLanguage(line, "TITLENHISNO"));
         this.lab_TitleNiaNo.setText(paragraph.getLanguage(line, "TITLENIANO"));
@@ -248,7 +246,8 @@ public class Frm_Registration extends javax.swing.JFrame implements FingerPrintV
     }
 
     /** 初始化下拉式選單*/
-    private void initShiftInfo(){
+    @SuppressWarnings("deprecation")
+	private void initShiftInfo(){
         ResultSet rs = null;
         try {
             this.lab_Register.setText("REISTER");
@@ -302,7 +301,8 @@ public class Frm_Registration extends javax.swing.JFrame implements FingerPrintV
     }
 
     /** 設定班表清單*/
-    private void showShiftList(){
+    @SuppressWarnings("deprecation")
+	private void showShiftList(){
         //*********************************************//
         ResultSet rs = null;
         String sql  = "SELECT policlinic.name AS "+paragraph.getLanguage(line, "COL_POLICLINIC")+", " +
@@ -603,7 +603,7 @@ public void ShowGpsFrom() {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -1445,9 +1445,7 @@ public void ShowGpsFrom() {
         FingerPrintScanner.stop();
 	    if (IsConnGPS) {
 	    	m_ReSearchGps.SetGpsConnClose();
-	    }
- 		if (etx.isActive())
-			etx.rollback();         
+	    }    
         new Frm_Main().setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btn_BackActionPerformed
