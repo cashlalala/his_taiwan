@@ -104,7 +104,7 @@ public class Frm_Setting extends javax.swing.JFrame {
 		//Set up the editor for the sport cells.
 		javax.swing.JComboBox comboBox = new javax.swing.JComboBox();
 		comboBox.addItem("Normal");
-		comboBox.addItem("Disabled");
+		comboBox.addItem("Disableds");
 		sportColumn.setCellEditor(new DefaultCellEditor(comboBox));
 	}
 		
@@ -199,6 +199,7 @@ public class Frm_Setting extends javax.swing.JFrame {
     	this.btn_SaveSystemSetting.setText(paragraph.getString("SAVE"));
     	this.btn_ReloadSystemSetting.setText(paragraph.getString("RELOAD"));
         this.btn_SelectHosIcon.setText(paragraph.getString("CHOOSE") + "...");
+        this.jLabelHosCode.setText(paragraph.getString("HOSPITALCODE") + " :");
         this.jLabelHosName.setText(paragraph.getString("HOSPITALNAME") + " :");
         this.jLabelHosPhone.setText(paragraph.getString("HOSPITALPHONE") + " :");
         this.jLabelHosAddr.setText(paragraph.getString("HOSPITALADDRESS") + " :");
@@ -259,6 +260,7 @@ public class Frm_Setting extends javax.swing.JFrame {
     	try{
             ResultSet rs = DBC.executeQuery("SELECT * FROM setting WHERE id = 1");
             if(rs.next()){
+            	this.txt_HosCode.setText(rs.getString("hospicalID"));
                 this.txt_HosName.setText(rs.getString("hos_name"));
                 this.txt_HosPhone.setText(rs.getString("hos_phone"));
                 this.txt_HosAddr.setText(rs.getString("hos_address"));
@@ -403,6 +405,7 @@ public class Frm_Setting extends javax.swing.JFrame {
         btn_SaveSystemSetting = new javax.swing.JButton();
         btn_ReloadSystemSetting = new javax.swing.JButton();
         btn_SelectHosIcon = new javax.swing.JButton();
+        txt_HosCode = new javax.swing.JTextField();
         txt_HosName = new javax.swing.JTextField();
         txt_HosPhone = new javax.swing.JTextField();
         txt_HosAddr = new javax.swing.JTextField();
@@ -410,6 +413,7 @@ public class Frm_Setting extends javax.swing.JFrame {
         //txt_Language = new javax.swing.JTextField();
         cob_Language = new javax.swing.JComboBox();
         cob_ICDVersion = new javax.swing.JComboBox();
+        jLabelHosCode = new javax.swing.JLabel();
         jLabelHosName = new javax.swing.JLabel();
         jLabelHosPhone = new javax.swing.JLabel();
         jLabelHosAddr = new javax.swing.JLabel();
@@ -476,6 +480,7 @@ public class Frm_Setting extends javax.swing.JFrame {
                     .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(jPanel4Layout.createSequentialGroup()
                         		.addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        				.addComponent(jLabelHosCode, javax.swing.GroupLayout.Alignment.TRAILING)
                                         .addComponent(jLabelHosName, javax.swing.GroupLayout.Alignment.TRAILING)
                                         .addComponent(jLabelHosPhone, javax.swing.GroupLayout.Alignment.TRAILING)
                                         .addComponent(jLabelHosAddr, javax.swing.GroupLayout.Alignment.TRAILING)
@@ -484,6 +489,7 @@ public class Frm_Setting extends javax.swing.JFrame {
                                         .addComponent(jLabelHosIcon, javax.swing.GroupLayout.Alignment.TRAILING)
                                 ).addGap(10, 10, 10)
                         		.addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        				.addComponent(txt_HosCode, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addComponent(txt_HosName, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addComponent(txt_HosPhone, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addComponent(txt_HosAddr, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -508,6 +514,10 @@ public class Frm_Setting extends javax.swing.JFrame {
         		jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel4Layout.createSequentialGroup()
                     .addContainerGap()
+                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    		.addComponent(jLabelHosCode)
+                    		.addComponent(txt_HosCode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    ).addGap(18, 18, 18)
                     .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     		.addComponent(jLabelHosName)
                     		.addComponent(txt_HosName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -992,6 +1002,7 @@ public class Frm_Setting extends javax.swing.JFrame {
     private void btn_SaveSystemSettingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_SaveActionPerformed
         try {
             DBC.executeUpdate("UPDATE setting SET " +
+            	"hospicalID = '"+txt_HosCode.getText()+"', " +
             	"hos_name = '"+txt_HosName.getText()+"', " +
             	"hos_phone = '"+txt_HosPhone.getText()+"', " +
             	"hos_icon_path = '"+txt_HosIcon.getText()+"', " +
@@ -1252,6 +1263,7 @@ public class Frm_Setting extends javax.swing.JFrame {
     private javax.swing.JButton btn_SaveSystemSetting;
     private javax.swing.JButton btn_ReloadSystemSetting;
     private javax.swing.JButton btn_SelectHosIcon;
+    private javax.swing.JLabel jLabelHosCode;
     private javax.swing.JLabel jLabelHosName;
     private javax.swing.JLabel jLabelHosPhone;
     private javax.swing.JLabel jLabelHosAddr;
@@ -1259,6 +1271,7 @@ public class Frm_Setting extends javax.swing.JFrame {
     private javax.swing.JLabel jLabelHosIconImg;
     private javax.swing.JLabel jLabelLanguage;
     private javax.swing.JLabel jLabelICDVersion;
+    private javax.swing.JTextField txt_HosCode;
     private javax.swing.JTextField txt_HosName;
     private javax.swing.JTextField txt_HosPhone;
     private javax.swing.JTextField txt_HosAddr;
