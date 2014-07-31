@@ -2,8 +2,12 @@ package cc.johnwu.sql;
 
 
 import java.awt.Frame;
-import java.sql.*;
-import java.util.Locale;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 import javax.swing.JOptionPane;
 
@@ -199,7 +203,7 @@ public class DBC {
     }
 
     /** 執行給定的 SQL 語句，該語句返回單個 ResultSet 物件。*/
-    public static ResultSet localExecuteQuery(String sql) throws SQLException {
+    public synchronized static ResultSet localExecuteQuery(String sql) throws SQLException {
         Connection conn = DriverManager.getConnection(LOCALURL,LOCALNAME,LOCALPASSWD);
         Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
         return stmt.executeQuery(sql);
@@ -215,7 +219,7 @@ public class DBC {
         return count;
     }
 
-    public static boolean localExecute(String sql) throws SQLException {
+    public synchronized static boolean localExecute(String sql) throws SQLException {
         boolean flag = false;
         Connection conn = DriverManager.getConnection(LOCALURL,LOCALNAME,LOCALPASSWD);
         Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
@@ -224,7 +228,7 @@ public class DBC {
         return flag;
     }
 
-    public static PreparedStatement localPrepareStatement(String sql) throws SQLException {
+    public synchronized static PreparedStatement localPrepareStatement(String sql) throws SQLException {
         Connection conn = DriverManager.getConnection(LOCALURL,LOCALNAME,LOCALPASSWD);
         return conn.prepareStatement(sql);
     }

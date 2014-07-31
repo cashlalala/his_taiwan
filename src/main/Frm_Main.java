@@ -3,6 +3,9 @@ package main;
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -632,17 +635,71 @@ public class Frm_Main extends javax.swing.JFrame {
 
     private void btn_DiagnosisActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_DiagnosisActionPerformed
         //自動更新diagnosis_code資料
-        Frm_Loading frm_Loading = new cc.johnwu.loading.Frm_Loading("diagnosis_code");
-        frm_Loading.show_Loading();
-        frm_Loading.setVisible(false);
+    	new Thread() {
+    		@SuppressWarnings("rawtypes")
+			@Override
+    		public void run(){
+    			
+    			final CountDownLatch latch = new CountDownLatch(3);
+    			ExecutorService executor = Executors.newFixedThreadPool(3);
+    			
+    		    executor.execute(new Runnable() {
 
-        Frm_Loading frm_Loading1 = new cc.johnwu.loading.Frm_Loading("prescription_code");
-        frm_Loading1.show_Loading();
-        frm_Loading1.setVisible(false);
+					@Override
+					public void run() {
+						try {
+							latch.countDown();
+	    	    	        Frm_Loading frm_Loading = new cc.johnwu.loading.Frm_Loading("diagnosis_code");
+	    	    	        frm_Loading.show_Loading();
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
+					}
+    		    	
+    		    });
+    		    
+    		    executor.execute(new Runnable() {
 
-        Frm_Loading frm_Loading2 = new cc.johnwu.loading.Frm_Loading("medicines");
-        frm_Loading2.show_Loading();
-        frm_Loading2.setVisible(false);
+					@Override
+					public void run() {
+						try {
+							latch.countDown();
+	    	    	        Frm_Loading frm_Loading1 = new cc.johnwu.loading.Frm_Loading("prescription_code");
+	    	    	        frm_Loading1.show_Loading();
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
+					}
+    		    	
+    		    });
+    		    
+    		    executor.execute(new Runnable() {
+
+					@Override
+					public void run() {
+						try {
+							latch.countDown();
+	    	    	        Frm_Loading frm_Loading2 = new cc.johnwu.loading.Frm_Loading("medicines");
+	    	    	        frm_Loading2.show_Loading();
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
+					}
+    		    	
+    		    });
+    		    
+    		    try {
+    		    	synchronized (latch) {
+    		    		latch.wait();
+    		    	};
+					
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+    		}
+    	}.start();
+
         //開啟看診 視窗
         new worklist.Frm_WorkList(0,"dia").setVisible(true);
         //關閉此視窗
