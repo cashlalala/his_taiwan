@@ -575,7 +575,8 @@ public class Frm_Main extends javax.swing.JFrame {
                     .addComponent(pan_Investgations, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(10, 10, 10)
-                        .addComponent(btn_DepartmentManagement, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        //.addComponent(btn_DepartmentManagement, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        )
                     .addComponent(pan_Case, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -583,9 +584,10 @@ public class Frm_Main extends javax.swing.JFrame {
                     .addComponent(pan_PersonalManagement, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(10, 10, 10)
-                        .addComponent(btn_MedicineStock, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        //.addComponent(btn_MedicineStock, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btn_PositionManagement, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        //.addComponent(btn_PositionManagement, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        ))
                 .addGap(61, 61, 61))
         );
         layout.setVerticalGroup(
@@ -607,9 +609,10 @@ public class Frm_Main extends javax.swing.JFrame {
                             .addComponent(pan_Investgations, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btn_DepartmentManagement, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btn_MedicineStock, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btn_PositionManagement, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            //.addComponent(btn_DepartmentManagement, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            //.addComponent(btn_MedicineStock, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            //.addComponent(btn_PositionManagement, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        		))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(pan_PersonalManagement, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -631,10 +634,15 @@ public class Frm_Main extends javax.swing.JFrame {
         //自動更新diagnosis_code資料
         Frm_Loading frm_Loading = new cc.johnwu.loading.Frm_Loading("diagnosis_code");
         frm_Loading.show_Loading();
+        frm_Loading.setVisible(false);
+
         Frm_Loading frm_Loading1 = new cc.johnwu.loading.Frm_Loading("prescription_code");
         frm_Loading1.show_Loading();
+        frm_Loading1.setVisible(false);
+
         Frm_Loading frm_Loading2 = new cc.johnwu.loading.Frm_Loading("medicines");
         frm_Loading2.show_Loading();
+        frm_Loading2.setVisible(false);
         //開啟看診 視窗
         new worklist.Frm_WorkList(0,"dia").setVisible(true);
         //關閉此視窗

@@ -74,7 +74,6 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
 
     // 修改資料
     public Frm_StaffDetails(int sno) {
-        
         initComponents();
         m_Sno = sno;
         init();
@@ -86,26 +85,15 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
 
     // 新增資料
     public Frm_StaffDetails() {
-        initComponents();
-        initNew();
+        createTempStaff();
+    	initComponents();
+        init();
         initComboBox();
         initLanguage();
     }
 
      /** 初始化  新增員工*/
-    private void initNew(){
-        FingerPrintScanner.setParentFrame(this);//打開指紋機
-        this.setLocationRelativeTo(this);//視窗顯示至中
-        this.setExtendedState(Frm_Employee.MAXIMIZED_BOTH);  // 最大化
-        addWindowListener(new WindowAdapter() {//視窗關閉事件
-            @Override
-            public void windowClosing(WindowEvent windowevent)
-            {
-                 FingerPrintScanner.stop();
-                btn_CancelActionPerformed(null);
-            }
-        });
-
+    private void createTempStaff(){
         ResultSet rs = null;
         try {
             m_UUID = UUID.randomUUID().toString();
@@ -133,7 +121,7 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
             rs = DBC.executeQuery(sql);
             if(rs.next()){
                 m_Sno = Integer.parseInt(rs.getString(1));
-                this.txt_No.setText(String.valueOf(m_Sno));
+                //this.txt_No.setText(String.valueOf(m_Sno));
               //  this.setTitle(paragraph.getLanguage(line, "HRMSYSTEM")+" ("+paragraph.getLanguage(line, "NEWSTAFFNO") +" "+m_Sno +" )");
             }
 
@@ -150,14 +138,9 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
 
     private void init(){
         FingerPrintScanner.setParentFrame(this);//打開指紋機
-        if (m_Sno != 0) {
-            //this.setTitle(paragraph.getLanguage(line, "EMPLOYEEINFORMATION") + " ("+paragraph.getLanguage(line, "NEWSTAFFNO")+" "+m_Sno +" )");
-        } else {
-            //this.setTitle(paragraph.getLanguage(line, "EMPLOYEEINFORMATION") +" ("+paragraph.getLanguage(line, "EDITSTAFFNO")+m_Sno +" )");
-        }
-        
-        this.setLocationRelativeTo(this);//視窗顯示至中
         this.setExtendedState(Frm_StaffDetails.MAXIMIZED_BOTH);  // 最大化
+        this.setLocationRelativeTo(this);//視窗顯示至中
+        //this.setResizable(true);
         addWindowListener(new WindowAdapter() {//視窗關閉事件
             @Override
             public void windowClosing(WindowEvent windowevent)
@@ -166,6 +149,13 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
                 btn_CancelActionPerformed(null);
             }
         });
+        
+        //if (m_Sno != 0) {
+            //this.setTitle(paragraph.getLanguage(line, "EMPLOYEEINFORMATION") + " ("+paragraph.getLanguage(line, "NEWSTAFFNO")+" "+m_Sno +" )");
+        //} else {
+            //this.setTitle(paragraph.getLanguage(line, "EMPLOYEEINFORMATION") +" ("+paragraph.getLanguage(line, "EDITSTAFFNO")+m_Sno +" )");
+        //}
+
         String sql = "";
         ResultSet rs = null;
 
@@ -423,6 +413,7 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
         btn_Save = new javax.swing.JButton();
         btn_Cancel = new javax.swing.JButton();
         pan_Personal_Personal = new javax.swing.JPanel();
+        pan_SaveCancelButton = new javax.swing.JPanel();
         pan_Fingerprint1 = new javax.swing.JPanel();
         fingerPrintViewer = new cc.johnwu.finger.FingerPrintViewer();
         btn_Enroll = new javax.swing.JButton();
@@ -611,7 +602,7 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
                     .addComponent(txt_CellPhone, javax.swing.GroupLayout.DEFAULT_SIZE, 329, Short.MAX_VALUE)
                     .addComponent(txt_UserId, javax.swing.GroupLayout.DEFAULT_SIZE, 329, Short.MAX_VALUE)
                     .addComponent(cob_Leave, 0, 329, Short.MAX_VALUE))
-                .addContainerGap(78, Short.MAX_VALUE))
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -625,15 +616,14 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
                     .addComponent(txt_FirstName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lab_FirstName))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txt_LastName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lab_LastName))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(dateChooser_PersonalDateBirth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txt_LastName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lab_LastName))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                		.addComponent(dateChooser_PersonalDateBirth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lab_DateOfBirth))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txt_PlaceOfBirth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lab_PlaceOfBirth))
@@ -653,7 +643,6 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(pwd_Confirmation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lab_Confirmation))
-                .addGap(7, 7, 7)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txt_Email, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lab_mail))
@@ -677,7 +666,7 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cob_Leave, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lab_Leave))
-                .addGap(148, 148, 148))
+                .addGap(20, 20, 20))
         );
 
         javax.swing.GroupLayout pan_Personal_PersonalLayout = new javax.swing.GroupLayout(pan_Personal_Personal);
@@ -687,7 +676,7 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pan_Personal_PersonalLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(50, 50, 50)
+                .addGap(20, 20, 20)
                 .addComponent(pan_Fingerprint1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -699,37 +688,54 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
                     .addGroup(pan_Personal_PersonalLayout.createSequentialGroup()
                         .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addContainerGap())
-                    .addGroup(pan_Personal_PersonalLayout.createSequentialGroup()
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, pan_Personal_PersonalLayout.createSequentialGroup()
                         .addComponent(pan_Fingerprint1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(318, 318, 318))))
+                        .addContainerGap())
+                        ))
         );
 
+        javax.swing.GroupLayout pan_PriceButtonLayout = new javax.swing.GroupLayout(pan_SaveCancelButton);
+        pan_SaveCancelButton.setLayout(pan_PriceButtonLayout);
+        pan_PriceButtonLayout.setHorizontalGroup(
+        		pan_PriceButtonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pan_PriceButtonLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btn_Cancel, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btn_Save, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        pan_PriceButtonLayout.setVerticalGroup(
+        		pan_PriceButtonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pan_PriceButtonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(btn_Cancel)
+                .addComponent(btn_Save)
+                .addGap(20,20,20)
+                )
+        );
+        
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(529, Short.MAX_VALUE)
-                .addComponent(btn_Save, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btn_Cancel, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(pan_Personal_Personal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            		.addContainerGap()
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    		.addComponent(pan_Personal_Personal, javax.swing.GroupLayout.DEFAULT_SIZE, 787, Short.MAX_VALUE)
+			                .addComponent(pan_SaveCancelButton)
+                    )
+                    .addContainerGap())
         );
+        
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(pan_Personal_Personal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btn_Cancel)
-                    .addComponent(btn_Save))
-                .addContainerGap())
-        );
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(pan_Personal_Personal)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+	                .addComponent(pan_SaveCancelButton)
+                    .addContainerGap())
+            );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -895,6 +901,7 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
     private javax.swing.JLabel lab_Leave;
     private javax.swing.JPanel pan_Fingerprint1;
     private javax.swing.JPanel pan_Personal_Personal;
+    private javax.swing.JPanel pan_SaveCancelButton;
     private javax.swing.JPasswordField pwd_Confirmation;
     private javax.swing.JPasswordField pwd_PassWord;
     private javax.swing.JTextField txt_CellPhone;

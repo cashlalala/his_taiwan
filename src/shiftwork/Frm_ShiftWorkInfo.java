@@ -89,24 +89,24 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
     /**多國語言翻譯*/
     private void initLanguage() {
         //this.lab_PolRoom.setText(paragraph.getLanguage(line, "POLROOM"));
-        this.lab_Year.setText(paragraph.getLanguage(line, "YEAR"));
-        this.lab_Month.setText(paragraph.getLanguage(line, "MONTH"));
+        this.lab_Year.setText(paragraph.getString("YEAR"));
+        this.lab_Month.setText(paragraph.getString("MONTH"));
         //this.lab_Policlinic.setText(paragraph.getLanguage(line, "POLICLINIC"));
-        this.btn_Close.setText(paragraph.getLanguage(message, "CLOSE"));
-        this.btn_Save.setText(paragraph.getLanguage(message, "SAVE"));
-        this.btn_ReLoad.setText(paragraph.getLanguage(line, "RELOAD"));
-        this.menu_File.setText(paragraph.getLanguage(message, "FILE"));
-        this.mnit_Back.setText(paragraph.getLanguage(message, "CLOSE"));
-        this.setTitle(paragraph.getLanguage(line, "TITLESHIFTWORK"));
+        this.btn_Close.setText(paragraph.getString("CLOSE"));
+        this.btn_Save.setText(paragraph.getString("SAVE"));
+        this.btn_ReLoad.setText(paragraph.getString("RELOAD"));
+        this.menu_File.setText(paragraph.getString("FILE"));
+        this.mnit_Back.setText(paragraph.getString("CLOSE"));
+        this.setTitle(paragraph.getString("TITLESHIFTWORK"));
     }
     /**是否變更儲存資料*/
     private void showSaveMessage(){
         if (this.btn_Save.isEnabled()){
-            Object[] options = {paragraph.getLanguage(message , "YES"),paragraph.getLanguage(message , "NO")};
+            Object[] options = {paragraph.getString("YES"),paragraph.getString("NO")};
             int dialog = JOptionPane.showOptionDialog(
                             null,
-                            paragraph.getLanguage(message , "DOYOUSAVEIT"),
-                            paragraph.getLanguage(message , "MESSAGE"),
+                            paragraph.getString("DOYOUSAVEIT"),
+                            paragraph.getString("MESSAGE"),
                             JOptionPane.YES_OPTION,
                             JOptionPane.QUESTION_MESSAGE,
                             null,
@@ -237,25 +237,25 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
         calRow.set(year, month , date) ;
         switch(calRow.get(Calendar.DAY_OF_WEEK)){    //那一天星期幾
             case 1:
-                m_DataTab[date-1][0] = "<html><font color='00AA00'>"+paragraph.getLanguage(line , "SUN")+"</font></html>" ;
+                m_DataTab[date-1][0] = "<html><font color='00AA00'>"+paragraph.getString("SUN")+"</font></html>" ;
                 break ;
             case 2:
-                m_DataTab[date-1][0] = paragraph.getLanguage(line , "MON") ;
+                m_DataTab[date-1][0] = paragraph.getString("MON") ;
                 break ;
             case 3:
-                m_DataTab[date-1][0] = paragraph.getLanguage(line , "TUE") ;
+                m_DataTab[date-1][0] = paragraph.getString("TUE") ;
                 break ;
             case 4:
-                m_DataTab[date-1][0] = paragraph.getLanguage(line , "WED") ;
+                m_DataTab[date-1][0] = paragraph.getString("WED") ;
                 break ;
             case 5:
-                m_DataTab[date-1][0] = paragraph.getLanguage(line , "THU") ;
+                m_DataTab[date-1][0] = paragraph.getString("THU") ;
                 break ;
             case 6:
-                m_DataTab[date-1][0] = paragraph.getLanguage(line , "FRI") ;
+                m_DataTab[date-1][0] = paragraph.getString("FRI") ;
                 break ;
             case 7:
-                m_DataTab[date-1][0] = "<html><font color='00AA00'>"+paragraph.getLanguage(line , "SAT")+"</font></html>" ;
+                m_DataTab[date-1][0] = "<html><font color='00AA00'>"+paragraph.getString("SAT")+"</font></html>" ;
                 break ;
         }
     }
@@ -263,12 +263,12 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
     // set shift data and set table grid editable
     public void setShiftData() {  
         String[] tableTitle = {
-                                paragraph.getLanguage(line , "WEEK"),
-                                paragraph.getLanguage(line , "DATE") ,
-                                paragraph.getLanguage(line , "MORNING"),
-                                paragraph.getLanguage(line , "NOON"),
-                                paragraph.getLanguage(line , "NIGHT"), 
-                                paragraph.getLanguage(line , "ALLNIGHT")
+                                paragraph.getString("WEEK"),
+                                paragraph.getString("DATE") ,
+                                paragraph.getString("MORNING"),
+                                paragraph.getString("NOON"),
+                                paragraph.getString("NIGHT"), 
+                                paragraph.getString("ALLNIGHT")
                                 };  //表頭
         ResultSet rs = null;
         try {
@@ -296,7 +296,7 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
                     coloumShift = 3;
                 } else if (rs.getString("shift").equals("3")) {
                     coloumShift = 4;
-                } else if (rs.getString("shift").equals("4")) {
+                } else if (rs.getString("shisft").equals("4")) {
                     coloumShift = 5;
                 }
                 m_DataTab[rowDay][coloumShift] = rs.getString("name");
@@ -315,7 +315,7 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
 
                          if (cob_Month.getSelectedIndex() > m_Cal.get(Calendar.MONTH)) {
                              return true;
-                         } else if (cob_Month.getSelectedIndex() == m_Cal.get(Calendar.MONTH) && rowIndex > m_Cal.get(Calendar.DAY_OF_MONTH)-1) {
+                         } else if (cob_Month.getSelectedIndex() == m_Cal.get(Calendar.MONTH) && rowIndex >= m_Cal.get(Calendar.DAY_OF_MONTH)-1) {
                              return true;
                          } else {
                              return false;
@@ -490,7 +490,7 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        btn_Save.setText("Save");
+        btn_Save.setText(paragraph.getString("SAVE"));
         btn_Save.setEnabled(false);
         btn_Save.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -498,14 +498,14 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
             }
         });
 
-        btn_Close.setText("Close");
+        btn_Close.setText(paragraph.getString("CLOSE"));
         btn_Close.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_CloseActionPerformed(evt);
             }
         });
 
-        btn_ReLoad.setText("Re-read");
+        btn_ReLoad.setText(paragraph.getString("RELOAD"));
         btn_ReLoad.setEnabled(false);
         btn_ReLoad.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -533,7 +533,7 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
                 .addComponent(btn_ReLoad))
         );
 
-        lab_Policlinic.setText("Division ");
+        lab_Policlinic.setText(paragraph.getString("DIVISION") + " ");
 
         cob_Policlinic.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -546,7 +546,7 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
             }
         });
 
-        lab_PolRoom.setText("Clinic");
+        lab_PolRoom.setText(paragraph.getString("CLINIC"));
 
         cob_PolRoom.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -583,10 +583,10 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
                 .addComponent(cob_PolRoom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
-        menu_File.setText("File");
+        menu_File.setText(paragraph.getString("FILE"));
 
         mnit_Back.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_ESCAPE, 0));
-        mnit_Back.setText("Close");
+        mnit_Back.setText(paragraph.getString("CLOSE"));
         mnit_Back.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mnit_BackActionPerformed(evt);
@@ -751,7 +751,7 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
 
     private void btn_ReLoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_ReLoadActionPerformed
        reLoad();
-       JOptionPane.showMessageDialog(null, paragraph.getLanguage(message , "LOADCOMPLETE"));
+       JOptionPane.showMessageDialog(null, paragraph.getString("LOADCOMPLETE"));
 }//GEN-LAST:event_btn_ReLoadActionPerformed
 
     private void cob_PoliclinicItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cob_PoliclinicItemStateChanged
