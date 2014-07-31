@@ -1,14 +1,14 @@
 package shiftwork;
 
-import cc.johnwu.sql.*;
-
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -23,8 +23,9 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
-import errormessage.StoredErrorMessage;
 import multilingual.Language;
+import cc.johnwu.sql.DBC;
+import errormessage.StoredErrorMessage;
 
 public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
     //private final String DOCTOR_DEPARTMENT = "Doctor"; // 排班只限醫生群組
@@ -40,7 +41,7 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
     private String[] message = new String(paragraph.setlanguage("MESSAGE")).split("\n") ;
     /*輸出錯誤資訊變數*/
     StoredErrorMessage ErrorMessage = new StoredErrorMessage() ;
-
+    
     public Frm_ShiftWorkInfo() {
         initComponents();
         initTabShift();
@@ -98,6 +99,10 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
         this.menu_File.setText(paragraph.getString("FILE"));
         this.mnit_Back.setText(paragraph.getString("CLOSE"));
         this.setTitle(paragraph.getString("TITLESHIFTWORK"));
+        this.btn_Repeat.setText(paragraph.getString("REPEAT"));
+        this.jLabelRepeatTime.setText(paragraph.getString("TIMES"));
+        this.jLabelDate.setText(paragraph.getString("DATE") + " :");
+        this.jLabelToDate.setText(paragraph.getString("TO") + " " + paragraph.getString("DATE") + " :");
     }
     /**是否變更儲存資料*/
     private void showSaveMessage(){
@@ -370,6 +375,7 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
         spn_Shift = new javax.swing.JScrollPane();
         tab_Shift = new javax.swing.JTable();
         pan_CenterUp = new javax.swing.JPanel();
+        pan_CenterUpUnder = new javax.swing.JPanel();
         cob_Year = new javax.swing.JComboBox();
         lab_Year = new javax.swing.JLabel();
         lab_Month = new javax.swing.JLabel();
@@ -386,6 +392,14 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
         mnb = new javax.swing.JMenuBar();
         menu_File = new javax.swing.JMenu();
         mnit_Back = new javax.swing.JMenuItem();
+        
+        jLabelDate = new javax.swing.JLabel();
+        jLabelToDate = new javax.swing.JLabel();
+        txt_DateFrom = new javax.swing.JTextField();
+        txt_DateTo = new javax.swing.JTextField();
+        btn_Repeat = new javax.swing.JButton();
+        txt_repeatTime = new javax.swing.JTextField();
+        jLabelRepeatTime = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Shift Work");
@@ -443,6 +457,30 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
             }
         });
 
+        btn_Repeat.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                if(common.Tools.isNaturalNumber(txt_DateFrom.getText()) 
+                		&& common.Tools.isNaturalNumber(txt_DateTo.getText()) 
+                		&& common.Tools.isNaturalNumber(txt_repeatTime.getText()) ) {
+                	System.out.println(Integer.valueOf(txt_DateFrom.getText()));
+                	System.out.println(txt_DateTo.getText());
+                	System.out.println(txt_repeatTime.getText());
+                	
+                	String dateString = String.valueOf(cob_Year.getSelectedItem()) + String.valueOf(cob_Month.getSelectedItem()) + String.format("%1$2d", txt_DateFrom.getText());// "20010-03-02 20:25:58";
+                	//SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+                	//Date firstDate = sdf.parse(dateString);
+                	System.out.println(dateString);
+                	
+                	for(int i = Integer.valueOf(txt_DateFrom.getText()); i < Integer.valueOf(txt_DateTo.getText()); i++) {
+                		
+                	}
+                } else {
+                	JOptionPane.showMessageDialog(null, paragraph.getString("PLEASEENTERVALIDNUMBER"));
+                }
+                //int selectedRowCount = tab_Shift.getselec.getSelectedRows();
+            }
+        });        
+
         javax.swing.GroupLayout pan_CenterUpLayout = new javax.swing.GroupLayout(pan_CenterUp);
         pan_CenterUp.setLayout(pan_CenterUpLayout);
         pan_CenterUpLayout.setHorizontalGroup(
@@ -451,13 +489,14 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(lab_Year)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cob_Year, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(cob_Year, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(lab_Month)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cob_Month, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(cob_Month, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(58, 58, 58))
         );
+        
         pan_CenterUpLayout.setVerticalGroup(
             pan_CenterUpLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pan_CenterUpLayout.createSequentialGroup()
@@ -465,7 +504,47 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
                     .addComponent(lab_Year)
                     .addComponent(cob_Year, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lab_Month)
-                    .addComponent(cob_Month, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cob_Month, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                 )
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+
+        javax.swing.GroupLayout pan_CenterUpUnderLayout = new javax.swing.GroupLayout(pan_CenterUpUnder);
+        pan_CenterUpUnder.setLayout(pan_CenterUpUnderLayout);
+        pan_CenterUpUnderLayout.setHorizontalGroup(
+        		pan_CenterUpUnderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pan_CenterUpUnderLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabelDate)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txt_DateFrom, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabelToDate)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txt_DateTo, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(btn_Repeat)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txt_repeatTime, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabelRepeatTime)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(58, 58, 58))
+        );
+        
+        pan_CenterUpUnderLayout.setVerticalGroup(
+        		pan_CenterUpUnderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pan_CenterUpUnderLayout.createSequentialGroup()
+                .addGroup(pan_CenterUpUnderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabelDate)
+                    .addComponent(txt_DateFrom)
+                    .addComponent(jLabelToDate)
+                    .addComponent(txt_DateTo)
+                    .addComponent(btn_Repeat)
+                    .addComponent(txt_repeatTime)
+                    .addComponent(jLabelRepeatTime)
+                 )
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -476,7 +555,8 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
             .addGroup(pan_CenterLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(pan_CenterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(pan_CenterUp, javax.swing.GroupLayout.PREFERRED_SIZE, 328, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(pan_CenterUp, javax.swing.GroupLayout.PREFERRED_SIZE, 750, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(pan_CenterUpUnder, javax.swing.GroupLayout.PREFERRED_SIZE, 750, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(spn_Shift, javax.swing.GroupLayout.DEFAULT_SIZE, 752, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -485,6 +565,8 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
             .addGroup(pan_CenterLayout.createSequentialGroup()
                 .addGap(15, 15, 15)
                 .addComponent(pan_CenterUp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(pan_CenterUpUnder, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(spn_Shift, javax.swing.GroupLayout.DEFAULT_SIZE, 411, Short.MAX_VALUE)
                 .addContainerGap())
@@ -817,9 +899,19 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
     private javax.swing.JMenuItem mnit_Back;
     private javax.swing.JPanel pan_Center;
     private javax.swing.JPanel pan_CenterUp;
+    private javax.swing.JPanel pan_CenterUpUnder;
     private javax.swing.JPanel pan_Up;
     private javax.swing.JPanel pan_under;
     private javax.swing.JScrollPane spn_Shift;
     private javax.swing.JTable tab_Shift;
+    
+    private javax.swing.JLabel jLabelDate;
+    private javax.swing.JLabel jLabelToDate;
+    private javax.swing.JTextField txt_DateFrom;
+    private javax.swing.JTextField txt_DateTo;
+    private javax.swing.JButton btn_Repeat;
+    private javax.swing.JTextField txt_repeatTime;
+    private javax.swing.JLabel jLabelRepeatTime;
+    
     // End of variables declaration//GEN-END:variables
 }
