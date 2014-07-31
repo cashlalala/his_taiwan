@@ -466,7 +466,10 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
                 	System.out.println(txt_DateTo.getText());
                 	System.out.println(txt_repeatTime.getText());
                 	
-                	String dateString = String.valueOf(cob_Year.getSelectedItem()) + String.valueOf(cob_Month.getSelectedItem()) + String.format("%1$2d", txt_DateFrom.getText());// "20010-03-02 20:25:58";
+                	System.out.println(String.valueOf(cob_Year.getSelectedItem()));
+                	System.out.println(String.valueOf(cob_Month.getSelectedItem()));
+                	System.out.println(String.format("%02d", Integer.valueOf(txt_DateFrom.getText())));
+                	String dateString = String.valueOf(cob_Year.getSelectedItem()) + String.valueOf(cob_Month.getSelectedItem()) + String.format("%02d", txt_DateFrom.getText());// "20010-03-02 20:25:58";
                 	//SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
                 	//Date firstDate = sdf.parse(dateString);
                 	System.out.println(dateString);
