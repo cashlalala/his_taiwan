@@ -5,6 +5,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
@@ -462,17 +463,43 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
                 if(common.Tools.isNaturalNumber(txt_DateFrom.getText()) 
                 		&& common.Tools.isNaturalNumber(txt_DateTo.getText()) 
                 		&& common.Tools.isNaturalNumber(txt_repeatTime.getText()) ) {
-                	System.out.println(Integer.valueOf(txt_DateFrom.getText()));
-                	System.out.println(txt_DateTo.getText());
-                	System.out.println(txt_repeatTime.getText());
+                	int fromDate = Integer.valueOf(txt_DateFrom.getText());
+                	int toDate = Integer.valueOf(txt_DateTo.getText());
+                	if( (toDate < fromDate) 
+                			|| (fromDate < 1) 
+                			|| (toDate > tab_Shift.getRowCount())) {
+                		JOptionPane.showMessageDialog(null, paragraph.getString("PLEASEENTERVALIDNUMBER"));
+                		return;
+                	}
                 	
-                	System.out.println(String.valueOf(cob_Year.getSelectedItem()));
-                	System.out.println(String.valueOf(cob_Month.getSelectedItem()));
-                	System.out.println(String.format("%02d", Integer.valueOf(txt_DateFrom.getText())));
-                	String dateString = String.valueOf(cob_Year.getSelectedItem()) + String.valueOf(cob_Month.getSelectedItem()) + String.format("%02d", txt_DateFrom.getText());// "20010-03-02 20:25:58";
-                	//SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-                	//Date firstDate = sdf.parse(dateString);
-                	System.out.println(dateString);
+                	String dateString = String.valueOf(cob_Year.getSelectedItem()) 
+                				+ String.valueOf(cob_Month.getSelectedItem()) 
+                				+ String.format("%02d", fromDate);
+                	SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+                	try {
+                		//System.out.println(dateString);
+                		Calendar c = Calendar.getInstance(); 
+						
+						Date firstDate = sdf.parse(dateString);
+						for(int repeat = 0; repeat < Integer.valueOf(txt_repeatTime.getText()); repeat++) {
+							for(int i = Integer.valueOf(txt_DateFrom.getText()) - 1; i < Integer.valueOf(txt_DateTo.getText()); i++) {
+								
+								
+								c.setTime(firstDate); 
+								c.add(Calendar.DAY_OF_MONTH, i);
+								//Date tempDate = c.getTime();
+								
+								System.out.print(c.get(Calendar.YEAR));
+								System.out.print(c.get(Calendar.MONTH)+1);
+								System.out.println(c.get(Calendar.DAY_OF_MONTH));
+								
+								
+							}
+						}
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
                 	
                 	for(int i = Integer.valueOf(txt_DateFrom.getText()); i < Integer.valueOf(txt_DateTo.getText()); i++) {
                 		
