@@ -45,6 +45,10 @@ public class Frm_Login extends javax.swing.JFrame {
         jl.setBounds(0, -30, icon.getIconWidth(), icon.getIconHeight());
 
         add(jl, BorderLayout.CENTER);
+        
+        txt_Id.setText("steven");
+        txt_Passwd.setText("123");
+        
         initLanguage();
     }
 
