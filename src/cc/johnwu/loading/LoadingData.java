@@ -4,6 +4,8 @@ package cc.johnwu.loading;
 import cc.johnwu.sql.DBC;
 import java.sql.*;
 
+import javax.swing.JProgressBar;
+
 
 public class LoadingData {
     private int m_ServerDataCount;
@@ -94,7 +96,7 @@ public class LoadingData {
         }
     }
 
-    protected synchronized boolean download2LocalDB(String tableName,int comparisonRow){
+    protected synchronized boolean download2LocalDB(String tableName,JProgressBar pbar_Loading){
         PreparedStatement localInsertStmt = null;
         try {
             String sql = "";
@@ -107,9 +109,8 @@ public class LoadingData {
                     sql += "?)";
             }
             localInsertStmt = DBC.localPrepareStatement(sql);
-
-            if(m_ServerRS.absolute(comparisonRow)){
-                // Insert to Local Database
+            int progress = 0;
+            while (m_ServerRS.next()) {
                 for(int i=1; i<=m_rsmd.getColumnCount(); i++){
                     if(m_rsmd.getColumnTypeName(i).equalsIgnoreCase("LONGBLOB")){
                         localInsertStmt.setBytes(i, m_ServerRS.getBytes(i));
@@ -124,13 +125,18 @@ public class LoadingData {
                             localInsertStmt.setString(i, null);
                     }
                 }
-                localInsertStmt.executeUpdate();
+                localInsertStmt.addBatch();
+                pbar_Loading.setValue(++progress);
             }
+            localInsertStmt.executeBatch();
             return true;
-        } catch (SQLException ex) {            
+        } catch (SQLException ex) {
+        	ex.printStackTrace();
         } finally {
             try{DBC.closeConnection(localInsertStmt);}
-            catch (SQLException ex) {}
+            catch (SQLException ex) {
+            	ex.printStackTrace();
+            }
         }
         return false;
     }
