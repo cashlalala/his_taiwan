@@ -1498,6 +1498,8 @@ public void ShowGpsFrom() {
         	"WHERE B.touchtime LIKE concat(DATE_FORMAT(now(),'%Y%m%d%H%i%S'),'%')),20,'000000'), " +
         	//touchtime end
         	"NULL,"+ 
+        	"NULL,"+
+        	"NULL,"+
         	"NULL;";
 
             DBC.executeUpdate(sql);
