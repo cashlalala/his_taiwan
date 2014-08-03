@@ -42,9 +42,9 @@ public class Frm_SettingMySQL extends javax.swing.JFrame {
             rs.next();
             this.txt_Host.setText(rs.getString("host").trim());
             this.txt_Port.setText(rs.getString("port").trim());
-            this.txt_Database.setText(rs.getString("database").trim());
-            this.txt_User.setText(HISPassword.deCode(rs.getString("user")).trim());
-            this.txt_Passwd.setText(HISPassword.deCode(rs.getString("passwd")).trim());
+            this.txt_Database.setText(rs.getString("database".trim()).trim());
+            this.txt_User.setText(HISPassword.deCode(rs.getString("user").trim()).trim());
+            this.txt_Passwd.setText(HISPassword.deCode(rs.getString("passwd").trim()).trim());
         } catch (SQLException ex) {
             this.txt_Host.setText("");
             this.txt_Port.setText("");

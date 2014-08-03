@@ -73,8 +73,8 @@ public class DBC {
             s_ServerURL = "jdbc:mysql://"+s_LocalRS.getString("host").trim()+
                           ":"+s_LocalRS.getString("port").trim()+
                           "/"+s_LocalRS.getString("database").trim();
-            s_ServerName = HISPassword.deCode(s_LocalRS.getString("user")).trim();
-            s_ServerPasswd = HISPassword.deCode(s_LocalRS.getString("passwd")).trim();
+            s_ServerName = HISPassword.deCode(s_LocalRS.getString("user").trim()).trim();
+            s_ServerPasswd = HISPassword.deCode(s_LocalRS.getString("passwd").trim()).trim();
             
             JPAUtil.setPassword(s_ServerPasswd);
             JPAUtil.setUser(s_ServerName);
