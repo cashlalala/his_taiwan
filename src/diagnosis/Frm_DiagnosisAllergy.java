@@ -77,7 +77,8 @@ public class Frm_DiagnosisAllergy extends javax.swing.JFrame {
         }});
         showAllergy();
     }
-    private void initLanguage() {
+    @SuppressWarnings("deprecation")
+	private void initLanguage() {
         //this.lab_TitleNo.setText(paragraph.getLanguage(line, "TITLENO"));
         this.lab_TitleName.setText(paragraph.getLanguage(line, "TITLENAME"));
         this.btn_New.setText(paragraph.getLanguage(line, "NEW"));
@@ -90,7 +91,8 @@ public class Frm_DiagnosisAllergy extends javax.swing.JFrame {
         this.setTitle(paragraph.getLanguage(line, "TITLEALLERQY"));
     }
     // 顯示此人過敏紀錄
-    public void showAllergy() {
+    @SuppressWarnings("deprecation")
+	public void showAllergy() {
             this.tab_Allergy.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);  // tabble不可按住多選
             ResultSet rs = null;
             try {

@@ -132,7 +132,8 @@ public class Frm_DiagnosisMedicine extends javax.swing.JFrame {
     }
 
     //condition 搜尋方式與條件  state KeyPress搜尋或是value change
-    public void setModel(String condition, String state) {  
+    @SuppressWarnings({ "serial", "rawtypes" })
+	public void setModel(String condition, String state) {  
         Object[][] dataArray = null;
         ResultSet rsTabMedicine = null;
         try {
@@ -159,7 +160,8 @@ public class Frm_DiagnosisMedicine extends javax.swing.JFrame {
                     dataArray[i][3] = rsTabMedicine.getString("injection");
                     dataArray[i][4] = rsTabMedicine.getString("unit_dosage");
                     dataArray[i][5] = rsTabMedicine.getString("unit");
-                    if (rsTabMedicine.getString("effective").equals("true")) {
+                    if (rsTabMedicine.getString("effective").equals("true") ||
+                    		rsTabMedicine.getBoolean("effective")) {
                         dataArray[i][0] = false;
                     } else {
                         dataArray[i][0] = null;
@@ -177,8 +179,13 @@ public class Frm_DiagnosisMedicine extends javax.swing.JFrame {
                     dataArray[i][3] = rsTabMedicine.getString("injection");
                     dataArray[i][4] = rsTabMedicine.getString("unit_dosage");
                     dataArray[i][5] = rsTabMedicine.getString("unit");
-                    if (rsTabMedicine.getString("effective").equals("true")) dataArray[i][0] = false;
-                    else dataArray[i][0] = null;
+                    if (rsTabMedicine.getString("effective").equals("true")||
+                    		rsTabMedicine.getBoolean("effective")) {
+                    	dataArray[i][0] = false;
+                    }
+                    else { 
+                    	dataArray[i][0] = null;
+                    }
                     
                     i++;
                 }
@@ -217,7 +224,8 @@ public class Frm_DiagnosisMedicine extends javax.swing.JFrame {
         }
     }
 
-    public void setHashMap() {
+    @SuppressWarnings("deprecation")
+	public void setHashMap() {
         String code = tab_Medicine.getValueAt(tab_Medicine.getSelectedRow(), 1).toString().trim();
         String item = tab_Medicine.getValueAt(tab_Medicine.getSelectedRow(), 2).toString().
                                              replace("<html>", "").replace("<font color='FF0000'>", "").
@@ -251,7 +259,8 @@ public class Frm_DiagnosisMedicine extends javax.swing.JFrame {
     }
 
     // 藥品列表排序
-    private static String getSortCode(String strCode) {
+    @SuppressWarnings("unused")
+	private static String getSortCode(String strCode) {
         String code = "";
         String arr[] = strCode.split("\\.");
         for (int i = 0; i < arr.length; i++) {
@@ -274,7 +283,7 @@ public class Frm_DiagnosisMedicine extends javax.swing.JFrame {
          }
     }
  
-    @SuppressWarnings("unchecked")
+    
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -470,7 +479,8 @@ public class Frm_DiagnosisMedicine extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_tab_MedicineKeyReleased
 
-    private void btn_EnterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_EnterActionPerformed
+    @SuppressWarnings("rawtypes")
+	private void btn_EnterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_EnterActionPerformed
 
         if (!m_Allergy.equals("Allergy")) {  // 用於看診藥品
             int[] column = {2,1,3,4,5,10,11};

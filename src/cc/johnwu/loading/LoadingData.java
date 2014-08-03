@@ -58,6 +58,8 @@ public class LoadingData {
                     sql += "("+rsmd.getColumnDisplaySize(i+1)+")";
                 }else if(rsmd.getColumnTypeName(i+1).equalsIgnoreCase("LONGBLOB")){
                     sql += rsmd.getColumnName(i+1)+" VARBINARY";
+                }else if(rsmd.getColumnTypeName(i+1).equalsIgnoreCase("BIT")){
+                    sql += rsmd.getColumnName(i+1)+" BIT";
                 }else if(rsmd.getColumnTypeName(i+1).equalsIgnoreCase("VARCHAR")){
                 	String type = " VARCHAR (255)";
                 	if (rsmd.getColumnName(i+1).equalsIgnoreCase("guideline"))

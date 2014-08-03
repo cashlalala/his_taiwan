@@ -121,7 +121,7 @@ public class Frm_DiagnosisTherapy extends javax.swing.JFrame {
     }
     // 取值條件變動進行model重設
     // 參數：condition 搜尋方式與條件  state KeyPress搜尋或是value change
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings({ "deprecation", "serial" })
 	public void setModel(String condition, String state) {
         Object[][] dataArray = null;
         ResultSet rsTabTherapy = null;
@@ -138,7 +138,7 @@ public class Frm_DiagnosisTherapy extends javax.swing.JFrame {
                 while (rsTabTherapy.next()) {
                      dataArray[i][1] = rsTabTherapy.getString("icd_code");
                      dataArray[i][2] = rsTabTherapy.getString("name");
-                     if (rsTabTherapy.getString("effective").equals("true")) {
+                     if (rsTabTherapy.getString("effective").equals("true") || rsTabTherapy.getBoolean("effective")) {
                         dataArray[i][0] = null;
                      } else {
                          if(m_ChooseHashMap.get(dataArray[i][0]) != null) 

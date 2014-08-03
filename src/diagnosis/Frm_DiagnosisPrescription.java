@@ -146,7 +146,7 @@ public class Frm_DiagnosisPrescription extends javax.swing.JFrame {
                      dataArray[i][2] = rsTabTherapy.getString("name");
                      dataArray[i][3] = rsTabTherapy.getString("type");
                 
-                     if (rsTabTherapy.getString("effective").equals("false")) {
+                     if (rsTabTherapy.getString("effective").equals("false") || !rsTabTherapy.getBoolean("effective")) {
                         dataArray[i][0] = null;
                      } else {
                         dataArray[i][0] = false;
