@@ -1,10 +1,14 @@
 package cc.johnwu.loading;
 
 
-import cc.johnwu.sql.DBC;
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 
 import javax.swing.JProgressBar;
+
+import cc.johnwu.sql.DBC;
 
 
 public class LoadingData {
@@ -47,13 +51,20 @@ public class LoadingData {
             serverRS = DBC.executeQuery("SELECT * FROM " + tableName);
             ResultSetMetaData rsmd = serverRS.getMetaData();
             Object[][] columnData = new Object[rsmd.getColumnCount()][3];
-            String sql = "CREATE TABLE "+tableName+"(";
+            String sql = "CREATE TABLE IF NOT EXISTS "+tableName+"(";
             for(int i=0; i<columnData.length; i++){
                 if(rsmd.getColumnTypeName(i+1).equalsIgnoreCase("CHAR")){
                     sql += rsmd.getColumnName(i+1)+" "+rsmd.getColumnTypeName(i+1);
                     sql += "("+rsmd.getColumnDisplaySize(i+1)+")";
                 }else if(rsmd.getColumnTypeName(i+1).equalsIgnoreCase("LONGBLOB")){
                     sql += rsmd.getColumnName(i+1)+" VARBINARY";
+                }else if(rsmd.getColumnTypeName(i+1).equalsIgnoreCase("VARCHAR")){
+                	String type = " VARCHAR (255)";
+                	if (rsmd.getColumnName(i+1).equalsIgnoreCase("guideline"))
+                		type = " VARCHAR (500)";
+                	else if (rsmd.getColumnName(i+1).equalsIgnoreCase("dia_code"))
+                		type = " VARCHAR (20)";
+                    sql += rsmd.getColumnName(i+1)+type;
                 }else{
                     sql += rsmd.getColumnName(i+1)+" "+rsmd.getColumnTypeName(i+1);
                 }
@@ -69,18 +80,22 @@ public class LoadingData {
             DBC.localExecute(sql);
             DBC.localExecute("SHUTDOWN");
         } catch (SQLException ex) {
+        	ex.printStackTrace();
         } finally {
             try{DBC.closeConnection(serverRS);}
-            catch (SQLException ex) {}
+            catch (SQLException ex) {
+            	ex.printStackTrace();
+            }
         }
         try{
             DBC.localExecuteQuery("DELETE FROM " + tableName);
             DBC.localExecute("SHUTDOWN");
-        } catch (SQLException sex) { }
-        loadData(tableName);
+        } catch (SQLException sex) { 
+        	sex.printStackTrace();
+        }
     }
 
-    private void loadData(String tableName){
+    public void loadData(String tableName){
         String sql = "SELECT * FROM " + tableName;
         try {
             m_ServerRS = DBC.executeQuery(sql);
@@ -93,6 +108,24 @@ public class LoadingData {
             m_LocalDataCount = m_LocalRS.getRow();
             m_LocalRS.beforeFirst();
         } catch (SQLException ex) {
+        	if (ex.getErrorCode() == -5501 && ex.getMessage().contains(tableName.toUpperCase())) {
+        		System.out.println("No table found, need update...");
+        	} else {
+        		ex.printStackTrace();
+        	}
+        } finally {
+        	try {
+				DBC.closeConnection(m_LocalRS);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					DBC.localExecute("SHUTDOWN");
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+        	
         }
     }
 
@@ -133,7 +166,10 @@ public class LoadingData {
         } catch (SQLException ex) {
         	ex.printStackTrace();
         } finally {
-            try{DBC.closeConnection(localInsertStmt);}
+            try{
+            	DBC.closeConnection(localInsertStmt);
+            	DBC.closeConnection(m_ServerRS);
+            }
             catch (SQLException ex) {
             	ex.printStackTrace();
             }

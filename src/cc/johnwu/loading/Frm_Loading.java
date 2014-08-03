@@ -10,25 +10,25 @@ public class Frm_Loading extends javax.swing.JFrame {
     public Frm_Loading(String tableName) {
         initComponents();
         m_TableName = tableName;
-        m_LoadingData.rebuildingData(m_TableName);
         pbar_Loading.setMinimum(0);
         pbar_Loading.setValue(0);
         pbar_Loading.setStringPainted(true);
+        m_LoadingData.loadData(tableName);
         pbar_Loading.setMaximum(m_LoadingData.getServerDataCount()+m_LoadingData.getLocalDataCount());
         this.setLocationRelativeTo(this);
-        setVisible(true);
     }
 
     public void show_Loading() {
-    	
+    	if (!m_LoadingData.need2Update(m_TableName))
+    		return;
+    	m_LoadingData.rebuildingData(m_TableName);
+    	setVisible(true);
         setTitle(getTitle()+" "+m_TableName+" data...");
-        if(!m_LoadingData.need2Update(m_TableName)){
-            return;
-        }
+        
         //set this frame on center
         m_LoadingData.download2LocalDB(m_TableName,pbar_Loading);
-
-	    setVisible(false);
+        
+        this.dispose();
     }
 
     @SuppressWarnings("unchecked")

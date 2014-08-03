@@ -3,6 +3,7 @@ package main;
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.SQLException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -22,6 +23,7 @@ import cashier.Frm_CashierList;
 import cc.johnwu.loading.Frm_Loading;
 import cc.johnwu.login.Frm_Login;
 import cc.johnwu.login.UserInfo;
+import cc.johnwu.sql.DBC;
 import errormessage.StoredErrorMessage;
 
 
@@ -636,8 +638,7 @@ public class Frm_Main extends javax.swing.JFrame {
     private void btn_DiagnosisActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_DiagnosisActionPerformed
         //自動更新diagnosis_code資料
     	new Thread() {
-    		@SuppressWarnings("rawtypes")
-			@Override
+    		@Override
     		public void run(){
     			
     			final CountDownLatch latch = new CountDownLatch(3);
@@ -691,10 +692,11 @@ public class Frm_Main extends javax.swing.JFrame {
     		    try {
     		    	synchronized (latch) {
     		    		latch.wait();
+    		    		DBC.localExecute("SHUTDOWN");
     		    	};
-					
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SQLException e) {
 					e.printStackTrace();
 				}
     		}
