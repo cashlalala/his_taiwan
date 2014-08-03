@@ -4,9 +4,9 @@ import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.SQLException;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -641,57 +641,50 @@ public class Frm_Main extends javax.swing.JFrame {
     		@Override
     		public void run(){
     			
-    			final CountDownLatch latch = new CountDownLatch(3);
-    			ExecutorService executor = Executors.newFixedThreadPool(3);
-    			
+    			ExecutorService executor = Executors.newFixedThreadPool(3);    			
     		    executor.execute(new Runnable() {
 
 					@Override
 					public void run() {
 						try {
-							latch.countDown();
 	    	    	        Frm_Loading frm_Loading = new cc.johnwu.loading.Frm_Loading("diagnosis_code");
 	    	    	        frm_Loading.show_Loading();
 						} catch (Exception ex) {
 							ex.printStackTrace();
 						}
 					}
-    		    	
     		    });
-    		    
     		    executor.execute(new Runnable() {
 
 					@Override
 					public void run() {
 						try {
-							latch.countDown();
 	    	    	        Frm_Loading frm_Loading1 = new cc.johnwu.loading.Frm_Loading("prescription_code");
 	    	    	        frm_Loading1.show_Loading();
 						} catch (Exception ex) {
 							ex.printStackTrace();
 						}
 					}
-    		    	
     		    });
-    		    
     		    executor.execute(new Runnable() {
 
 					@Override
 					public void run() {
 						try {
-							latch.countDown();
 	    	    	        Frm_Loading frm_Loading2 = new cc.johnwu.loading.Frm_Loading("medicines");
 	    	    	        frm_Loading2.show_Loading();
 						} catch (Exception ex) {
 							ex.printStackTrace();
 						}
 					}
-    		    	
     		    });
     		    
     		    try {
-    		    	synchronized (latch) {
-    		    		latch.wait();
+    		    	synchronized (executor) {
+    		    		executor.shutdown();
+    		    		if (!executor.awaitTermination(5, TimeUnit.MINUTES)) {
+    		    			JOptionPane.showMessageDialog(null, "Timeout! Downloading fail , some diagnosis_code, prescription_code, medicines may be incorrect!");
+    		    		}
     		    		DBC.localExecute("SHUTDOWN");
     		    	};
 				} catch (InterruptedException e) {

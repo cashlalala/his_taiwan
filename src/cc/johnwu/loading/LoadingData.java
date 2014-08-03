@@ -78,7 +78,6 @@ public class LoadingData {
                 }
             }
             DBC.localExecute(sql);
-            DBC.localExecute("SHUTDOWN");
         } catch (SQLException ex) {
         	ex.printStackTrace();
         } finally {
@@ -89,7 +88,6 @@ public class LoadingData {
         }
         try{
             DBC.localExecuteQuery("DELETE FROM " + tableName);
-            DBC.localExecute("SHUTDOWN");
         } catch (SQLException sex) { 
         	sex.printStackTrace();
         }
@@ -118,13 +116,7 @@ public class LoadingData {
 				DBC.closeConnection(m_LocalRS);
 			} catch (SQLException e) {
 				e.printStackTrace();
-			} finally {
-				try {
-					DBC.localExecute("SHUTDOWN");
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
+			} 
         	
         }
     }
