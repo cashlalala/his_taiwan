@@ -1301,7 +1301,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 	// 儲存或修改病歷
 	@SuppressWarnings("deprecation")
 	public void setSaveDiagnosis() {
-//		ResultSet rsOsGuid = null;
+		// ResultSet rsOsGuid = null;
 		ResultSet rsPharmacyNo = null;
 		ResultSet rsModifyCount = null;
 		// 防錯 診斷
@@ -1368,21 +1368,22 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 		if (diagnosisIsNull == true && medicineIsNull == true) {
 			try {
 				String os_uuid = UUID.randomUUID().toString();
-//				if (m_FinishState == true) { // 將舊看診資訊刪除
-//					String sqlDelete = "DELETE FROM outpatient_services WHERE reg_guid = '"
-//							+ m_RegistrationGuid + "'";
-//					DBC.executeUpdate(sqlDelete);
-//				}
-//				// 新增資料到看診 outpatient_services
-//				DBC.executeUpdate("INSERT outpatient_services(guid, reg_guid, summary, ps, state ) "
-//						+ "VALUES ('"
-//						+ os_uuid
-//						+ "', '"
-//						+ m_RegistrationGuid
-//						+ "', '"
-//						+ txta_Summary.getText().trim()
-//						+ "','"
-//						+ txt_Message.getText().trim() + "', 0)");
+				// if (m_FinishState == true) { // 將舊看診資訊刪除
+				// String sqlDelete =
+				// "DELETE FROM outpatient_services WHERE reg_guid = '"
+				// + m_RegistrationGuid + "'";
+				// DBC.executeUpdate(sqlDelete);
+				// }
+				// // 新增資料到看診 outpatient_services
+				// DBC.executeUpdate("INSERT outpatient_services(guid, reg_guid, summary, ps, state ) "
+				// + "VALUES ('"
+				// + os_uuid
+				// + "', '"
+				// + m_RegistrationGuid
+				// + "', '"
+				// + txta_Summary.getText().trim()
+				// + "','"
+				// + txt_Message.getText().trim() + "', 0)");
 
 				ResultSet setting = DBC
 						.executeQuery("Select icdversion from setting");
@@ -1428,7 +1429,9 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 						}
 
 						DBC.executeUpdate("INSERT prescription(guid, reg_guid, code , place, state) VALUES (uuid(), "
-								+ "'" + m_RegistrationGuid + "', "
+								+ "'"
+								+ m_RegistrationGuid
+								+ "', "
 								+ "'"
 								+ this.tab_Prescription.getValueAt(i, 1)
 										.toString().trim()
@@ -1463,8 +1466,11 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 								+ "dosage, `usage`, way,"
 								+ "`repeat_number`, quantity, urgent,"
 								+ "powder, ps, exist,"
-								+ "s_id, teach_complete) " + "VALUES (uuid(), "
-								+ "'" + m_RegistrationGuid + "', "
+								+ "s_id, teach_complete) "
+								+ "VALUES (uuid(), "
+								+ "'"
+								+ m_RegistrationGuid
+								+ "', "
 								+ "'"
 								+ this.tab_Medicine.getValueAt(i, 2).toString()
 										.trim()
@@ -1634,7 +1640,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 								e.toString().length()));
 			} finally {
 				try {
-//					DBC.closeConnection(rsOsGuid);
+					// DBC.closeConnection(rsOsGuid);
 					DBC.closeConnection(rsPharmacyNo);
 					DBC.closeConnection(rsModifyCount);
 				} catch (SQLException e) {
@@ -3690,11 +3696,11 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 	}// GEN-LAST:event_tab_MedicineKeyReleased
 
 	private void tab_PrescriptionMouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_tab_PrescriptionMouseClicked
-	// if (this.tab_Prescription.getSelectedColumn() == 2) {
-	// this.tab_Prescription.setColumnSelectionInterval(1, 1);
-	// } else if (this.tab_Prescription.getSelectedColumn() == 1){
-	//
-	// }
+		// if (this.tab_Prescription.getSelectedColumn() == 2) {
+		// this.tab_Prescription.setColumnSelectionInterval(1, 1);
+		// } else if (this.tab_Prescription.getSelectedColumn() == 1){
+		//
+		// }
 	}// GEN-LAST:event_tab_PrescriptionMouseClicked
 
 	private void tab_PrescriptionKeyReleased(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_tab_PrescriptionKeyReleased
