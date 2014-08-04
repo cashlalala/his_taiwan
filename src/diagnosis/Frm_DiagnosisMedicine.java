@@ -41,7 +41,7 @@ public class Frm_DiagnosisMedicine extends javax.swing.JFrame {
 	/* 輸出錯誤資訊變數 */
 	StoredErrorMessage ErrorMessage = new StoredErrorMessage();
 	
-	private final static String DELIMITER = Character.toString((char)0); 
+	private final static String DELIMITER = Character.toString((char)1); 
 
 	public Frm_DiagnosisMedicine(Frm_DiagnosisAllergy diagnosisAllergy,
 			String Allergy) {
@@ -179,7 +179,7 @@ public class Frm_DiagnosisMedicine extends javax.swing.JFrame {
 					dataArray[i][1] = rsTabMedicine.getString("code");
 					dataArray[i][2] = rsTabMedicine.getString("item");
 					dataArray[i][3] = rsTabMedicine.getString("injection");
-					dataArray[i][4] = rsTabMedicine.getString("unit_dosage");
+					dataArray[i][4] = String.valueOf(rsTabMedicine.getFloat("unit_dosage"));
 					dataArray[i][5] = rsTabMedicine.getString("unit");
 					if (rsTabMedicine.getString("effective").equals("true")
 							|| rsTabMedicine.getBoolean("effective")) {
@@ -206,7 +206,7 @@ public class Frm_DiagnosisMedicine extends javax.swing.JFrame {
 													+ search.toLowerCase()
 													+ "</font>") + "</html>";
 					dataArray[i][3] = rsTabMedicine.getString("injection");
-					dataArray[i][4] = rsTabMedicine.getString("unit_dosage");
+					dataArray[i][4] = String.valueOf(rsTabMedicine.getFloat("unit_dosage"));
 					dataArray[i][5] = rsTabMedicine.getString("unit");
 					if (rsTabMedicine.getString("effective").equals("true")
 							|| rsTabMedicine.getBoolean("effective")) {

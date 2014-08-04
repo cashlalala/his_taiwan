@@ -60,12 +60,20 @@ public class LoadingData {
                     sql += rsmd.getColumnName(i+1)+" VARBINARY";
                 }else if(rsmd.getColumnTypeName(i+1).equalsIgnoreCase("BIT")){
                     sql += rsmd.getColumnName(i+1)+" BIT";
+                }else if(rsmd.getColumnTypeName(i+1).equalsIgnoreCase("FLOAT")){
+                    sql += rsmd.getColumnName(i+1)+" FLOAT";
                 }else if(rsmd.getColumnTypeName(i+1).equalsIgnoreCase("VARCHAR")){
                 	String type = " VARCHAR (255)";
                 	if (rsmd.getColumnName(i+1).equalsIgnoreCase("guideline"))
                 		type = " VARCHAR (500)";
                 	else if (rsmd.getColumnName(i+1).equalsIgnoreCase("dia_code"))
                 		type = " VARCHAR (20)";
+                	else if (rsmd.getColumnName(i+1).equalsIgnoreCase("ICDVersion"))
+                		type = " VARCHAR (10)";
+                	else if (rsmd.getColumnName(i+1).equalsIgnoreCase("unit"))
+                		type = " VARCHAR (45)";
+                	else if (rsmd.getColumnName(i+1).equalsIgnoreCase("equipment_ID"))
+                		type = " VARCHAR (22)";
                     sql += rsmd.getColumnName(i+1)+type;
                 }else{
                     sql += rsmd.getColumnName(i+1)+" "+rsmd.getColumnTypeName(i+1);
@@ -145,6 +153,8 @@ public class LoadingData {
                         localInsertStmt.setBoolean(i, m_ServerRS.getBoolean(i));
                     }else if(m_rsmd.getColumnTypeName(i).equalsIgnoreCase("INT")){
                         localInsertStmt.setInt(i, m_ServerRS.getInt(i));
+                    }else if(m_rsmd.getColumnTypeName(i).equalsIgnoreCase("FLOAT")){
+                        localInsertStmt.setFloat(i, m_ServerRS.getFloat(i));
                     }else{
                         if(m_ServerRS.getString(i)!=null)
                             localInsertStmt.setString(i, m_ServerRS.getString(i).replace("'","''"));
