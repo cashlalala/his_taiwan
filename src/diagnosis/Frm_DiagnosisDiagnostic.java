@@ -211,10 +211,9 @@ public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
             
             String sqlDiagnosis =
               "SELECT diagnosis_code.icd_code AS '"+paragraph.getLanguage(line, "ICDCODE")+"', diagnosis_code.name AS 'Item'" +
-              "FROM  diagnosis_code, diagnostic, outpatient_services, registration_info " +
+              "FROM  diagnosis_code, diagnostic, registration_info " +
               "WHERE registration_info.guid = '"+tab_Record.getValueAt(tab_Record.getSelectedRow(), 5)+"' " +
-              "AND diagnostic.os_guid = outpatient_services.guid " +
-              "AND outpatient_services.reg_guid = registration_info.guid " +
+              "AND diagnostic.reg_guid = registration_info.guid " +
               "AND diagnosis_code.icd_code = diagnostic.dia_code";
 
             rsDiagnosis =  DBC.executeQuery(sqlDiagnosis);
@@ -253,10 +252,9 @@ public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
         ResultSet rsSummary = null;
         try {
             String sqlSummary  =
-                    "SELECT outpatient_services.summary, outpatient_services.ps " +
-                    "FROM outpatient_services, registration_info " +
-                    "WHERE registration_info.guid = '"+tab_Record.getValueAt(tab_Record.getSelectedRow(), 5)+"' " +
-                    "AND outpatient_services.reg_guid = registration_info.guid";
+                    "SELECT registration_info.summary, registration_info.ps " +
+                    "FROM registration_info " +
+                    "WHERE registration_info.guid = '"+tab_Record.getValueAt(tab_Record.getSelectedRow(), 5)+"' ";
 
             rsSummary = DBC.executeQuery(sqlSummary);
             rsSummary.next();
@@ -283,11 +281,10 @@ public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
       
             String sqlPrescription =
                 "SELECT prescription.code AS '"+paragraph.getLanguage(line, "CODE")+"', prescription_code.name AS 'Item' " +
-                "FROM prescription, outpatient_services, registration_info, prescription_code " +
+                "FROM prescription, registration_info, prescription_code " +
                 "WHERE registration_info.guid = '"+tab_Record.getValueAt(tab_Record.getSelectedRow(), 5)+"' " +
-                "AND prescription.os_guid = outpatient_services.guid " +
-                "AND prescription_code.code = prescription.code " +
-                "AND outpatient_services.reg_guid = registration_info.guid";
+                "AND prescription.reg_guid = registration_info.guid " +
+                "AND prescription_code.code = prescription.code ";
             rsPrescription = DBC.executeQuery(sqlPrescription);
 
             if (rsPrescription.next()) {
@@ -332,10 +329,9 @@ public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
                 "SELECT medicines.code, medicines.item, medicine_stock.dosage, medicines.unit, medicine_stock.usage, " +
                        "medicine_stock.way, medicine_stock.repeat_number, medicine_stock.quantity, " +
                        "medicine_stock.urgent, medicine_stock.powder , medicine_stock.ps " +
-                "FROM medicines, medicine_stock, outpatient_services, registration_info " +
+                "FROM medicines, medicine_stock, registration_info " +
                 "WHERE registration_info.guid = '"+tab_Record.getValueAt(tab_Record.getSelectedRow(), 5)+"' " +
-                "AND medicine_stock.os_guid = outpatient_services.guid " +
-                "AND outpatient_services.reg_guid = registration_info.guid " +
+                "AND medicine_stock.reg_guid = registration_info.guid " +
                 "AND medicines.code = medicine_stock.m_code";
             rsMedicines = DBC.executeQuery(sqlMedicines);
 

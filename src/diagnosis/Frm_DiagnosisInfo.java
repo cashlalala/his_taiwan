@@ -168,9 +168,9 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 				+ "'";
 		String sqlRecord = "SELECT shift_table.shift_date AS date, "
 				+ "concat(staff_info.firstname,'  ',staff_info.lastname) AS name, "
-				+ "registration_info.guid, outpatient_services.summary, outpatient_services.ps, "
+				+ "registration_info.guid, registration_info.summary, registration_info.ps, "
 				+ "registration_info.reg_time "
-				+ "FROM registration_info, shift_table, policlinic, poli_room, staff_info, outpatient_services  "
+				+ "FROM registration_info, shift_table, policlinic, poli_room, staff_info  "
 				+ "WHERE registration_info.p_no = '" + m_Pno + "' "
 				+ "AND policlinic.name = '" + UserInfo.getUserPoliclinic()
 				+ "' " + "AND registration_info.shift_guid = shift_table.guid "
@@ -178,7 +178,6 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 				+ "AND poli_room.poli_guid = policlinic.guid "
 				+ "AND staff_info.s_id = shift_table.s_id "
 				+ "AND registration_info.finish = 'F' "
-				+ "AND outpatient_services.reg_guid = registration_info.guid "
 				+ "ORDER BY registration_info.reg_time DESC";
 		try {
 			// 取出病患基本資料
@@ -1302,7 +1301,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 	// 儲存或修改病歷
 	@SuppressWarnings("deprecation")
 	public void setSaveDiagnosis() {
-		ResultSet rsOsGuid = null;
+//		ResultSet rsOsGuid = null;
 		ResultSet rsPharmacyNo = null;
 		ResultSet rsModifyCount = null;
 		// 防錯 診斷
@@ -1369,21 +1368,21 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 		if (diagnosisIsNull == true && medicineIsNull == true) {
 			try {
 				String os_uuid = UUID.randomUUID().toString();
-				if (m_FinishState == true) { // 將舊看診資訊刪除
-					String sqlDelete = "DELETE FROM outpatient_services WHERE reg_guid = '"
-							+ m_RegistrationGuid + "'";
-					DBC.executeUpdate(sqlDelete);
-				}
-				// 新增資料到看診 outpatient_services
-				DBC.executeUpdate("INSERT outpatient_services(guid, reg_guid, summary, ps, state ) "
-						+ "VALUES ('"
-						+ os_uuid
-						+ "', '"
-						+ m_RegistrationGuid
-						+ "', '"
-						+ txta_Summary.getText().trim()
-						+ "','"
-						+ txt_Message.getText().trim() + "', 0)");
+//				if (m_FinishState == true) { // 將舊看診資訊刪除
+//					String sqlDelete = "DELETE FROM outpatient_services WHERE reg_guid = '"
+//							+ m_RegistrationGuid + "'";
+//					DBC.executeUpdate(sqlDelete);
+//				}
+//				// 新增資料到看診 outpatient_services
+//				DBC.executeUpdate("INSERT outpatient_services(guid, reg_guid, summary, ps, state ) "
+//						+ "VALUES ('"
+//						+ os_uuid
+//						+ "', '"
+//						+ m_RegistrationGuid
+//						+ "', '"
+//						+ txta_Summary.getText().trim()
+//						+ "','"
+//						+ txt_Message.getText().trim() + "', 0)");
 
 				ResultSet setting = DBC
 						.executeQuery("Select icdversion from setting");
@@ -1428,9 +1427,8 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 							this.tab_Prescription.setValueAt("", i, 3);
 						}
 
-						DBC.executeUpdate("INSERT prescription(guid, os_guid, reg_guid, code , place, state) VALUES (uuid(), '"
-								+ os_uuid
-								+ "', NULL, "
+						DBC.executeUpdate("INSERT prescription(guid, reg_guid, code , place, state) VALUES (uuid(), "
+								+ "'" + m_RegistrationGuid + "', "
 								+ "'"
 								+ this.tab_Prescription.getValueAt(i, 1)
 										.toString().trim()
@@ -1461,11 +1459,12 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 											.toString().trim() + "'";
 						}
 
-						String sql = "INSERT medicine_stock(guid, m_code,"
+						String sql = "INSERT medicine_stock(guid, reg_guid, m_code,"
 								+ "dosage, `usage`, way,"
 								+ "`repeat_number`, quantity, urgent,"
 								+ "powder, ps, exist,"
 								+ "s_id, teach_complete) " + "VALUES (uuid(), "
+								+ "'" + m_RegistrationGuid + "', "
 								+ "'"
 								+ this.tab_Medicine.getValueAt(i, 2).toString()
 										.trim()
@@ -1543,7 +1542,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 
 				String sqlPharmacyNo = // 領藥號
 				"SELECT MAX(registration_info.pharmacy_no) AS pharmacyNo "
-						+ "FROM registration_info, shift_table, medicine_stock, outpatient_services "
+						+ "FROM registration_info, shift_table, medicine_stock "
 						+ "WHERE shift_table.shift = '"
 						+ DateMethod.getNowShiftNum() + "' "
 						+ "AND registration_info.finish = 'F' "
@@ -1635,7 +1634,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 								e.toString().length()));
 			} finally {
 				try {
-					DBC.closeConnection(rsOsGuid);
+//					DBC.closeConnection(rsOsGuid);
 					DBC.closeConnection(rsPharmacyNo);
 					DBC.closeConnection(rsModifyCount);
 				} catch (SQLException e) {
@@ -1779,11 +1778,10 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 			getTxtaSummary(summary);
 			// 取出看診ICD CODE
 			String sqlDiagnosis = "SELECT diagnosis_code.icd_code, diagnosis_code.name "
-					+ "FROM  diagnosis_code, diagnostic, outpatient_services, registration_info "
+					+ "FROM  diagnosis_code, diagnostic, registration_info "
 					+ "WHERE registration_info.guid = '"
 					+ guid
 					+ "' "
-					+ "AND outpatient_services.reg_guid = registration_info.guid "
 					+ "AND diagnosis_code.dia_code = diagnostic.dia_code";
 			rsDiagnosis = DBC.executeQuery(sqlDiagnosis);
 			int rowDiagnosis = 0;
@@ -1804,13 +1802,12 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 			}
 			// 取出處置
 			String sqlPrescription = "SELECT prescription.code, prescription_code.name, prescription_code.type, prescription.place "
-					+ "FROM prescription, outpatient_services, registration_info, prescription_code "
+					+ "FROM prescription, registration_info, prescription_code "
 					+ "WHERE registration_info.guid = '"
 					+ guid
 					+ "' "
-					+ "AND prescription.os_guid = outpatient_services.guid "
-					+ "AND prescription_code.code = prescription.code "
-					+ "AND outpatient_services.reg_guid = registration_info.guid";
+					+ "AND prescription.reg_guid = registration_info.guid "
+					+ "AND prescription_code.code = prescription.code ";
 			// System.out.println(sqlPrescription);
 			rsPrescription = DBC.executeQuery(sqlPrescription);
 			int rowPrescription = 0;
@@ -1834,11 +1831,10 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 			String sqlMedicines = "SELECT medicines.code,medicines.injection, medicines.item, medicine_stock.dosage, medicines.unit, medicine_stock.usage, "
 					+ "medicine_stock.way, medicine_stock.repeat_number, medicine_stock.quantity,medicine_stock.urgent, "
 					+ "medicine_stock.powder ,medicine_stock.ps "
-					+ "FROM medicines, medicine_stock, outpatient_services, registration_info "
+					+ "FROM medicines, medicine_stock, registration_info "
 					+ "WHERE registration_info.guid = '"
 					+ guid
 					+ "' "
-					+ "AND outpatient_services.reg_guid = registration_info.guid "
 					+ "AND medicines.code = medicine_stock.m_code";
 			rsMedicines = DBC.executeQuery(sqlMedicines);
 			int rowMedicine = 0;
