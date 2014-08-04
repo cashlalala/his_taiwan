@@ -238,6 +238,21 @@ public class Tools {
         }
         return 0;
     }
+    
+    /**
+     * 是否為數值資料(包含小數點)
+     */
+    public static boolean isNaturalNumber(String str) {
+        Pattern pattern = Pattern.compile("[0-9]*");
+        Matcher isNum = pattern.matcher(str);
+        if (!isNum.matches() || str.trim().equals("")) {
+            System.out.println("FALSE");
+            return false;
+        } else {
+            System.out.println("TRUE");
+            return true;
+        }
+    }
 
     /**
      * 是否為數值資料(包含小數點)
