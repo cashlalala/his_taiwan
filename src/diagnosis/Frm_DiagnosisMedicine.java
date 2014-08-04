@@ -40,6 +40,8 @@ public class Frm_DiagnosisMedicine extends javax.swing.JFrame {
 	private String[] message = paragraph.setlanguage("MESSAGE").split("\n");
 	/* 輸出錯誤資訊變數 */
 	StoredErrorMessage ErrorMessage = new StoredErrorMessage();
+	
+	private final static String DELIMITER = Character.toString((char)0); 
 
 	public Frm_DiagnosisMedicine(Frm_DiagnosisAllergy diagnosisAllergy,
 			String Allergy) {
@@ -90,7 +92,7 @@ public class Frm_DiagnosisMedicine extends javax.swing.JFrame {
 			int i = 0;
 			medicineCob[i++] = "";
 			while (rs.next())
-				medicineCob[i++] = rs.getString("code").trim() + "    "
+				medicineCob[i++] = rs.getString("code").trim() + DELIMITER
 						+ rs.getString("item").trim();
 
 		} catch (SQLException e) {
@@ -291,12 +293,13 @@ public class Frm_DiagnosisMedicine extends javax.swing.JFrame {
 
 		if (tab_Medicine.getValueAt(this.tab_Medicine.getSelectedRow(), 0)
 				.equals(true)) {
+			;
 			if (!m_Allergy.equals("Allergy")) {
-				m_ChooseHashMap.put(code, code + "    " + item + "    "
-						+ injection + "    " + unitDosage + "    " + unit
-						+ "    " + "N" + "    " + "N");
+				m_ChooseHashMap.put(code, code + DELIMITER + item + DELIMITER
+						+ injection + DELIMITER + unitDosage + DELIMITER + unit
+						+ DELIMITER + "N" + DELIMITER + "N");
 			} else {
-				m_ChooseHashMap.put(code, code + "    " + item + "    "
+				m_ChooseHashMap.put(code, code + DELIMITER + item + DELIMITER
 						+ paragraph.getLanguage(line, "GENERAL"));
 			}
 		} else if (tab_Medicine.getValueAt(this.tab_Medicine.getSelectedRow(),
@@ -339,7 +342,7 @@ public class Frm_DiagnosisMedicine extends javax.swing.JFrame {
 	private void comboBoxItemStateChanged(ItemEvent evt) {
 		if (evt.getStateChange() == ItemEvent.SELECTED) {
 			String[] condition = m_Cobww.getSelectedItem().toString().trim()
-					.split("    "); // get select table condition from m_Cobww
+					.split(DELIMITER); // get select table condition from m_Cobww
 			if (condition.length > 1 || condition[0].trim().equals("")) {
 				setModel("code LIKE '" + condition[0] + "%'", "");
 			} else {
@@ -623,7 +626,7 @@ public class Frm_DiagnosisMedicine extends javax.swing.JFrame {
 			Collection collection = m_ChooseHashMap.values();
 			Iterator iterator = collection.iterator();
 			while (iterator.hasNext()) {
-				Object[] value = iterator.next().toString().split("    ");
+				Object[] value = iterator.next().toString().split(DELIMITER);
 				if (m_DiagnosisInfo.isCodeAtHashMap(value[0].toString().trim()) == true) {
 					m_DiagnosisInfo.setDiagnosisInfoTable(value, column);
 				}
@@ -633,7 +636,7 @@ public class Frm_DiagnosisMedicine extends javax.swing.JFrame {
 			Collection collection = m_ChooseHashMap.values();
 			Iterator iterator = collection.iterator();
 			while (iterator.hasNext()) {
-				Object[] value = iterator.next().toString().split("    ");
+				Object[] value = iterator.next().toString().split(DELIMITER);
 				if (m_DiagnosisAllergy.isAllergyHashMap(value[0].toString()
 						.trim()) == true) {
 					this.m_DiagnosisAllergy.setAllergy(value, column);
