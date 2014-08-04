@@ -40,14 +40,13 @@ import casemgmt.Frm_Case;
 import cc.johnwu.date.DateMethod;
 import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
-
 import common.Constant;
 import common.PrintTools;
 import common.TabTools;
 import common.Tools;
-
 import errormessage.StoredErrorMessage;
 
+@SuppressWarnings("serial")
 public class Frm_DiagnosisInfo extends javax.swing.JFrame implements DiagnosisInterface {
 
 //    private final String SYSTEMNAME = "Diagnosis";   //系統名稱
@@ -92,7 +91,8 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements DiagnosisIn
     private String[] m_AutoListValue;
     private int m_RsRowCount;
     private int m_Row;
-    private String m_OsGuid;
+    @SuppressWarnings("unused")
+	private String m_OsGuid;
     /*多國語言變數*/
     private Language paragraph = Language.getInstance();
     private String[] line = paragraph.setlanguage("DIAGNOSISINFO").split("\n") ;
@@ -124,7 +124,8 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements DiagnosisIn
     }
 
     // 取出病患資料 與 確認是否讀取上次看診資料
-    public void initFrame() {
+    @SuppressWarnings("deprecation")
+	public void initFrame() {
         this.setExtendedState(Frm_DiagnosisInfo.MAXIMIZED_BOTH);  // 最大化
         this.setLocationRelativeTo(this);
         this.tab_Diagnosis.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);     // tabble不可按住多選
@@ -782,7 +783,8 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements DiagnosisIn
     }
 
     // 比對過敏資訊
-    public boolean isCodeAllergy(Object code) {
+    @SuppressWarnings("deprecation")
+	public boolean isCodeAllergy(Object code) {
         if (m_AllergyHashMap.get(code) != null) {
             String level = null;
             switch(Integer.parseInt(m_AllergyHashMap.get(code).toString())) {
@@ -1033,7 +1035,8 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements DiagnosisIn
  
     
     // 從其他 FRAME 增加一筆資料到指定 TABLE  指定 TABLE 欄位
-    public void setDiagnosisInfoTable(Object[] value, int[] appointColumn) {
+    @SuppressWarnings("rawtypes")
+	public void setDiagnosisInfoTable(Object[] value, int[] appointColumn) {
         for (int i = 0; i <= m_SelectTable.getRowCount(); i++) {
 
             if (i < m_SelectTable.getRowCount()
@@ -1060,7 +1063,8 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements DiagnosisIn
     }
 
     // TABLE 按鍵進行 ROW 增加 或清除值
-    public int setRowValue(KeyEvent evt) {
+    @SuppressWarnings("rawtypes")
+	public int setRowValue(KeyEvent evt) {
             m_SelectTable.removeEditor();
             //上一行特定欄位不為空白才能增加行
             if (evt.getKeyCode() == KeyEvent.VK_ENTER
@@ -1674,7 +1678,8 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements DiagnosisIn
     }
 
     // 套餐 V1&V3
-    private void setV(String v) {
+    @SuppressWarnings("rawtypes")
+	private void setV(String v) {
 
        tab_Prescription.removeRowSelectionInterval(0, tab_Prescription.getRowCount()-1);
        tab_PrescriptionFocusGained(null);
@@ -1687,7 +1692,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements DiagnosisIn
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked" })
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -2056,14 +2061,16 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements DiagnosisIn
                 "", "藥品代碼", "藥品名稱", "次劑量", "單位", "服法", "途徑", "天", "總量", "急", "磨", "備註", "隱藏的服法次數"
             }
         ) {
-            Class[] types = new Class [] {
+            @SuppressWarnings("rawtypes")
+			Class[] types = new Class [] {
                 java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Boolean.class, java.lang.Boolean.class, java.lang.Object.class, java.lang.Object.class
             };
             boolean[] canEdit = new boolean [] {
                 false, true, false, true, true, true, true, true, true, true, true, true, true
             };
 
-            public Class getColumnClass(int columnIndex) {
+            @SuppressWarnings("rawtypes")
+			public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
             }
 
@@ -2696,7 +2703,8 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements DiagnosisIn
         System.out.println("鎖定藥品");
 }//GEN-LAST:event_tab_MedicineFocusGained
 
-    private void btn_SendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_SendActionPerformed
+    @SuppressWarnings("deprecation")
+	private void btn_SendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_SendActionPerformed
         setAllRemoveEditAndSelection();
         if (m_FinishState != true) {
             setSaveDiagnosis();
