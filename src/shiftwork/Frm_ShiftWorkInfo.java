@@ -465,49 +465,108 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
                 		&& common.Tools.isNaturalNumber(txt_repeatTime.getText()) ) {
                 	int fromDate = Integer.valueOf(txt_DateFrom.getText());
                 	int toDate = Integer.valueOf(txt_DateTo.getText());
-                	if( (toDate < fromDate) 
-                			|| (fromDate < 1) 
-                			|| (toDate > tab_Shift.getRowCount())) {
-                		JOptionPane.showMessageDialog(null, paragraph.getString("PLEASEENTERVALIDNUMBER"));
-                		return;
-                	}
+                	int repeatTime = Integer.valueOf(txt_repeatTime.getText());
+                	int dayCount = Integer.valueOf(txt_DateTo.getText()) - Integer.valueOf(txt_DateFrom.getText()) + 1;
                 	
-                	String dateString = String.valueOf(cob_Year.getSelectedItem()) 
-                				+ String.valueOf(cob_Month.getSelectedItem()) 
-                				+ String.format("%02d", fromDate);
-                	SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-                	try {
-                		//System.out.println(dateString);
-                		Calendar c = Calendar.getInstance(); 
-						
-						Date firstDate = sdf.parse(dateString);
-						for(int repeat = 0; repeat < Integer.valueOf(txt_repeatTime.getText()); repeat++) {
-							for(int i = Integer.valueOf(txt_DateFrom.getText()) - 1; i < Integer.valueOf(txt_DateTo.getText()); i++) {
-								
-								
-								c.setTime(firstDate); 
-								c.add(Calendar.DAY_OF_MONTH, i);
-								//Date tempDate = c.getTime();
-								
-								System.out.print(c.get(Calendar.YEAR));
-								System.out.print(c.get(Calendar.MONTH)+1);
-								System.out.println(c.get(Calendar.DAY_OF_MONTH));
-								
-								
-							}
+                	String firstDateString = String.valueOf(cob_Year.getSelectedItem()) 
+            				+"-"+ String.valueOf(cob_Month.getSelectedItem()) 
+            				+"-"+ String.format("%02d", fromDate);
+	            	String lastDateString = String.valueOf(cob_Year.getSelectedItem()) 
+	        				+"-"+ String.valueOf(cob_Month.getSelectedItem()) 
+	        				+"-"+ String.format("%02d", toDate);
+	            	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+	            	String firstRepeatDateString, lastRepeatDateString;
+
+	            	try {
+	                	if( (toDate < fromDate) 
+	                			|| (fromDate < 1) 
+	                			|| (toDate > tab_Shift.getRowCount())
+	                			|| (repeatTime < 1) ) {
+	                		JOptionPane.showMessageDialog(null, paragraph.getString("PLEASEENTERVALIDNUMBER"));
+	                		return;
+	                	}
+
+		            	Calendar lastDate = Calendar.getInstance();
+	                	lastDate.setTime(sdf.parse(lastDateString));
+
+	                	Calendar firstRepeatDate = Calendar.getInstance(); 
+	                	firstRepeatDate.setTime(sdf.parse(lastDateString));
+	                	firstRepeatDate.add(Calendar.DATE, 1);
+	                	firstRepeatDateString = firstRepeatDate.get(Calendar.YEAR)+"-"
+	                			+String.format("%02d", (firstRepeatDate.get(Calendar.MONTH)+1))
+	                			+"-"+String.format("%02d", firstRepeatDate.get(Calendar.DAY_OF_MONTH));
+	                	Calendar firstRepeatDatePlusOne = Calendar.getInstance(); 
+	                	firstRepeatDatePlusOne.setTime(sdf.parse(lastDateString));
+	                	firstRepeatDatePlusOne.add(Calendar.DATE, 2);
+
+	                	// the repeated shift must start after today
+						if( firstRepeatDatePlusOne.getTime().before(Calendar.getInstance().getTime())   ) {
+							JOptionPane.showMessageDialog(null, paragraph.getString("PLEASEENTERVALIDNUMBER"));
+	                		return;
 						}
+						
+						Calendar lastRepeatDate = Calendar.getInstance(); 
+						lastRepeatDate.setTime(sdf.parse(lastDateString)); 
+						lastRepeatDate.add(Calendar.DATE, repeatTime * dayCount);
+						lastRepeatDateString = lastRepeatDate.get(Calendar.YEAR)+"-"
+								+String.format("%02d", (lastRepeatDate.get(Calendar.MONTH)+1))
+								+"-"+String.format("%02d", lastRepeatDate.get(Calendar.DAY_OF_MONTH));
+
+						
+						String sqlCheckexist = "SELECT count(*) FROM shift_table where shift_date >= '" 
+								+ firstRepeatDateString + "' and shift_date <= '" 
+								+ lastRepeatDateString + "'";
+						//System.out.println(sqlCheckexist);
+						ResultSet rscheck = DBC.executeQuery (sqlCheckexist);
+						rscheck.next();
+						if(rscheck.getInt(1) != 0) {
+							JOptionPane.showMessageDialog(null, paragraph.getString("REPEATPERIODHASDATA"));
+							return;
+						}
+						
+						String poliRoom = cob_PolRoom.getSelectedItem().toString(); // 診間名稱
+						String division = cob_Policlinic.getSelectedItem().toString();
+				        String sqlSource = "SELECT * FROM shift_table where shift_date >= '" + firstDateString + "' and shift_date <= '" + lastDateString + "'"
+								+ " AND shift_table.room_guid = (SELECT poli_room.guid FROM poli_room,policlinic WHERE poli_room.name = '"+poliRoom+"' AND poli_room.poli_guid = policlinic.guid  AND policlinic.name = '"+division+"') ";
+						//System.out.println(sqlSource);
+						//sqlSource = "SELECT * FROM shift_table where shift_date >= '2014-07-25' and shift_date <= '2014-07-25'";
+						ResultSet rsSrc = DBC.executeQuery (sqlSource);
+						Calendar tempDate = Calendar.getInstance(); 
+						String sqlInsert;
+						while(rsSrc.next()) {
+							String shift_date = rsSrc.getString("shift_date");
+							tempDate.setTime(sdf.parse(shift_date));
+							String s_id = rsSrc.getString("s_id");
+							String shift = rsSrc.getString("shift");
+							String room_guid = rsSrc.getString("room_guid");
+							String tempDateStr;
+
+							for(int repeat = 0; repeat < repeatTime; repeat++) {
+								tempDate.add(Calendar.DATE, dayCount);
+								//System.out.println(tempDate.getTime());
+								tempDateStr = tempDate.get(Calendar.YEAR)+"-"
+			                			+String.format("%02d", (tempDate.get(Calendar.MONTH)+1))
+			                			+"-"+String.format("%02d", tempDate.get(Calendar.DAY_OF_MONTH));
+								
+			                    sqlInsert = "INSERT INTO shift_table(guid, s_id, shift_date, shift, room_guid) VALUES(uuid(), '"
+			                    		+s_id+"', '"+tempDateStr+"', '"+shift+"', '" +room_guid+"')";
+			                    DBC.executeUpdate (sqlInsert);
+
+							}
+							//System.out.println();
+						}
+						reLoad();
 					} catch (ParseException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
-                	
-                	for(int i = Integer.valueOf(txt_DateFrom.getText()); i < Integer.valueOf(txt_DateTo.getText()); i++) {
-                		
-                	}
+
                 } else {
                 	JOptionPane.showMessageDialog(null, paragraph.getString("PLEASEENTERVALIDNUMBER"));
                 }
-                //int selectedRowCount = tab_Shift.getselec.getSelectedRows();
             }
         });        
 
