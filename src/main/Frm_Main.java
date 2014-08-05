@@ -82,7 +82,7 @@ public class Frm_Main extends javax.swing.JFrame {
 
         pan_Doctor.setBorder(javax.swing.BorderFactory.createTitledBorder(paragraph.getString("CLINIC")));
 
-        btn_Diagnosis.setText(paragraph.getString("DIAGNOSIS"));
+        btn_Diagnosis.setText(paragraph.getString("CLINIC"));
 
         btn_Patients.setText(paragraph.getString("PATIENT_INFORMATION"));
 
@@ -134,7 +134,7 @@ public class Frm_Main extends javax.swing.JFrame {
         
         this.btn_Anamnesis.setText(paragraph.getString("MEDICAL_HISTORYT"));
         this.btn_Patients.setText(paragraph.getString("PATIENT_INFORMATION"));
-        this.btn_Diagnosis.setText(paragraph.getString("DIAGNOSIS"));
+        this.btn_Diagnosis.setText(paragraph.getString("CLINIC"));
         this.btn_Register.setText(paragraph.getString("REGISTRATION"));
         this.btn_ShiftManagement.setText(paragraph.getString("SHIFT_MANAGEMENT"));
 
