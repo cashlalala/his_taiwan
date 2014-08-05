@@ -324,7 +324,7 @@ public class Frm_Main extends javax.swing.JFrame {
         pan_Doctor.setBackground(new java.awt.Color(240, 246, 255));
         pan_Doctor.setBorder(javax.swing.BorderFactory.createTitledBorder(paragraph.getString("CLINIC")));
 
-        btn_Diagnosis.setText(paragraph.getString("DIAGNOSIS"));
+        btn_Diagnosis.setText(paragraph.getString("CLINIC"));
         btn_Diagnosis.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_DiagnosisActionPerformed(evt);

@@ -761,7 +761,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 				.createTitledBorder(paragraph.getLanguage(line,
 						"MEDICALRECORDSUMMARY")));
 		this.pan_Diagnosis.setBorder(javax.swing.BorderFactory
-				.createTitledBorder(paragraph.getLanguage(line, "DIAGNSIS")));
+				.createTitledBorder(paragraph.getLanguage(line, "DIAGNOSIS")));
 		// this.pan_Prescription.setBorder(javax.swing.BorderFactory.createTitledBorder(paragraph.getLanguage(line,
 		// "PRESCRIPTION")));
 		this.pan_Center.setBorder(javax.swing.BorderFactory
@@ -2571,7 +2571,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 																lab_TitlePs))));
 
 		pan_CenterTop.setBorder(javax.swing.BorderFactory
-				.createTitledBorder("Medical Record Summary"));
+				.createTitledBorder(paragraph.getString("MEDICALRECORDSUMMARY")));
 		pan_CenterTop.setPreferredSize(new java.awt.Dimension(813, 132));
 
 		txta_Summary.setColumns(20);
