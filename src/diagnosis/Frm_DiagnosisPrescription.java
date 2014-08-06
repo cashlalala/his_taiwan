@@ -28,7 +28,11 @@ import errormessage.StoredErrorMessage;
 import multilingual.Language;
 
 public class Frm_DiagnosisPrescription extends javax.swing.JFrame {
-    private CompleterComboBox m_Cobww;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -6154059993811747242L;
+	private CompleterComboBox m_Cobww;
     private Map<Object, Object> m_ChooseHashMap = new HashMap<Object, Object>();
     private Frm_DiagnosisInfo m_DiagnosisInfo;
     private Frm_Case m_Case;
@@ -128,7 +132,8 @@ public class Frm_DiagnosisPrescription extends javax.swing.JFrame {
     }
     // 取值條件變動進行model重設
     // 參數：condition 搜尋方式與條件  state KeyPress搜尋或是value change
-    public void setModel(String condition, String state) {
+    @SuppressWarnings("deprecation")
+	public void setModel(String condition, String state) {
         Object[][] dataArray = null;
         ResultSet rsTabTherapy = null;
         try {
@@ -173,7 +178,12 @@ public class Frm_DiagnosisPrescription extends javax.swing.JFrame {
                 }
              }
              m_TherapyModel = new DefaultTableModel(dataArray,title) {
-                @Override
+                /**
+				 * 
+				 */
+				private static final long serialVersionUID = 7951343890304473258L;
+
+				@Override
                  public boolean isCellEditable(int rowIndex,int columnIndex) {
                      if (columnIndex == 0) {
                         return true;
@@ -242,7 +252,7 @@ public class Frm_DiagnosisPrescription extends javax.swing.JFrame {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -429,7 +439,8 @@ public class Frm_DiagnosisPrescription extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_tab_PrescriptionMouseClicked
 
-    private void btn_EnterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_EnterActionPerformed
+    @SuppressWarnings("rawtypes")
+	private void btn_EnterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_EnterActionPerformed
         int[] column = {1,2,4};
         Collection collection = m_ChooseHashMap.values();
         Iterator iterator = collection.iterator();
