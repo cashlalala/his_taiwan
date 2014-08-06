@@ -1543,7 +1543,6 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 												i, 8).toString());
 							}
 						}
-						System.out.println(sql);
 						DBC.executeUpdate(sql);
 						medicineState += 1;
 					}
@@ -1793,7 +1792,8 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 					+ "WHERE registration_info.guid = '"
 					+ guid
 					+ "' "
-					+ "AND diagnosis_code.dia_code = diagnostic.dia_code";
+					+ "AND diagnosis_code.dia_code = diagnostic.dia_code "
+					+ "AND diagnostic.reg_guid = '" + guid + "'";
 			rsDiagnosis = DBC.executeQuery(sqlDiagnosis);
 			int rowDiagnosis = 0;
 			while (rsDiagnosis.next()) {
@@ -1817,7 +1817,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 					+ "WHERE registration_info.guid = '"
 					+ guid
 					+ "' "
-					+ "AND prescription.reg_guid = registration_info.guid "
+					+ "AND prescription.reg_guid = '" + guid +  "' "
 					+ "AND prescription_code.code = prescription.code ";
 			// System.out.println(sqlPrescription);
 			rsPrescription = DBC.executeQuery(sqlPrescription);
@@ -1846,7 +1846,8 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 					+ "WHERE registration_info.guid = '"
 					+ guid
 					+ "' "
-					+ "AND medicines.code = medicine_stock.m_code";
+					+ "AND medicines.code = medicine_stock.m_code "
+					+ "AND medicine_stock.reg_guid = '" + guid + "'";
 			rsMedicines = DBC.executeQuery(sqlMedicines);
 			int rowMedicine = 0;
 			while (rsMedicines.next()) {
