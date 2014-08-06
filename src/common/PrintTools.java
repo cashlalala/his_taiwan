@@ -285,7 +285,7 @@ public class PrintTools {
                                    "ELSE 'Locality' " +
                                    "END 'Register', " +
                                    "concat(staff_info.firstname,'  ',staff_info.lastname) AS 'doctor' "+
-                                 "FROM registration_info, patients_info, shift_table,staff_info ,poli_room, policlinic, outpatient_services ,medicine_stock "+
+                                 "FROM registration_info, patients_info, shift_table,staff_info ,poli_room, policlinic, medicine_stock "+
                                  "WHERE registration_info.shift_guid = shift_table.guid "+
                                     "AND shift_table.room_guid = poli_room.guid "+
                                     "AND poli_room.poli_guid = policlinic.guid "+
@@ -356,11 +356,10 @@ public class PrintTools {
                     case 4:
                         // 4.X-Ray(給病患)
                         sqlData = "SELECT prescription_code.code AS code, prescription_code.name AS name, prescription.place, prescription_code.type " +
-                            "FROM prescription, prescription_code, outpatient_services, registration_info " +
+                            "FROM prescription, prescription_code, registration_info " +
                             "WHERE registration_info.guid = '"+m_RegGuid+"' " +
-                              "AND prescription.os_guid = outpatient_services.guid " +
+                              "AND prescription.reg_guid = registration_info.guid " +
                               "AND prescription_code.code = prescription.code " +
-                              "AND outpatient_services.reg_guid = registration_info.guid "+
                               "AND prescription_code.type = '"+Constant.X_RAY_CODE+"' ";
        
                         m_RsData = DBC.executeQuery(sqlData);
@@ -387,11 +386,10 @@ public class PrintTools {
                       sqlData =
                             "SELECT prescription_code.code AS code, prescription_code.name AS name, prescription.place, prescription_code.type, prescription.cost AS cost, prescription.result AS result, " +
                                "CASE prescription.isnormal WHEN 1 THEN 'Y' WHEN 0 THEN 'N' ELSE null  END 'Normal' " +
-                            "FROM prescription, prescription_code, outpatient_services, registration_info " +
+                            "FROM prescription, prescription_code, registration_info " +
                             "WHERE registration_info.guid = '"+m_RegGuid+"' " +
-                              "AND prescription.os_guid = outpatient_services.guid " +
+                              "AND prescription.reg_guid = registration_info.guid " +
                               "AND prescription_code.code = prescription.code " +
-                              "AND outpatient_services.reg_guid = registration_info.guid " +
                               "AND prescription_code.type = '"+Constant.X_RAY_CODE+"'";
                          m_RsData = DBC.executeQuery(sqlData);
                         // 5.X-Ray結果單(給病歷室)
@@ -422,11 +420,10 @@ public class PrintTools {
                     case 6:
                         // 6.檢驗單(給病患)
                         String sql = "SELECT prescription_code.code AS code, prescription_code.name AS name, prescription.place, prescription_code.type " +
-                                "FROM prescription, prescription_code, outpatient_services, registration_info " +
+                                "FROM prescription, prescription_code, registration_info " +
                                 "WHERE registration_info.guid = '"+m_RegGuid+"' " +
-                                  "AND prescription.os_guid = outpatient_services.guid " +
+                                  "AND prescription.reg_guid = registration_info.guid " +
                                   "AND prescription_code.code = prescription.code " +
-                                  "AND outpatient_services.reg_guid = registration_info.guid " +
                                   "AND prescription_code.type <> '"+Constant.X_RAY_CODE+"'";
 
                         m_RsData = DBC.executeQuery(sql);
@@ -451,11 +448,10 @@ public class PrintTools {
                        sqlData =
                             "SELECT prescription_code.code AS code, prescription_code.name AS name, prescription.place, prescription_code.type, prescription.cost AS cost, prescription.result AS result, " +
                                "CASE prescription.isnormal WHEN 1 THEN 'Y' WHEN 0 THEN 'N' ELSE null  END 'Normal' " +
-                            "FROM prescription, prescription_code, outpatient_services, registration_info " +
+                            "FROM prescription, prescription_code, registration_info " +
                             "WHERE registration_info.guid = '"+m_RegGuid+"' " +
-                              "AND prescription.os_guid = outpatient_services.guid " +
+                              "AND prescription.reg_guid = registration_info.guid " +
                               "AND prescription_code.code = prescription.code " +
-                              "AND outpatient_services.reg_guid = registration_info.guid " +
                               "AND prescription_code.type <> '"+Constant.X_RAY_CODE+"'";
                         m_RsData = DBC.executeQuery(sqlData);
                         setLogoTitle(g2, "Laboratory Data (To The Medical Records)");
@@ -490,9 +486,8 @@ public class PrintTools {
                          sqlData = "SELECT medicines.code, medicines.item, medicine_stock.dosage, medicines.unit, medicines.injection,medicine_stock.usage, " +
                                     "medicine_stock.way, medicine_stock.repeat_number, medicine_stock.quantity, medicine_stock.urgent, " +
                                    "medicine_stock.powder, medicine_stock.ps " +
-                            "FROM medicines, medicine_stock, outpatient_services, registration_info " +
+                            "FROM medicines, medicine_stock, registration_info " +
                             "WHERE registration_info.guid = '"+m_RegGuid+"' " +
-                                "AND outpatient_services.reg_guid = registration_info.guid " +
                                 "AND medicines.code = medicine_stock.m_code";
 
                         m_RsData = DBC.executeQuery(sqlData);
@@ -530,9 +525,8 @@ public class PrintTools {
                                 "SELECT medicines.code,medicines.injection, medicines.item, medicine_stock.dosage, medicines.unit, medicine_stock.usage, " +
                                        "medicine_stock.way, medicine_stock.repeat_number, medicine_stock.quantity, medicine_stock.urgent, " +
                                        "medicine_stock.powder, medicine_stock.ps " +
-                                "FROM medicines, medicine_stock, outpatient_services, registration_info " +
+                                "FROM medicines, medicine_stock, registration_info " +
                                 "WHERE registration_info.guid = '"+m_RegGuid+"' " +
-                                    "AND outpatient_services.reg_guid = registration_info.guid " +
                                     "AND medicines.code = medicine_stock.m_code";
 
                    
@@ -581,10 +575,9 @@ public class PrintTools {
                         g2.setFont(new Font("Serif", Font.BOLD, 28)); // 表頭
                         g2.drawString("======== Summary =========================" + "============================================================================", x, y);
                         String sqlSummary  =
-                            "SELECT outpatient_services.summary, outpatient_services.ps " +
-                            "FROM outpatient_services, registration_info " +
-                            "WHERE registration_info.guid = '"+m_RegGuid+"' " +
-                            "AND outpatient_services.reg_guid = registration_info.guid";
+                            "SELECT diagnostic.summary, diagnostic.ps " +
+                            "FROM diagnostic " +
+                            "WHERE diagnostic.reg_guid = '"+m_RegGuid+"' ";
 
                         rs = DBC.executeQuery(sqlSummary);
                         rs.next();

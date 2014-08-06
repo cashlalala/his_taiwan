@@ -19,13 +19,13 @@ import org.his.model.Setting;
 
 public class DBC {
 
-    private final static String LOCALURL;
-    private final static String LOCALNAME;
-    private final static String LOCALPASSWD;
+    public final static String LOCALURL;
+    public final static String LOCALNAME;
+    public final static String LOCALPASSWD;
 
-    private static String s_ServerURL;
-    private static String s_ServerName;
-    private static String s_ServerPasswd;
+    public static String s_ServerURL;
+    public static String s_ServerName;
+    public static String s_ServerPasswd;
 
     private static Connection s_LocalConn;
     private static Statement s_LocalStmt;
@@ -165,6 +165,7 @@ public class DBC {
 
     /** 執行給定的 SQL 語句，該語句返回單個 ResultSet 物件。*/
     public static ResultSet executeQuery(String sql) throws SQLException {
+    	System.out.println(sql);
         cc.johnwu.login.OnlineState.OnlineState();
         Connection conn = DriverManager.getConnection(s_ServerURL,s_ServerName,s_ServerPasswd);
         Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
@@ -179,6 +180,7 @@ public class DBC {
 
     /** 執行給定 SQL 語句，該語句可能為 INSERT、UPDATE 或 DELETE 語句，或者不返回任何內容的 SQL 語句（如 SQL DDL 語句）。*/
     public static int executeUpdate(String sql) throws SQLException {
+    	System.out.println(sql);
         cc.johnwu.login.OnlineState.OnlineState();
         int count = 0;
         Connection conn = DriverManager.getConnection(s_ServerURL,s_ServerName,s_ServerPasswd);

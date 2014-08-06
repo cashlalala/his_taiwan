@@ -40,7 +40,8 @@ public class Frm_DiagnosisTherapy extends javax.swing.JFrame {
     /*輸出錯誤資訊變數*/
     StoredErrorMessage ErrorMessage = new StoredErrorMessage() ;
 
-
+    private final static String DELIMITER = Character.toString((char)0); 
+    
     public Frm_DiagnosisTherapy(Frm_DiagnosisInfo diagnosisInfo,boolean isDM) {
         this.m_DiagnosisInfo = diagnosisInfo;
         m_IsDM = isDM;
@@ -79,7 +80,7 @@ public class Frm_DiagnosisTherapy extends javax.swing.JFrame {
             rs.beforeFirst();
             int i = 0;
             icdCob[i++] = "";
-            while (rs.next()) icdCob[i++] = rs.getString("icd_code").trim() + "    " + rs.getString("name").trim();
+            while (rs.next()) icdCob[i++] = rs.getString("icd_code").trim() + DELIMITER + rs.getString("name").trim();
             
             m_Cobww = new CompleterComboBox(icdCob);
             m_Cobww.setBounds(80, 15, 580, 20);
@@ -121,7 +122,7 @@ public class Frm_DiagnosisTherapy extends javax.swing.JFrame {
     }
     // 取值條件變動進行model重設
     // 參數：condition 搜尋方式與條件  state KeyPress搜尋或是value change
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings({ "deprecation", "serial" })
 	public void setModel(String condition, String state) {
         Object[][] dataArray = null;
         ResultSet rsTabTherapy = null;
@@ -138,7 +139,7 @@ public class Frm_DiagnosisTherapy extends javax.swing.JFrame {
                 while (rsTabTherapy.next()) {
                      dataArray[i][1] = rsTabTherapy.getString("icd_code");
                      dataArray[i][2] = rsTabTherapy.getString("name");
-                     if (rsTabTherapy.getString("effective").equals("true")) {
+                     if (rsTabTherapy.getString("effective").equals("true") || rsTabTherapy.getBoolean("effective")) {
                         dataArray[i][0] = null;
                      } else {
                          if(m_ChooseHashMap.get(dataArray[i][0]) != null) 
@@ -197,7 +198,7 @@ public class Frm_DiagnosisTherapy extends javax.swing.JFrame {
                                              replace("<html>", "").replace("<font color='FF0000'>", "").
                                              replace("</font>", "").replace("</html>", "").trim();
 
-        if (tab_Therapy.getValueAt(this.tab_Therapy.getSelectedRow(), 0).equals(true) )  m_ChooseHashMap.put(code,code+"    "+name);
+        if (tab_Therapy.getValueAt(this.tab_Therapy.getSelectedRow(), 0).equals(true) )  m_ChooseHashMap.put(code,code+DELIMITER+name);
         else if (tab_Therapy.getValueAt(this.tab_Therapy.getSelectedRow(), 0).equals(false)) m_ChooseHashMap.remove(code);
         
   }
@@ -215,7 +216,7 @@ public class Frm_DiagnosisTherapy extends javax.swing.JFrame {
     // cobww變動進行資料搜尋
     private void getComboBoxItemStateChanged(ItemEvent evt) {
         if(evt.getStateChange() == ItemEvent.SELECTED ){
-             String []condition = m_Cobww.getSelectedItem().toString().trim().split("    ");  //get select table condition from m_Cobww
+             String []condition = m_Cobww.getSelectedItem().toString().trim().split(DELIMITER);  //get select table condition from m_Cobww
              if (condition.length > 1 || condition[0].trim().equals("") ) setModel("icd_code LIKE '"+condition[0]+"%'","");
              else setModel("LOWER(name) LIKE LOWER('%"+m_Cobww.getSelectedItem().toString().trim()+"%') ", "ENTER");
         }
@@ -397,7 +398,7 @@ public class Frm_DiagnosisTherapy extends javax.swing.JFrame {
         
         while (iterator.hasNext()) {
            // count++;
-            Object[] value = iterator.next().toString().split("    ");
+            Object[] value = iterator.next().toString().split(DELIMITER);
              if (m_DiagnosisInfo.isCodeAtHashMap(value[0].toString().trim())) 
                 m_DiagnosisInfo.setDiagnosisInfoTable(value, column);
         }

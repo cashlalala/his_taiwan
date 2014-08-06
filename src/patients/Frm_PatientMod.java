@@ -2950,12 +2950,13 @@ public class Frm_PatientMod extends javax.swing.JFrame implements
 
 			}
 			this.patientInfoDao.persist(patientInfo);
+			etx.commit();
 			// ***********************列印barcode
 			if (this.m_Status.equals("NEW")) {
 				PrintBarcode.PrintBarcode(txt_No.getText());
 			}
 
-			etx.commit();
+			
 			// ************************
 			JOptionPane.showMessageDialog(new Frame(),
 					paragraph.getString("SAVECOMPLETE"));

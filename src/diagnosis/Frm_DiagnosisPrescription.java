@@ -28,7 +28,11 @@ import errormessage.StoredErrorMessage;
 import multilingual.Language;
 
 public class Frm_DiagnosisPrescription extends javax.swing.JFrame {
-    private CompleterComboBox m_Cobww;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -6154059993811747242L;
+	private CompleterComboBox m_Cobww;
     private Map<Object, Object> m_ChooseHashMap = new HashMap<Object, Object>();
     private Frm_DiagnosisInfo m_DiagnosisInfo;
     private Frm_Case m_Case;
@@ -39,6 +43,8 @@ public class Frm_DiagnosisPrescription extends javax.swing.JFrame {
     private String[] message = paragraph.setlanguage("MESSAGE").split("\n") ;
     /*輸出錯誤資訊變數*/
     StoredErrorMessage ErrorMessage = new StoredErrorMessage() ;
+    
+    private final static String DELIMITER = Character.toString((char)0); 
 
     public Frm_DiagnosisPrescription(Frm_DiagnosisInfo diagnosisInfo) {
         this.m_DiagnosisInfo = diagnosisInfo;
@@ -87,7 +93,7 @@ public class Frm_DiagnosisPrescription extends javax.swing.JFrame {
             int i = 0;
             icdCob[i++] = "";
             while (rs.next()) {
-                  icdCob[i++] = rs.getString("code").trim() + "    " + rs.getString("name").trim();
+                  icdCob[i++] = rs.getString("code").trim() + DELIMITER + rs.getString("name").trim();
             }
 
             m_Cobww = new CompleterComboBox(icdCob);
@@ -126,7 +132,8 @@ public class Frm_DiagnosisPrescription extends javax.swing.JFrame {
     }
     // 取值條件變動進行model重設
     // 參數：condition 搜尋方式與條件  state KeyPress搜尋或是value change
-    public void setModel(String condition, String state) {
+    @SuppressWarnings("deprecation")
+	public void setModel(String condition, String state) {
         Object[][] dataArray = null;
         ResultSet rsTabTherapy = null;
         try {
@@ -146,7 +153,7 @@ public class Frm_DiagnosisPrescription extends javax.swing.JFrame {
                      dataArray[i][2] = rsTabTherapy.getString("name");
                      dataArray[i][3] = rsTabTherapy.getString("type");
                 
-                     if (rsTabTherapy.getString("effective").equals("false")) {
+                     if (rsTabTherapy.getString("effective").equals("false") || !rsTabTherapy.getBoolean("effective")) {
                         dataArray[i][0] = null;
                      } else {
                         dataArray[i][0] = false;
@@ -171,7 +178,12 @@ public class Frm_DiagnosisPrescription extends javax.swing.JFrame {
                 }
              }
              m_TherapyModel = new DefaultTableModel(dataArray,title) {
-                @Override
+                /**
+				 * 
+				 */
+				private static final long serialVersionUID = 7951343890304473258L;
+
+				@Override
                  public boolean isCellEditable(int rowIndex,int columnIndex) {
                      if (columnIndex == 0) {
                         return true;
@@ -212,7 +224,7 @@ public class Frm_DiagnosisPrescription extends javax.swing.JFrame {
                                              replace("</font>", "").replace("</html>", "").trim();
         String type = tab_Prescription.getValueAt(tab_Prescription.getSelectedRow(), 3).toString().trim();
         if (tab_Prescription.getValueAt(this.tab_Prescription.getSelectedRow(), 0).equals(true) ) {
-            m_ChooseHashMap.put(code,code+"    "+name+"    "+type);
+            m_ChooseHashMap.put(code,code+DELIMITER+name+DELIMITER+type);
         } else if (tab_Prescription.getValueAt(this.tab_Prescription.getSelectedRow(), 0).equals(false) ){
             m_ChooseHashMap.remove(code);
         }
@@ -231,7 +243,7 @@ public class Frm_DiagnosisPrescription extends javax.swing.JFrame {
     // cobww變動進行資料搜尋
     private void getComboBoxItemStateChanged(ItemEvent evt) {
         if(evt.getStateChange() == ItemEvent.SELECTED ){
-             String[] condition = m_Cobww.getSelectedItem().toString().trim().split("    ");  //get select table condition from m_Cobww
+             String[] condition = m_Cobww.getSelectedItem().toString().trim().split(DELIMITER);  //get select table condition from m_Cobww
              if (condition.length > 1 || condition[0].trim().equals("") ) {
                 setModel("code LIKE '"+condition[0]+"%'","");
              } else {
@@ -240,7 +252,7 @@ public class Frm_DiagnosisPrescription extends javax.swing.JFrame {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -427,12 +439,13 @@ public class Frm_DiagnosisPrescription extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_tab_PrescriptionMouseClicked
 
-    private void btn_EnterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_EnterActionPerformed
+    @SuppressWarnings("rawtypes")
+	private void btn_EnterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_EnterActionPerformed
         int[] column = {1,2,4};
         Collection collection = m_ChooseHashMap.values();
         Iterator iterator = collection.iterator();
         while (iterator.hasNext()) {
-            Object[] value = iterator.next().toString().split("    ");
+            Object[] value = iterator.next().toString().split(DELIMITER);
             if (m_DiagnosisInfo != null && m_DiagnosisInfo.isCodeAtHashMap(value[0].toString().trim())) m_DiagnosisInfo.setDiagnosisInfoTable(value, column);
             else if (m_Case != null && m_Case.isCodeAtHashMap(value[0].toString().trim())) m_Case.setDiagnosisInfoTable(value, column);
         }
