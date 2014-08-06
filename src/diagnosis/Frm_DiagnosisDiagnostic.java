@@ -1,23 +1,26 @@
 package diagnosis;
 
-import cc.johnwu.login.UserInfo;
-import cc.johnwu.sql.*;
-
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.sql.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
-import errormessage.StoredErrorMessage;
 import multilingual.Language;
+import cc.johnwu.login.UserInfo;
+import cc.johnwu.sql.DBC;
+import cc.johnwu.sql.HISModel;
+import errormessage.StoredErrorMessage;
 
 public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1651665664021329428L;
 	private String m_Pname;
 	private String m_Pno;
 	private Frm_DiagnosisInfo m_DiagnosisInfo;
@@ -122,6 +125,7 @@ public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
 		setTabRecord(); // 加入看診紀錄
 	}
 
+	@SuppressWarnings("deprecation")
 	private void initLanguage() {
 		// this.lab_TitleNo.setText(paragraph.getLanguage(line, "TITLENO"));
 		this.lab_TitleName.setText(paragraph.getLanguage(line, "TITLENAME"));
@@ -144,6 +148,7 @@ public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
 	}
 
 	// 加入看診紀錄
+	@SuppressWarnings("deprecation")
 	public void setTabRecord() {
 		ResultSet rsRecord = null;
 
@@ -223,6 +228,11 @@ public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
 	/** 設定表單預設模型。 */
 	private DefaultTableModel getModle(String[] title, String[][] data) {
 		return new DefaultTableModel(data, title) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1351758744930605390L;
+
 			@Override
 			public boolean isCellEditable(int r, int c) {
 				return false;
@@ -231,6 +241,7 @@ public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
 	}
 
 	// icd code
+	@SuppressWarnings("deprecation")
 	public void setTab_Diagnosis() {
 		ResultSet rsDiagnosis = null;
 		try {
@@ -331,6 +342,7 @@ public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
 	}
 
 	// 處置
+	@SuppressWarnings("deprecation")
 	public void setTab_Prescription() {
 		ResultSet rsPrescription = null;
 		try {
@@ -391,6 +403,7 @@ public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
 	}
 
 	// 藥品
+	@SuppressWarnings("deprecation")
 	public void setTab_Medicines() {
 		ResultSet rsMedicines = null;
 		Object[][] medicineArray = null;
@@ -431,6 +444,11 @@ public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
 					}
 					DefaultTableModel model = new DefaultTableModel(
 							medicineArray, medicineTitle) {
+						/**
+								 * 
+								 */
+								private static final long serialVersionUID = 8018976528701814935L;
+
 						@Override
 						// 設定欄位可否編輯
 						public boolean isCellEditable(int rowIndex,
@@ -443,6 +461,11 @@ public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
 			} else {
 				DefaultTableModel model = new DefaultTableModel(medicineArray,
 						medicineTitle) {
+					/**
+							 * 
+							 */
+							private static final long serialVersionUID = 7671361675848330232L;
+
 					@Override
 					// 設定欄位可否編輯
 					public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -530,7 +553,7 @@ public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
 		this.setAlwaysOnTop(true);
 	}
 
-	@SuppressWarnings("unchecked")
+	
 	// <editor-fold defaultstate="collapsed"
 	// desc="Generated Code">//GEN-BEGIN:initComponents
 	private void initComponents() {
@@ -572,6 +595,10 @@ public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
 						{ null, null, null, null, null, null, null, null },
 						{ null, null, null, null, null, null, null, null } },
 				new String[] { "", "", "", "", "", "", "", "" }) {
+			/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1513713184594101009L;
 			boolean[] canEdit = new boolean[] { false, false, false, false,
 					false, false, false, false };
 
@@ -597,6 +624,10 @@ public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
 						{ null, null, null, null, null },
 						{ null, null, null, null, null } }, new String[] { "",
 						"", "", "", "" }) {
+			/**
+							 * 
+							 */
+							private static final long serialVersionUID = -4409373919019254517L;
 			boolean[] canEdit = new boolean[] { false, false, false, false,
 					false };
 
@@ -627,6 +658,10 @@ public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
 		tab_Diagnosis.setModel(new javax.swing.table.DefaultTableModel(
 				new Object[][] { { null, null, null }, { null, null, null },
 						{ null, null, null } }, new String[] { "", "", "" }) {
+			/**
+							 * 
+							 */
+							private static final long serialVersionUID = 4850207119924028297L;
 			boolean[] canEdit = new boolean[] { false, false, false };
 
 			public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -645,6 +680,10 @@ public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
 		tab_Prescription.setModel(new javax.swing.table.DefaultTableModel(
 				new Object[][] { { null, null, null }, { null, null, null },
 						{ null, null, null } }, new String[] { "", "", "" }) {
+			/**
+							 * 
+							 */
+							private static final long serialVersionUID = 8484744495481923745L;
 			boolean[] canEdit = new boolean[] { false, false, false };
 
 			public boolean isCellEditable(int rowIndex, int columnIndex) {
