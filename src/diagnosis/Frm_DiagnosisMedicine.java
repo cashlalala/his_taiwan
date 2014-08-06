@@ -145,9 +145,9 @@ public class Frm_DiagnosisMedicine extends javax.swing.JFrame {
 
 	// 顯示糖尿病提示資訊
 	private void showExplain() throws IOException {
-		Frm_Explain Frm_Explain = new Frm_Explain();
-		Frm_Explain.setVisible(true);
-		Frm_Explain.setAlwaysOnTop(true);
+		Frm_Explain frm_Explain = new Frm_Explain();
+		frm_Explain.setVisible(true);
+		frm_Explain.setAlwaysOnTop(true);
 	}
 
 	// condition 搜尋方式與條件 state KeyPress搜尋或是value change
