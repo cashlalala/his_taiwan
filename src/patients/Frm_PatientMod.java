@@ -91,7 +91,8 @@ public class Frm_PatientMod extends javax.swing.JFrame implements
 
 	public Frm_PatientMod(PatientsInterface m_frame, boolean isNewPatient) {
 		etx = JPAUtil.getTransaction();
-		etx.begin();
+		if (!etx.isActive())
+			etx.begin();
 		initComponents();
 		initPatientInfoCtrl();
 		initContactCtrl();
@@ -118,9 +119,7 @@ public class Frm_PatientMod extends javax.swing.JFrame implements
 
 		if (isNewPatient) {
 			initPatientInfo();
-			contactpersonInfo = new ContactpersonInfo();
-			contactpersonInfo.setGender("M");
-			contactpersonInfo.setMaritalStatus(m_MaritalStatus[0]);
+			initContactInfo();
 			initDataBindings();
 		}
 	}
@@ -128,8 +127,7 @@ public class Frm_PatientMod extends javax.swing.JFrame implements
 	public Frm_PatientMod(PatientsInterface m_frame, PatientsInfo pInfo) {
 		this(m_frame, false);
 		this.patientInfo = patientInfoDao.merge(pInfo);
-		this.contactpersonInfo = (patientInfo.getContactpersonInfo() != null) ? patientInfo
-				.getContactpersonInfo() : new ContactpersonInfo();
+		initContactInfo();
 
 		if (patientInfo.getDeathInfo() != null) {
 			deathInfo = patientInfo.getDeathInfo();
@@ -151,8 +149,7 @@ public class Frm_PatientMod extends javax.swing.JFrame implements
 	public Frm_PatientMod(PatientsInterface m_frame, String p_no) {
 		this(m_frame, false);
 		this.patientInfo = this.patientInfoDao.QueryPatientInfoById(p_no);
-		this.contactpersonInfo = (patientInfo.getContactpersonInfo() != null) ? patientInfo
-				.getContactpersonInfo() : new ContactpersonInfo();
+		initContactInfo();
 
 		if (patientInfo.getDeathInfo() != null) {
 			deathInfo = patientInfo.getDeathInfo();
@@ -169,6 +166,31 @@ public class Frm_PatientMod extends javax.swing.JFrame implements
 			bar_menu.setVisible(false);
 		}
 		initDataBindings();
+	}
+
+	private void initContactInfo() {
+		if (patientInfo.getContactpersonInfo() != null) {
+			this.contactpersonInfo = patientInfo.getContactpersonInfo();
+		} else {
+			contactpersonInfo = new ContactpersonInfo();
+			contactpersonInfo.setFirstname("");
+			contactpersonInfo.setLastname("");
+			contactpersonInfo.setGender("M");
+			contactpersonInfo.setPhone("");
+			contactpersonInfo.setAddress("");
+			contactpersonInfo.setCellPhone("");
+			contactpersonInfo.setCountry("");
+			contactpersonInfo.setTown("");
+			contactpersonInfo.setState("");
+			contactpersonInfo.setCountry("");
+			contactpersonInfo.setOccupation("");
+			contactpersonInfo.setLanguage("");
+			contactpersonInfo.setMaritalStatus(m_MaritalStatus[0]);
+			contactpersonInfo.setRelation("");
+			contactpersonInfo.setReligion("");
+			contactpersonInfo.setTribe("");
+			contactpersonInfo.setPlaceOfBirth("");
+		}
 	}
 
 	/** 初始化 */
@@ -2956,7 +2978,6 @@ public class Frm_PatientMod extends javax.swing.JFrame implements
 				PrintBarcode.PrintBarcode(txt_No.getText());
 			}
 
-			
 			// ************************
 			JOptionPane.showMessageDialog(new Frame(),
 					paragraph.getString("SAVECOMPLETE"));
