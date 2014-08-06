@@ -6,8 +6,11 @@
 package worklist;
 
 import java.awt.Color;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
@@ -36,6 +39,8 @@ public class RefrashWorkList extends Thread {
 	private String[] m_Guid;
 	private ResultSet rs = null;
 	private String sql;
+
+	private Statement stmt = null;
 
 	@SuppressWarnings("deprecation")
 	protected RefrashWorkList(javax.swing.JTable tab, long time, String SysName) {
@@ -296,6 +301,12 @@ public class RefrashWorkList extends Thread {
 			}
 
 			DBC.closeConnection(rs);
+
+			cc.johnwu.login.OnlineState.OnlineState();
+			Connection conn = DriverManager.getConnection(DBC.s_ServerURL,
+					DBC.s_ServerName, DBC.s_ServerPasswd);
+			stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+					ResultSet.CONCUR_READ_ONLY);
 		} catch (SQLException ex) {
 			System.out.println(ex);
 		} finally {
@@ -306,10 +317,16 @@ public class RefrashWorkList extends Thread {
 		}
 	}
 
+	private boolean isRunning = true;
+
+	public void stopRunning() {
+		this.isRunning = false;
+	}
+
 	@Override
 	public void run() {
 		try {
-			while (true) {
+			while (isRunning) {
 				try {
 					String check_sql = "";
 					if (m_SysName.equals("dia")) {
@@ -348,7 +365,7 @@ public class RefrashWorkList extends Thread {
 								+ DateMethod.getNowShiftNum() + "' ";
 					}
 
-					rs = DBC.executeQuery(check_sql);
+					rs = stmt.executeQuery(check_sql);
 					if (rs.next()
 							&& (rs.getString(1) == null || rs.getString(1)
 									.equals(m_LastTouchTime))) {
@@ -356,9 +373,9 @@ public class RefrashWorkList extends Thread {
 						continue;
 					}
 					m_LastTouchTime = rs.getString(1);
-					DBC.closeConnection(rs);
+					rs.close();
 
-					rs = DBC.executeQuery(sql);
+					rs = stmt.executeQuery(sql);
 					if (rs.last()) {
 						int row = 0;
 						this.m_Guid = new String[rs.getRow()];
@@ -372,17 +389,25 @@ public class RefrashWorkList extends Thread {
 							row++;
 						}
 					}
-					DBC.closeConnection(rs);
+					rs.close();
 				} catch (SQLException ex) {
 					System.out.println("WorkList:" + ex);
-				} finally {
-					try {
-						DBC.closeConnection(rs);
-					} catch (SQLException ex) {
-					}
+					ex.printStackTrace();
 				}
 			}
 		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				DBC.closeConnection(rs);
+			} catch (SQLException e) {
+				e.printStackTrace();
+				try {
+					DBC.closeConnection(stmt);
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+			}
 		}
 	}
 

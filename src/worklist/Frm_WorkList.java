@@ -644,6 +644,7 @@ public class Frm_WorkList extends javax.swing.JFrame {
 
 	private void mnit_CloseActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnit_CloseActionPerformed
 
+		m_RefrashWorkList.stopRunning();
 		m_RefrashWorkList.interrupt(); // 終止重複讀取掛號表單
 		m_Clock.interrupt();
 		new Frm_Main().setVisible(true);
