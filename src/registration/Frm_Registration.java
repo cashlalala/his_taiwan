@@ -1497,8 +1497,6 @@ public void ShowGpsFrom() {
         	"FROM (SELECT touchtime FROM registration_info) AS B " +
         	"WHERE B.touchtime LIKE concat(DATE_FORMAT(now(),'%Y%m%d%H%i%S'),'%')),20,'000000'), " +
         	//touchtime end
-        	"NULL,"+ 
-        	"NULL,"+
         	"NULL,"+
         	"NULL;";
 
