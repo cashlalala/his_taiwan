@@ -364,7 +364,7 @@ public class RefrashWorkList extends Thread {
 								+ "AND shift_table.shift = '"
 								+ DateMethod.getNowShiftNum() + "' ";
 					}
-
+					System.out.println(check_sql);
 					rs = stmt.executeQuery(check_sql);
 					if (rs.next()
 							&& (rs.getString(1) == null || rs.getString(1)
@@ -375,6 +375,7 @@ public class RefrashWorkList extends Thread {
 					m_LastTouchTime = rs.getString(1);
 					rs.close();
 
+					System.out.println(sql);
 					rs = stmt.executeQuery(sql);
 					if (rs.last()) {
 						int row = 0;
