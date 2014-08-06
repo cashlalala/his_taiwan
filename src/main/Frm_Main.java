@@ -685,11 +685,9 @@ public class Frm_Main extends javax.swing.JFrame {
     		    		if (!executor.awaitTermination(5, TimeUnit.MINUTES)) {
     		    			JOptionPane.showMessageDialog(null, "Timeout! Downloading fail , some diagnosis_code, prescription_code, medicines may be incorrect!");
     		    		}
-    		    		DBC.localExecute("SHUTDOWN");
+//    		    		DBC.localExecute("SHUTDOWN");
     		    	};
 				} catch (InterruptedException e) {
-					e.printStackTrace();
-				} catch (SQLException e) {
 					e.printStackTrace();
 				}
     		}
