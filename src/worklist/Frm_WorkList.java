@@ -1,10 +1,5 @@
 package worklist;
 
-import casemgmt.Frm_Case;
-import cc.johnwu.login.UserInfo;
-import cc.johnwu.date.DateMethod;
-import cc.johnwu.sql.DBC;
-
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Frame;
@@ -25,16 +20,23 @@ import java.util.Calendar;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 
-import radiology.Frm_Radiology;
-import common.TabTools;
-import diagnosis.Frm_DiagnosisInfo;
-import errormessage.StoredErrorMessage;
 import laboratory.Frm_Laboratory;
 import main.Frm_Main;
 import multilingual.Language;
+import radiology.Frm_Radiology;
+import casemgmt.Frm_Case;
+import cc.johnwu.date.DateMethod;
+import cc.johnwu.login.UserInfo;
+import cc.johnwu.sql.DBC;
+import diagnosis.Frm_DiagnosisInfo;
+import errormessage.StoredErrorMessage;
 
 public class Frm_WorkList extends javax.swing.JFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private long REFRASHTIME = 1000; // 自度刷新跨號資訊時間
 	private RefrashWorkList m_RefrashWorkList;
 	private Thread m_Clock;
@@ -151,6 +153,7 @@ public class Frm_WorkList extends javax.swing.JFrame {
 
 	}
 
+	@SuppressWarnings("deprecation")
 	private void initLanguage() {
 		this.btn_RePrint.setText(paragraph.getLanguage(line, "PRINT"));
 		// this.lab_Name.setText(paragraph.getLanguage(line, "NAME"));
@@ -220,7 +223,7 @@ public class Frm_WorkList extends javax.swing.JFrame {
 		this.dispose();
 	}
 
-	@SuppressWarnings("unchecked")
+	
 	// <editor-fold defaultstate="collapsed"
 	// desc="Generated Code">//GEN-BEGIN:initComponents
 	private void initComponents() {
@@ -654,6 +657,7 @@ public class Frm_WorkList extends javax.swing.JFrame {
 		tab_WorkListKeyPressed(null);
 	}// GEN-LAST:event_tab_WorkListMouseClicked
 
+	@SuppressWarnings("deprecation")
 	private void tab_WorkListKeyPressed(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_tab_WorkListKeyPressed
 		if (this.tab_WorkList.getRowCount() > 0) {
 			this.btn_Enter.setEnabled(true);
@@ -669,6 +673,7 @@ public class Frm_WorkList extends javax.swing.JFrame {
 		}
 	}// GEN-LAST:event_tab_WorkListKeyPressed
 
+	@SuppressWarnings("deprecation")
 	private void btn_EnterActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_EnterActionPerformed
 
 		boolean finishState = false;
