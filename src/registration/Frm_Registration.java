@@ -181,10 +181,11 @@ public class Frm_Registration extends javax.swing.JFrame implements FingerPrintV
                     m_ReSearchGps.interrupt();
                 }
                 
+                m_RefrashRecord.stopRunning();
+                m_RefrashRecord.interrupt();
+                
                 if(isEnabled()){
-                    
                     FingerPrintScanner.stop();
-                    m_RefrashRecord.interrupt();
                     new Frm_Main().setVisible(true);
                     dispose();
                     
@@ -1445,7 +1446,9 @@ public void ShowGpsFrom() {
         FingerPrintScanner.stop();
 	    if (IsConnGPS) {
 	    	m_ReSearchGps.SetGpsConnClose();
-	    }    
+	    }
+        m_RefrashRecord.stopRunning();
+        m_RefrashRecord.interrupt();
         new Frm_Main().setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btn_BackActionPerformed
