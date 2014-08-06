@@ -575,9 +575,9 @@ public class PrintTools {
                         g2.setFont(new Font("Serif", Font.BOLD, 28)); // 表頭
                         g2.drawString("======== Summary =========================" + "============================================================================", x, y);
                         String sqlSummary  =
-                            "SELECT registration_info.summary, registration_info.ps " +
-                            "FROM registration_info " +
-                            "WHERE registration_info.guid = '"+m_RegGuid+"' ";
+                            "SELECT diagnostic.summary, diagnostic.ps " +
+                            "FROM diagnostic " +
+                            "WHERE diagnostic.reg_guid = '"+m_RegGuid+"' ";
 
                         rs = DBC.executeQuery(sqlSummary);
                         rs.next();

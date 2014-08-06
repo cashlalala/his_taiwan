@@ -295,11 +295,11 @@ public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
 
 		ResultSet rsSummary = null;
 		try {
-			String sqlSummary = "SELECT registration_info.summary, registration_info.ps "
-					+ "FROM registration_info "
+			String sqlSummary = "SELECT diagnostic.summary, diagnostic.ps "
+					+ "FROM registration_info, diagnostic "
 					+ "WHERE registration_info.guid = '"
 					+ tab_Record.getValueAt(tab_Record.getSelectedRow(), 5)
-					+ "' ";
+					+ "' AND registration_info.guid = diagnostic.reg_guid";
 
 			rsSummary = DBC.executeQuery(sqlSummary);
 			rsSummary.next();

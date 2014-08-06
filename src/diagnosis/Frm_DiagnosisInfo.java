@@ -168,9 +168,9 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 				+ "'";
 		String sqlRecord = "SELECT shift_table.shift_date AS date, "
 				+ "concat(staff_info.firstname,'  ',staff_info.lastname) AS name, "
-				+ "registration_info.guid, registration_info.summary, registration_info.ps, "
+				+ "registration_info.guid, diagnostic.summary, diagnostic.ps, "
 				+ "registration_info.reg_time "
-				+ "FROM registration_info, shift_table, policlinic, poli_room, staff_info  "
+				+ "FROM registration_info, shift_table, policlinic, poli_room, staff_info, diagnostic  "
 				+ "WHERE registration_info.p_no = '" + m_Pno + "' "
 				+ "AND policlinic.name = '" + UserInfo.getUserPoliclinic()
 				+ "' " + "AND registration_info.shift_guid = shift_table.guid "
@@ -178,6 +178,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 				+ "AND poli_room.poli_guid = policlinic.guid "
 				+ "AND staff_info.s_id = shift_table.s_id "
 				+ "AND registration_info.finish = 'F' "
+				+ "AND diagnostic.reg_guid = registration_info.guid "
 				+ "ORDER BY registration_info.reg_time DESC";
 		try {
 			// 取出病患基本資料
@@ -1394,14 +1395,18 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 				if (tab_Diagnosis.getValueAt(0, 2) != null) {
 					for (int i = 0; i < this.tab_Diagnosis.getRowCount(); i++) {
 						if (this.tab_Diagnosis.getValueAt(i, 2) != null) {
-							String sql = "INSERT diagnostic(guid, reg_guid, dia_code , state) VALUES (uuid(), '"
+							String sql = "INSERT diagnostic(guid, reg_guid, dia_code , state, summary, ps) VALUES (uuid(), '"
 									+ m_RegistrationGuid
 									+ "', '"
 									+ this.tab_Diagnosis.getValueAt(i, 1)
 											.toString().trim()
 									+ "-"
 									+ icdVer
-									+ "' , 0)";
+									+ "', 0, '"
+									+ txta_Summary.getText().trim()
+									+ "', '"
+									+ txt_Message.getText().trim()
+									+ "')";
 							DBC.executeUpdate(sql);
 						}
 					}
@@ -2570,8 +2575,10 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 														.addComponent(
 																lab_TitlePs))));
 
-		pan_CenterTop.setBorder(javax.swing.BorderFactory
-				.createTitledBorder(paragraph.getString("MEDICALRECORDSUMMARY")));
+		pan_CenterTop
+				.setBorder(javax.swing.BorderFactory
+						.createTitledBorder(paragraph
+								.getString("MEDICALRECORDSUMMARY")));
 		pan_CenterTop.setPreferredSize(new java.awt.Dimension(813, 132));
 
 		txta_Summary.setColumns(20);
@@ -3598,7 +3605,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 		TabTools.setClearTableValue(tab_Diagnosis);
 		TabTools.setClearTableValue(tab_Prescription);
 		TabTools.setClearTableValue(tab_Medicine);
-		txta_Summary.setText(null);
+		txta_Summary.setText("");
 		m_DiagnosisHashMap.clear();
 		m_MedicineHashMap.clear();
 		m_PrescriptionHashMap.clear();
@@ -3790,7 +3797,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 	}// GEN-LAST:event_mnit_FocusMActionPerformed
 
 	private void mnit_ClearSActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnit_ClearSActionPerformed
-		txta_Summary.setText(null);
+		txta_Summary.setText("");
 	}// GEN-LAST:event_mnit_ClearSActionPerformed
 
 	private void mnit_ClearDActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnit_ClearDActionPerformed
