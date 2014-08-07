@@ -1,10 +1,11 @@
 package diagnosis;
 
-import autocomplete.CompleterComboBox;
-import casemgmt.Frm_Case;
-import cc.johnwu.sql.*;
-
 import java.awt.event.ItemEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -12,20 +13,25 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.sql.ResultSet;
 
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.JToolTip;
 import javax.swing.ListSelectionModel;
+import javax.swing.ToolTipManager;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+
+import multilingual.Language;
+import autocomplete.CompleterComboBox;
+import casemgmt.Frm_Case;
+import cc.johnwu.sql.DBC;
+
+import common.JMultiLineToolTip;
 
 import diagnosis.TableTriStateCell.TriStateCellEditor;
 import diagnosis.TableTriStateCell.TriStateCellRenderer;
 import errormessage.StoredErrorMessage;
-import multilingual.Language;
 
 public class Frm_DiagnosisPrescription extends javax.swing.JFrame {
 	/**
@@ -313,7 +319,15 @@ public class Frm_DiagnosisPrescription extends javax.swing.JFrame {
 
 		pan_Center = new javax.swing.JPanel();
 		span_Therapy = new javax.swing.JScrollPane();
-		tab_Prescription = new javax.swing.JTable();
+		tab_Prescription = new javax.swing.JTable() {
+
+			@Override
+			public JToolTip createToolTip() {
+				return new JMultiLineToolTip();
+			}
+
+			private static final long serialVersionUID = 1L;
+		};
 		lab_Therapy = new javax.swing.JLabel();
 		btn_Search = new javax.swing.JButton();
 		jPanel1 = new javax.swing.JPanel();
@@ -340,7 +354,40 @@ public class Frm_DiagnosisPrescription extends javax.swing.JFrame {
 		tab_Prescription.setRowHeight(25);
 		tab_Prescription.getTableHeader().setReorderingAllowed(false);
 		tab_Prescription.addMouseListener(new java.awt.event.MouseAdapter() {
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				ToolTipManager.sharedInstance().setEnabled(false);
+			}
+
 			public void mouseClicked(java.awt.event.MouseEvent evt) {
+				JTable table = (JTable) evt.getSource();
+				int curRow = table.rowAtPoint(evt.getPoint());
+				ToolTipManager.sharedInstance().setEnabled(true);
+				ToolTipManager.sharedInstance().setInitialDelay(0);
+				ToolTipManager.sharedInstance().setDismissDelay(5000);
+				String code = (String) tab_Prescription.getValueAt(curRow, 1);
+				ResultSet resultSet = null;
+				try {
+					if (code != null && !code.equals("")) {
+						resultSet = DBC.executeQuery(String
+								.format("select guideline from prescription_code where code = '%s'",
+										code));
+						if (resultSet.first()) {
+							String guideline = resultSet.getString("guideline");
+							System.out.println(guideline);
+							tab_Prescription.setToolTipText(guideline);
+						}
+					}
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				} finally {
+					try {
+						DBC.closeConnection(resultSet);
+					} catch (SQLException e1) {
+						e1.printStackTrace();
+					}
+				}
 				tab_PrescriptionMouseClicked(evt);
 			}
 		});
