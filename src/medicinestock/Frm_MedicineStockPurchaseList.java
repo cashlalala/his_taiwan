@@ -88,7 +88,7 @@ public class Frm_MedicineStockPurchaseList extends javax.swing.JFrame {
         String Sql="SELECT medicines.code AS 'Medicine',medicine_stock.druggist AS 'Druggist' ,medicine_stock.quantity AS 'Quantity',medicine_stock.price AS 'Price'," +
                     " DATE_FORMAT(medicine_stock.replenish_date,'%Y-%m-%d') AS 'Date' " +
                     "FROM medicines,medicine_stock " +
-                    "WHERE medicines.effective=1 AND medicine_stock.exist=1 AND medicine_stock.os_guid IS null AND medicines.code=medicine_stock.m_code AND medicines.code= '"+
+                    "WHERE medicines.effective=1 AND medicine_stock.exist=1 AND medicine_stock.reg_guid IS null AND medicines.code=medicine_stock.m_code AND medicines.code= '"+
                     m_code +"' ";
         System.out.println(Sql);
         try{

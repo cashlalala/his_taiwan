@@ -42,10 +42,10 @@ public class Frm_MidicineStockInfo extends javax.swing.JFrame implements cc.john
 
     }
     private void initLanguage() {
-        this.btn_Search.setText(paragraph.getLanguage(message, "SEARCH"));
-        this.btn_Purchase.setText(paragraph.getLanguage(line, "PURCHASE"));
-        this.btn_More.setText(paragraph.getLanguage(line, "MORE"));
-        this.btn_Close.setText(paragraph.getLanguage(message, "CLOSE"));
+        this.btn_Search.setText(paragraph.getString("SEARCH"));
+        this.btn_Purchase.setText(paragraph.getString("PURCHASE"));
+        this.btn_More.setText(paragraph.getString("MORE"));
+        this.btn_Close.setText(paragraph.getString("CLOSE"));
     }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -206,23 +206,30 @@ public class Frm_MidicineStockInfo extends javax.swing.JFrame implements cc.john
     public void showMedTabList(){//各藥品剩餘總量
         ResultSet tabArray= null;
         try{
-            String ArraySql="SELECT medicines.code, ( "+
-                        "CASE WHEN (SELECT SUM(quantity) FROM medicine_stock AS B WHERE B.m_code = medicines.code AND os_guid IS NULL GROUP BY code) "+
+        	String ArraySql = "SELECT medical_stock.item_guid as code, medicines.item as description, medical_stock.current_amount as quantity, "
+        			+ " medical_stock.minimal_amount as threshold, medical_stock.default_unit_price as price "
+        			+ " FROM medical_stock, medicines " 
+        			+ " WHERE medicines.code = medical_stock.item_guid "
+        			+ " AND type = 'P' " 
+        			+ " ORDER BY item_guid";
+        	//String ArraySql = "SELECT medical_stock.item_guid, medical_stock.current_amount FROM medical_stock WHERE type = 'P' ORDER BY item_guid";
+/*            String ArraySql="SELECT medicines.code, ( "+
+                        "CASE WHEN (SELECT SUM(quantity) FROM medicine_stock AS B WHERE B.m_code = medicines.code AND reg_guid IS NULL GROUP BY code) "+
                         "IS NULL THEN 0 "+
-                        "ELSE (SELECT SUM(quantity) FROM medicine_stock AS B WHERE B.m_code = medicines.code AND os_guid IS NULL GROUP BY code) "+
+                        "ELSE (SELECT SUM(quantity) FROM medicine_stock AS B WHERE B.m_code = medicines.code AND reg_guid IS NULL GROUP BY code) "+
                         "END "+
                         "- "+
-                        "CASE WHEN (SELECT SUM(quantity) FROM medicine_stock AS B WHERE B.m_code = medicines.code AND os_guid IS NOT NULL GROUP BY code) "+
+                        "CASE WHEN (SELECT SUM(quantity) FROM medicine_stock AS B WHERE B.m_code = medicines.code AND reg_guid IS NOT NULL GROUP BY code) "+
                         "IS NULL THEN 0 "+
-                        "ELSE (SELECT SUM(quantity) FROM medicine_stock AS B WHERE B.m_code = medicines.code AND os_guid IS NOT NULL GROUP BY code) "+
+                        "ELSE (SELECT SUM(quantity) FROM medicine_stock AS B WHERE B.m_code = medicines.code AND reg_guid IS NOT NULL GROUP BY code) "+
                         "END "+
                         ") AS quantity "+
                         "FROM medicines ,medicine_stock " +
                         "WHERE exist = 1 " +
                         "AND effective = 1 " +
                         "GROUP BY medicines.code ";
-            tabArray= DBC.executeQuery(ArraySql);
-            this.tab_MedicineList.setModel(HISModel.getModel(tabArray, true));
+*/            tabArray= DBC.executeQuery(ArraySql);
+            this.tab_MedicineList.setModel(HISModel.getModel(tabArray, false));
             DBC.closeConnection(tabArray);
         }catch(SQLException e) {
             ErrorMessage.setData("MedicineStock", "Frm_MedicineStockInfo" ,"showMedTabList()",
