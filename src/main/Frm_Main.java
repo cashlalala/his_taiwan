@@ -107,7 +107,7 @@ public class Frm_Main extends javax.swing.JFrame {
 
         btn_DepartmentManagement.setText(paragraph.getString("POLINLIC_MANAGEMENT"));
 
-        btn_MedicineStock.setText(paragraph.getString("MEDICINE_STOCK"));
+        btn_MedicineStock.setText(paragraph.getString("PHARMACYSTOCK"));
 
         pan_Case.setBorder(javax.swing.BorderFactory.createTitledBorder(paragraph.getString("CASE_MANAGEMENT")));
 
@@ -170,7 +170,7 @@ public class Frm_Main extends javax.swing.JFrame {
         btn_Sms.setEnabled(UserInfo.getSelectPow("Mobile Health"));
         btn_Case.setEnabled(UserInfo.getSelectPow("Case Management"));
         btn_Cashier.setEnabled(UserInfo.getSelectPow("Cashier"));
-
+        btn_MedicineStock.setEnabled(UserInfo.getSelectPow("Stock"));
     }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
