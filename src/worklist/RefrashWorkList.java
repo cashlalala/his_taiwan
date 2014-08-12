@@ -69,6 +69,9 @@ public class RefrashWorkList extends Thread {
 					+ "patients_info.birth AS '"
 					+ paragraph.getLanguage(line, "COL_BIRTH")
 					+ "', "
+					+ "TIMESTAMPDIFF(year,patients_info.birth, now()) AS '"
+					+ paragraph.getLanguage(line, "COL_AGE")
+					+ "', "
 					+ "patients_info.gender AS '"
 					+ paragraph.getLanguage(line, "COL_GENDER")
 					+ "', "
@@ -165,7 +168,6 @@ public class RefrashWorkList extends Thread {
 			// "AND prescription.code = prescription_code.code  " +
 			// "AND prescription_code.type <> '"+Constant.X_RAY_CODE+"' "+
 			// "AND registration_info.guid = A.guid)  > 0 ORDER BY A.reg_time DESC, A.visits_no ";
-			System.out.println(sql);
 		} else if (SysName.equals("xray")) {
 			sql = "SELECT distinct A.visits_no AS '"
 					+ paragraph.getLanguage(line, "COL_NO")
@@ -277,7 +279,7 @@ public class RefrashWorkList extends Thread {
 				Object[][] array = { { "O", Constant.FINISH_COLOR },
 						{ "F", Constant.FINISH_COLOR } };
 				TabTools.setTabColor(m_Tab, 3, array);
-				TabTools.setHideColumn(this.m_Tab, 10);
+				TabTools.setHideColumn(this.m_Tab, 11);
 			} else if (SysName.equals("case")) {
 				Object[][] array = { { "F", Constant.FINISH_COLOR } };
 				TabTools.setTabColor(m_Tab, 3, array);
@@ -364,7 +366,7 @@ public class RefrashWorkList extends Thread {
 								+ "AND shift_table.shift = '"
 								+ DateMethod.getNowShiftNum() + "' ";
 					}
-
+					System.out.println(check_sql);
 					rs = stmt.executeQuery(check_sql);
 					if (rs.next()
 							&& (rs.getString(1) == null || rs.getString(1)
@@ -375,6 +377,7 @@ public class RefrashWorkList extends Thread {
 					m_LastTouchTime = rs.getString(1);
 					rs.close();
 
+					System.out.println(sql);
 					rs = stmt.executeQuery(sql);
 					if (rs.last()) {
 						int row = 0;
