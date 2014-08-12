@@ -104,7 +104,7 @@ public class Frm_Setting extends javax.swing.JFrame {
 		//Set up the editor for the sport cells.
 		javax.swing.JComboBox comboBox = new javax.swing.JComboBox();
 		comboBox.addItem("Normal");
-		comboBox.addItem("Disableds");
+		comboBox.addItem("Disabled");
 		sportColumn.setCellEditor(new DefaultCellEditor(comboBox));
 	}
 		

@@ -36,7 +36,8 @@ public class Frm_MedicineStockPurchase extends javax.swing.JFrame implements cc.
         showCombo();
         this.date_Choose.setParentFrame(this);
         setAddEnable();
-        this.tab_Purchase.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);  // tabble不可按住多選
+        this.tab_Purchase.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);  // table不可按住多選
+        this.tab_Purchase.setAutoCreateRowSorter(true);
         this.setLocationRelativeTo(this);
         addWindowListener(new WindowAdapter() {  // 畫面關閉原視窗enable
         @Override
@@ -45,31 +46,20 @@ public class Frm_MedicineStockPurchase extends javax.swing.JFrame implements cc.
         }});
         if (!UserInfo.getSelectPow("Stock")) {
             setHidePrice();
-        }
-
-        tab_Purchase.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                paragraph.getLanguage(line, "MEDICINE"), paragraph.getLanguage(line, "DRUGGIST"), paragraph.getLanguage(line, "QUANTITY"), paragraph.getLanguage(line, "DATE"), paragraph.getLanguage(line, "PRICE")
-            }
-        ));
-
-       
+        }       
     }
 
     private void initLanguage() {
-        this.lab_MedicineName.setText(paragraph.getLanguage(line, "MEDICINENAME"));
-        this.lab_Date.setText(paragraph.getLanguage(line, "DATA"));
-        this.lab_Company.setText(paragraph.getLanguage(line, "COMPANY"));
-        this.lab_Quantity.setText(paragraph.getLanguage(line, "QUANTITY"));
-        this.lab_Price.setText(paragraph.getLanguage(line, "PRICE"));
-        this.btn_Delete.setText(paragraph.getLanguage(line, "DELETE"));
-        this.btn_Add.setText(paragraph.getLanguage(line, "ADD"));
-        this.btn_Send.setText(paragraph.getLanguage(line, "SEND"));
-        this.btn_Close.setText(paragraph.getLanguage(message, "CLOSE"));
-        this.setTitle(paragraph.getLanguage(line, "TITLEMEDICINEPURCHASE"));
+    	this.lab_MedicineCode.setText(paragraph.getString("CODE"));
+        this.lab_Date.setText(paragraph.getString("PURCHASEDATE"));
+        this.lab_Company.setText(paragraph.getString("VENDOR"));
+        this.lab_Quantity.setText(paragraph.getString("QUANTITY"));
+        this.lab_Price.setText(paragraph.getString("TOTALCOST"));
+        this.btn_Delete.setText(paragraph.getString("DELETE"));
+        this.btn_Add.setText(paragraph.getString("ADD"));
+        this.btn_Send.setText(paragraph.getString("SEND"));
+        this.btn_Close.setText(paragraph.getString("CLOSE"));
+        this.setTitle(paragraph.getString("TITLEMEDICINEPURCHASE"));
     }
     /**目前庫存頁  藥品的combo選單*/
     private void showCombo(){//
@@ -166,7 +156,7 @@ public class Frm_MedicineStockPurchase extends javax.swing.JFrame implements cc.
         span_Purchase = new javax.swing.JScrollPane();
         tab_Purchase = new javax.swing.JTable();
         pan_PurListRight = new javax.swing.JPanel();
-        lab_MedicineName = new javax.swing.JLabel();
+        lab_MedicineCode = new javax.swing.JLabel();
         lab_Quantity = new javax.swing.JLabel();
         lab_Company = new javax.swing.JLabel();
         lab_Date = new javax.swing.JLabel();
@@ -181,17 +171,21 @@ public class Frm_MedicineStockPurchase extends javax.swing.JFrame implements cc.
         btn_Close = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Medicine Purchase");
-        setAlwaysOnTop(true);
+        //setTitle("Medicine Purchase");
+        //setAlwaysOnTop(true);
 
         tab_Purchase.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
+        		new Object [][] {
 
-            },
-            new String [] {
-                "Medicine", "Druggist", "Quantity", "Date", "Price"
-            }
-        ) {
+                },
+                new String [] {
+                    paragraph.getString("PHARMACY"), 
+                    paragraph.getString("VENDOR"), 
+                    paragraph.getString("QUANTITY"), 
+                    paragraph.getString("DATE"), 
+                    paragraph.getString("TOTALCOST")
+                }
+            ) {
             boolean[] canEdit = new boolean [] {
                 false, false, false, false, false
             };
@@ -213,14 +207,6 @@ public class Frm_MedicineStockPurchase extends javax.swing.JFrame implements cc.
         tab_Purchase.getColumnModel().getColumn(3).setResizable(false);
         tab_Purchase.getColumnModel().getColumn(4).setResizable(false);
 
-        lab_MedicineName.setText("Medicine");
-
-        lab_Quantity.setText("Quantity");
-
-        lab_Company.setText("Company");
-
-        lab_Date.setText("Date");
-
         txt_Quantity.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 txt_QuantityKeyReleased(evt);
@@ -233,14 +219,11 @@ public class Frm_MedicineStockPurchase extends javax.swing.JFrame implements cc.
             }
         });
 
-        btn_Add.setText("Add");
         btn_Add.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_AddActionPerformed(evt);
             }
         });
-
-        lab_Price.setText("Price");
 
         txt_Price.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
@@ -248,7 +231,6 @@ public class Frm_MedicineStockPurchase extends javax.swing.JFrame implements cc.
             }
         });
 
-        btn_Delete.setText("Delete");
         btn_Delete.setEnabled(false);
         btn_Delete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -263,16 +245,29 @@ public class Frm_MedicineStockPurchase extends javax.swing.JFrame implements cc.
             .addGroup(pan_PurListRightLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(pan_PurListRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lab_MedicineName)
+                		.addComponent(lab_MedicineCode)
+                		//.addComponent(lab_MedicineName)
+                		
+                    	.addGroup(pan_PurListRightLayout.createSequentialGroup()
+                            .addGroup(pan_PurListRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(lab_MedicineCode)
+                                //.addComponent(lab_MedicineName)
+                                )
+                            .addGap(18, 18, 18)
+                        )
+                		
                     .addGroup(pan_PurListRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addGroup(pan_PurListRightLayout.createSequentialGroup()
+                        
+                    	.addGroup(pan_PurListRightLayout.createSequentialGroup()
                             .addGroup(pan_PurListRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(lab_Quantity)
                                 .addComponent(lab_Price))
                             .addGap(18, 18, 18)
                             .addGroup(pan_PurListRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(txt_Price, javax.swing.GroupLayout.DEFAULT_SIZE, 174, Short.MAX_VALUE)
-                                .addComponent(txt_Quantity)))
+                                .addComponent(txt_Quantity))
+                        )
+                                
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pan_PurListRightLayout.createSequentialGroup()
                             .addComponent(btn_Delete, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -289,10 +284,14 @@ public class Frm_MedicineStockPurchase extends javax.swing.JFrame implements cc.
         );
         pan_PurListRightLayout.setVerticalGroup(
             pan_PurListRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pan_PurListRightLayout.createSequentialGroup()
+            	.addGroup(pan_PurListRightLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(lab_MedicineName)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
+                .addGroup(pan_PurListRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addComponent(lab_MedicineCode)
+                )
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                //.addComponent(lab_MedicineName)
+                //.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
                 .addGroup(pan_PurListRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(lab_Date)
                     .addComponent(date_Choose, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -365,7 +364,7 @@ public class Frm_MedicineStockPurchase extends javax.swing.JFrame implements cc.
 
     private void btn_AddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_AddActionPerformed
 
-        ((DefaultTableModel)this.tab_Purchase.getModel()).addRow(new Object[] {
+    	 ((DefaultTableModel)this.tab_Purchase.getModel()).addRow(new Object[] {
             m_Cobww.getSelectedItem(),txt_Company.getText(),txt_Quantity.getText(),date_Choose.getValue(),txt_Price.getText()}) ;
         tab_Purchase.setRowSelectionInterval(tab_Purchase.getRowCount()-1, tab_Purchase.getRowCount()-1);
         tab_Purchase.changeSelection(tab_Purchase.getSelectedRow(), 0, false, false);
@@ -386,18 +385,53 @@ public class Frm_MedicineStockPurchase extends javax.swing.JFrame implements cc.
 }//GEN-LAST:event_btn_CloseActionPerformed
 
     private void btn_SendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_SendActionPerformed
-        String sql = null;
+        //String sql = null;
         if(this.tab_Purchase.getRowCount() != 0){
            try {
                 for(int i = 0; i < tab_Purchase.getRowCount(); i++){
-
+                	
+                	String code = tab_Purchase.getValueAt(i, 0).toString();
+                	float purchasedAmount = Float.parseFloat(tab_Purchase.getValueAt(i, 2).toString());
+                	String vendor = tab_Purchase.getValueAt(i, 1).toString();
+                	String date = tab_Purchase.getValueAt(i, 3).toString();
+                	float cost = Float.parseFloat(tab_Purchase.getValueAt(i, 4).toString()) / purchasedAmount; 
+                	
+                	String sql;
+                	String sqlChangeRecord;
+                	
+                	ResultSet rsStockSQL= null;
+                    //try{
+                	String stockSQL = "SELECT * FROM medical_stock where type = 'P' AND item_guid = '" + code + "'";
+                	rsStockSQL= DBC.executeQuery(stockSQL);
+                    if(rsStockSQL.next()) {
+                    	String guid = rsStockSQL.getString("guid");
+                    	float currentAmount = rsStockSQL.getFloat("current_amount");
+	                    float newCurrentAmount = currentAmount + purchasedAmount;
+	                    sql = "UPDATE medical_stock SET `current_amount`='" + newCurrentAmount + "' WHERE guid = '" + guid + "'";
+                    } else {
+                    	sql = "INSERT INTO medical_stock (`guid`, `type`, `item_guid`, `current_amount`) VALUES (uuid(), 'P', '" + code + "', '" + purchasedAmount + "');";
+                    }
+                    
+                    sqlChangeRecord = "INSERT INTO medical_stock_change_record (`guid`, `action`, `item_guid`, `type`, "
+                    		+ "`diff_amount`, `s_no`, `purchase_date`, `unit_cost`, `vendor`) "
+                    		+ " VALUES (uuid(), 'P', '" + code + "', 'P', '" + purchasedAmount + "', '" + UserInfo.getUserNO() + "', '" + date + "', '" + cost + "', '" + vendor + "');";
+                    try {DBC.closeConnection(rsStockSQL);}
+                    catch (SQLException e){
+                        ErrorMessage.setData("MedicineStock", "Frm_MedicineStockPurchase" ,"btn_SendActionPerformed() - DBC.closeConnection",
+                        		e.toString().substring(e.toString().lastIndexOf(".")+1, e.toString().length()));
+                    }
+                    
+                    DBC.executeUpdate(sql);
+                    DBC.executeUpdate(sqlChangeRecord);
+                    
+                	/*
                     if (txt_Price.isVisible()) {
                         sql = "INSERT INTO medicine_stock VALUES " +
                             "(uuid(), null,'" +
                             tab_Purchase.getValueAt(i, 0) +"' ,'" +
                             tab_Purchase.getValueAt(i, 3)+"', '" +
                             tab_Purchase.getValueAt(i, 1)+"', " +
-                            tab_Purchase.getValueAt(i, 4)+
+                            tab_Purchase.getValueAt(i, 4)+ 
                             " , null, null, null, null,'" +
                             tab_Purchase.getValueAt(i, 2) +
                             "',null,null,null,1)";
@@ -413,13 +447,15 @@ public class Frm_MedicineStockPurchase extends javax.swing.JFrame implements cc.
                             "',null,null,null,1)";
                     }
                     DBC.executeUpdate(sql);
+                    */
                 }
                
-                JOptionPane.showMessageDialog(null, paragraph.getLanguage(message,"SAVECOMPLETE"));
+                JOptionPane.showMessageDialog(null, paragraph.getString("SAVECOMPLETE"));
                 btn_CloseActionPerformed(null);
             } catch (SQLException e) {
                 ErrorMessage.setData("MedicineStock", "Frm_MedicineStockPurchase" ,"btn_SendActionPerformed()",
                 e.toString().substring(e.toString().lastIndexOf(".")+1, e.toString().length()));
+                e.printStackTrace();
             }
         }
     }//GEN-LAST:event_btn_SendActionPerformed
@@ -455,7 +491,7 @@ public class Frm_MedicineStockPurchase extends javax.swing.JFrame implements cc.
     private cc.johnwu.date.DateChooser date_Choose;
     private javax.swing.JLabel lab_Company;
     private javax.swing.JLabel lab_Date;
-    private javax.swing.JLabel lab_MedicineName;
+    private javax.swing.JLabel lab_MedicineCode;
     private javax.swing.JLabel lab_Price;
     private javax.swing.JLabel lab_Quantity;
     private javax.swing.JPanel pan_PurListRight;
@@ -467,6 +503,6 @@ public class Frm_MedicineStockPurchase extends javax.swing.JFrame implements cc.
     // End of variables declaration//GEN-END:variables
 
     public void onDateChanged() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        //throw new UnsupportedOperationException("Not supported yet.");
     }
 }
