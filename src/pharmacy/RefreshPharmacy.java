@@ -17,7 +17,7 @@ import errormessage.StoredErrorMessage;
 import multilingual.Language;
 
 
-public class RefrashPharmacy extends Thread{
+public class RefreshPharmacy extends Thread{
     private javax.swing.JTable tab;
     private long time;
     private javax.swing.JCheckBox checkBox;
@@ -64,7 +64,9 @@ public class RefrashPharmacy extends Thread{
                 "AND shift_table.shift = '"+DateMethod.getNowShiftNum()+"' "+
                 "AND registration_info.finish IS NOT NULL ";
 
-    protected RefrashPharmacy(javax.swing.JTable tab,long time,Frm_Pharmacy frm, javax.swing.JCheckBox checkBox){
+
+    
+    protected RefreshPharmacy(javax.swing.JTable tab,long time,Frm_Pharmacy frm, javax.swing.JCheckBox checkBox){
 
         this.tab = tab;
         this.time = time;
@@ -91,21 +93,23 @@ public class RefrashPharmacy extends Thread{
         }catch (SQLException e) {
             ErrorMessage.setData("Pharmacy", "RefrashPharmacy" ,"RefrashPharmacy(javax.swing.JTable tab,long time,Frm_Pharmacy frm, javax.swing.JCheckBox checkBox)",
                 e.toString().substring(e.toString().lastIndexOf(".")+1, e.toString().length()));
-            Logger.getLogger(RefrashPharmacy.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(RefreshPharmacy.class.getName()).log(Level.SEVERE, null, e);
         }finally{ try{ DBC.closeConnection(rs); }catch(SQLException e){
             ErrorMessage.setData("Pharmacy", "RefrashPharmacy" ,"RefrashPharmacy(javax.swing.JTable tab,long time,Frm_Pharmacy frm, javax.swing.JCheckBox checkBox) - DBC.closeConnection",
                 e.toString().substring(e.toString().lastIndexOf(".")+1, e.toString().length()));
         } }
     }
 
-
+    private boolean isRunning = true;
+    public void stopRunning() {
+    	this.isRunning = false;
+    }    
 
 
     @Override
-
     public void run(){
         try{
-            while(true){
+            while(isRunning){
             ResultSet rsCheck = null;
             try {
                 rsCheck = DBC.executeQuery(touchTimeSql);
@@ -116,7 +120,7 @@ public class RefrashPharmacy extends Thread{
                     if(rsCheck.getString("medicine_touchtime") == null && tab.getRowCount() != 0){
                         ((DefaultTableModel)tab.getModel()).setRowCount(0);
                     }
-                    RefrashPharmacy.sleep(time);
+                    RefreshPharmacy.sleep(time);
                     DBC.closeConnection(rsCheck);
                     continue;
                 }
@@ -156,7 +160,7 @@ public class RefrashPharmacy extends Thread{
             }catch (SQLException e) {
                 ErrorMessage.setData("Pharmacy", "RefrashPharmacy" ,"run()",
                     e.toString().substring(e.toString().lastIndexOf(".")+1, e.toString().length()));
-                Logger.getLogger(RefrashPharmacy.class.getName()).log(Level.SEVERE, null, e);
+                Logger.getLogger(RefreshPharmacy.class.getName()).log(Level.SEVERE, null, e);
             }finally{
                 try{ DBC.closeConnection(rs);
                      DBC.closeConnection(rsTouchTime);
@@ -170,6 +174,12 @@ public class RefrashPharmacy extends Thread{
         }catch(InterruptedException e) {
             ErrorMessage.setData("Pharmacy", "RefrashPharmacy" ,"run() - InterruptedException",
                 e.toString().substring(e.toString().lastIndexOf(".")+1, e.toString().length()));
+        }finally {
+        	try {
+        		DBC.closeConnection(rs);
+        	} catch (SQLException e) {
+        		e.printStackTrace();
+        	}
         }
     }
 

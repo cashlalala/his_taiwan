@@ -32,13 +32,11 @@ import multilingual.Language;
 
 public class Frm_Pharmacy extends javax.swing.JFrame {
  
-    private long REFRASHTIME = 1000; //自度刷新跨號資訊時間
-    private RefrashPharmacy m_RefrashWorkList;
+    private long RefreshTIME = 1000; //自度刷新跨號資訊時間
+    private RefreshPharmacy m_RefreshWorkList;
     private Thread m_Clock;
     /*多國語言變數*/
     private Language paragraph = Language.getInstance();
-    private String[] line = paragraph.setlanguage("PHARMACY").split("\n") ;
-    private String[] message = paragraph.setlanguage("MESSAGE").split("\n") ;
     /*輸出錯誤資訊變數*/
     StoredErrorMessage ErrorMessage = new StoredErrorMessage() ;
    
@@ -68,8 +66,8 @@ public class Frm_Pharmacy extends javax.swing.JFrame {
             }
         });
         txt_UserName.setText(UserInfo.getUserName());
-        this.m_RefrashWorkList = new RefrashPharmacy(this.tab_Pharmacy, REFRASHTIME, this, this.check_Follow);
-        this.m_RefrashWorkList.start();
+        this.m_RefreshWorkList = new RefreshPharmacy(this.tab_Pharmacy, RefreshTIME, this, this.check_Follow);
+        this.m_RefreshWorkList.start();
         this.m_Clock = new Thread(){ // Clock
             @Override
             @SuppressWarnings("static-access")
@@ -86,19 +84,18 @@ public class Frm_Pharmacy extends javax.swing.JFrame {
     }
 
     private void initLanguage() {
-        this.lab_UserName.setText(paragraph.getLanguage(line, "USERNAME"));
-        this.check_Follow.setText(paragraph.getLanguage(line, "FOLLOW"));
-        this.lab_Finish.setText(paragraph.getLanguage(line, "FINISH"));
-
-        //this.btn_Search.setText(paragraph.getLanguage(line, "SEARCH"));
-        this.btn_Check.setText(paragraph.getLanguage(message, "CHECK"));
-        this.btn_Close.setText(paragraph.getLanguage(message, "CLOSE"));
-        this.btn_Reprint.setText(paragraph.getLanguage(line, "REPRINT"));
-        mn_Fiele.setText(paragraph.getLanguage(message, "FILE"));
-        mnit_Enter.setText(paragraph.getLanguage(message, "CHECK"));
-        mnit_Close.setText(paragraph.getLanguage(message, "CLOSE"));
-        this.setTitle(paragraph.getLanguage(line, "TITLEPHARMACY"));
+        this.lab_UserName.setText(paragraph.getString( "USERNAME"));
+        this.check_Follow.setText(paragraph.getString("FOLLOW"));
+        this.lab_Finish.setText(paragraph.getString("FINISH"));
+        this.btn_Check.setText(paragraph.getString("CHECK"));
+        this.btn_Close.setText(paragraph.getString("CLOSE"));
+        this.btn_Reprint.setText(paragraph.getString("REPRINT"));
+        mn_Field.setText(paragraph.getString("FILE"));
+        mnit_Enter.setText(paragraph.getString("CHECK"));
+        mnit_Close.setText(paragraph.getString("CLOSE"));
+        this.setTitle(paragraph.getString("TITLEPHARMACY"));
     }
+    
     public void setNowRowCount(String rowCount){
         lab_FinishCount.setText(rowCount);
     }
@@ -125,7 +122,7 @@ public class Frm_Pharmacy extends javax.swing.JFrame {
         check_Follow = new javax.swing.JCheckBox();
         lab_SystemTime = new javax.swing.JLabel();
         mnb = new javax.swing.JMenuBar();
-        mn_Fiele = new javax.swing.JMenu();
+        mn_Field = new javax.swing.JMenu();
         mnit_Enter = new javax.swing.JMenuItem();
         mnit_Close = new javax.swing.JMenuItem();
 
@@ -231,10 +228,10 @@ public class Frm_Pharmacy extends javax.swing.JFrame {
         lab_SystemTime.setFont(new java.awt.Font("UnDotum", 0, 18));
         lab_SystemTime.setText("-----");
 
-        mn_Fiele.setText("File");
-        mn_Fiele.addActionListener(new java.awt.event.ActionListener() {
+        mn_Field.setText("File");
+        mn_Field.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                mn_FieleActionPerformed(evt);
+                mn_FieldActionPerformed(evt);
             }
         });
 
@@ -245,7 +242,7 @@ public class Frm_Pharmacy extends javax.swing.JFrame {
                 mnit_EnterActionPerformed(evt);
             }
         });
-        mn_Fiele.add(mnit_Enter);
+        mn_Field.add(mnit_Enter);
 
         mnit_Close.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_ESCAPE, 0));
         mnit_Close.setText("Close");
@@ -254,9 +251,9 @@ public class Frm_Pharmacy extends javax.swing.JFrame {
                 mnit_CloseActionPerformed(evt);
             }
         });
-        mn_Fiele.add(mnit_Close);
+        mn_Field.add(mnit_Close);
 
-        mnb.add(mn_Fiele);
+        mnb.add(mn_Field);
 
         setJMenuBar(mnb);
 
@@ -296,7 +293,8 @@ public class Frm_Pharmacy extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_CloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_CloseActionPerformed
-        m_RefrashWorkList.interrupt();  // 終止重複讀取掛號表單
+        //m_RefreshWorkList.interrupt();
+        m_RefreshWorkList.stopRunning();
         new Frm_Main().setVisible(true);
         this.dispose();
 }//GEN-LAST:event_btn_CloseActionPerformed
@@ -360,9 +358,9 @@ public class Frm_Pharmacy extends javax.swing.JFrame {
          }
     }//GEN-LAST:event_btn_ReprintActionPerformed
 
-    private void mn_FieleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mn_FieleActionPerformed
+    private void mn_FieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mn_FieldActionPerformed
         
-    }//GEN-LAST:event_mn_FieleActionPerformed
+    }//GEN-LAST:event_mn_FieldActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_Check;
@@ -373,7 +371,7 @@ public class Frm_Pharmacy extends javax.swing.JFrame {
     private javax.swing.JLabel lab_FinishCount;
     private javax.swing.JLabel lab_SystemTime;
     private javax.swing.JLabel lab_UserName;
-    private javax.swing.JMenu mn_Fiele;
+    private javax.swing.JMenu mn_Field;
     private javax.swing.JMenuBar mnb;
     private javax.swing.JMenuItem mnit_Close;
     private javax.swing.JMenuItem mnit_Enter;
@@ -487,7 +485,7 @@ public class Frm_Pharmacy extends javax.swing.JFrame {
             } catch (SQLException e) {
                 ErrorMessage.setData("Pharmacy", "Frm_Pharmacy" ,"print(Graphics g, PageFormat pf, int pageIndex)",
                     e.toString().substring(e.toString().lastIndexOf(".")+1, e.toString().length()));
-                Logger.getLogger(RefrashPharmacy.class.getName()).log(Level.SEVERE, null, e);
+                Logger.getLogger(RefreshPharmacy.class.getName()).log(Level.SEVERE, null, e);
             } finally {
                 try {DBC.closeConnection(rsMedicines);
                      DBC.closeConnection(rsReceiveMedicineNo);
