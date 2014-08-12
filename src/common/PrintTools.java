@@ -551,6 +551,7 @@ public class PrintTools {
 							+ "WHERE registration_info.guid = '"
 							+ m_RegGuid
 							+ "' "
+							+ "AND registration_info.guid = medicine_stock.reg_guid "
 							+ "AND medicines.code = medicine_stock.m_code";
 
 					m_RsData = DBC.executeQuery(sqlData);
@@ -603,6 +604,7 @@ public class PrintTools {
 							+ "WHERE registration_info.guid = '"
 							+ m_RegGuid
 							+ "' "
+							+ "AND registration_info.guid = medicine_stock.reg_guid "
 							+ "AND medicines.code = medicine_stock.m_code";
 
 					m_RsData = DBC.executeQuery(sqlMedicines);
