@@ -65,9 +65,8 @@ public class RefreshPharmacy extends Thread {
 			+ "AND shift_table.shift_date = '" + DateMethod.getTodayYMD()
 			+ "' " + "AND shift_table.shift = '" + DateMethod.getNowShiftNum()
 			+ "' " + "AND registration_info.finish = 'F' "
-			+ "AND registration_info.guid = outpatient_services.reg_guid " +
-			// "AND medicine_stock.os_guid = outpatient_services.guid "+
-			"GROUP BY registration_info.guid " + "ORDER BY 'No.' ";
+			+ "AND medicine_stock.reg_guid =  registration_info.guid "
+			+"GROUP BY registration_info.guid " + "ORDER BY 'No.' ";
 	private String touchTimeSql = // 最新更新時間
 	"SELECT MAX(registration_info.medicine_touchtime) AS medicine_touchtime "
 			+ "FROM registration_info, shift_table, outpatient_services, medicine_stock "
