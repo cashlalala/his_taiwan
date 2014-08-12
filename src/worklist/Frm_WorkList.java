@@ -223,7 +223,6 @@ public class Frm_WorkList extends javax.swing.JFrame {
 		this.dispose();
 	}
 
-	
 	// <editor-fold defaultstate="collapsed"
 	// desc="Generated Code">//GEN-BEGIN:initComponents
 	private void initComponents() {
@@ -803,12 +802,11 @@ public class Frm_WorkList extends javax.swing.JFrame {
 			String sqlMedicines = "SELECT medicines.code, medicines.item, medicine_stock.dosage, medicines.unit, medicine_stock.usage, "
 					+ "medicine_stock.way, medicine_stock.repeat_number, medicine_stock.quantity, medicine_stock.urgent, "
 					+ "medicine_stock.powder, medicine_stock.ps "
-					+ "FROM medicines, medicine_stock, outpatient_services, registration_info "
+					+ "FROM medicines, medicine_stock, registration_info "
 					+ "WHERE registration_info.guid = '"
 					+ regGuid
 					+ "' "
-					+ "AND medicine_stock.os_guid = outpatient_services.guid "
-					+ "AND outpatient_services.reg_guid = registration_info.guid "
+					+ "AND medicine_stock.reg_guid = registration_info.guid "
 					+ "AND medicines.code = medicine_stock.m_code";
 
 			String sqlPatient = "SELECT registration_info.touchtime, patients_info.p_no, registration_info.pharmacy_no, "
@@ -867,8 +865,9 @@ public class Frm_WorkList extends javax.swing.JFrame {
 				i += 20;
 				g2.drawString(
 						"Age: "
-								+ DateMethod.getAgeWithMonth(rsPatient
-										.getDate("birth")), 80, i);
+								+ ((rsPatient.getDate("birth") == null) ? ""
+										: DateMethod.getAgeWithMonth(rsPatient
+												.getDate("birth"))), 80, i);
 				g2.drawString("Receive Medicine Number: " + finishNo, 220, i);
 				i += 15;
 				g2.drawString(
@@ -904,7 +903,7 @@ public class Frm_WorkList extends javax.swing.JFrame {
 					i += 15;
 					g2.drawString(rsMedicines.getString("dosage"), 90, i); // +" "+
 																			// rsMedicines.getString("unit")
-					g2.drawString(rsMedicines.getString("day") + " Day", 125, i);
+					g2.drawString(rsMedicines.getString("repeat_number") + " Day", 125, i);
 					g2.drawString(urgent, 190, i);
 					g2.drawString(powder, 245, i);
 					g2.drawString(
@@ -913,6 +912,7 @@ public class Frm_WorkList extends javax.swing.JFrame {
 					// ********************************************************//
 				}
 			} catch (SQLException e) {
+				e.printStackTrace();
 				ErrorMessage
 						.setData(
 								"Diagnosis",
@@ -927,6 +927,7 @@ public class Frm_WorkList extends javax.swing.JFrame {
 					DBC.closeConnection(rsReceiveMedicineNo);
 					DBC.closeConnection(rsPatient);
 				} catch (SQLException e) {
+					e.printStackTrace();
 					ErrorMessage
 							.setData(
 									"Diagnosis",
