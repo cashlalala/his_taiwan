@@ -164,7 +164,53 @@ public class PrintTools {
 		}
 	}
 
-	class MyPrintable implements Printable {
+	public void DoPrintWithDialog(int i, String guid) {
+		m_RegGuid = guid;
+		m_Type = i;
+		// 病患資料
+		String sqlPatient = "SELECT  patients_info.p_no, "
+				+ "registration_info.pharmacy_no, registration_info.modify_count,concat(patients_info.firstname,'  ',patients_info.lastname) AS name, "
+				+ "patients_info.gender, patients_info.birth , shift_table.shift_date AS date, policlinic.name AS dept, poli_room.name AS clinic, "
+				+ "concat(staff_info.firstname,'  ',staff_info.lastname) AS doctor, "
+				+ "(YEAR(CURDATE())-YEAR(patients_info.birth))-(RIGHT(CURDATE(),5)< RIGHT(patients_info.birth,5)) AS age, "
+				+ "CASE shift_table.shift  "
+				+ "WHEN '1' THEN 'Morning'  "
+				+ "WHEN '2' THEN 'Afternoon'  "
+				+ "WHEN '3' THEN 'Night'  "
+				+ "ELSE 'All Night' "
+				+ "END shift "
+				+ "FROM registration_info, patients_info, shift_table,poli_room,policlinic, staff_info WHERE registration_info.guid = '"
+				+ m_RegGuid + "'  "
+				+ "AND registration_info.p_no = patients_info.p_no "
+				+ "AND registration_info.shift_guid = shift_table.guid "
+				+ "AND shift_table.room_guid = poli_room.guid "
+				+ "AND poli_room.poli_guid = policlinic.guid "
+				+ "AND shift_table.s_id = staff_info.s_id";
+		try {
+			m_Rs = DBC.executeQuery(sqlPatient);
+			m_Rs.next();
+		} catch (SQLException ex) {
+			Logger.getLogger(PrintTools.class.getName()).log(Level.SEVERE,
+					null, ex);
+		}
+
+		PrinterJob pj = PrinterJob.getPrinterJob();
+
+		PageFormat pf = pj.defaultPage();
+		Paper paper = new Paper();
+		pf.setPaper(paper);
+		pj.setPrintable(new MyPrintable(), pf);
+
+		if (pj.printDialog()) {
+			try {
+				pj.print();
+			} catch (PrinterException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public class MyPrintable implements Printable {
 
 		public int print(Graphics g, PageFormat pf, int pageIndex) {
 			try {
@@ -683,11 +729,10 @@ public class PrintTools {
 					space = 50; // 間距
 
 					String sqlDia = "SELECT diagnosis_code.icd_code, diagnosis_code.name "
-							+ "FROM  diagnosis_code, diagnostic, outpatient_services, registration_info "
+							+ "FROM  diagnosis_code, diagnostic, registration_info "
 							+ "WHERE registration_info.guid = '"
 							+ m_RegGuid
 							+ "' "
-							+ "AND outpatient_services.reg_guid = registration_info.guid "
 							+ "AND diagnosis_code.dia_code = diagnostic.dia_code";
 					rs = DBC.executeQuery(sqlDia);
 					if (rs.next()) {
@@ -711,13 +756,12 @@ public class PrintTools {
 					}
 
 					sql = "SELECT prescription_code.code AS code, prescription_code.name AS name, prescription.place, prescription_code.type "
-							+ "FROM prescription, prescription_code, outpatient_services, registration_info "
+							+ "FROM prescription, prescription_code, registration_info "
 							+ "WHERE registration_info.guid = '"
 							+ m_RegGuid
 							+ "' "
-							+ "AND prescription.os_guid = outpatient_services.guid "
+							+ "AND prescription.reg_guid = registration_info.guid "
 							+ "AND prescription_code.code = prescription.code "
-							+ "AND outpatient_services.reg_guid = registration_info.guid "
 							+ "AND prescription_code.type <> '"
 							+ X_RAY_CODE
 							+ "'";
@@ -747,13 +791,12 @@ public class PrintTools {
 					}
 
 					sql = "SELECT prescription_code.code AS code, prescription_code.name AS name, prescription.place, prescription_code.type "
-							+ "FROM prescription, prescription_code, outpatient_services, registration_info "
+							+ "FROM prescription, prescription_code, registration_info "
 							+ "WHERE registration_info.guid = '"
 							+ m_RegGuid
 							+ "' "
-							+ "AND prescription.os_guid = outpatient_services.guid "
+							+ "AND prescription.reg_guid = registration_info.guid "
 							+ "AND prescription_code.code = prescription.code "
-							+ "AND outpatient_services.reg_guid = registration_info.guid "
 							+ "AND prescription_code.type = '"
 							+ X_RAY_CODE
 							+ "' ";
@@ -785,11 +828,10 @@ public class PrintTools {
 					sql = "SELECT medicines.code, medicines.item, medicine_stock.dosage, medicines.unit, medicines.injection,medicine_stock.usage, "
 							+ "medicine_stock.way, medicine_stock.repeat_number, medicine_stock.quantity, medicine_stock.urgent, "
 							+ "medicine_stock.powder, medicine_stock.ps "
-							+ "FROM medicines, medicine_stock, outpatient_services, registration_info "
+							+ "FROM medicines, medicine_stock, registration_info "
 							+ "WHERE registration_info.guid = '"
 							+ m_RegGuid
 							+ "' "
-							+ "AND outpatient_services.reg_guid = registration_info.guid "
 							+ "AND medicines.code = medicine_stock.m_code";
 					rs = DBC.executeQuery(sql);
 					if (rs.next()) {
