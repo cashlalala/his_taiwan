@@ -733,6 +733,7 @@ public class PrintTools {
 							+ "WHERE registration_info.guid = '"
 							+ m_RegGuid
 							+ "' "
+							+ "AND diagnostic.reg_guid = registration_info.guid "
 							+ "AND diagnosis_code.dia_code = diagnostic.dia_code";
 					rs = DBC.executeQuery(sqlDia);
 					if (rs.next()) {
@@ -905,16 +906,15 @@ public class PrintTools {
 					if (sys.equals("Pharmacy")) {
 						sql = "SELECT medicines.item AS 'Item', "
 								+ "medicine_stock.price AS 'Cost' "
-								+ "FROM medicines, medicine_stock, outpatient_services, registration_info "
+								+ "FROM medicines, medicine_stock, registration_info "
 								+ "WHERE registration_info.guid = '"
 								+ m_RegGuid
 								+ "' "
-								+ "AND outpatient_services.reg_guid = registration_info.guid "
 								+ "AND medicines.code = medicine_stock.m_code";
 					} else if (sys.equals("Laboratory")) {
 						sql = "SELECT concat(prescription.code,'  ',prescription_code.name) AS Item, "
 								+ "prescription.cost AS 'Cost' "
-								+ "FROM prescription LEFT JOIN outpatient_services ON prescription.os_guid = outpatient_services.guid, registration_info, "
+								+ "FROM prescription , registration_info, "
 								+ "prescription_code, shift_table, policlinic,poli_room,staff_info "
 								+ "WHERE registration_info.guid = '"
 								+ m_RegGuid
@@ -923,8 +923,7 @@ public class PrintTools {
 								+ "AND shift_table.room_guid = poli_room.guid "
 								+ "AND poli_room.poli_guid = policlinic.guid "
 								+ "AND staff_info.s_id = shift_table.s_id "
-								+ "AND  (outpatient_services.reg_guid = registration_info.guid "
-								+ "OR prescription.case_guid = registration_info.guid) "
+								+ "AND  prescription.reg_guid = registration_info.guid "
 								+ "AND prescription_code.code = prescription.code "
 								+ "AND prescription_code.type <> '"
 								+ Constant.X_RAY_CODE + "' ";
@@ -936,7 +935,7 @@ public class PrintTools {
 					} else if (sys.equals("Radiology(X-RAY)")) {
 						sql = "SELECT concat(prescription.code,'  ',prescription_code.name) AS Item, "
 								+ "prescription.cost AS 'Cost' "
-								+ "FROM prescription, outpatient_services, registration_info, "
+								+ "FROM prescription, registration_info, "
 								+ "prescription_code, shift_table, policlinic,poli_room,staff_info "
 								+ "WHERE registration_info.guid = '"
 								+ m_RegGuid
@@ -945,9 +944,8 @@ public class PrintTools {
 								+ "AND shift_table.room_guid = poli_room.guid "
 								+ "AND poli_room.poli_guid = policlinic.guid "
 								+ "AND staff_info.s_id = shift_table.s_id "
-								+ "AND prescription.os_guid = outpatient_services.guid "
+								+ "AND prescription.reg_guid = registration_info.guid "
 								+ "AND prescription_code.code = prescription.code "
-								+ "AND outpatient_services.reg_guid = registration_info.guid "
 								+ "AND prescription_code.type = '"
 								+ Constant.X_RAY_CODE + "' ";
 					}
@@ -1043,7 +1041,7 @@ public class PrintTools {
 				case 12:
 					// 6.檢驗單(給病患)
 					sql = "SELECT prescription_code.code AS code, prescription_code.name AS name, prescription.place, prescription_code.type "
-							+ "FROM prescription, prescription_code, outpatient_services, registration_info "
+							+ "FROM prescription, prescription_code, registration_info "
 							+ "WHERE registration_info.guid = '"
 							+ m_RegGuid
 							+ "' "
@@ -1051,7 +1049,6 @@ public class PrintTools {
 							+ m_RegGuid
 							+ "'"
 							+ "AND prescription_code.code = prescription.code "
-							+ "AND outpatient_services.reg_guid = registration_info.guid "
 							+ "AND prescription_code.type <> '"
 							+ Constant.X_RAY_CODE + "'";
 
