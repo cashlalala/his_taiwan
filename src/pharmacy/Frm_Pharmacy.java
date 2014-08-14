@@ -84,7 +84,7 @@ public class Frm_Pharmacy extends javax.swing.JFrame {
     }
 
     private void initLanguage() {
-        this.lab_UserName.setText(paragraph.getString( "USERNAME"));
+        this.lab_UserName.setText(paragraph.getString("USERNAME"));
         this.check_Follow.setText(paragraph.getString("FOLLOW"));
         this.lab_Finish.setText(paragraph.getString("FINISH"));
         this.btn_Check.setText(paragraph.getString("CHECK"));
