@@ -100,6 +100,60 @@ public class RefrashWorkList extends Thread {
 					+ "AND A.p_no = patients_info.p_no "
 					+ "ORDER BY A.finish, A.visits_no";
 		} else if (SysName.equals("lab")) {
+			sql = "SELECT "
+				    + " NEWTABLE.visits_no AS 'NO.',"
+				    + " NEWTABLE.visits_no AS 'Register',"
+				    + " '',"
+				    + " NULL,"
+				    + " NEWTABLE.reg_time AS 'Reg time',"
+				    + " NEWTABLE.p_no AS 'Patient No.',"
+				    + " NEWTABLE.Name AS 'Name',"
+				    + " NEWTABLE.birth AS 'Birthday',"
+				    + " NEWTABLE.gender AS 'Gender',"
+				    + " NEWTABLE.Blood,"
+				    + " NEWTABLE.ps AS 'P.S.',"
+				    + " NEWTABLE.regguid AS guid,"
+				    + " pre_status.status AS status"
+				    + " FROM"
+				    + " (SELECT distinct"
+				    + " A.visits_no,"
+				    + " A.reg_time,"
+				    + " A.p_no,"
+				    + " concat(patients_info.firstname, '  ', patients_info.lastname) AS 'Name',"
+				    + " patients_info.birth,"
+				    + " patients_info.gender,"
+				    + " concat(patients_info.bloodtype, patients_info.rh_type) AS 'Blood',"
+				    + " patients_info.ps,"
+				    + " A.guid AS regguid"
+				    + " FROM"
+				    + " registration_info AS A, patients_info, shift_table, staff_info, prescription"
+				    + " LEFT JOIN prescription_code ON prescription.code = prescription_code.code"
+				    + " WHERE"
+				    + " A.shift_guid = shift_table.guid"
+				    + " AND shift_table.s_id = staff_info.s_id"
+				    + " AND A.p_no = patients_info.p_no"
+				    + " AND prescription.code = prescription_code.code"
+				    + " AND prescription.reg_guid = A.guid"
+				    + " AND (SELECT" 
+				    + " COUNT(prescription.code)"
+				    + " FROM"
+				    + " prescription, registration_info, prescription_code"
+				    + " WHERE"
+				    + " (prescription.finish <> 'F'"
+				    + " OR prescription.finish IS NULL)"
+				    + " AND prescription.reg_guid = registration_info.guid"
+				    + " AND prescription.code = prescription_code.code"
+				    + " AND prescription_code.type <> 'X-RAY'"
+				    + " AND registration_info.guid = A.guid) > 0) AS NEWTABLE"
+				    + " LEFT JOIN"
+				    + " (SELECT distinct"
+				    + " reg_guid, '1' AS status"
+				    + " FROM"
+				    + " prescription"
+				    + " WHERE"
+				    + " prescription.specimen_status = '1') AS pre_status ON (pre_status.reg_guid = NEWTABLE.regguid)"
+				    + " ORDER BY pre_status.status , NEWTABLE.reg_time DESC , NEWTABLE.visits_no";
+			/*
 			sql = "SELECT NEWTABLE.visits_no AS 'NO.', "
 					+ "NEWTABLE.register AS 'Register' ,  "
 					+ "'',"
@@ -136,7 +190,7 @@ public class RefrashWorkList extends Thread {
 					+ "WHERE prescription.specimen_status = '1') AS pre_status ON (pre_status.os_guid = NEWTABLE.osguid  "
 					+ "OR pre_status.case_guid =  NEWTABLE.regguid)  "
 					+ "ORDER BY pre_status.status ,NEWTABLE.reg_time DESC, NEWTABLE.visits_no ";
-
+*/
 			// sql =
 			// "SELECT distinct A.visits_no AS 'NO.', A.register AS 'Register', '', NULL, A.reg_time AS 'Reg time', A.p_no AS 'Patient No.', "
 			// +
@@ -172,7 +226,7 @@ public class RefrashWorkList extends Thread {
 			sql = "SELECT distinct A.visits_no AS '"
 					+ paragraph.getLanguage(line, "COL_NO")
 					+ "', "
-					+ "A.register AS '"
+					+ "A.visits_no AS '"
 					+ paragraph.getLanguage(line, "COL_REGISTER")
 					+ "', "
 					+ "'', "
@@ -199,22 +253,20 @@ public class RefrashWorkList extends Thread {
 					+ paragraph.getLanguage(line, "COL_PS")
 					+ "', "
 					+ "A.guid "
-					+ "FROM registration_info AS A, patients_info, shift_table,staff_info, prescription, outpatient_services, prescription_code "
+					+ "FROM registration_info AS A, patients_info, shift_table,staff_info, prescription, prescription_code "
 					+ "WHERE A.shift_guid = shift_table.guid "
 					+ "AND shift_table.s_id = staff_info.s_id "
 					+ "AND A.p_no = patients_info.p_no "
 					+ "AND prescription.code = prescription_code.code "
-					+ "AND prescription.os_guid = outpatient_services.guid "
-					+ "AND outpatient_services.reg_guid = A.guid "
+					+ "AND prescription.reg_guid = A.guid "
 					+ "AND (SELECT COUNT(code) "
-					+ "FROM prescription,outpatient_services, registration_info "
+					+ "FROM prescription, registration_info "
 					+ "WHERE (prescription.finish <> 'F' OR prescription.finish IS  NULL ) "
 					+ "AND prescription.code = prescription_code.code "
 					+ "AND prescription_code.type = '"
 					+ Constant.X_RAY_CODE
 					+ "' "
-					+ "AND outpatient_services.reg_guid = registration_info.guid "
-					+ "AND prescription.os_guid = outpatient_services.guid "
+					+ "AND prescription.reg_guid = registration_info.guid "
 					+ "AND registration_info.guid = A.guid)  > 0 "
 					+ "ORDER BY A.reg_time DESC, A.visits_no ";
 		} else if (SysName.equals("case")) {
@@ -269,6 +321,7 @@ public class RefrashWorkList extends Thread {
 		this.m_Tab = tab;
 		this.m_Time = time;
 		try {
+			System.out.println(sql);
 			rs = DBC.executeQuery(sql);
 			((DefaultTableModel) this.m_Tab.getModel()).setRowCount(0);
 			this.m_Tab.setModel(HISModel.getModel(rs));
@@ -290,6 +343,7 @@ public class RefrashWorkList extends Thread {
 				Object[][] array = { { "1", Constant.WARNING_COLOR } };
 				TabTools.setTabColor(m_Tab, 12, array);
 				TabTools.setHideColumn(this.m_Tab, 0);
+				TabTools.setHideColumn(this.m_Tab, 1);
 				TabTools.setHideColumn(this.m_Tab, 2);
 				TabTools.setHideColumn(this.m_Tab, 3);
 				TabTools.setHideColumn(this.m_Tab, 11);
@@ -297,6 +351,7 @@ public class RefrashWorkList extends Thread {
 
 			} else if (SysName.equals("xray")) {
 				TabTools.setHideColumn(this.m_Tab, 0);
+				TabTools.setHideColumn(this.m_Tab, 1);
 				TabTools.setHideColumn(this.m_Tab, 2);
 				TabTools.setHideColumn(this.m_Tab, 3);
 				TabTools.setHideColumn(this.m_Tab, 11);

@@ -112,7 +112,7 @@ public class Frm_WorkList extends javax.swing.JFrame {
 
 		this.setExtendedState(Frm_WorkList.MAXIMIZED_BOTH); // 最大化
 		this.setLocationRelativeTo(this);
-		this.tab_WorkList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); // tabble不可按住多選
+		this.tab_WorkList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); // table不可按住多選
 		addWindowListener(new WindowAdapter() { // 畫面關閉原視窗enable
 			@Override
 			public void windowClosing(WindowEvent windowevent) {
