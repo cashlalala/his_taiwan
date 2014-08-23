@@ -192,7 +192,7 @@ public class Frm_Pharmacy extends javax.swing.JFrame {
 		});
 
 		btn_ReturnToMerchant.setText(paragraph.getString("RETURNTOMERCHANT"));
-		btn_ReturnToMerchant.setEnabled(false);
+		btn_ReturnToMerchant.setEnabled(true);
 		btn_ReturnToMerchant
 				.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -464,7 +464,8 @@ public class Frm_Pharmacy extends javax.swing.JFrame {
 
 	private void btn_ReturnToMerchantActionPerformed(
 			java.awt.event.ActionEvent evt) {
-
+		new Frm_ReturnToMerchant().setVisible(true);
+		this.setEnabled(false);
 	}
 
 	private void btn_ReprintActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_ReprintActionPerformed
