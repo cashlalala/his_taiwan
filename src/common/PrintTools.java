@@ -833,6 +833,7 @@ public class PrintTools {
 							+ "WHERE registration_info.guid = '"
 							+ m_RegGuid
 							+ "' "
+							+ "AND medicine_stock.reg_guid = registration_info.guid "
 							+ "AND medicines.code = medicine_stock.m_code";
 					rs = DBC.executeQuery(sql);
 					if (rs.next()) {

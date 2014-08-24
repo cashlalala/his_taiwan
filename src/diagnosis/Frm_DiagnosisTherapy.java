@@ -28,7 +28,11 @@ import errormessage.StoredErrorMessage;
 import multilingual.Language;
 
 public class Frm_DiagnosisTherapy extends javax.swing.JFrame {
-    private CompleterComboBox m_Cobww;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private CompleterComboBox m_Cobww;
     private Map<Object, Object> m_ChooseHashMap = new HashMap<Object, Object>();
     private Frm_DiagnosisInfo m_DiagnosisInfo;
     private DefaultTableModel m_TherapyModel;
@@ -80,7 +84,10 @@ public class Frm_DiagnosisTherapy extends javax.swing.JFrame {
             rs.beforeFirst();
             int i = 0;
             icdCob[i++] = "";
-            while (rs.next()) icdCob[i++] = rs.getString("icd_code").trim() + DELIMITER + rs.getString("name").trim();
+            while (rs.next()) {
+            	icdCob[i++] = String.format("%s%s%s", 
+            			rs.getString("icd_code").trim(), DELIMITER, rs.getString("name").trim());
+            }
             
             m_Cobww = new CompleterComboBox(icdCob);
             m_Cobww.setBounds(80, 15, 580, 20);
@@ -139,14 +146,14 @@ public class Frm_DiagnosisTherapy extends javax.swing.JFrame {
                 while (rsTabTherapy.next()) {
                      dataArray[i][1] = rsTabTherapy.getString("icd_code");
                      dataArray[i][2] = rsTabTherapy.getString("name");
-                     if (rsTabTherapy.getString("effective").equals("true") || rsTabTherapy.getBoolean("effective")) {
-                        dataArray[i][0] = null;
+                     if (rsTabTherapy.getString("effective").equals("true") 
+                    		 || rsTabTherapy.getBoolean("effective")) {
+                        if(m_ChooseHashMap.get(dataArray[i][0]) != null)
+                            dataArray[i][0] = true;
+                        else
+                        	dataArray[i][0] = false;
                      } else {
-                         if(m_ChooseHashMap.get(dataArray[i][0]) != null) 
-                         {
-                             dataArray[i][0] = true;
-                         }
-                         else dataArray[i][0] = false;
+                    	 dataArray[i][0] = null;
                      }
                      i++;
                  }
@@ -156,8 +163,10 @@ public class Frm_DiagnosisTherapy extends javax.swing.JFrame {
                     dataArray[i][1] = rsTabTherapy.getString("icd_code");
                     dataArray[i][2] = "<html>"+(rsTabTherapy.getString("name").replace(search.toUpperCase() , "<font color='FF0000'>"+
                             search.toUpperCase()+"</font>")).replace(search.toLowerCase() , "<font color='FF0000'>"+search.toLowerCase()+"</font>")+"</html>";
-                    if(m_ChooseHashMap.get(dataArray[i][0]) != null) dataArray[i][0] = true;
-                    else dataArray[i][0] = false;
+                    if(m_ChooseHashMap.get(dataArray[i][0]) != null) 
+                    	dataArray[i][0] = true;
+                    else 
+                    	dataArray[i][0] = false;
                      
                     i++;
                 }
@@ -165,8 +174,10 @@ public class Frm_DiagnosisTherapy extends javax.swing.JFrame {
              m_TherapyModel = new DefaultTableModel(dataArray,title) {
                 @Override
                  public boolean isCellEditable(int rowIndex,int columnIndex) {
-                     if (columnIndex == 0) return true;
-                     else return false;
+                     if (columnIndex == 0) 
+                    	 return true;
+                     else 
+                    	 return false;
                  }
              };
               tab_Therapy.setModel(m_TherapyModel);
@@ -198,8 +209,10 @@ public class Frm_DiagnosisTherapy extends javax.swing.JFrame {
                                              replace("<html>", "").replace("<font color='FF0000'>", "").
                                              replace("</font>", "").replace("</html>", "").trim();
 
-        if (tab_Therapy.getValueAt(this.tab_Therapy.getSelectedRow(), 0).equals(true) )  m_ChooseHashMap.put(code,code+DELIMITER+name);
-        else if (tab_Therapy.getValueAt(this.tab_Therapy.getSelectedRow(), 0).equals(false)) m_ChooseHashMap.remove(code);
+        if (tab_Therapy.getValueAt(this.tab_Therapy.getSelectedRow(), 0).equals(true) )  
+        	m_ChooseHashMap.put(code,code+DELIMITER+name);
+        else if (tab_Therapy.getValueAt(this.tab_Therapy.getSelectedRow(), 0).equals(false)) 
+        	m_ChooseHashMap.remove(code);
         
   }
 
@@ -217,12 +230,14 @@ public class Frm_DiagnosisTherapy extends javax.swing.JFrame {
     private void getComboBoxItemStateChanged(ItemEvent evt) {
         if(evt.getStateChange() == ItemEvent.SELECTED ){
              String []condition = m_Cobww.getSelectedItem().toString().trim().split(DELIMITER);  //get select table condition from m_Cobww
-             if (condition.length > 1 || condition[0].trim().equals("") ) setModel("icd_code LIKE '"+condition[0]+"%'","");
-             else setModel("LOWER(name) LIKE LOWER('%"+m_Cobww.getSelectedItem().toString().trim()+"%') ", "ENTER");
+             if (condition.length > 1 || condition[0].trim().equals("") ) 
+            	 setModel("icd_code LIKE '"+condition[0]+"%'","");
+             else 
+            	 setModel("LOWER(name) LIKE LOWER('%"+m_Cobww.getSelectedItem().toString().trim()+"%') ", "ENTER");
         }
     }
 
-    @SuppressWarnings("unchecked")
+    
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -389,7 +404,8 @@ public class Frm_DiagnosisTherapy extends javax.swing.JFrame {
             setCheckChange();
     }//GEN-LAST:event_tab_TherapyMouseClicked
 
-    private void btn_EnterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_EnterActionPerformed
+    @SuppressWarnings("rawtypes")
+	private void btn_EnterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_EnterActionPerformed
         int[] column = {1, 2};
         //int count=0;
         //count=m_ChooseHashMap.size();
@@ -415,7 +431,8 @@ public class Frm_DiagnosisTherapy extends javax.swing.JFrame {
     private javax.swing.JButton btn_Close;
     private javax.swing.JButton btn_Enter;
     private javax.swing.JButton btn_Search;
-    private javax.swing.JSplitPane jSplitPane1;
+    @SuppressWarnings("unused")
+	private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JLabel lab_Therapy;
     private javax.swing.JMenu menu_File;
     private javax.swing.JMenuBar mnb;
