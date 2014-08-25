@@ -1,7 +1,10 @@
 package pharmacy;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -12,8 +15,11 @@ import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JTable;
 
+import org.his.JPAUtil;
+
 import errormessage.StoredErrorMessage;
 import cc.johnwu.sql.DBC;
+import cc.johnwu.sql.HISPassword;
 import multilingual.Language;
 
 import java.awt.EventQueue;
@@ -24,29 +30,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 public class Frm_ReturnToMerchant extends JFrame {
-
 	private JPanel contentPane;
 	private JTextField txt_Search;
 	private JTable tab_MedicineList;
 	private static final Language paragraph = Language.getInstance();
-	
-	StoredErrorMessage ErrorMessage = new StoredErrorMessage();
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Frm_ReturnToMerchant frame = new Frm_ReturnToMerchant();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+	StoredErrorMessage ErrorMessage = new StoredErrorMessage();
 
 	/**
 	 * Create the frame.
@@ -175,6 +164,28 @@ public class Frm_ReturnToMerchant extends JFrame {
 
 	private void btn_ReturnActionPerformed(java.awt.event.ActionEvent evt) {
 		// todo return
+		String sql = "";
+		Connection conn=null;
+		try {
+			conn = DriverManager.getConnection(DBC.s_ServerURL,
+					DBC.s_ServerName, DBC.s_ServerPasswd);
+			conn.setAutoCommit(false);
+			conn.prepareStatement(sql).executeUpdate();
+			conn.commit();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			try {
+				conn.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+		}finally{
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private void showMedicineList(String reg_guid) {
@@ -190,8 +201,12 @@ public class Frm_ReturnToMerchant extends JFrame {
 				+ "AND medicines.code = medicine_stock.m_code";
 		ResultSet rsMedicines = null;
 		try {
-			rsMedicines = DBC.executeQuery(sqlMedicines);
-			
+			Connection conn = DriverManager.getConnection(DBC.s_ServerURL,
+					DBC.s_ServerName, DBC.s_ServerPasswd);
+			Statement stmt = conn
+					.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+							ResultSet.CONCUR_READ_ONLY);
+			rsMedicines = stmt.executeQuery(sqlMedicines);
 		} catch (SQLException e) {
 		} finally {
 			try {
