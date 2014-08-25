@@ -202,9 +202,11 @@ public class Frm_WorkList extends javax.swing.JFrame {
 			new Frm_DiagnosisInfo(m_Pno, m_RegGuid, getSelectRow, finishState,
 					getFirst).setVisible(true);
 		} else if (m_SysName.equals("lab")) {
+			m_Pno = (String) this.tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 5);
 			new Frm_Laboratory(m_Pno, m_RegGuid, getSelectRow, finishState)
 					.setVisible(true);
 		} else if (m_SysName.equals("xray")) {
+			m_Pno = (String) this.tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 5);
 			new Frm_Radiology(m_Pno, m_RegGuid, getSelectRow, finishState)
 					.setVisible(true);
 		} else if (m_SysName.equals("case")) {
@@ -675,6 +677,7 @@ public class Frm_WorkList extends javax.swing.JFrame {
 	private void btn_EnterActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_EnterActionPerformed
 
 		boolean finishState = false;
+		System.out.println("aa  " + tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 2));
 		if (tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 2) != null
 				&& tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 2)
 						.equals("F")) {
@@ -692,7 +695,8 @@ public class Frm_WorkList extends javax.swing.JFrame {
 				m_RefrashWorkList.interrupt(); // 終止重複讀取掛號表單
 				setEnter(finishState);
 			}
-		} else if (tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 2) == null) {
+		} else if ( (tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 2) == null)
+				|| (tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 2)).toString().compareTo("") == 0 ) {
 			m_RefrashWorkList.interrupt(); // 終止重複讀取掛號表單
 			setEnter(finishState);
 		}
