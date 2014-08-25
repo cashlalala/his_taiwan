@@ -680,7 +680,6 @@ public class Frm_Laboratory extends javax.swing.JFrame {
                     "AND prescription.reg_guid = registration_info.guid " +
                     "AND prescription_code.code = prescription.code " +
                     "AND prescription_code.type <> '"+Constant.X_RAY_CODE+"' ";
-            System.out.println("QQ");
             rsPrescription = DBC.executeQuery(sqlPrescription);
 
             if (rsPrescription.next()) {
