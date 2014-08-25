@@ -1386,6 +1386,21 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 				// + "','"
 				// + txt_Message.getText().trim() + "', 0)");
 
+				String delSql = String.format(
+						"Delete from diagnostic where reg_guid = '%s' ",
+						m_RegistrationGuid);
+				DBC.executeUpdate(delSql);
+				
+				delSql = String.format(
+						"delete from prescription where reg_guid = '%s'",
+						m_RegistrationGuid);
+				DBC.executeUpdate(delSql);
+				
+				delSql = String.format(
+						"delete from medicine_stock where reg_guid = '%s'",
+						m_RegistrationGuid);
+				DBC.executeUpdate(delSql);
+
 				ResultSet setting = DBC
 						.executeQuery("Select icdversion from setting");
 				String icdVer = (setting.first()) ? setting.getString(
@@ -1825,7 +1840,9 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 					+ "WHERE registration_info.guid = '"
 					+ guid
 					+ "' "
-					+ "AND prescription.reg_guid = '" + guid +  "' "
+					+ "AND prescription.reg_guid = '"
+					+ guid
+					+ "' "
 					+ "AND prescription_code.code = prescription.code ";
 			// System.out.println(sqlPrescription);
 			rsPrescription = DBC.executeQuery(sqlPrescription);

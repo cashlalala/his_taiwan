@@ -46,6 +46,8 @@ public class Frm_DiagnosisTherapy extends javax.swing.JFrame {
 
     private final static String DELIMITER = Character.toString((char)0); 
     
+    private String m_ICDVersion = "ICD-10";
+    
     public Frm_DiagnosisTherapy(Frm_DiagnosisInfo diagnosisInfo,boolean isDM) {
         this.m_DiagnosisInfo = diagnosisInfo;
         m_IsDM = isDM;
@@ -75,9 +77,9 @@ public class Frm_DiagnosisTherapy extends javax.swing.JFrame {
         	String sql = "SELECT ICDVersion FROM setting";
         	rs = DBC.executeQuery(sql);
         	rs.first();
-        	String icdVer = rs.getString("ICDVersion");
+        	m_ICDVersion = rs.getString("ICDVersion");
         	
-            sql = "SELECT * FROM diagnosis_code where ICDVersion = '" + icdVer + "'";
+            sql = "SELECT * FROM diagnosis_code where ICDVersion = '" + m_ICDVersion + "'";
             rs = DBC.localExecuteQuery(sql);
             rs.last();
             icdCob = new String[rs.getRow()+1];
@@ -135,7 +137,9 @@ public class Frm_DiagnosisTherapy extends javax.swing.JFrame {
         ResultSet rsTabTherapy = null;
         try {
              Object[] title = {"",paragraph.getLanguage(line, "ICDCODE"),paragraph.getLanguage(line, "NAME")};
-             String sql = "SELECT * FROM diagnosis_code WHERE "+condition+" AND icd_code NOT LIKE '%-%'";
+             String sql = String
+ 					.format("SELECT * FROM diagnosis_code WHERE %s AND icd_code NOT LIKE '%%-%%' AND ICDVersion = '%s'",
+ 							condition, m_ICDVersion);
 
              rsTabTherapy = DBC.localExecuteQuery(sql);
              rsTabTherapy.last();
