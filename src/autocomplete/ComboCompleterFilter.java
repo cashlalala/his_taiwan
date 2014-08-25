@@ -94,13 +94,13 @@ public class ComboCompleterFilter extends AbstractCompleterFilter
   {
     super.replace(filterBypass, offset, length, string, attributeSet);
 
-    System.out.println("現在輸入的那一個字 "+string);   //現在輸入的那一個字
+    //System.out.println("現在輸入的那一個字 "+string);   //現在輸入的那一個字
 //    setSearch(string);
     // Try to select the item in the combo list 
     if (_firstSelectedIndex != -1)   //判斷資料表內有值嗎
     {
       JTextField tf = (JTextField)_combo.getEditor().getEditorComponent();
-      System.out.println("tf.getText()  "+tf.getSelectedText());
+      //System.out.println("tf.getText()  "+tf.getSelectedText());
       int preTextLen = _preText.length();
       String text = tf.getText();
       _combo.setSelectedIndex(_firstSelectedIndex);

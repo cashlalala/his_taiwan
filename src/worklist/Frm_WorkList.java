@@ -112,7 +112,7 @@ public class Frm_WorkList extends javax.swing.JFrame {
 
 		this.setExtendedState(Frm_WorkList.MAXIMIZED_BOTH); // 最大化
 		this.setLocationRelativeTo(this);
-		this.tab_WorkList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); // tabble不可按住多選
+		this.tab_WorkList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); // table不可按住多選
 		addWindowListener(new WindowAdapter() { // 畫面關閉原視窗enable
 			@Override
 			public void windowClosing(WindowEvent windowevent) {
@@ -202,9 +202,11 @@ public class Frm_WorkList extends javax.swing.JFrame {
 			new Frm_DiagnosisInfo(m_Pno, m_RegGuid, getSelectRow, finishState,
 					getFirst).setVisible(true);
 		} else if (m_SysName.equals("lab")) {
+			m_Pno = (String) this.tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 5);
 			new Frm_Laboratory(m_Pno, m_RegGuid, getSelectRow, finishState)
 					.setVisible(true);
 		} else if (m_SysName.equals("xray")) {
+			m_Pno = (String) this.tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 5);
 			new Frm_Radiology(m_Pno, m_RegGuid, getSelectRow, finishState)
 					.setVisible(true);
 		} else if (m_SysName.equals("case")) {
@@ -692,7 +694,8 @@ public class Frm_WorkList extends javax.swing.JFrame {
 				m_RefrashWorkList.interrupt(); // 終止重複讀取掛號表單
 				setEnter(finishState);
 			}
-		} else if (tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 2) == null) {
+		} else if ( (tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 2) == null)
+				|| (tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 2)).toString().compareTo("") == 0 ) {
 			m_RefrashWorkList.interrupt(); // 終止重複讀取掛號表單
 			setEnter(finishState);
 		}
