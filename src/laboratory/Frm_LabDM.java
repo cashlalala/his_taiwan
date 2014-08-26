@@ -70,7 +70,7 @@ public class Frm_LabDM extends javax.swing.JFrame {
             this.lab_Pno.setText(rs.getString("p_no"));
             this.lab_Name.setText(rs.getString("firstname") + " " + rs.getString("lastname"));
             this.lab_Gender.setText(rs.getString("gender"));
-            this.lab_Age.setText(DateMethod.getAgeWithMonth(rs.getDate("birth")));
+            this.lab_Age.setText((rs.getDate("birth")==null)? "" : DateMethod.getAgeWithMonth(rs.getDate("birth")));
             getResult();
         } catch (SQLException ex) {
             Logger.getLogger(Frm_LabDM.class.getName()).log(Level.SEVERE, null, ex);

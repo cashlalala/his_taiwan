@@ -1,8 +1,14 @@
 package cc.johnwu.loading;
 
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+
+import javax.swing.JProgressBar;
+
 import cc.johnwu.sql.DBC;
-import java.sql.*;
 
 
 public class LoadingData {
@@ -45,13 +51,30 @@ public class LoadingData {
             serverRS = DBC.executeQuery("SELECT * FROM " + tableName);
             ResultSetMetaData rsmd = serverRS.getMetaData();
             Object[][] columnData = new Object[rsmd.getColumnCount()][3];
-            String sql = "CREATE TABLE "+tableName+"(";
+            String sql = "CREATE TABLE IF NOT EXISTS "+tableName+"(";
             for(int i=0; i<columnData.length; i++){
                 if(rsmd.getColumnTypeName(i+1).equalsIgnoreCase("CHAR")){
                     sql += rsmd.getColumnName(i+1)+" "+rsmd.getColumnTypeName(i+1);
                     sql += "("+rsmd.getColumnDisplaySize(i+1)+")";
                 }else if(rsmd.getColumnTypeName(i+1).equalsIgnoreCase("LONGBLOB")){
                     sql += rsmd.getColumnName(i+1)+" VARBINARY";
+                }else if(rsmd.getColumnTypeName(i+1).equalsIgnoreCase("BIT")){
+                    sql += rsmd.getColumnName(i+1)+" BIT";
+                }else if(rsmd.getColumnTypeName(i+1).equalsIgnoreCase("FLOAT")){
+                    sql += rsmd.getColumnName(i+1)+" FLOAT";
+                }else if(rsmd.getColumnTypeName(i+1).equalsIgnoreCase("VARCHAR")){
+                	String type = " VARCHAR (255)";
+                	if (rsmd.getColumnName(i+1).equalsIgnoreCase("guideline"))
+                		type = " VARCHAR (500)";
+                	else if (rsmd.getColumnName(i+1).equalsIgnoreCase("dia_code"))
+                		type = " VARCHAR (20)";
+                	else if (rsmd.getColumnName(i+1).equalsIgnoreCase("ICDVersion"))
+                		type = " VARCHAR (10)";
+                	else if (rsmd.getColumnName(i+1).equalsIgnoreCase("unit"))
+                		type = " VARCHAR (45)";
+                	else if (rsmd.getColumnName(i+1).equalsIgnoreCase("equipment_ID"))
+                		type = " VARCHAR (22)";
+                    sql += rsmd.getColumnName(i+1)+type;
                 }else{
                     sql += rsmd.getColumnName(i+1)+" "+rsmd.getColumnTypeName(i+1);
                 }
@@ -65,20 +88,22 @@ public class LoadingData {
                 }
             }
             DBC.localExecute(sql);
-            DBC.localExecute("SHUTDOWN");
         } catch (SQLException ex) {
+        	ex.printStackTrace();
         } finally {
             try{DBC.closeConnection(serverRS);}
-            catch (SQLException ex) {}
+            catch (SQLException ex) {
+            	ex.printStackTrace();
+            }
         }
         try{
             DBC.localExecuteQuery("DELETE FROM " + tableName);
-            DBC.localExecute("SHUTDOWN");
-        } catch (SQLException sex) { }
-        loadData(tableName);
+        } catch (SQLException sex) { 
+        	sex.printStackTrace();
+        }
     }
 
-    private void loadData(String tableName){
+    public void loadData(String tableName){
         String sql = "SELECT * FROM " + tableName;
         try {
             m_ServerRS = DBC.executeQuery(sql);
@@ -91,10 +116,22 @@ public class LoadingData {
             m_LocalDataCount = m_LocalRS.getRow();
             m_LocalRS.beforeFirst();
         } catch (SQLException ex) {
+        	if (ex.getErrorCode() == -5501 && ex.getMessage().contains(tableName.toUpperCase())) {
+        		System.out.println("No table found, need update...");
+        	} else {
+        		ex.printStackTrace();
+        	}
+        } finally {
+        	try {
+				DBC.closeConnection(m_LocalRS);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} 
+        	
         }
     }
 
-    protected synchronized boolean download2LocalDB(String tableName,int comparisonRow){
+    protected synchronized boolean download2LocalDB(String tableName,JProgressBar pbar_Loading){
         PreparedStatement localInsertStmt = null;
         try {
             String sql = "";
@@ -107,9 +144,8 @@ public class LoadingData {
                     sql += "?)";
             }
             localInsertStmt = DBC.localPrepareStatement(sql);
-
-            if(m_ServerRS.absolute(comparisonRow)){
-                // Insert to Local Database
+            int progress = 0;
+            while (m_ServerRS.next()) {
                 for(int i=1; i<=m_rsmd.getColumnCount(); i++){
                     if(m_rsmd.getColumnTypeName(i).equalsIgnoreCase("LONGBLOB")){
                         localInsertStmt.setBytes(i, m_ServerRS.getBytes(i));
@@ -117,6 +153,8 @@ public class LoadingData {
                         localInsertStmt.setBoolean(i, m_ServerRS.getBoolean(i));
                     }else if(m_rsmd.getColumnTypeName(i).equalsIgnoreCase("INT")){
                         localInsertStmt.setInt(i, m_ServerRS.getInt(i));
+                    }else if(m_rsmd.getColumnTypeName(i).equalsIgnoreCase("FLOAT")){
+                        localInsertStmt.setFloat(i, m_ServerRS.getFloat(i));
                     }else{
                         if(m_ServerRS.getString(i)!=null)
                             localInsertStmt.setString(i, m_ServerRS.getString(i).replace("'","''"));
@@ -124,13 +162,21 @@ public class LoadingData {
                             localInsertStmt.setString(i, null);
                     }
                 }
-                localInsertStmt.executeUpdate();
+                localInsertStmt.addBatch();
+                pbar_Loading.setValue(++progress);
             }
+            localInsertStmt.executeBatch();
             return true;
-        } catch (SQLException ex) {            
+        } catch (SQLException ex) {
+        	ex.printStackTrace();
         } finally {
-            try{DBC.closeConnection(localInsertStmt);}
-            catch (SQLException ex) {}
+            try{
+            	DBC.closeConnection(localInsertStmt);
+            	DBC.closeConnection(m_ServerRS);
+            }
+            catch (SQLException ex) {
+            	ex.printStackTrace();
+            }
         }
         return false;
     }

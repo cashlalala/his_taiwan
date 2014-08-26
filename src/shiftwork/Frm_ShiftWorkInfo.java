@@ -1,14 +1,15 @@
 package shiftwork;
 
-import cc.johnwu.sql.*;
-
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -23,8 +24,9 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
-import errormessage.StoredErrorMessage;
 import multilingual.Language;
+import cc.johnwu.sql.DBC;
+import errormessage.StoredErrorMessage;
 
 public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
     //private final String DOCTOR_DEPARTMENT = "Doctor"; // 排班只限醫生群組
@@ -40,7 +42,7 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
     private String[] message = new String(paragraph.setlanguage("MESSAGE")).split("\n") ;
     /*輸出錯誤資訊變數*/
     StoredErrorMessage ErrorMessage = new StoredErrorMessage() ;
-
+    
     public Frm_ShiftWorkInfo() {
         initComponents();
         initTabShift();
@@ -89,24 +91,28 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
     /**多國語言翻譯*/
     private void initLanguage() {
         //this.lab_PolRoom.setText(paragraph.getLanguage(line, "POLROOM"));
-        this.lab_Year.setText(paragraph.getLanguage(line, "YEAR"));
-        this.lab_Month.setText(paragraph.getLanguage(line, "MONTH"));
+        this.lab_Year.setText(paragraph.getString("YEAR"));
+        this.lab_Month.setText(paragraph.getString("MONTH"));
         //this.lab_Policlinic.setText(paragraph.getLanguage(line, "POLICLINIC"));
-        this.btn_Close.setText(paragraph.getLanguage(message, "CLOSE"));
-        this.btn_Save.setText(paragraph.getLanguage(message, "SAVE"));
-        this.btn_ReLoad.setText(paragraph.getLanguage(line, "RELOAD"));
-        this.menu_File.setText(paragraph.getLanguage(message, "FILE"));
-        this.mnit_Back.setText(paragraph.getLanguage(message, "CLOSE"));
-        this.setTitle(paragraph.getLanguage(line, "TITLESHIFTWORK"));
+        this.btn_Close.setText(paragraph.getString("CLOSE"));
+        this.btn_Save.setText(paragraph.getString("SAVE"));
+        this.btn_ReLoad.setText(paragraph.getString("RELOAD"));
+        this.menu_File.setText(paragraph.getString("FILE"));
+        this.mnit_Back.setText(paragraph.getString("CLOSE"));
+        this.setTitle(paragraph.getString("TITLESHIFTWORK"));
+        this.btn_Repeat.setText(paragraph.getString("REPEAT"));
+        this.jLabelRepeatTime.setText(paragraph.getString("TIMES"));
+        this.jLabelDate.setText(paragraph.getString("DATE") + " :");
+        this.jLabelToDate.setText(paragraph.getString("TO") + " " + paragraph.getString("DATE") + " :");
     }
     /**是否變更儲存資料*/
     private void showSaveMessage(){
         if (this.btn_Save.isEnabled()){
-            Object[] options = {paragraph.getLanguage(message , "YES"),paragraph.getLanguage(message , "NO")};
+            Object[] options = {paragraph.getString("YES"),paragraph.getString("NO")};
             int dialog = JOptionPane.showOptionDialog(
                             null,
-                            paragraph.getLanguage(message , "DOYOUSAVEIT"),
-                            paragraph.getLanguage(message , "MESSAGE"),
+                            paragraph.getString("DOYOUSAVEIT"),
+                            paragraph.getString("MESSAGE"),
                             JOptionPane.YES_OPTION,
                             JOptionPane.QUESTION_MESSAGE,
                             null,
@@ -237,25 +243,25 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
         calRow.set(year, month , date) ;
         switch(calRow.get(Calendar.DAY_OF_WEEK)){    //那一天星期幾
             case 1:
-                m_DataTab[date-1][0] = "<html><font color='00AA00'>"+paragraph.getLanguage(line , "SUN")+"</font></html>" ;
+                m_DataTab[date-1][0] = "<html><font color='00AA00'>"+paragraph.getString("SUN")+"</font></html>" ;
                 break ;
             case 2:
-                m_DataTab[date-1][0] = paragraph.getLanguage(line , "MON") ;
+                m_DataTab[date-1][0] = paragraph.getString("MON") ;
                 break ;
             case 3:
-                m_DataTab[date-1][0] = paragraph.getLanguage(line , "TUE") ;
+                m_DataTab[date-1][0] = paragraph.getString("TUE") ;
                 break ;
             case 4:
-                m_DataTab[date-1][0] = paragraph.getLanguage(line , "WED") ;
+                m_DataTab[date-1][0] = paragraph.getString("WED") ;
                 break ;
             case 5:
-                m_DataTab[date-1][0] = paragraph.getLanguage(line , "THU") ;
+                m_DataTab[date-1][0] = paragraph.getString("THU") ;
                 break ;
             case 6:
-                m_DataTab[date-1][0] = paragraph.getLanguage(line , "FRI") ;
+                m_DataTab[date-1][0] = paragraph.getString("FRI") ;
                 break ;
             case 7:
-                m_DataTab[date-1][0] = "<html><font color='00AA00'>"+paragraph.getLanguage(line , "SAT")+"</font></html>" ;
+                m_DataTab[date-1][0] = "<html><font color='00AA00'>"+paragraph.getString("SAT")+"</font></html>" ;
                 break ;
         }
     }
@@ -263,12 +269,12 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
     // set shift data and set table grid editable
     public void setShiftData() {  
         String[] tableTitle = {
-                                paragraph.getLanguage(line , "WEEK"),
-                                paragraph.getLanguage(line , "DATE") ,
-                                paragraph.getLanguage(line , "MORNING"),
-                                paragraph.getLanguage(line , "NOON"),
-                                paragraph.getLanguage(line , "NIGHT"), 
-                                paragraph.getLanguage(line , "ALLNIGHT")
+                                paragraph.getString("WEEK"),
+                                paragraph.getString("DATE") ,
+                                paragraph.getString("MORNING"),
+                                paragraph.getString("NOON"),
+                                paragraph.getString("NIGHT"), 
+                                paragraph.getString("ALLNIGHT")
                                 };  //表頭
         ResultSet rs = null;
         try {
@@ -296,7 +302,7 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
                     coloumShift = 3;
                 } else if (rs.getString("shift").equals("3")) {
                     coloumShift = 4;
-                } else if (rs.getString("shift").equals("4")) {
+                } else if (rs.getString("shisft").equals("4")) {
                     coloumShift = 5;
                 }
                 m_DataTab[rowDay][coloumShift] = rs.getString("name");
@@ -315,7 +321,7 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
 
                          if (cob_Month.getSelectedIndex() > m_Cal.get(Calendar.MONTH)) {
                              return true;
-                         } else if (cob_Month.getSelectedIndex() == m_Cal.get(Calendar.MONTH) && rowIndex > m_Cal.get(Calendar.DAY_OF_MONTH)-1) {
+                         } else if (cob_Month.getSelectedIndex() == m_Cal.get(Calendar.MONTH) && rowIndex >= m_Cal.get(Calendar.DAY_OF_MONTH)-1) {
                              return true;
                          } else {
                              return false;
@@ -370,6 +376,7 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
         spn_Shift = new javax.swing.JScrollPane();
         tab_Shift = new javax.swing.JTable();
         pan_CenterUp = new javax.swing.JPanel();
+        pan_CenterUpUnder = new javax.swing.JPanel();
         cob_Year = new javax.swing.JComboBox();
         lab_Year = new javax.swing.JLabel();
         lab_Month = new javax.swing.JLabel();
@@ -386,6 +393,14 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
         mnb = new javax.swing.JMenuBar();
         menu_File = new javax.swing.JMenu();
         mnit_Back = new javax.swing.JMenuItem();
+        
+        jLabelDate = new javax.swing.JLabel();
+        jLabelToDate = new javax.swing.JLabel();
+        txt_DateFrom = new javax.swing.JTextField();
+        txt_DateTo = new javax.swing.JTextField();
+        btn_Repeat = new javax.swing.JButton();
+        txt_repeatTime = new javax.swing.JTextField();
+        jLabelRepeatTime = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Shift Work");
@@ -443,6 +458,118 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
             }
         });
 
+        btn_Repeat.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                if(common.Tools.isNaturalNumber(txt_DateFrom.getText()) 
+                		&& common.Tools.isNaturalNumber(txt_DateTo.getText()) 
+                		&& common.Tools.isNaturalNumber(txt_repeatTime.getText()) ) {
+                	int fromDate = Integer.valueOf(txt_DateFrom.getText());
+                	int toDate = Integer.valueOf(txt_DateTo.getText());
+                	int repeatTime = Integer.valueOf(txt_repeatTime.getText());
+                	int dayCount = Integer.valueOf(txt_DateTo.getText()) - Integer.valueOf(txt_DateFrom.getText()) + 1;
+                	
+                	String firstDateString = String.valueOf(cob_Year.getSelectedItem()) 
+            				+"-"+ String.valueOf(cob_Month.getSelectedItem()) 
+            				+"-"+ String.format("%02d", fromDate);
+	            	String lastDateString = String.valueOf(cob_Year.getSelectedItem()) 
+	        				+"-"+ String.valueOf(cob_Month.getSelectedItem()) 
+	        				+"-"+ String.format("%02d", toDate);
+	            	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+	            	String firstRepeatDateString, lastRepeatDateString;
+
+	            	try {
+	                	if( (toDate < fromDate) 
+	                			|| (fromDate < 1) 
+	                			|| (toDate > tab_Shift.getRowCount())
+	                			|| (repeatTime < 1) ) {
+	                		JOptionPane.showMessageDialog(null, paragraph.getString("PLEASEENTERVALIDNUMBER"));
+	                		return;
+	                	}
+
+		            	Calendar lastDate = Calendar.getInstance();
+	                	lastDate.setTime(sdf.parse(lastDateString));
+
+	                	Calendar firstRepeatDate = Calendar.getInstance(); 
+	                	firstRepeatDate.setTime(sdf.parse(lastDateString));
+	                	firstRepeatDate.add(Calendar.DATE, 1);
+	                	firstRepeatDateString = firstRepeatDate.get(Calendar.YEAR)+"-"
+	                			+String.format("%02d", (firstRepeatDate.get(Calendar.MONTH)+1))
+	                			+"-"+String.format("%02d", firstRepeatDate.get(Calendar.DAY_OF_MONTH));
+	                	Calendar firstRepeatDatePlusOne = Calendar.getInstance(); 
+	                	firstRepeatDatePlusOne.setTime(sdf.parse(lastDateString));
+	                	firstRepeatDatePlusOne.add(Calendar.DATE, 2);
+
+	                	// the repeated shift must start after today
+						if( firstRepeatDatePlusOne.getTime().before(Calendar.getInstance().getTime())   ) {
+							JOptionPane.showMessageDialog(null, paragraph.getString("PLEASEENTERVALIDNUMBER"));
+	                		return;
+						}
+						
+						Calendar lastRepeatDate = Calendar.getInstance(); 
+						lastRepeatDate.setTime(sdf.parse(lastDateString)); 
+						lastRepeatDate.add(Calendar.DATE, repeatTime * dayCount);
+						lastRepeatDateString = lastRepeatDate.get(Calendar.YEAR)+"-"
+								+String.format("%02d", (lastRepeatDate.get(Calendar.MONTH)+1))
+								+"-"+String.format("%02d", lastRepeatDate.get(Calendar.DAY_OF_MONTH));
+
+						
+						String sqlCheckexist = "SELECT count(*) FROM shift_table where shift_date >= '" 
+								+ firstRepeatDateString + "' and shift_date <= '" 
+								+ lastRepeatDateString + "'";
+						//System.out.println(sqlCheckexist);
+						ResultSet rscheck = DBC.executeQuery (sqlCheckexist);
+						rscheck.next();
+						if(rscheck.getInt(1) != 0) {
+							JOptionPane.showMessageDialog(null, paragraph.getString("REPEATPERIODHASDATA"));
+							return;
+						}
+						
+						String poliRoom = cob_PolRoom.getSelectedItem().toString(); // 診間名稱
+						String division = cob_Policlinic.getSelectedItem().toString();
+				        String sqlSource = "SELECT * FROM shift_table where shift_date >= '" + firstDateString + "' and shift_date <= '" + lastDateString + "'"
+								+ " AND shift_table.room_guid = (SELECT poli_room.guid FROM poli_room,policlinic WHERE poli_room.name = '"+poliRoom+"' AND poli_room.poli_guid = policlinic.guid  AND policlinic.name = '"+division+"') ";
+						//System.out.println(sqlSource);
+						//sqlSource = "SELECT * FROM shift_table where shift_date >= '2014-07-25' and shift_date <= '2014-07-25'";
+						ResultSet rsSrc = DBC.executeQuery (sqlSource);
+						Calendar tempDate = Calendar.getInstance(); 
+						String sqlInsert;
+						while(rsSrc.next()) {
+							String shift_date = rsSrc.getString("shift_date");
+							tempDate.setTime(sdf.parse(shift_date));
+							String s_id = rsSrc.getString("s_id");
+							String shift = rsSrc.getString("shift");
+							String room_guid = rsSrc.getString("room_guid");
+							String tempDateStr;
+
+							for(int repeat = 0; repeat < repeatTime; repeat++) {
+								tempDate.add(Calendar.DATE, dayCount);
+								//System.out.println(tempDate.getTime());
+								tempDateStr = tempDate.get(Calendar.YEAR)+"-"
+			                			+String.format("%02d", (tempDate.get(Calendar.MONTH)+1))
+			                			+"-"+String.format("%02d", tempDate.get(Calendar.DAY_OF_MONTH));
+								
+			                    sqlInsert = "INSERT INTO shift_table(guid, s_id, shift_date, shift, room_guid) VALUES(uuid(), '"
+			                    		+s_id+"', '"+tempDateStr+"', '"+shift+"', '" +room_guid+"')";
+			                    DBC.executeUpdate (sqlInsert);
+
+							}
+							//System.out.println();
+						}
+						reLoad();
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+                } else {
+                	JOptionPane.showMessageDialog(null, paragraph.getString("PLEASEENTERVALIDNUMBER"));
+                }
+            }
+        });        
+
         javax.swing.GroupLayout pan_CenterUpLayout = new javax.swing.GroupLayout(pan_CenterUp);
         pan_CenterUp.setLayout(pan_CenterUpLayout);
         pan_CenterUpLayout.setHorizontalGroup(
@@ -451,13 +578,14 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(lab_Year)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cob_Year, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(cob_Year, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(lab_Month)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cob_Month, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(cob_Month, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(58, 58, 58))
         );
+        
         pan_CenterUpLayout.setVerticalGroup(
             pan_CenterUpLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pan_CenterUpLayout.createSequentialGroup()
@@ -465,7 +593,47 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
                     .addComponent(lab_Year)
                     .addComponent(cob_Year, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lab_Month)
-                    .addComponent(cob_Month, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cob_Month, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                 )
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+
+        javax.swing.GroupLayout pan_CenterUpUnderLayout = new javax.swing.GroupLayout(pan_CenterUpUnder);
+        pan_CenterUpUnder.setLayout(pan_CenterUpUnderLayout);
+        pan_CenterUpUnderLayout.setHorizontalGroup(
+        		pan_CenterUpUnderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pan_CenterUpUnderLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabelDate)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txt_DateFrom, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabelToDate)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txt_DateTo, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(btn_Repeat)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txt_repeatTime, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabelRepeatTime)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(58, 58, 58))
+        );
+        
+        pan_CenterUpUnderLayout.setVerticalGroup(
+        		pan_CenterUpUnderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pan_CenterUpUnderLayout.createSequentialGroup()
+                .addGroup(pan_CenterUpUnderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabelDate)
+                    .addComponent(txt_DateFrom)
+                    .addComponent(jLabelToDate)
+                    .addComponent(txt_DateTo)
+                    .addComponent(btn_Repeat)
+                    .addComponent(txt_repeatTime)
+                    .addComponent(jLabelRepeatTime)
+                 )
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -476,7 +644,8 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
             .addGroup(pan_CenterLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(pan_CenterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(pan_CenterUp, javax.swing.GroupLayout.PREFERRED_SIZE, 328, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(pan_CenterUp, javax.swing.GroupLayout.PREFERRED_SIZE, 750, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(pan_CenterUpUnder, javax.swing.GroupLayout.PREFERRED_SIZE, 750, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(spn_Shift, javax.swing.GroupLayout.DEFAULT_SIZE, 752, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -486,11 +655,13 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
                 .addGap(15, 15, 15)
                 .addComponent(pan_CenterUp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(pan_CenterUpUnder, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(spn_Shift, javax.swing.GroupLayout.DEFAULT_SIZE, 411, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
-        btn_Save.setText("Save");
+        btn_Save.setText(paragraph.getString("SAVE"));
         btn_Save.setEnabled(false);
         btn_Save.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -498,14 +669,14 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
             }
         });
 
-        btn_Close.setText("Close");
+        btn_Close.setText(paragraph.getString("CLOSE"));
         btn_Close.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_CloseActionPerformed(evt);
             }
         });
 
-        btn_ReLoad.setText("Re-read");
+        btn_ReLoad.setText(paragraph.getString("RELOAD"));
         btn_ReLoad.setEnabled(false);
         btn_ReLoad.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -533,7 +704,7 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
                 .addComponent(btn_ReLoad))
         );
 
-        lab_Policlinic.setText("Division ");
+        lab_Policlinic.setText(paragraph.getString("DIVISION") + " ");
 
         cob_Policlinic.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -546,7 +717,7 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
             }
         });
 
-        lab_PolRoom.setText("Clinic");
+        lab_PolRoom.setText(paragraph.getString("CLINIC"));
 
         cob_PolRoom.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -583,10 +754,10 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
                 .addComponent(cob_PolRoom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
-        menu_File.setText("File");
+        menu_File.setText(paragraph.getString("FILE"));
 
         mnit_Back.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_ESCAPE, 0));
-        mnit_Back.setText("Close");
+        mnit_Back.setText(paragraph.getString("CLOSE"));
         mnit_Back.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mnit_BackActionPerformed(evt);
@@ -751,7 +922,7 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
 
     private void btn_ReLoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_ReLoadActionPerformed
        reLoad();
-       JOptionPane.showMessageDialog(null, paragraph.getLanguage(message , "LOADCOMPLETE"));
+       JOptionPane.showMessageDialog(null, paragraph.getString("LOADCOMPLETE"));
 }//GEN-LAST:event_btn_ReLoadActionPerformed
 
     private void cob_PoliclinicItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cob_PoliclinicItemStateChanged
@@ -817,9 +988,19 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
     private javax.swing.JMenuItem mnit_Back;
     private javax.swing.JPanel pan_Center;
     private javax.swing.JPanel pan_CenterUp;
+    private javax.swing.JPanel pan_CenterUpUnder;
     private javax.swing.JPanel pan_Up;
     private javax.swing.JPanel pan_under;
     private javax.swing.JScrollPane spn_Shift;
     private javax.swing.JTable tab_Shift;
+    
+    private javax.swing.JLabel jLabelDate;
+    private javax.swing.JLabel jLabelToDate;
+    private javax.swing.JTextField txt_DateFrom;
+    private javax.swing.JTextField txt_DateTo;
+    private javax.swing.JButton btn_Repeat;
+    private javax.swing.JTextField txt_repeatTime;
+    private javax.swing.JLabel jLabelRepeatTime;
+    
     // End of variables declaration//GEN-END:variables
 }
