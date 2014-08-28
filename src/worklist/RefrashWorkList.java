@@ -298,7 +298,7 @@ public class RefrashWorkList extends Thread {
 				TabTools.setTabColor(m_Tab, 12, array);
 				TabTools.setHideColumn(this.m_Tab, 0);
 				TabTools.setHideColumn(this.m_Tab, 1);
-				TabTools.setHideColumn(this.m_Tab, 2);
+				//TabTools.setHideColumn(this.m_Tab, 2);
 				TabTools.setHideColumn(this.m_Tab, 3);
 				TabTools.setHideColumn(this.m_Tab, 11);
 				TabTools.setHideColumn(this.m_Tab, 12);
@@ -306,7 +306,7 @@ public class RefrashWorkList extends Thread {
 			} else if (SysName.equals("xray")) {
 				TabTools.setHideColumn(this.m_Tab, 0);
 				TabTools.setHideColumn(this.m_Tab, 1);
-				TabTools.setHideColumn(this.m_Tab, 2);
+				//TabTools.setHideColumn(this.m_Tab, 2);
 				TabTools.setHideColumn(this.m_Tab, 3);
 				TabTools.setHideColumn(this.m_Tab, 11);
 			}
@@ -525,12 +525,14 @@ public class RefrashWorkList extends Thread {
 				Object[][] array = { { "1", new Color(250, 232, 176) } };
 				TabTools.setTabColor(m_Tab, 12, array);
 				TabTools.setHideColumn(this.m_Tab, 0);
+				TabTools.setHideColumn(this.m_Tab, 1);
 				//TabTools.setHideColumn(this.m_Tab, 2);
 				TabTools.setHideColumn(this.m_Tab, 3);
 				TabTools.setHideColumn(this.m_Tab, 11);
 				// TabTools.setHideColumn(this.m_Tab,12);
 			} else if (m_SysName.equals("xray")) {
 				TabTools.setHideColumn(this.m_Tab, 0);
+				TabTools.setHideColumn(this.m_Tab, 1);
 				//TabTools.setHideColumn(this.m_Tab, 2);
 				TabTools.setHideColumn(this.m_Tab, 3);
 				TabTools.setHideColumn(this.m_Tab, 11);
