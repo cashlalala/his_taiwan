@@ -148,7 +148,7 @@ public class Frm_Pharmacy extends javax.swing.JFrame {
 				new Object[][] { {}, {}, {} }, new String[] {
 
 				}));
-		tab_Pharmacy.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+		//tab_Pharmacy.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
 		tab_Pharmacy.setRowHeight(25);
 		tab_Pharmacy.getTableHeader().setReorderingAllowed(false);
 		tab_Pharmacy.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -436,7 +436,6 @@ public class Frm_Pharmacy extends javax.swing.JFrame {
 	private void btn_CheckActionPerformed(java.awt.event.ActionEvent evt) {
 		if (tab_Pharmacy.getSelectedRow() != -1
 				&& tab_Pharmacy.getValueAt(tab_Pharmacy.getSelectedRow(), 1) != null) {
-
 			String getDep = (String) this.tab_Pharmacy.getValueAt(
 					tab_Pharmacy.getSelectedRow(), 1);
 			String getDocter = (String) this.tab_Pharmacy.getValueAt(
