@@ -160,6 +160,7 @@ public class Frm_ReturnToMerchant extends JFrame {
 
 	private void btn_CloseActionPerformed(java.awt.event.ActionEvent evt) {
 		// todo close
+		//aaaa
 	}
 
 	private void btn_ReturnActionPerformed(java.awt.event.ActionEvent evt) {
@@ -207,6 +208,7 @@ public class Frm_ReturnToMerchant extends JFrame {
 					.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
 							ResultSet.CONCUR_READ_ONLY);
 			rsMedicines = stmt.executeQuery(sqlMedicines);
+			
 		} catch (SQLException e) {
 		} finally {
 			try {
