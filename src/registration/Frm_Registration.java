@@ -1457,8 +1457,7 @@ public void ShowGpsFrom() {
     private void btn_SaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_SaveActionPerformed
     	String sql = "";
         m_Number = 0;
-        try {
-        	
+        try {    	
         	sql="INSERT INTO registration_info SELECT "+
         	"uuid(),"+                                     //guid 
         	"NULL,"+                                       //bed_guid
@@ -1475,7 +1474,7 @@ public void ShowGpsFrom() {
         	"NULL,"+ 
         	"'O',"+                                        //type
         	"NULL,"+ 
-        	"NULL,"+                                       //finish
+        	"'W',"+                                        //finish
         	"NULL,"+ 
         	"NULL,"+ 
         	"100,"+                                        //reg_cost 
