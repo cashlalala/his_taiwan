@@ -1386,6 +1386,21 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 				// + "','"
 				// + txt_Message.getText().trim() + "', 0)");
 
+				String delSql = String.format(
+						"Delete from diagnostic where reg_guid = '%s' ",
+						m_RegistrationGuid);
+				DBC.executeUpdate(delSql);
+				
+				delSql = String.format(
+						"delete from prescription where reg_guid = '%s'",
+						m_RegistrationGuid);
+				DBC.executeUpdate(delSql);
+				
+				delSql = String.format(
+						"delete from medicine_stock where reg_guid = '%s'",
+						m_RegistrationGuid);
+				DBC.executeUpdate(delSql);
+
 				ResultSet setting = DBC
 						.executeQuery("Select icdversion from setting");
 				String icdVer = (setting.first()) ? setting.getString(
@@ -1395,6 +1410,10 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 				if (tab_Diagnosis.getValueAt(0, 2) != null) {
 					for (int i = 0; i < this.tab_Diagnosis.getRowCount(); i++) {
 						if (this.tab_Diagnosis.getValueAt(i, 2) != null) {
+
+							System.out.println(String.format("inserting %s...",
+									(String) tab_Diagnosis.getValueAt(i, 2)));
+
 							String sql = "INSERT diagnostic(guid, reg_guid, dia_code , state, summary, ps) VALUES (uuid(), '"
 									+ m_RegistrationGuid
 									+ "', '"
@@ -1419,6 +1438,9 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 					if (this.tab_Prescription.getValueAt(i, 1) != null
 							&& !this.tab_Prescription.getValueAt(i, 1)
 									.toString().trim().equals("")) {
+
+						System.out.println(String.format("inserting %s...",
+								(String) tab_Prescription.getValueAt(i, 1)));
 
 						if (this.tab_Prescription.getValueAt(i, 4) != null
 								&& this.tab_Prescription.getValueAt(i, 4)
@@ -1456,7 +1478,8 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 																		// &&
 																		// !this.tab_Medicine.getValueAt(i,
 																		// 2).toString().trim().equals("")
-
+						System.out.println(String.format("inserting %s...",
+								(String) tab_Medicine.getValueAt(i, 2)));
 						String ps = null;
 
 						if (this.tab_Medicine.getValueAt(i, 12) == null) {
@@ -1817,7 +1840,9 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 					+ "WHERE registration_info.guid = '"
 					+ guid
 					+ "' "
-					+ "AND prescription.reg_guid = '" + guid +  "' "
+					+ "AND prescription.reg_guid = '"
+					+ guid
+					+ "' "
 					+ "AND prescription_code.code = prescription.code ";
 			// System.out.println(sqlPrescription);
 			rsPrescription = DBC.executeQuery(sqlPrescription);

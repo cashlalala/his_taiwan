@@ -8,10 +8,7 @@ import java.awt.Graphics2D;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.print.PageFormat;
-import java.awt.print.Paper;
 import java.awt.print.Printable;
-import java.awt.print.PrinterException;
-import java.awt.print.PrinterJob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -29,6 +26,7 @@ import cc.johnwu.date.DateMethod;
 import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
 import diagnosis.Frm_DiagnosisInfo;
+import diagnosis.Frm_DiagnosisPrintChooser;
 import errormessage.StoredErrorMessage;
 
 public class Frm_WorkList extends javax.swing.JFrame {
@@ -114,7 +112,7 @@ public class Frm_WorkList extends javax.swing.JFrame {
 
 		this.setExtendedState(Frm_WorkList.MAXIMIZED_BOTH); // 最大化
 		this.setLocationRelativeTo(this);
-		this.tab_WorkList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); // tabble不可按住多選
+		this.tab_WorkList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); // table不可按住多選
 		addWindowListener(new WindowAdapter() { // 畫面關閉原視窗enable
 			@Override
 			public void windowClosing(WindowEvent windowevent) {
@@ -190,7 +188,7 @@ public class Frm_WorkList extends javax.swing.JFrame {
 		m_Pno = (String) this.tab_WorkList.getValueAt(
 				tab_WorkList.getSelectedRow(), 4);
 		m_RegGuid = (String) this.tab_WorkList.getValueAt(
-				tab_WorkList.getSelectedRow(), 10);
+				tab_WorkList.getSelectedRow(), 11);
 		int getSelectRow = this.tab_WorkList.getSelectedRow();
 
 		if (m_SysName.equals("dia")) {
@@ -204,9 +202,11 @@ public class Frm_WorkList extends javax.swing.JFrame {
 			new Frm_DiagnosisInfo(m_Pno, m_RegGuid, getSelectRow, finishState,
 					getFirst).setVisible(true);
 		} else if (m_SysName.equals("lab")) {
+			m_Pno = (String) this.tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 5);
 			new Frm_Laboratory(m_Pno, m_RegGuid, getSelectRow, finishState)
 					.setVisible(true);
 		} else if (m_SysName.equals("xray")) {
+			m_Pno = (String) this.tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 5);
 			new Frm_Radiology(m_Pno, m_RegGuid, getSelectRow, finishState)
 					.setVisible(true);
 		} else if (m_SysName.equals("case")) {
@@ -223,7 +223,6 @@ public class Frm_WorkList extends javax.swing.JFrame {
 		this.dispose();
 	}
 
-	
 	// <editor-fold defaultstate="collapsed"
 	// desc="Generated Code">//GEN-BEGIN:initComponents
 	private void initComponents() {
@@ -695,7 +694,8 @@ public class Frm_WorkList extends javax.swing.JFrame {
 				m_RefrashWorkList.interrupt(); // 終止重複讀取掛號表單
 				setEnter(finishState);
 			}
-		} else if (tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 2) == null) {
+		} else if ( (tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 2) == null)
+				|| (tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 2)).toString().compareTo("") == 0 ) {
 			m_RefrashWorkList.interrupt(); // 終止重複讀取掛號表單
 			setEnter(finishState);
 		}
@@ -706,24 +706,13 @@ public class Frm_WorkList extends javax.swing.JFrame {
 	}// GEN-LAST:event_btn_CloseActionPerformed
 
 	private void btn_RePrintActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_RePrintActionPerformed
-		PrinterJob pj = PrinterJob.getPrinterJob();
-		PageFormat pf = pj.defaultPage();
-		Paper paper = new Paper();
-		pf.setPaper(paper);
-		pj.setPrintable(new MyPrintable(), pf);
-		// ***************************//
-		if (pj.printDialog())
-			try {
-				pj.print();
-			} catch (PrinterException e) {
-				ErrorMessage.setData(
-						"Diagnosis",
-						"Frm_DiagnosisWorkList",
-						"btn_RePrintActionPerformed()",
-						e.toString().substring(
-								e.toString().lastIndexOf(".") + 1,
-								e.toString().length()));
-			}
+		String regGuid = (String) tab_WorkList.getValueAt(
+				tab_WorkList.getSelectedRow(), 11);
+		System.out.println(String.format("Selected Patient [%s]", regGuid));
+		Frm_DiagnosisPrintChooser chooser = new Frm_DiagnosisPrintChooser(
+				regGuid);
+		chooser.setLocationRelativeTo(this);
+		chooser.setVisible(true);
 	}// GEN-LAST:event_btn_RePrintActionPerformed
 
 	private void btn_SearchActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_SearchActionPerformed
@@ -795,149 +784,5 @@ public class Frm_WorkList extends javax.swing.JFrame {
 	private javax.swing.JTextField txt_Poli;
 
 	// End of variables declaration//GEN-END:variables
-	class MyPrintable implements Printable {
-		public int print(Graphics g, PageFormat pf, int pageIndex) {
-			String regGuid = (String) tab_WorkList.getValueAt(
-					tab_WorkList.getSelectedRow(), 11);
 
-			String sqlMedicines = "SELECT medicines.code, medicines.item, medicine_stock.dosage, medicines.unit, medicine_stock.usage, "
-					+ "medicine_stock.way, medicine_stock.repeat_number, medicine_stock.quantity, medicine_stock.urgent, "
-					+ "medicine_stock.powder, medicine_stock.ps "
-					+ "FROM medicines, medicine_stock, outpatient_services, registration_info "
-					+ "WHERE registration_info.guid = '"
-					+ regGuid
-					+ "' "
-					+ "AND medicine_stock.os_guid = outpatient_services.guid "
-					+ "AND outpatient_services.reg_guid = registration_info.guid "
-					+ "AND medicines.code = medicine_stock.m_code";
-
-			String sqlPatient = "SELECT registration_info.touchtime, patients_info.p_no, registration_info.pharmacy_no, "
-					+ "registration_info.modify_count, concat(patients_info.firstname,'  ',patients_info.lastname) AS name, "
-					+ "patients_info.gender, patients_info.birth "
-					+ "FROM registration_info, patients_info "
-					+ "WHERE guid = '"
-					+ regGuid
-					+ "' "
-					+ "AND registration_info.p_no = patients_info.p_no";
-
-			ResultSet rsMedicines = null;
-			ResultSet rsReceiveMedicineNo = null;
-			ResultSet rsPatient = null;
-			if (pageIndex != 0)
-				return NO_SUCH_PAGE;
-			Graphics2D g2 = (Graphics2D) g;
-			g2.setFont(new Font("Serif", Font.PLAIN, 12));
-			g2.setPaint(Color.black);
-			int i = 80;
-			int r = 0;
-			String urgent = null;
-			String powder = null;
-			String ps = null;
-			String finishNo = null;
-			// g2.drawString("文字", X, Y);
-			// ********************************************************//
-			try {
-				rsMedicines = DBC.executeQuery(sqlMedicines);
-				rsPatient = DBC.executeQuery(sqlPatient);
-
-				rsPatient.next();
-				if (rsMedicines.next()) {
-					finishNo = rsPatient.getString("pharmacy_no");
-				} else {
-					finishNo = "--";
-				}
-				rsMedicines.beforeFirst();
-				if (rsPatient.getInt("modify_count") != 0) {
-					g2.drawString("Modify-" + rsPatient.getInt("modify_count"),
-							380, i);
-				}
-				g2.drawString(
-						rsPatient.getString("touchtime").substring(4, 14), 450,
-						i);
-				i += 60;
-				g2.drawString("Date: " + DateMethod.getTodayYMD(), 80, i);
-				g2.drawString("Department: " + UserInfo.getUserPoliclinic(),
-						220, i);
-				g2.drawString("Doctor: " + UserInfo.getUserName(), 400, i);
-				i += 20;
-				g2.drawString("Name: " + rsPatient.getString("name"), 80, i);
-				g2.drawString("Gender: " + rsPatient.getString("gender"), 220,
-						i);
-				g2.drawString("ID: " + rsPatient.getString("p_no"), 400, i);
-				i += 20;
-				g2.drawString(
-						"Age: "
-								+ DateMethod.getAgeWithMonth(rsPatient
-										.getDate("birth")), 80, i);
-				g2.drawString("Receive Medicine Number: " + finishNo, 220, i);
-				i += 15;
-				g2.drawString(
-						"------------------------------------------------------------------------",
-						0, i);
-				i += 15;
-				g2.drawString("Medicine", 80, i);
-
-				while (rsMedicines.next()) {
-					++r;
-					if (rsMedicines.getString("urgent").equals("Y")) {
-						urgent = "Urgent";
-					} else {
-						urgent = "--";
-					}
-					if (rsMedicines.getString("powder").equals("Y")) {
-						powder = "Powder";
-					} else {
-						powder = "--";
-					}
-					if (rsMedicines.getString("ps") != null) {
-						ps = rsMedicines.getString("ps");
-					} else {
-						ps = "";
-					}
-					i += 25;
-					g2.drawString(String.valueOf(r), 80, i);
-					g2.drawString(rsMedicines.getString("item"), 90, i);
-					i += 15;
-					g2.drawString(rsMedicines.getString("usage"), 90, i);
-					g2.drawString(rsMedicines.getString("way"), 125, i);
-					g2.drawString(ps, 160, i);
-					i += 15;
-					g2.drawString(rsMedicines.getString("dosage"), 90, i); // +" "+
-																			// rsMedicines.getString("unit")
-					g2.drawString(rsMedicines.getString("day") + " Day", 125, i);
-					g2.drawString(urgent, 190, i);
-					g2.drawString(powder, 245, i);
-					g2.drawString(
-							"Total: " + rsMedicines.getString("quantity"), 330,
-							i); // +" "+rsMedicines.getString("unit")
-					// ********************************************************//
-				}
-			} catch (SQLException e) {
-				ErrorMessage
-						.setData(
-								"Diagnosis",
-								"Frm_DiagnosisWorkList",
-								"MyPrintable - print(Graphics g, PageFormat pf, int pageIndex)",
-								e.toString().substring(
-										e.toString().lastIndexOf(".") + 1,
-										e.toString().length()));
-			} finally {
-				try {
-					DBC.closeConnection(rsMedicines);
-					DBC.closeConnection(rsReceiveMedicineNo);
-					DBC.closeConnection(rsPatient);
-				} catch (SQLException e) {
-					ErrorMessage
-							.setData(
-									"Diagnosis",
-									"Frm_DiagnosisWorkList",
-									"MyPrintable - print(Graphics g, PageFormat pf, int pageIndex) - DBC.closeConnection",
-									e.toString().substring(
-											e.toString().lastIndexOf(".") + 1,
-											e.toString().length()));
-				}
-			}
-			return PAGE_EXISTS;
-		}
-	}
 }

@@ -60,6 +60,7 @@ public class RefrashRecord extends Thread{
                     row++;
                 } while (row<tableItem.length && rs.next());
                 this.tab.setModel(new DefaultTableModel(tableItem,m_Title));
+                TabTools.setHideColumn(tab, 1);
             }else{
                 tableItem = new Object[0][m_Title.length];
                 this.tab.setModel(new DefaultTableModel(tableItem,m_Title));
@@ -107,8 +108,8 @@ public class RefrashRecord extends Thread{
     }
 
     private String getSQL(){
-        String sql = "SELECT patients_info.p_no AS 'Patient No.', registration_info.register, " +
-                                "CASE registration_info.finish WHEN 'F' THEN 'F' WHEN 'O' THEN 'Skip' END 'Status'," +
+        String sql = "SELECT patients_info.p_no AS 'Patient No.', shift_table.guid AS 'Shift_guid', " +
+                                "CASE registration_info.finish WHEN 'F' THEN 'Finished' WHEN 'W' THEN 'Waiting' WHEN 'O' THEN 'Skip' END 'Status'," +
                                 "concat(patients_info.firstname ,'  ',patients_info.lastname) AS Name , " +
                                 "patients_info.birth AS Birthday, " +
                                 "policlinic.name AS Policlinic, "+
@@ -123,7 +124,7 @@ public class RefrashRecord extends Thread{
                                 "record_touchtime, " +
                                 "registration_info.guid AS reg_guid "+
                  "FROM (registration_info, patients_info, shift_table, staff_info, policlinic, poli_room ) " +
-                 "LEFT JOIN anamnesis_retrieve ON registration_info.guid = anamnesis_retrieve.reg_guid " +
+                 "LEFT JOIN anamnesis_retrieve ON registration_info.p_no = anamnesis_retrieve.p_no " +
                  "WHERE registration_info.p_no = patients_info.p_no " +
                  "AND registration_info.shift_guid = shift_table.guid " +
                  "AND shift_table.s_id = staff_info.s_id " +
@@ -143,7 +144,7 @@ public class RefrashRecord extends Thread{
                         conditions +
                         "ORDER BY registration_info.finish DESC, shift_table.shift, touchtime ";
         }
-
+System.out.println(judge);
         return sql;
     }
 
@@ -156,7 +157,7 @@ public class RefrashRecord extends Thread{
             try{
                 String check_sql = "SELECT MAX(record_touchtime) AS record_touchtime ,MAX(borrow_time) " +
                                    "FROM (registration_info,shift_table) " +
-                                   "LEFT JOIN anamnesis_retrieve ON registration_info.guid = anamnesis_retrieve.reg_guid " +
+                                   "LEFT JOIN anamnesis_retrieve ON registration_info.p_no = anamnesis_retrieve.p_no " +
                                    "WHERE registration_info.shift_guid = shift_table.guid " +
                                    "AND finish IS NULL " +
                                    "AND shift_table.shift = '"+DateMethod.getNowShiftNum()+"' " ;
@@ -237,7 +238,7 @@ public class RefrashRecord extends Thread{
                     //this.tab.setModel(new DefaultTableModel(tableItem,m_Title));
                     //RefrashRecord.sleep(time);
                 }
-               tab.getColumnModel().getColumn(0).setMaxWidth(60);
+                tab.getColumnModel().getColumn(0).setMaxWidth(60);
                 TabTools.setHideColumn(tab,m_Title.length-1);
                 //DBC.closeConnection(rs);
             }catch (SQLException e) {
