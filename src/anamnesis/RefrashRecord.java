@@ -1,21 +1,25 @@
 package anamnesis;
 
 
-import anamnesis.TableTriStateCell.*;
-import cc.johnwu.date.*;
-import cc.johnwu.sql.*;
-
 import java.awt.Color;
-import java.sql.*;
+import java.awt.Component;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.table.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+
+import anamnesis.TableTriStateCell.TriStateCellEditor;
+import anamnesis.TableTriStateCell.TriStateCellRenderer;
+import cc.johnwu.date.DateMethod;
+import cc.johnwu.sql.DBC;
 
 import common.PrintTools;
 import common.TabTools;
+
 import errormessage.StoredErrorMessage;
-import multilingual.Language;
 
 
 public class RefrashRecord extends Thread{
@@ -29,7 +33,7 @@ public class RefrashRecord extends Thread{
     private String[] m_Title = new String[]{"Patient No.","Register","Status","Name",
                                             "Birthday","Policlinic",
                                             "Clinic", "Doctor",
-                                            "Shift","Lent Time","Check","reg_guid"};
+                                            "Shift","Lent Time", "Anamnesis", "borrow_guid", "Check","reg_guid"};
     private Boolean judge;  // true 借閱病歷
 
 
@@ -90,6 +94,7 @@ public class RefrashRecord extends Thread{
             TableColumn tc = tab.getColumnModel().getColumn(0);
             tc.setMaxWidth(60);
             TabTools.setHideColumn(tab,m_Title.length-1);
+            TabTools.setHideColumn(tab,m_Title.length-3);
             TableColumn columnChoose = this.tab.getColumnModel().getColumn(m_Title.length-2);
             columnChoose.setPreferredWidth(50);
             columnChoose.setCellRenderer(new TriStateCellRenderer());
@@ -107,6 +112,8 @@ public class RefrashRecord extends Thread{
       }
     }
 
+    // 借病例: 列出今天掛號，狀態為待診中
+    // 還病例: 列出過去 已經借出去的，還沒還的
     private String getSQL(){
         String sql = "SELECT patients_info.p_no AS 'Patient No.', shift_table.guid AS 'Shift_guid', " +
                                 "CASE registration_info.finish WHEN 'F' THEN 'Finished' WHEN 'W' THEN 'Waiting' WHEN 'O' THEN 'Skip' END 'Status'," +
@@ -121,20 +128,23 @@ public class RefrashRecord extends Thread{
                                     "WHEN '3' THEN 'Night' " +
                                     "ELSE 'All Night' END Shift," +
                                 "anamnesis_retrieve.borrow_time AS 'Lent Time', "+
+                                "CASE anamnesis.status WHEN 'O' THEN 'Out' ELSE 'In' END 'Anamnesis', " +
+                                "anamnesis_retrieve.guid AS 'borrow_guid', " + 
                                 "record_touchtime, " +
-                                "registration_info.guid AS reg_guid "+
+                                "registration_info.guid AS reg_guid " +
                  "FROM (registration_info, patients_info, shift_table, staff_info, policlinic, poli_room ) " +
-                 "LEFT JOIN anamnesis_retrieve ON registration_info.p_no = anamnesis_retrieve.p_no " +
+                 "LEFT JOIN anamnesis_retrieve ON registration_info.p_no = anamnesis_retrieve.p_no AND registration_info.shift_guid = anamnesis_retrieve.shift_guid " +
+                 "LEFT JOIN anamnesis on anamnesis.borrow_guid = anamnesis_retrieve.guid " +
                  "WHERE registration_info.p_no = patients_info.p_no " +
                  "AND registration_info.shift_guid = shift_table.guid " +
                  "AND shift_table.s_id = staff_info.s_id " +
                  "AND shift_table.room_guid = poli_room.guid " +
-                 "AND shift_table.shift = '"+DateMethod.getNowShiftNum()+"' " +
+                 //"AND shift_table.shift = '"+DateMethod.getNowShiftNum()+"' " +
                  "AND poli_room.poli_guid = policlinic.guid " ;
 
         if(judge){
             sql = sql + "AND shift_table.shift_date = '"+DateMethod.getTodayYMD() + "' " +
-                        "AND borrow_time IS NULL " +
+                        //"AND borrow_time IS NULL " +
                         "ORDER BY shift_table.shift, touchtime ";
             
         }else{
@@ -144,7 +154,7 @@ public class RefrashRecord extends Thread{
                         conditions +
                         "ORDER BY registration_info.finish DESC, shift_table.shift, touchtime ";
         }
-System.out.println(judge);
+//System.out.println(judge);
         return sql;
     }
 
@@ -232,6 +242,7 @@ System.out.println(judge);
                     columnChoose.setPreferredWidth(50);
                     columnChoose.setCellRenderer(new TriStateCellRenderer());
                     columnChoose.setCellEditor(new TriStateCellEditor());
+                    
                 }else{
                     //Object[][] tableItem = null;
                     //tableItem = new Object[0][m_Title.length];
