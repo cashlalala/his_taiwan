@@ -20,6 +20,7 @@ import org.his.bind.MedicineReturnTableBind;
 
 import errormessage.StoredErrorMessage;
 import cc.johnwu.sql.DBC;
+import cc.johnwu.sql.HISModel;
 import cc.johnwu.sql.HISPassword;
 import multilingual.Language;
 
@@ -208,7 +209,7 @@ public class Frm_ReturnToMerchant extends JFrame {
 					.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
 							ResultSet.CONCUR_READ_ONLY);
 			rsMedicines = stmt.executeQuery(sqlMedicines);
-			tab_MedicineList.setModel(new MedicineReturnTableBind(rsMedicines));
+			tab_MedicineList.setModel(HISModel.getModel(rsMedicines, false));
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
