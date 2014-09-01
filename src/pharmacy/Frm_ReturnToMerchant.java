@@ -191,7 +191,6 @@ public class Frm_ReturnToMerchant extends JFrame {
 	}
 
 	private void showMedicineList(String reg_guid) {
-		System.out.print(reg_guid);
 		String sqlMedicines = "SELECT "
 				+ "medicines.code, medicines.item, medicine_stock.dosage, medicines.unit, "
 				+ "medicine_stock.usage, medicine_stock.unit_price, medicine_stock.price "

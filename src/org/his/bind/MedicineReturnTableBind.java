@@ -89,43 +89,43 @@ public class MedicineReturnTableBind extends AbstractTableModel implements
 		switch (columnIndex) {
 		case COL_MEDICINE_CODE:
 			try {
-				return medicinesInfo.getString(COL_MEDICINE_CODE);
+				return medicinesInfo.getString(COL_MEDICINE_CODE+1);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 		case COL_MEDICINE_NAME:
 			try {
-				return medicinesInfo.getString(COL_MEDICINE_NAME);
+				return medicinesInfo.getString(COL_MEDICINE_NAME+1);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 		case COL_MEDICINE_DOSAGE:
 			try {
-				return medicinesInfo.getString(COL_MEDICINE_DOSAGE);
+				return medicinesInfo.getString(COL_MEDICINE_DOSAGE+1);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 		case COL_MEDICINE_UNIT:
 			try {
-				return medicinesInfo.getString(COL_MEDICINE_UNIT);
+				return medicinesInfo.getString(COL_MEDICINE_UNIT+1);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 		case COL_MEDICINE_QUANTITY:
 			try {
-				return medicinesInfo.getString(COL_MEDICINE_QUANTITY);
+				return medicinesInfo.getString(COL_MEDICINE_QUANTITY+1);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 		case COL_MEDICINE_UNIT_PRICE:
 			try {
-				return medicinesInfo.getString(COL_MEDICINE_UNIT_PRICE);
+				return medicinesInfo.getString(COL_MEDICINE_UNIT_PRICE+1);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 		case COL_MEDICINE_TOTAL_PRICE:
 			try {
-				return medicinesInfo.getString(COL_MEDICINE_UNIT_PRICE);
+				return medicinesInfo.getString(COL_MEDICINE_UNIT_PRICE+1);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
