@@ -1507,7 +1507,7 @@ public void ShowGpsFrom() {
             sql = "SELECT visits_no, guid FROM registration_info " +
                   "WHERE shift_guid = '"+m_RegShiftGuid+"' " +
                   "AND p_no ='"+this.lab_PNo.getText()+"' " +
-                  "AND finish IS NULL " +
+                  "AND finish='W' " +
                   "AND touchtime LIKE concat(DATE_FORMAT(now(),'%Y%m%d%H%i'),'%') ";
             ResultSet rs = DBC.executeQuery(sql);
             if(rs.next()){
@@ -1545,7 +1545,6 @@ public void ShowGpsFrom() {
             pt = new PrintTools();
             //pt.DoPrint(1, rs);
 
-            System.out.println("aaaaaaaaaaaaaaaaa\n");
             System.out.println(cob_Policlinic.getSelectedItem().toString());
             
             if (cob_Policlinic.getSelectedItem().toString().equals(POLINAME_DM)) {
