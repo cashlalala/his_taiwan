@@ -410,14 +410,20 @@ public class Frm_Anamnesis extends javax.swing.JFrame {
             m_RefrashRecord.interrupt();
             for(int i=0; i<tab_Anamnesis.getRowCount(); i++){
                 if(m_Select.contains(tab_Anamnesis.getValueAt(i, tab_Anamnesis.getColumnCount()-1).toString())){
-                    sql = "INSERT INTO anamnesis_retrieve " +
-                            "SELECT uuid(), " +
-                            "'"+tab_Anamnesis.getValueAt(i, tab_Anamnesis.getColumnCount()-1).toString()+"', "+
+                	String uuid = UUID.randomUUID().toString();
+                    sql = "INSERT INTO anamnesis_retrieve VALUES (" +
+                            "'" + uuid + "', " +
+                            "'"+tab_Anamnesis.getValueAt(i, 0).toString()+"', "+
+                            " 'M', " +
+                            " '" + UserInfo.getUserNO() + "', " +
+                            "'"+tab_Anamnesis.getValueAt(i, 1).toString()+"', "+
                             "now(), " +
-                            "null " +
-                            "FROM dual " +
-                            "WHERE NOT EXISTS (SELECT * FROM anamnesis_retrieve " +
-                                "WHERE anamnesis_retrieve.reg_guid = '"+tab_Anamnesis.getValueAt(i, tab_Anamnesis.getColumnCount()-1).toString()+"') ";
+                            "null)";
+                        DBC.executeUpdate(sql);
+                    sql = "INSERT INTO anamnesis VALUES (" +
+                            "'"+tab_Anamnesis.getValueAt(i, 0).toString()+"', "+
+                            " 'O', " +
+                            " '" + uuid + "') ";
                         DBC.executeUpdate(sql);
                         m_Select.remove(tab_Anamnesis.getValueAt(i, tab_Anamnesis.getColumnCount()-1).toString());
                 }

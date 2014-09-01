@@ -512,10 +512,12 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
 								+String.format("%02d", (lastRepeatDate.get(Calendar.MONTH)+1))
 								+"-"+String.format("%02d", lastRepeatDate.get(Calendar.DAY_OF_MONTH));
 
-						
+						String poliRoom = cob_PolRoom.getSelectedItem().toString(); // 診間名稱
+						String division = cob_Policlinic.getSelectedItem().toString();
 						String sqlCheckexist = "SELECT count(*) FROM shift_table where shift_date >= '" 
 								+ firstRepeatDateString + "' and shift_date <= '" 
-								+ lastRepeatDateString + "'";
+								+ lastRepeatDateString + "'"
+								+ " AND shift_table.room_guid = (SELECT poli_room.guid FROM poli_room,policlinic WHERE poli_room.name = '"+poliRoom+"' AND poli_room.poli_guid = policlinic.guid  AND policlinic.name = '"+division+"') ";
 						//System.out.println(sqlCheckexist);
 						ResultSet rscheck = DBC.executeQuery (sqlCheckexist);
 						rscheck.next();
@@ -523,9 +525,7 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
 							JOptionPane.showMessageDialog(null, paragraph.getString("REPEATPERIODHASDATA"));
 							return;
 						}
-						
-						String poliRoom = cob_PolRoom.getSelectedItem().toString(); // 診間名稱
-						String division = cob_Policlinic.getSelectedItem().toString();
+
 				        String sqlSource = "SELECT * FROM shift_table where shift_date >= '" + firstDateString + "' and shift_date <= '" + lastDateString + "'"
 								+ " AND shift_table.room_guid = (SELECT poli_room.guid FROM poli_room,policlinic WHERE poli_room.name = '"+poliRoom+"' AND poli_room.poli_guid = policlinic.guid  AND policlinic.name = '"+division+"') ";
 						//System.out.println(sqlSource);
