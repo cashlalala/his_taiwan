@@ -202,7 +202,7 @@ public class Frm_DiagnosisPrintChooser extends JDialog {
 		JButton btnAll = new JButton("All");
 		btnAll.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				onDiagnosisPrintClicked();
+				pt.DoPrintWithDialog(10, regGuid);
 				pt.DoPrintWithDialog(6, regGuid);
 				pt.DoPrintWithDialog(4, regGuid);
 				pt.DoPrintWithDialog(8, regGuid);
@@ -213,7 +213,7 @@ public class Frm_DiagnosisPrintChooser extends JDialog {
 		JButton btnDiagnosis = new JButton("Diagnosis");
 		btnDiagnosis.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				onDiagnosisPrintClicked();
+				pt.DoPrintWithDialog(10, regGuid);
 			}
 		});
 
