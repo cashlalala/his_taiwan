@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -168,7 +169,7 @@ public class Frm_ReturnToMerchant extends JFrame {
 	private void btn_ReturnActionPerformed(java.awt.event.ActionEvent evt) {
 		// todo return
 		String sql = "";
-		Connection conn=null;
+		Connection conn = null;
 		try {
 			conn = DriverManager.getConnection(DBC.s_ServerURL,
 					DBC.s_ServerName, DBC.s_ServerPasswd);
@@ -182,7 +183,7 @@ public class Frm_ReturnToMerchant extends JFrame {
 			} catch (SQLException e1) {
 				e1.printStackTrace();
 			}
-		}finally{
+		} finally {
 			try {
 				conn.close();
 			} catch (SQLException e) {
@@ -191,14 +192,29 @@ public class Frm_ReturnToMerchant extends JFrame {
 		}
 	}
 
+	private ArrayList<ArrayList<String>> ConvertToMatrix(ResultSet rs) {
+		ArrayList<ArrayList<String>> returnMatrix = new ArrayList<ArrayList<String>>();
+		try {
+			while (rs.next()) {
+				ArrayList<String> newRow = new ArrayList<String>();
+				int i=0;
+				for(i=0;i<7;i++){
+					newRow.add(rs.getString(i+1));
+				}
+				returnMatrix.add(newRow);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return returnMatrix;
+	}
+
 	private void showMedicineList(String reg_guid) {
 		String sqlMedicines = "SELECT "
 				+ "medicines.code, medicines.item, medicine_stock.dosage, medicines.unit, "
 				+ "medicine_stock.usage, medicine_stock.unit_price, medicine_stock.price "
 				+ "FROM medicines, medicine_stock, registration_info "
-				+ "WHERE registration_info.guid = '"
-				+ reg_guid
-				+ "' "
+				+ "WHERE registration_info.guid = '" + reg_guid + "' "
 				+ "AND medicine_stock.reg_guid = registration_info.guid "
 				+ "AND medicines.code = medicine_stock.m_code";
 		ResultSet rsMedicines = null;
@@ -209,10 +225,12 @@ public class Frm_ReturnToMerchant extends JFrame {
 					.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
 							ResultSet.CONCUR_READ_ONLY);
 			rsMedicines = stmt.executeQuery(sqlMedicines);
-			tab_MedicineList.setModel(new MedicineReturnTableBind(rsMedicines));
+			ArrayList<ArrayList<String>> MedicineList = ConvertToMatrix(rsMedicines);
+			tab_MedicineList
+					.setModel(new MedicineReturnTableBind(MedicineList));
 		} catch (SQLException e) {
 			e.printStackTrace();
-		} finally {/*
+		} finally {
 			try {
 				DBC.closeConnection(rsMedicines);
 			} catch (SQLException e) {
@@ -225,7 +243,7 @@ public class Frm_ReturnToMerchant extends JFrame {
 								e.toString().length()));
 				Logger.getLogger(RefreshPharmacy.class.getName()).log(
 						Level.SEVERE, null, e);
-			}*/
+			}
 		}
 	}
 }

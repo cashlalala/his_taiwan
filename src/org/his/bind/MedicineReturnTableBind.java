@@ -3,6 +3,7 @@ package org.his.bind;
 import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -34,29 +35,15 @@ public class MedicineReturnTableBind extends AbstractTableModel implements
 	private static final int COL_MEDICINE_UNIT_PRICE = 5;
 	private static final int COL_MEDICINE_TOTAL_PRICE = 6;
 
-	public MedicineReturnTableBind(ResultSet medicinesInfo) {
+	public MedicineReturnTableBind(ArrayList<ArrayList<String>> medicinesInfo) {
 		this.medicinesInfo = medicinesInfo;
 	}
 
-	private ResultSet medicinesInfo;
+	private ArrayList<ArrayList<String>> medicinesInfo;
 
 	@Override
 	public int getRowCount() {
-		try {
-			medicinesInfo.beforeFirst();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		int counter = 0;
-
-		try {
-			while (medicinesInfo.next()) {
-				counter = counter + 1;
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return counter;
+		return medicinesInfo.size()+1;
 	}
 
 	@Override
@@ -71,66 +58,12 @@ public class MedicineReturnTableBind extends AbstractTableModel implements
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		try {
-			medicinesInfo.beforeFirst();
-		} catch (SQLException e) {
-			e.printStackTrace();
+		if (rowIndex == 0) {
+			return COL_NAMES_FOR_RETURN[columnIndex];
+		}
+		if (rowIndex > medicinesInfo.size()) {
 			return null;
 		}
-		int i = 0;
-		while (i <= rowIndex) {
-			try {
-				medicinesInfo.next();
-				i=i+1;
-			} catch (SQLException e) {
-				e.printStackTrace();
-				return null;
-			}
-		}
-		switch (columnIndex) {
-		case COL_MEDICINE_CODE:
-			try {
-				return medicinesInfo.getString(COL_MEDICINE_CODE+1);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		case COL_MEDICINE_NAME:
-			try {
-				return medicinesInfo.getString(COL_MEDICINE_NAME+1);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		case COL_MEDICINE_DOSAGE:
-			try {
-				return medicinesInfo.getString(COL_MEDICINE_DOSAGE+1);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		case COL_MEDICINE_UNIT:
-			try {
-				return medicinesInfo.getString(COL_MEDICINE_UNIT+1);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		case COL_MEDICINE_QUANTITY:
-			try {
-				return medicinesInfo.getString(COL_MEDICINE_QUANTITY+1);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		case COL_MEDICINE_UNIT_PRICE:
-			try {
-				return medicinesInfo.getString(COL_MEDICINE_UNIT_PRICE+1);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		case COL_MEDICINE_TOTAL_PRICE:
-			try {
-				return medicinesInfo.getString(COL_MEDICINE_UNIT_PRICE+1);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-		return null;
+		return medicinesInfo.get(rowIndex-1).get(columnIndex);
 	}
 }
