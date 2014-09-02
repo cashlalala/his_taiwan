@@ -37,7 +37,7 @@ public class Frm_Pharmacy extends javax.swing.JFrame {
 	private Language paragraph = Language.getInstance();
 	/* 輸出錯誤資訊變數 */
 	StoredErrorMessage ErrorMessage = new StoredErrorMessage();
-
+	boolean m_clock_running=true;
 	public Frm_Pharmacy() {
 		initComponents();
 		initWorkList();
@@ -57,6 +57,7 @@ public class Frm_Pharmacy extends javax.swing.JFrame {
 		this.setExtendedState(this.MAXIMIZED_BOTH); // 最大化
 		this.setLocationRelativeTo(this);
 		this.tab_Pharmacy.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); // tabble不可按住多選
+		this.m_clock_running=true;
 		addWindowListener(new WindowAdapter() { // 畫面關閉原視窗enable
 			@Override
 			public void windowClosing(WindowEvent windowevent) {
@@ -67,12 +68,13 @@ public class Frm_Pharmacy extends javax.swing.JFrame {
 		this.m_RefreshWorkList = new RefreshPharmacy(this.tab_Pharmacy,
 				RefreshTIME, this, this.check_Follow);
 		this.m_RefreshWorkList.start();
+		
 		this.m_Clock = new Thread() { // Clock
 			@Override
 			@SuppressWarnings("static-access")
 			public void run() {
 				try {
-					while (true) {
+					while (m_clock_running) {
 						lab_SystemTime.setText(new SimpleDateFormat(
 								"yyyy/MM/dd HH:mm:ss").format(Calendar
 								.getInstance().getTime()));
@@ -145,10 +147,8 @@ public class Frm_Pharmacy extends javax.swing.JFrame {
 		pan_Center.setBackground(new java.awt.Color(228, 228, 228));
 
 		tab_Pharmacy.setModel(new javax.swing.table.DefaultTableModel(
-				new Object[][] { {}, {}, {} }, new String[] {
-
-				}));
-		//tab_Pharmacy.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+				new Object[][] { {}, {}, {} }, new String[] {}));
+		// tab_Pharmacy.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
 		tab_Pharmacy.setRowHeight(25);
 		tab_Pharmacy.getTableHeader().setReorderingAllowed(false);
 		tab_Pharmacy.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -241,7 +241,7 @@ public class Frm_Pharmacy extends javax.swing.JFrame {
 																				btn_ReturnToMerchant,
 																				javax.swing.GroupLayout.PREFERRED_SIZE,
 																				95,
-																				javax.swing.GroupLayout.PREFERRED_SIZE)																		
+																				javax.swing.GroupLayout.PREFERRED_SIZE)
 																		.addPreferredGap(
 																				javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 																		.addComponent(
@@ -288,7 +288,8 @@ public class Frm_Pharmacy extends javax.swing.JFrame {
 														.addComponent(
 																lab_FinishCount)
 														.addComponent(btn_Close)
-														.addComponent(btn_ReturnToMerchant)
+														.addComponent(
+																btn_ReturnToMerchant)
 														.addComponent(btn_Check)
 														.addComponent(
 																btn_Reprint))
@@ -459,11 +460,13 @@ public class Frm_Pharmacy extends javax.swing.JFrame {
 					.setVisible(true);
 			this.setEnabled(false);
 		}
-	}// GEN-LAST:event_btn_CheckActionPerformed
+	}
 
 	private void btn_ReturnToMerchantActionPerformed(
 			java.awt.event.ActionEvent evt) {
-		new Frm_ReturnToMerchant().setVisible(true);
+		m_RefreshWorkList.stopRunning();
+		m_clock_running=false;
+		new Frm_ReturnToMerchant(this).setVisible(true);
 		this.setEnabled(false);
 	}
 
@@ -628,7 +631,8 @@ public class Frm_Pharmacy extends javax.swing.JFrame {
 					i += 15;
 					g2.drawString(rsMedicines.getString("dosage"), 90, i); // +" "+
 																			// rsMedicines.getString("unit")
-					//g2.drawString(rsMedicines.getString("day") + " Day", 125, i);
+					// g2.drawString(rsMedicines.getString("day") + " Day", 125,
+					// i);
 					g2.drawString(urgent, 190, i);
 					g2.drawString(powder, 245, i);
 					g2.drawString(
