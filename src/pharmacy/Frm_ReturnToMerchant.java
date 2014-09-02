@@ -209,10 +209,10 @@ public class Frm_ReturnToMerchant extends JFrame {
 					.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
 							ResultSet.CONCUR_READ_ONLY);
 			rsMedicines = stmt.executeQuery(sqlMedicines);
-			tab_MedicineList.setModel(HISModel.getModel(rsMedicines, false));
+			tab_MedicineList.setModel(new MedicineReturnTableBind(rsMedicines));
 		} catch (SQLException e) {
 			e.printStackTrace();
-		} finally {
+		} finally {/*
 			try {
 				DBC.closeConnection(rsMedicines);
 			} catch (SQLException e) {
@@ -225,7 +225,7 @@ public class Frm_ReturnToMerchant extends JFrame {
 								e.toString().length()));
 				Logger.getLogger(RefreshPharmacy.class.getName()).log(
 						Level.SEVERE, null, e);
-			}
+			}*/
 		}
 	}
 }

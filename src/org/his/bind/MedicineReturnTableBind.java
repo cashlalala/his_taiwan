@@ -81,6 +81,7 @@ public class MedicineReturnTableBind extends AbstractTableModel implements
 		while (i <= rowIndex) {
 			try {
 				medicinesInfo.next();
+				i=i+1;
 			} catch (SQLException e) {
 				e.printStackTrace();
 				return null;
