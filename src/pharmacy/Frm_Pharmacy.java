@@ -148,7 +148,7 @@ public class Frm_Pharmacy extends javax.swing.JFrame {
 				new Object[][] { {}, {}, {} }, new String[] {
 
 				}));
-		tab_Pharmacy.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+		//tab_Pharmacy.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
 		tab_Pharmacy.setRowHeight(25);
 		tab_Pharmacy.getTableHeader().setReorderingAllowed(false);
 		tab_Pharmacy.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -433,10 +433,9 @@ public class Frm_Pharmacy extends javax.swing.JFrame {
 		tab_PharmacyMouseClicked(null);
 	}// GEN-LAST:event_tab_PharmacyKeyPressed
 
-	private void btn_CheckActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_CheckActionPerformed
+	private void btn_CheckActionPerformed(java.awt.event.ActionEvent evt) {
 		if (tab_Pharmacy.getSelectedRow() != -1
 				&& tab_Pharmacy.getValueAt(tab_Pharmacy.getSelectedRow(), 1) != null) {
-
 			String getDep = (String) this.tab_Pharmacy.getValueAt(
 					tab_Pharmacy.getSelectedRow(), 1);
 			String getDocter = (String) this.tab_Pharmacy.getValueAt(
@@ -589,10 +588,6 @@ public class Frm_Pharmacy extends javax.swing.JFrame {
 				g2.drawString("Patient No.: " + rsPatient.getString("p_no"),
 						400, i);
 				i += 20;
-				g2.drawString(
-						"Age: "
-								+ DateMethod.getAgeWithMonth(rsPatient
-										.getDate("birth")), 80, i);
 				g2.drawString("Receive Medicine Number: " + finishNo, 220, i);
 				i += 15;
 				g2.drawString(
