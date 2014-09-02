@@ -387,7 +387,10 @@ public class Frm_Anamnesis extends javax.swing.JFrame {
                     if(this.tab_Anamnesis.getValueAt(i, this.tab_Anamnesis.getColumnCount()-2).equals(true)){
                         sql = "UPDATE anamnesis_retrieve " +
                                 "SET return_time = now() " +
-                                "WHERE anamnesis_retrieve.reg_guid = '" + tab_Anamnesis.getValueAt(i,tab_Anamnesis.getColumnCount()-1 ) + "'";
+                                "WHERE anamnesis_retrieve.guid = '" + tab_Anamnesis.getValueAt(i,tab_Anamnesis.getColumnCount()-3 ) + "'";
+                        DBC.executeUpdate(sql);
+                        sql = "UPDATE anamnesis SET status = 'I' WHERE " +
+                        		"anamnesis.p_no = '" + tab_Anamnesis.getValueAt(i,0) + "'";
                         DBC.executeUpdate(sql);
                         m_Select.remove(tab_Anamnesis.getValueAt(i, tab_Anamnesis.getColumnCount()-1).toString());
                     }
@@ -423,7 +426,8 @@ public class Frm_Anamnesis extends javax.swing.JFrame {
                     sql = "INSERT INTO anamnesis VALUES (" +
                             "'"+tab_Anamnesis.getValueAt(i, 0).toString()+"', "+
                             " 'O', " +
-                            " '" + uuid + "') ";
+                            " '" + uuid + "') " +
+                            "ON DUPLICATE KEY UPDATE STATUS = 'O', borrow_guid = '" + uuid + "' ";
                         DBC.executeUpdate(sql);
                         m_Select.remove(tab_Anamnesis.getValueAt(i, tab_Anamnesis.getColumnCount()-1).toString());
                 }
