@@ -37,13 +37,14 @@ public class Frm_ReturnToMerchant extends JFrame {
 	private JTextField txt_Search;
 	private JTable tab_MedicineList;
 	private static final Language paragraph = Language.getInstance();
-
+	private Frm_Pharmacy Frm_Parent;
 	StoredErrorMessage ErrorMessage = new StoredErrorMessage();
 
 	/**
 	 * Create the frame.
 	 */
-	public Frm_ReturnToMerchant() {
+	public Frm_ReturnToMerchant(Frm_Pharmacy Frm_Parent) {
+		this.Frm_Parent = Frm_Parent;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 721, 692);
 		contentPane = new JPanel();
@@ -162,8 +163,9 @@ public class Frm_ReturnToMerchant extends JFrame {
 	}
 
 	private void btn_CloseActionPerformed(java.awt.event.ActionEvent evt) {
-		// todo close
-
+		this.Frm_Parent.setEnabled(true);		
+		this.Frm_Parent.initWorkList();
+		this.dispose();
 	}
 
 	private void btn_ReturnActionPerformed(java.awt.event.ActionEvent evt) {
@@ -190,6 +192,7 @@ public class Frm_ReturnToMerchant extends JFrame {
 				e.printStackTrace();
 			}
 		}
+		showMedicineList(txt_Search.getText());
 	}
 
 	private ArrayList<ArrayList<String>> ConvertToMatrix(ResultSet rs) {
@@ -197,9 +200,9 @@ public class Frm_ReturnToMerchant extends JFrame {
 		try {
 			while (rs.next()) {
 				ArrayList<String> newRow = new ArrayList<String>();
-				int i=0;
-				for(i=0;i<7;i++){
-					newRow.add(rs.getString(i+1));
+				int i = 0;
+				for (i = 0; i < 7; i++) {
+					newRow.add(rs.getString(i + 1));
 				}
 				returnMatrix.add(newRow);
 			}
