@@ -1607,6 +1607,24 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 						DBC.executeUpdate(sql);
 						medicineState += 1;
 
+						// update the medical stock amount
+						sql = String
+								.format("select guid, current_amount from  medical_stock where item_guid = '%s'",
+										m_code.trim());
+						ResultSet rsAmount = stmt.executeQuery(sql);
+						if (rsAmount.first()) {
+							Float amount = rsAmount.getFloat("current_amount")
+									- (Float) tab_Medicine.getValueAt(i, 9);
+							String guid = rsAmount.getString("guid");
+
+							sql = String
+									.format("update medical_stock set current_amount = %f where guid = '%s'",
+											amount, guid);
+							DBC.executeUpdate(sql);
+						}
+						rsAmount.close();
+
+						// update the count of favorite medicines
 						sql = String
 								.format("select guid, usedTime from medicine_favorite "
 										+ " where s_no = '%s' and m_code = '%s' ",
