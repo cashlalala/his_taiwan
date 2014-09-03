@@ -171,8 +171,8 @@ public class Frm_WorkList extends javax.swing.JFrame {
 		int finishCount = 0;
 		if (this.tab_WorkList.getRowCount() > 0)
 			for (int i = 0; i < this.tab_WorkList.getRowCount(); i++) {
-				if (this.tab_WorkList.getValueAt(i, 3) != null
-						&& this.tab_WorkList.getValueAt(i, 3).toString()
+				if (this.tab_WorkList.getValueAt(i, 2) != null
+						&& this.tab_WorkList.getValueAt(i, 2).toString()
 								.equals("F"))
 					finishCount++;
 			}

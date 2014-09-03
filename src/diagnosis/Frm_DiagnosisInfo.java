@@ -9,6 +9,7 @@ import java.awt.print.Paper;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -30,6 +31,8 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+
+import com.mysql.jdbc.Statement;
 
 import laboratory.Frm_LabDM;
 import laboratory.Frm_LabHistory;
@@ -113,12 +116,29 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 	private int m_PackageSetDay = 0;
 	private boolean m_IsFirst;
 
+	private String m_ICDVersion;
+	private static final String DELIMITER = Character.toString((char) 0);
+
 	public Frm_DiagnosisInfo() {
 	}
 
 	// 參數：病患編號 掛號guid worklist停留行號 看診狀態 是否為初診
 	public Frm_DiagnosisInfo(String p_no, String regGuid, int stopRowNo,
 			boolean finishState, boolean isFirst) {
+		ResultSet setting = null;
+		try {
+			setting = DBC.executeQuery("Select icdversion from setting");
+			m_ICDVersion = (setting.first()) ? setting.getString("icdversion")
+					: null;
+		} catch (SQLException e) {
+			try {
+				DBC.closeConnection(setting);
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+		}
+
 		this.m_Pno = p_no;
 		this.m_RegistrationGuid = regGuid;
 		this.m_WorkListRowNo = stopRowNo;
@@ -1012,19 +1032,27 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 			break;
 		case 3: // tab_Medicine
 			if (value.length != -1) {
-				System.out.println("0  :" + value[0] + " 1  :" + value[1]
-						+ " 2  :" + value[2]);
-				m_AutoTxt.setText(value[1]);
-				tab_Medicine.setValueAt(value[1].trim(),
-						tab_Medicine.getSelectedRow(), 1); // item
-				tab_Medicine.setValueAt(value[0].trim(),
-						tab_Medicine.getSelectedRow(), 2); // code
-				tab_Medicine.setValueAt(value[2].trim(),
-						tab_Medicine.getSelectedRow(), 3); // injection
-				// tab_Medicine.setValueAt(value[4],
-				// tab_Medicine.getSelectedRow(), 4);
-				tab_Medicine.setValueAt("N", tab_Medicine.getSelectedRow(), 10);
-				tab_Medicine.setValueAt("N", tab_Medicine.getSelectedRow(), 11);
+				try {
+					String msg = String.format("0:%s,1:%s,2:%s,3:%s", value[0],
+							value[1], value[2], value[3]);
+					System.out.println(msg);
+					m_AutoTxt.setText(value[1]);
+					tab_Medicine.setValueAt(value[1].trim(),
+							tab_Medicine.getSelectedRow(), 1); // item
+					tab_Medicine.setValueAt(value[0].trim(),
+							tab_Medicine.getSelectedRow(), 2); // code
+					tab_Medicine.setValueAt(value[2].trim(),
+							tab_Medicine.getSelectedRow(), 3); // injection
+					tab_Medicine.setValueAt(Double.valueOf(value[3].trim()),
+							tab_Medicine.getSelectedRow(), 4); // unit dosage
+
+					tab_Medicine.setValueAt("N", tab_Medicine.getSelectedRow(),
+							10);
+					tab_Medicine.setValueAt("N", tab_Medicine.getSelectedRow(),
+							11);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 
 			break;
@@ -1064,34 +1092,42 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 			String sql = null;
 			if (m_AutoTable.equals("medicines")) {
 				// System.out.println("搜尋用 藥品 語法");
-				sql = "SELECT * FROM " + m_AutoTable + " " + "WHERE LOWER("
-						+ m_AutoColumnName + ") LIKE LOWER('" + condition
-						+ "%') " + "AND effective <> 0 ORDER BY "
-						+ m_AutoColumnName + "";
+				sql = String
+						.format("SELECT *, "
+								+ "case when (select count(1) from medicine_favorite where s_no = %s and medicine_favorite.m_code = medicines.code) = 0 "
+								+ "then 0 "
+								+ "else (select usedTime from medicine_favorite where s_no = %s and medicine_favorite.m_code = medicines.code) end "
+								+ "as freq "
+								+ "FROM %s "
+								+ "WHERE LOWER(%s) LIKE LOWER('%s%%') AND effective <> 0 "
+								+ "AND code in (select b.item_guid from medical_stock b) "
+								+ "ORDER BY freq desc, %s",
+								UserInfo.getUserNO(), UserInfo.getUserNO(),
+								m_AutoTable, m_AutoColumnName, condition,
+								m_AutoColumnName);
 			} else if (m_AutoTable.equals("diagnosis_code")) {
 				// System.out.println("搜尋用 icd code 語法");
-				sql = "SELECT * FROM "
-						+ m_AutoTable
-						+ " "
-						+ "WHERE LOWER("
-						+ m_AutoColumnName
-						+ ") LIKE LOWER('"
-						+ condition
+				sql = "SELECT * FROM " + m_AutoTable + " " + "WHERE LOWER("
+						+ m_AutoColumnName + ") LIKE LOWER('" + condition
 						+ "%') "
-						+ "AND icd_code NOT LIKE '%-%' AND effective <> 1 ORDER BY "
-						+ m_AutoColumnName + "";
+						+ "AND icd_code NOT LIKE '%-%' AND effective = 1 "
+						+ "AND icdversion = '" + m_ICDVersion + "'"
+						+ "ORDER BY " + m_AutoColumnName + "";
 			} else if (m_AutoTable.equals("prescription_code")) {
 				System.out.println("搜尋用 處置 語法");
 				sql = "SELECT * FROM " + m_AutoTable + "  " + "WHERE LOWER("
 						+ m_AutoColumnName + ") LIKE LOWER('" + condition
-						+ "%') " + "AND effective = 1  ORDER BY "
-						+ m_AutoColumnName + "";
+						+ "%') " + "AND effective = 1  " + "AND icdversion = '"
+						+ m_ICDVersion + "' " + "ORDER BY " + m_AutoColumnName
+						+ "";
 			}
-			System.out.println(sql);
+
 			int index = 0;
 			ResultSet rs = null;
 			try {
-				rs = DBC.localExecuteQuery(sql);
+				rs = (m_AutoTable.equals("medicines")) ? DBC.executeQuery(sql)
+						: DBC.localExecuteQuery(sql);
+
 				rs.last();
 				m_RsRowCount = rs.getRow();
 				setListheight();
@@ -1112,9 +1148,9 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 							if (m_AutoTable.equals("medicines")
 									&& rs.getString(m_AutoColumn[2]).equals("")) {
 								str += (" "
-										+ rs.getString(m_AutoColumn[i]).trim() + "       ");
+										+ rs.getString(m_AutoColumn[i]).trim() + DELIMITER);
 							} else {
-								str += (rs.getString(m_AutoColumn[i]).trim() + "       ");
+								str += (rs.getString(m_AutoColumn[i]).trim() + DELIMITER);
 							}
 						}
 						list[index++] = str;
@@ -1305,6 +1341,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 		// ResultSet rsOsGuid = null;
 		ResultSet rsPharmacyNo = null;
 		ResultSet rsModifyCount = null;
+		ResultSet rsFavoriteMed = null;
 		// 防錯 診斷
 		boolean diagnosisIsNull = true;
 		for (int i = 0; i < tab_Diagnosis.getRowCount(); i++) {
@@ -1390,21 +1427,19 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 						"Delete from diagnostic where reg_guid = '%s' ",
 						m_RegistrationGuid);
 				DBC.executeUpdate(delSql);
-				
+
 				delSql = String.format(
 						"delete from prescription where reg_guid = '%s'",
 						m_RegistrationGuid);
 				DBC.executeUpdate(delSql);
-				
+
 				delSql = String.format(
 						"delete from medicine_stock where reg_guid = '%s'",
 						m_RegistrationGuid);
 				DBC.executeUpdate(delSql);
 
-				ResultSet setting = DBC
-						.executeQuery("Select icdversion from setting");
-				String icdVer = (setting.first()) ? setting.getString(
-						"icdversion").split("-")[1] : "10";
+				String icdVer = (m_ICDVersion != null) ? m_ICDVersion
+						.split("-")[1] : "10";
 
 				// 存入icd code診斷碼
 				if (tab_Diagnosis.getValueAt(0, 2) != null) {
@@ -1471,15 +1506,19 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 
 				int medicineState = 0; // 判斷是否有開出藥品
 
+				java.sql.Statement stmt = DBC.getQueryStatement();
+
 				// 存入藥品
 				for (int i = 0; i < this.tab_Medicine.getRowCount(); i++) {
-					if (this.tab_Medicine.getValueAt(i, 2) != null) { // Medicine
-																		// hide
-																		// &&
-																		// !this.tab_Medicine.getValueAt(i,
-																		// 2).toString().trim().equals("")
+					String m_code = (String) this.tab_Medicine.getValueAt(i, 2);
+
+					if (m_code != null) { // Medicine
+											// hide
+											// &&
+											// !this.tab_Medicine.getValueAt(i,
+											// 2).toString().trim().equals("")
 						System.out.println(String.format("inserting %s...",
-								(String) tab_Medicine.getValueAt(i, 2)));
+								m_code));
 						String ps = null;
 
 						if (this.tab_Medicine.getValueAt(i, 12) == null) {
@@ -1500,8 +1539,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 								+ m_RegistrationGuid
 								+ "', "
 								+ "'"
-								+ this.tab_Medicine.getValueAt(i, 2).toString()
-										.trim()
+								+ m_code.trim()
 								+ "', "
 								+ // 藥品代碼
 								"'"
@@ -1568,8 +1606,53 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 						}
 						DBC.executeUpdate(sql);
 						medicineState += 1;
+
+						// update the medical stock amount
+						sql = String
+								.format("select guid, current_amount from  medical_stock where item_guid = '%s'",
+										m_code.trim());
+						ResultSet rsAmount = stmt.executeQuery(sql);
+						if (rsAmount.first()) {
+							Float amount = rsAmount.getFloat("current_amount")
+									- (Float) tab_Medicine.getValueAt(i, 9);
+							String guid = rsAmount.getString("guid");
+
+							sql = String
+									.format("update medical_stock set current_amount = %f where guid = '%s'",
+											amount, guid);
+							DBC.executeUpdate(sql);
+						}
+						rsAmount.close();
+
+						// update the count of favorite medicines
+						sql = String
+								.format("select guid, usedTime from medicine_favorite "
+										+ " where s_no = '%s' and m_code = '%s' ",
+										UserInfo.getUserNO(), m_code);
+
+						rsFavoriteMed = stmt.executeQuery(sql);
+						int usedTime = 1;
+						if (rsFavoriteMed.next()) {
+							// overflow possible
+							usedTime = rsFavoriteMed.getInt("usedTime")
+									+ usedTime;
+							sql = String
+									.format("update medicine_favorite set usedTime = '%d' where guid = '%s'",
+											usedTime,
+											rsFavoriteMed.getString("guid"));
+						} else {
+							sql = String.format(
+									"insert medicine_favorite (guid, s_no, m_code, usedTime) "
+											+ "values (UUID(),'%s','%s','%d')",
+									UserInfo.getUserNO(), m_code, usedTime);
+						}
+						DBC.executeUpdate(sql);
+						rsFavoriteMed.close();
 					}
 				}
+				Connection conn = stmt.getConnection();
+				stmt.close();
+				conn.close();
 				// 領藥號
 				int pharmacyNo = 1;
 
@@ -1670,6 +1753,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 					// DBC.closeConnection(rsOsGuid);
 					DBC.closeConnection(rsPharmacyNo);
 					DBC.closeConnection(rsModifyCount);
+					DBC.closeConnection(rsFavoriteMed);
 				} catch (SQLException e) {
 					ErrorMessage.setData(
 							"Diagnosis",
@@ -1989,7 +2073,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 		System.out.println("AUTOCOMPLETE 值顯示到經過 split 轉為陣列丟入 TABLE");
 		if (list_Menu.getSelectedValue() != null) {
 			m_AutoListValue = list_Menu.getSelectedValue().toString()
-					.split("       ");
+					.split(DELIMITER);
 			// 回傳table autoCompleteList表單值切割的陣列
 			if (m_AutoListValue.length > 1) {
 				setTableValue(m_AutoListValue);
@@ -2609,6 +2693,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 
 		txta_Summary.setColumns(20);
 		txta_Summary.setRows(3);
+		txta_Summary.setText("S:\nO:\nA:\nP:\n");
 		txta_Summary.addMouseListener(new java.awt.event.MouseAdapter() {
 			public void mouseClicked(java.awt.event.MouseEvent evt) {
 				txta_SummaryMouseClicked(evt);
@@ -3471,9 +3556,9 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 
 	private void tab_MedicineFocusGained(java.awt.event.FocusEvent evt) {// GEN-FIRST:event_tab_MedicineFocusGained
 		m_AutoTable = "medicines";
-		String[] medicineRsList = { "code", "item", "injection" }; // ,
-																	// "unit_dosage",
-																	// "unit"
+		String[] medicineRsList = { "code", "item", "injection", "unit_dosage" }; // ,
+		// "unit_dosage",
+		// "unit"
 		m_AutoColumn = medicineRsList;
 		m_AutoColumnName = "item";
 		m_SelectTable = tab_Medicine;
