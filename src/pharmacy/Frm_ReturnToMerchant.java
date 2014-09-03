@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,9 +17,11 @@ import javax.swing.JButton;
 import javax.swing.JTable;
 
 import org.his.JPAUtil;
+import org.his.bind.MedicineReturnTableBind;
 
 import errormessage.StoredErrorMessage;
 import cc.johnwu.sql.DBC;
+import cc.johnwu.sql.HISModel;
 import cc.johnwu.sql.HISPassword;
 import multilingual.Language;
 
@@ -34,13 +37,14 @@ public class Frm_ReturnToMerchant extends JFrame {
 	private JTextField txt_Search;
 	private JTable tab_MedicineList;
 	private static final Language paragraph = Language.getInstance();
-
+	private Frm_Pharmacy Frm_Parent;
 	StoredErrorMessage ErrorMessage = new StoredErrorMessage();
 
 	/**
 	 * Create the frame.
 	 */
-	public Frm_ReturnToMerchant() {
+	public Frm_ReturnToMerchant(Frm_Pharmacy Frm_Parent) {
+		this.Frm_Parent = Frm_Parent;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 721, 692);
 		contentPane = new JPanel();
@@ -159,13 +163,15 @@ public class Frm_ReturnToMerchant extends JFrame {
 	}
 
 	private void btn_CloseActionPerformed(java.awt.event.ActionEvent evt) {
-		// todo close
+		this.Frm_Parent.setEnabled(true);		
+		this.Frm_Parent.initWorkList();
+		this.dispose();
 	}
 
 	private void btn_ReturnActionPerformed(java.awt.event.ActionEvent evt) {
 		// todo return
 		String sql = "";
-		Connection conn=null;
+		Connection conn = null;
 		try {
 			conn = DriverManager.getConnection(DBC.s_ServerURL,
 					DBC.s_ServerName, DBC.s_ServerPasswd);
@@ -179,24 +185,39 @@ public class Frm_ReturnToMerchant extends JFrame {
 			} catch (SQLException e1) {
 				e1.printStackTrace();
 			}
-		}finally{
+		} finally {
 			try {
 				conn.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 		}
+		showMedicineList(txt_Search.getText());
+	}
+
+	private ArrayList<ArrayList<String>> ConvertToMatrix(ResultSet rs) {
+		ArrayList<ArrayList<String>> returnMatrix = new ArrayList<ArrayList<String>>();
+		try {
+			while (rs.next()) {
+				ArrayList<String> newRow = new ArrayList<String>();
+				int i = 0;
+				for (i = 0; i < 7; i++) {
+					newRow.add(rs.getString(i + 1));
+				}
+				returnMatrix.add(newRow);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return returnMatrix;
 	}
 
 	private void showMedicineList(String reg_guid) {
-		System.out.print(reg_guid);
-		String sqlMedicines = "SELECT medicines.item, medicine_stock.dosage, medicines.unit, medicine_stock.usage, "
-				+ "medicine_stock.way, medicine_stock.repeat_number, medicine_stock.quantity, medicine_stock.urgent, "
-				+ "medicine_stock.powder, medicine_stock.ps "
+		String sqlMedicines = "SELECT "
+				+ "medicines.code, medicines.item, medicine_stock.dosage, medicines.unit, "
+				+ "medicine_stock.usage, medicine_stock.unit_price, medicine_stock.price "
 				+ "FROM medicines, medicine_stock, registration_info "
-				+ "WHERE registration_info.guid = '"
-				+ reg_guid
-				+ "' "
+				+ "WHERE registration_info.guid = '" + reg_guid + "' "
 				+ "AND medicine_stock.reg_guid = registration_info.guid "
 				+ "AND medicines.code = medicine_stock.m_code";
 		ResultSet rsMedicines = null;
@@ -207,7 +228,11 @@ public class Frm_ReturnToMerchant extends JFrame {
 					.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
 							ResultSet.CONCUR_READ_ONLY);
 			rsMedicines = stmt.executeQuery(sqlMedicines);
+			ArrayList<ArrayList<String>> MedicineList = ConvertToMatrix(rsMedicines);
+			tab_MedicineList
+					.setModel(new MedicineReturnTableBind(MedicineList));
 		} catch (SQLException e) {
+			e.printStackTrace();
 		} finally {
 			try {
 				DBC.closeConnection(rsMedicines);
