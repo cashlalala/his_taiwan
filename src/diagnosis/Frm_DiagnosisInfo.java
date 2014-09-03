@@ -117,6 +117,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 	private boolean m_IsFirst;
 
 	private String m_ICDVersion;
+	private static final String DELIMITER = Character.toString((char) 0);
 
 	public Frm_DiagnosisInfo() {
 	}
@@ -1031,19 +1032,27 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 			break;
 		case 3: // tab_Medicine
 			if (value.length != -1) {
-				System.out.println("0  :" + value[0] + " 1  :" + value[1]
-						+ " 2  :" + value[2]);
-				m_AutoTxt.setText(value[1]);
-				tab_Medicine.setValueAt(value[1].trim(),
-						tab_Medicine.getSelectedRow(), 1); // item
-				tab_Medicine.setValueAt(value[0].trim(),
-						tab_Medicine.getSelectedRow(), 2); // code
-				tab_Medicine.setValueAt(value[2].trim(),
-						tab_Medicine.getSelectedRow(), 3); // injection
-				// tab_Medicine.setValueAt(value[4],
-				// tab_Medicine.getSelectedRow(), 4);
-				tab_Medicine.setValueAt("N", tab_Medicine.getSelectedRow(), 10);
-				tab_Medicine.setValueAt("N", tab_Medicine.getSelectedRow(), 11);
+				try {
+					String msg = String.format("0:%s,1:%s,2:%s,3:%s", value[0],
+							value[1], value[2], value[3]);
+					System.out.println(msg);
+					m_AutoTxt.setText(value[1]);
+					tab_Medicine.setValueAt(value[1].trim(),
+							tab_Medicine.getSelectedRow(), 1); // item
+					tab_Medicine.setValueAt(value[0].trim(),
+							tab_Medicine.getSelectedRow(), 2); // code
+					tab_Medicine.setValueAt(value[2].trim(),
+							tab_Medicine.getSelectedRow(), 3); // injection
+					tab_Medicine.setValueAt(Double.valueOf(value[3].trim()),
+							tab_Medicine.getSelectedRow(), 4); // unit dosage
+
+					tab_Medicine.setValueAt("N", tab_Medicine.getSelectedRow(),
+							10);
+					tab_Medicine.setValueAt("N", tab_Medicine.getSelectedRow(),
+							11);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 
 			break;
@@ -1112,12 +1121,12 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 						+ m_ICDVersion + "' " + "ORDER BY " + m_AutoColumnName
 						+ "";
 			}
-			
+
 			int index = 0;
 			ResultSet rs = null;
 			try {
-				rs = (m_AutoTable.equals("medicines")) ? rs = DBC
-						.executeQuery(sql) : DBC.localExecuteQuery(sql);
+				rs = (m_AutoTable.equals("medicines")) ? DBC.executeQuery(sql)
+						: DBC.localExecuteQuery(sql);
 
 				rs.last();
 				m_RsRowCount = rs.getRow();
@@ -1139,9 +1148,9 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 							if (m_AutoTable.equals("medicines")
 									&& rs.getString(m_AutoColumn[2]).equals("")) {
 								str += (" "
-										+ rs.getString(m_AutoColumn[i]).trim() + "       ");
+										+ rs.getString(m_AutoColumn[i]).trim() + DELIMITER);
 							} else {
-								str += (rs.getString(m_AutoColumn[i]).trim() + "       ");
+								str += (rs.getString(m_AutoColumn[i]).trim() + DELIMITER);
 							}
 						}
 						list[index++] = str;
@@ -2046,7 +2055,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 		System.out.println("AUTOCOMPLETE 值顯示到經過 split 轉為陣列丟入 TABLE");
 		if (list_Menu.getSelectedValue() != null) {
 			m_AutoListValue = list_Menu.getSelectedValue().toString()
-					.split("       ");
+					.split(DELIMITER);
 			// 回傳table autoCompleteList表單值切割的陣列
 			if (m_AutoListValue.length > 1) {
 				setTableValue(m_AutoListValue);
@@ -2666,6 +2675,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 
 		txta_Summary.setColumns(20);
 		txta_Summary.setRows(3);
+		txta_Summary.setText("S:\nO:\nA:\nP:\n");
 		txta_Summary.addMouseListener(new java.awt.event.MouseAdapter() {
 			public void mouseClicked(java.awt.event.MouseEvent evt) {
 				txta_SummaryMouseClicked(evt);
@@ -3528,9 +3538,9 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 
 	private void tab_MedicineFocusGained(java.awt.event.FocusEvent evt) {// GEN-FIRST:event_tab_MedicineFocusGained
 		m_AutoTable = "medicines";
-		String[] medicineRsList = { "code", "item", "injection" }; // ,
-																	// "unit_dosage",
-																	// "unit"
+		String[] medicineRsList = { "code", "item", "injection", "unit_dosage" }; // ,
+		// "unit_dosage",
+		// "unit"
 		m_AutoColumn = medicineRsList;
 		m_AutoColumnName = "item";
 		m_SelectTable = tab_Medicine;
