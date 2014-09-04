@@ -82,6 +82,12 @@ public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
 		((DefaultTableModel) tab_Prescription.getModel()).setRowCount(0);
 		((DefaultTableModel) tab_Medicine.getModel()).setRowCount(0);
 	}
+	
+	private boolean isFromDiagInfo;
+	
+	public void setIsFromDiagInfo(boolean isFromDiagInfo){
+		this.isFromDiagInfo = isFromDiagInfo;
+	}
 
 	// cob 加入 poli
 	public void initPoli() {
@@ -1064,6 +1070,8 @@ public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
 	private void btn_InsertActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_InsertActionPerformed
 		m_DiagnosisInfo.getCasehistory(txta_Summary.getText(),
 				(String) tab_Record.getValueAt(tab_Record.getSelectedRow(), 5));
+		if (!isFromDiagInfo)
+			m_DiagnosisInfo.setVisible(true);
 		btn_CloseActionPerformed(null);
 	}// GEN-LAST:event_btn_InsertActionPerformed
 

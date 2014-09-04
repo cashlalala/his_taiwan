@@ -25,9 +25,18 @@ import casemgmt.Frm_Case;
 import cc.johnwu.date.DateMethod;
 import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
+import diagnosis.Frm_DiagnosisDiagnostic;
 import diagnosis.Frm_DiagnosisInfo;
 import diagnosis.Frm_DiagnosisPrintChooser;
 import errormessage.StoredErrorMessage;
+
+import javax.swing.JButton;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.GroupLayout;
+import javax.swing.LayoutStyle.ComponentPlacement;
+
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class Frm_WorkList extends javax.swing.JFrame {
 
@@ -61,6 +70,9 @@ public class Frm_WorkList extends javax.swing.JFrame {
 		// ----------------------------------
 		initWorkList();
 		initLanguage();
+		if (m_SysName.equals("dia")) {
+			btn_Diagnostic.setVisible(true);
+		}
 		if (tab_WorkList.getRowCount() != 0) {
 			btn_Enter.setEnabled(true);
 
@@ -171,8 +183,8 @@ public class Frm_WorkList extends javax.swing.JFrame {
 		int finishCount = 0;
 		if (this.tab_WorkList.getRowCount() > 0)
 			for (int i = 0; i < this.tab_WorkList.getRowCount(); i++) {
-				if (this.tab_WorkList.getValueAt(i, 3) != null
-						&& this.tab_WorkList.getValueAt(i, 3).toString()
+				if (this.tab_WorkList.getValueAt(i, 2) != null
+						&& this.tab_WorkList.getValueAt(i, 2).toString()
 								.equals("F"))
 					finishCount++;
 			}
@@ -497,55 +509,45 @@ public class Frm_WorkList extends javax.swing.JFrame {
 				btn_RePrintActionPerformed(evt);
 			}
 		});
+		
+		btn_Diagnostic = new JButton("Diagnostic");
+		btn_Diagnostic.addActionListener(new java.awt.event.ActionListener() {
+			
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				onDiagnosticClicked(evt);
+			}
+
+
+		});
+		btn_Diagnostic.setVisible(false);
 
 		javax.swing.GroupLayout pan_RightLayout = new javax.swing.GroupLayout(
 				pan_Right);
+		pan_RightLayout.setHorizontalGroup(
+			pan_RightLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(pan_RightLayout.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(pan_RightLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(btn_Enter, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
+						.addComponent(btn_RePrint, GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
+						.addComponent(btn_Close, GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
+						.addComponent(btn_Diagnostic, GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE))
+					.addContainerGap())
+		);
+		pan_RightLayout.setVerticalGroup(
+			pan_RightLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(pan_RightLayout.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(btn_Enter)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btn_RePrint)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btn_Close)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btn_Diagnostic)
+					.addContainerGap(335, Short.MAX_VALUE))
+		);
 		pan_Right.setLayout(pan_RightLayout);
-		pan_RightLayout
-				.setHorizontalGroup(pan_RightLayout
-						.createParallelGroup(
-								javax.swing.GroupLayout.Alignment.LEADING)
-						.addGroup(
-								pan_RightLayout
-										.createSequentialGroup()
-										.addContainerGap()
-										.addGroup(
-												pan_RightLayout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.LEADING)
-														.addComponent(
-																btn_Enter,
-																javax.swing.GroupLayout.Alignment.TRAILING,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																133,
-																Short.MAX_VALUE)
-														.addComponent(
-																btn_RePrint,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																133,
-																Short.MAX_VALUE)
-														.addComponent(
-																btn_Close,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																133,
-																Short.MAX_VALUE))
-										.addContainerGap()));
-		pan_RightLayout
-				.setVerticalGroup(pan_RightLayout
-						.createParallelGroup(
-								javax.swing.GroupLayout.Alignment.LEADING)
-						.addGroup(
-								pan_RightLayout
-										.createSequentialGroup()
-										.addContainerGap()
-										.addComponent(btn_Enter)
-										.addPreferredGap(
-												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-										.addComponent(btn_RePrint)
-										.addPreferredGap(
-												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-										.addComponent(btn_Close)
-										.addContainerGap(363, Short.MAX_VALUE)));
 
 		mn_Fiele.setText("File");
 
@@ -634,6 +636,35 @@ public class Frm_WorkList extends javax.swing.JFrame {
 
 		pack();
 	}// </editor-fold>//GEN-END:initComponents
+	
+	private void onDiagnosticClicked(java.awt.event.ActionEvent evt) {
+		m_Pno = (String) tab_WorkList.getValueAt(
+				tab_WorkList.getSelectedRow(), 4);
+		
+		m_RegGuid = (String) tab_WorkList.getValueAt(
+				tab_WorkList.getSelectedRow(), 11);
+		
+		boolean finishState = false;
+		if (tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 2) != null
+				&& tab_WorkList
+						.getValueAt(tab_WorkList.getSelectedRow(), 2)
+						.toString().equals("F")) {
+			finishState = true;
+		}
+		
+		int getSelectRow = tab_WorkList.getSelectedRow();
+		
+		Frm_DiagnosisDiagnostic frm_DiagnosisDiagnostic = new Frm_DiagnosisDiagnostic(new Frm_DiagnosisInfo(m_Pno, m_RegGuid, getSelectRow, finishState,
+				false), m_Pno, (String) tab_WorkList.getValueAt(
+				tab_WorkList.getSelectedRow(), 1));
+		frm_DiagnosisDiagnostic.setIsFromDiagInfo(false);
+		frm_DiagnosisDiagnostic.setVisible(true);
+		
+		m_RefrashWorkList.stopRunning();
+		m_RefrashWorkList.interrupt(); // 終止重複讀取掛號表單
+		m_Clock.interrupt();
+		this.dispose();
+	}
 
 	private void mnit_EnterActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnit_EnterActionPerformed
 		if (btn_Enter.isEnabled()) {
@@ -782,7 +813,5 @@ public class Frm_WorkList extends javax.swing.JFrame {
 	private javax.swing.JTable tab_WorkList;
 	private javax.swing.JTextField txt_Name;
 	private javax.swing.JTextField txt_Poli;
-
-	// End of variables declaration//GEN-END:variables
-
+	private JButton btn_Diagnostic;
 }
