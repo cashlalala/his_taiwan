@@ -53,8 +53,27 @@ public class Frm_DiagnosisPrescription extends javax.swing.JFrame {
 
 	private final static String DELIMITER = Character.toString((char) 0);
 
+	private String m_ICDVersion;
+
+	private void setICDVersion() {
+		ResultSet setting = null;
+		try {
+			setting = DBC.executeQuery("Select icdversion from setting");
+			m_ICDVersion = (setting.first()) ? setting.getString("icdversion")
+					: null;
+		} catch (SQLException e) {
+			try {
+				DBC.closeConnection(setting);
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+		}
+	}
+
 	public Frm_DiagnosisPrescription(Frm_DiagnosisInfo diagnosisInfo) {
 		this.m_DiagnosisInfo = diagnosisInfo;
+		setICDVersion();
 		initComponents();
 		initFram();
 		initCobww();
@@ -63,6 +82,7 @@ public class Frm_DiagnosisPrescription extends javax.swing.JFrame {
 
 	public Frm_DiagnosisPrescription(Frm_Case Frm_Case) {
 		this.m_Case = Frm_Case;
+		setICDVersion();
 		initComponents();
 		initFram();
 		initCobww();
@@ -89,8 +109,9 @@ public class Frm_DiagnosisPrescription extends javax.swing.JFrame {
 		ResultSet rs = null;
 
 		try {
-			String sql = "SELECT code, name " + "FROM prescription_code "
-					+ "WHERE effective = true ";
+			String sql = String
+					.format("SELECT code, name FROM prescription_code WHERE effective <> 0 and ICDVersion = '%s'",
+							m_ICDVersion);
 
 			rs = DBC.localExecuteQuery(sql);
 			rs.last();
@@ -159,8 +180,9 @@ public class Frm_DiagnosisPrescription extends javax.swing.JFrame {
 		try {
 			Object[] title = { "", paragraph.getLanguage(line, "CODE"),
 					paragraph.getLanguage(line, "TREATMENT"), "Type" };
-			String sql = "SELECT * FROM prescription_code WHERE " + condition
-					+ " ";
+			String sql = String
+					.format("SELECT * FROM prescription_code WHERE effective <> 0 and ICDVersion = '%s' AND %s",
+							m_ICDVersion, condition);
 
 			rsTabTherapy = DBC.localExecuteQuery(sql);
 			rsTabTherapy.last();
