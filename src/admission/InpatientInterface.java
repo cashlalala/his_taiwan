@@ -9,7 +9,7 @@ package admission;
  *
  * @author steven
  */
-public abstract interface DiagnosisInterface {
+public abstract interface InpatientInterface {
     public abstract void reSetEnable();
     public abstract void getAllergy();
 }

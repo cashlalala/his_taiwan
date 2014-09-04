@@ -27,7 +27,7 @@ import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
 import errormessage.StoredErrorMessage;
 
-public class Frm_DiagnosisPrintChooser extends JDialog {
+public class Frm_InpatientPrintChooser extends JDialog {
 
 	/**
 	 * 
@@ -190,7 +190,7 @@ public class Frm_DiagnosisPrintChooser extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public Frm_DiagnosisPrintChooser() {
+	public Frm_InpatientPrintChooser() {
 
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
@@ -296,7 +296,7 @@ public class Frm_DiagnosisPrintChooser extends JDialog {
 
 	}
 
-	public Frm_DiagnosisPrintChooser(String regGuid) {
+	public Frm_InpatientPrintChooser(String regGuid) {
 		this();
 		this.regGuid = regGuid;
 	}

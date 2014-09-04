@@ -9,7 +9,7 @@ public class Frm_LabAnalysis extends javax.swing.JFrame {
     /** Creates new form Frm_LabAnalysis */
     public Frm_LabAnalysis() {
         initComponents();
-        this.setExtendedState(Frm_DiagnosisInfo.MAXIMIZED_BOTH);  // 最大化
+        this.setExtendedState(Frm_InpatientInfo.MAXIMIZED_BOTH);  // 最大化
         this.setLocationRelativeTo(this);
     }
 

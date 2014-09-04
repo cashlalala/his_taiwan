@@ -33,14 +33,14 @@ import admission.TableTriStateCell.TriStateCellEditor;
 import admission.TableTriStateCell.TriStateCellRenderer;
 import errormessage.StoredErrorMessage;
 
-public class Frm_DiagnosisPrescription extends javax.swing.JFrame {
+public class Frm_InpatientPrescription extends javax.swing.JFrame {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -6154059993811747242L;
 	private CompleterComboBox m_Cobww;
 	private Map<Object, Object> m_ChooseHashMap = new HashMap<Object, Object>();
-	private Frm_DiagnosisInfo m_DiagnosisInfo;
+	private Frm_InpatientInfo m_DiagnosisInfo;
 	private Frm_Case m_Case;
 	private DefaultTableModel m_TherapyModel;
 	/* 多國語言變數 */
@@ -71,7 +71,7 @@ public class Frm_DiagnosisPrescription extends javax.swing.JFrame {
 		}
 	}
 
-	public Frm_DiagnosisPrescription(Frm_DiagnosisInfo diagnosisInfo) {
+	public Frm_InpatientPrescription(Frm_InpatientInfo diagnosisInfo) {
 		this.m_DiagnosisInfo = diagnosisInfo;
 		setICDVersion();
 		initComponents();
@@ -80,7 +80,7 @@ public class Frm_DiagnosisPrescription extends javax.swing.JFrame {
 		initLanguage();
 	}
 
-	public Frm_DiagnosisPrescription(Frm_Case Frm_Case) {
+	public Frm_InpatientPrescription(Frm_Case Frm_Case) {
 		this.m_Case = Frm_Case;
 		setICDVersion();
 		initComponents();
@@ -136,7 +136,7 @@ public class Frm_DiagnosisPrescription extends javax.swing.JFrame {
 			m_Cobww.setSelectedIndex(0);
 			setModel("code LIKE '%'", "");
 		} catch (SQLException e) {
-			Logger.getLogger(Frm_DiagnosisPrescription.class.getName()).log(
+			Logger.getLogger(Frm_InpatientPrescription.class.getName()).log(
 					Level.SEVERE, null, e);
 			ErrorMessage.setData(
 					"Diagnosis",
@@ -261,7 +261,7 @@ public class Frm_DiagnosisPrescription extends javax.swing.JFrame {
 			columnChoose.setCellEditor(new TriStateCellEditor());
 			tab_Prescription.setRowHeight(30);
 		} catch (SQLException e) {
-			Logger.getLogger(Frm_DiagnosisPrescription.class.getName()).log(
+			Logger.getLogger(Frm_InpatientPrescription.class.getName()).log(
 					Level.SEVERE, null, e);
 			ErrorMessage.setData(
 					"Diagnosis",

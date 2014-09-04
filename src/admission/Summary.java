@@ -13,8 +13,8 @@ import laboratory.Frm_Laboratory;
 
 public class Summary extends javax.swing.JFrame {
     private final int MAX_SUMMARY_HEIGHT = 600;
-    private Frm_DiagnosisInfo m_DiagnosisInfo;
-    private Frm_DiagnosisDiagnostic m_Diagnostic;
+    private Frm_InpatientInfo m_DiagnosisInfo;
+    private Frm_InpatientDiagnostic m_Diagnostic;
     private Frm_Laboratory m_Laboratory;
     private Frm_LabHistory m_Labhistory;
     private Frm_Radiology m_XRay;
@@ -97,7 +97,7 @@ public class Summary extends javax.swing.JFrame {
         m_lineCount = txta_Summary.getLineCount();
     }
 
-    public Summary(Frm_DiagnosisDiagnostic diagnostic,String txtSummary, Point Localtion, int width, int height, int rowCount, boolean edit ) {
+    public Summary(Frm_InpatientDiagnostic diagnostic,String txtSummary, Point Localtion, int width, int height, int rowCount, boolean edit ) {
         initComponents();
         txta_Summary.setEditable(edit);
         txta_Summary.setLineWrap(true);  // txta_Summary 自動換行
@@ -114,7 +114,7 @@ public class Summary extends javax.swing.JFrame {
         txta_Summary.setText(txtSummary);
         this.setLocation(Localtion);
     }
-    public Summary(Frm_DiagnosisInfo diagnosisInfo, String txtSummary, Point Localtion, int width, int height, int rowCount, boolean edit ) {
+    public Summary(Frm_InpatientInfo diagnosisInfo, String txtSummary, Point Localtion, int width, int height, int rowCount, boolean edit ) {
         initComponents();
 
         int h = 0;

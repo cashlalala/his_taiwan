@@ -450,7 +450,7 @@ public class Frm_Main extends javax.swing.JFrame {
 		
 		btn_Inpatient.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				btn_DiagnosisActionPerformed(evt);
+				btn_AdmissionActionPerformed(evt);
 			}
 		});
 
@@ -1213,6 +1213,77 @@ public class Frm_Main extends javax.swing.JFrame {
 		this.dispose();
 	}// GEN-LAST:event_btn_DiagnosisActionPerformed
 
+	private void btn_AdmissionActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_DiagnosisActionPerformed
+		// 自動更新diagnosis_code資料
+		new Thread() {
+			@Override
+			public void run() {
+
+				ExecutorService executor = Executors.newFixedThreadPool(3);
+				executor.execute(new Runnable() {
+
+					@Override
+					public void run() {
+						try {
+							Frm_Loading frm_Loading = new cc.johnwu.loading.Frm_Loading(
+									"diagnosis_code");
+							frm_Loading.show_Loading();
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
+					}
+				});
+				executor.execute(new Runnable() {
+
+					@Override
+					public void run() {
+						try {
+							Frm_Loading frm_Loading1 = new cc.johnwu.loading.Frm_Loading(
+									"prescription_code");
+							frm_Loading1.show_Loading();
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
+					}
+				});
+				executor.execute(new Runnable() {
+
+					@Override
+					public void run() {
+						try {
+							Frm_Loading frm_Loading2 = new cc.johnwu.loading.Frm_Loading(
+									"medicines");
+							frm_Loading2.show_Loading();
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
+					}
+				});
+
+				try {
+					synchronized (executor) {
+						executor.shutdown();
+						if (!executor.awaitTermination(5, TimeUnit.MINUTES)) {
+							JOptionPane
+									.showMessageDialog(
+											null,
+											"Timeout! Downloading fail , some diagnosis_code, prescription_code, medicines may be incorrect!");
+						}
+						// DBC.localExecute("SHUTDOWN");
+					}
+					;
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}.start();
+
+		// 開啟看診 視窗
+		new worklist.Frm_WorkList(0, "dia").setVisible(true);
+		// 關閉此視窗
+		this.dispose();
+	}// GEN-LAST:event_btn_DiagnosisActionPerformed
+	
 	private void btn_PharmacyActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_PharmacyActionPerformed
 		new pharmacy.Frm_Pharmacy().setVisible(true);
 		// 關閉此視窗

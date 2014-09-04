@@ -27,14 +27,14 @@ import admission.TableTriStateCell.TriStateCellRenderer;
 import errormessage.StoredErrorMessage;
 import multilingual.Language;
 
-public class Frm_DiagnosisTherapy extends javax.swing.JFrame {
+public class Frm_InpatientTherapy extends javax.swing.JFrame {
     /**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	private CompleterComboBox m_Cobww;
     private Map<Object, Object> m_ChooseHashMap = new HashMap<Object, Object>();
-    private Frm_DiagnosisInfo m_DiagnosisInfo;
+    private Frm_InpatientInfo m_DiagnosisInfo;
     private DefaultTableModel m_TherapyModel;
     private boolean m_IsDM = false;
     /*多國語言變數*/
@@ -48,7 +48,7 @@ public class Frm_DiagnosisTherapy extends javax.swing.JFrame {
     
     private String m_ICDVersion = "ICD-10";
     
-    public Frm_DiagnosisTherapy(Frm_DiagnosisInfo diagnosisInfo,boolean isDM) {
+    public Frm_InpatientTherapy(Frm_InpatientInfo diagnosisInfo,boolean isDM) {
         this.m_DiagnosisInfo = diagnosisInfo;
         m_IsDM = isDM;
         initComponents();
@@ -107,7 +107,7 @@ public class Frm_DiagnosisTherapy extends javax.swing.JFrame {
                 setModel("icd_code LIKE '%'","");
             }
         } catch (SQLException e) {
-                Logger.getLogger(Frm_DiagnosisTherapy.class.getName()).log(Level.SEVERE, null, e);
+                Logger.getLogger(Frm_InpatientTherapy.class.getName()).log(Level.SEVERE, null, e);
                 ErrorMessage.setData("Diagnosis", "Frm_DiagnosisTherapy" ,"initCobww()",
                     e.toString().substring(e.toString().lastIndexOf(".")+1, e.toString().length()));
         } finally {
@@ -194,7 +194,7 @@ public class Frm_DiagnosisTherapy extends javax.swing.JFrame {
               columnChoose.setCellEditor(new TriStateCellEditor());
               tab_Therapy.setRowHeight(30);
         } catch (SQLException e) {
-                Logger.getLogger(Frm_DiagnosisTherapy.class.getName()).log(Level.SEVERE, null, e);
+                Logger.getLogger(Frm_InpatientTherapy.class.getName()).log(Level.SEVERE, null, e);
                 ErrorMessage.setData("Diagnosis", "Frm_DiagnosisTherapy" ,"setModel(String condition, String state)",
                     e.toString().substring(e.toString().lastIndexOf(".")+1, e.toString().length()));
         } finally {

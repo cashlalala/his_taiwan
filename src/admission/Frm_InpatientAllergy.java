@@ -24,13 +24,13 @@ import javax.swing.table.TableColumn;
 import errormessage.StoredErrorMessage;
 import multilingual.Language;
 
-public class Frm_DiagnosisAllergy extends javax.swing.JFrame {
+public class Frm_InpatientAllergy extends javax.swing.JFrame {
 	private String m_PNo;
 	private String m_PName;
 	private String[] m_GetAllergyGuid; // 儲存資料庫過敏資料guid
 	private DefaultTableModel m_Model;
 	private int m_RowCount = 0;
-	private DiagnosisInterface m_DiagnosisAllergy;
+	private InpatientInterface m_DiagnosisAllergy;
 	private JComboBox m_ComboBox = new JComboBox(); // 嚴重程度combobox
 	private Map<Object, Object> m_AllergyHashMap = new LinkedHashMap<Object, Object>(); // 儲存已存在的過敏資料
 	/* 多國語言變數 */
@@ -41,7 +41,7 @@ public class Frm_DiagnosisAllergy extends javax.swing.JFrame {
 	/* 輸出錯誤資訊變數 */
 	StoredErrorMessage ErrorMessage = new StoredErrorMessage();
 
-	public Frm_DiagnosisAllergy(DiagnosisInterface diagnosisInfo, String pNo,
+	public Frm_InpatientAllergy(InpatientInterface diagnosisInfo, String pNo,
 			String pName) {
 
 		this.m_DiagnosisAllergy = diagnosisInfo;
@@ -65,7 +65,7 @@ public class Frm_DiagnosisAllergy extends javax.swing.JFrame {
 				lab_Udata.setText("Newly diagnosed.");
 			}
 		} catch (SQLException ex) {
-			Logger.getLogger(Frm_DiagnosisAllergy.class.getName()).log(
+			Logger.getLogger(Frm_InpatientAllergy.class.getName()).log(
 					Level.SEVERE, null, ex);
 		}
 	}
@@ -583,7 +583,7 @@ public class Frm_DiagnosisAllergy extends javax.swing.JFrame {
 		// this.setAlwaysOnTop(false);
 		this.setEnabled(false);
 		btn_Save.setEnabled(true);
-		new Frm_DiagnosisMedicine(this, "Allergy").setVisible(true);
+		new Frm_InpatientMedicine(this, "Allergy").setVisible(true);
 	}// GEN-LAST:event_btn_NewActionPerformed
 
 	private void btn_SaveActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_SaveActionPerformed

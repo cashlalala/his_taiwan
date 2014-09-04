@@ -16,15 +16,15 @@ import cc.johnwu.sql.DBC;
 import cc.johnwu.sql.HISModel;
 import errormessage.StoredErrorMessage;
 
-public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
+public class Frm_InpatientDiagnostic extends javax.swing.JFrame {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1651665664021329428L;
 	private String m_Pname;
 	private String m_Pno;
-	private Frm_DiagnosisInfo m_DiagnosisInfo;
-	private DiagnosisInterface m_Frame;
+	private Frm_InpatientInfo m_DiagnosisInfo;
+	private InpatientInterface m_Frame;
 	private boolean m_SelectPoli;
 	/* 多國語言變數 */
 	private Language paragraph = Language.getInstance();
@@ -35,7 +35,7 @@ public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
 	/* 輸出錯誤資訊變數 */
 	StoredErrorMessage ErrorMessage = new StoredErrorMessage();
 
-	public Frm_DiagnosisDiagnostic(Frm_DiagnosisInfo diagnosisInfo, String pno,
+	public Frm_InpatientDiagnostic(Frm_InpatientInfo diagnosisInfo, String pno,
 			String pname) {
 		this.m_Pname = pname;
 		this.m_Pno = pno;
@@ -47,7 +47,7 @@ public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
 		initLanguage();
 	}
 
-	public Frm_DiagnosisDiagnostic(DiagnosisInterface frame, String pno,
+	public Frm_InpatientDiagnostic(InpatientInterface frame, String pno,
 			String pname) {
 		this.m_Pname = pname;
 		this.m_Pno = pno;
@@ -61,7 +61,7 @@ public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
 
 	// 初始化
 	public void initFrame() {
-		this.setExtendedState(Frm_DiagnosisDiagnostic.MAXIMIZED_BOTH); // 最大化
+		this.setExtendedState(Frm_InpatientDiagnostic.MAXIMIZED_BOTH); // 最大化
 		this.txta_Summary.setLineWrap(true);
 		this.tab_Record.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); // tabble不可按住多選
 		this.tab_Diagnosis

@@ -27,12 +27,12 @@ import admission.TableTriStateCell.TriStateCellRenderer;
 import errormessage.StoredErrorMessage;
 import multilingual.Language;
 
-public class Frm_DiagnosisMedicine extends javax.swing.JFrame {
+public class Frm_InpatientMedicine extends javax.swing.JFrame {
 	private CompleterComboBox m_Cobww;
 	private Map<Object, Object> m_ChooseHashMap = new HashMap<Object, Object>();
 	private DefaultTableModel m_MedicineModel;
-	private Frm_DiagnosisInfo m_DiagnosisInfo;
-	private Frm_DiagnosisAllergy m_DiagnosisAllergy;
+	private Frm_InpatientInfo m_DiagnosisInfo;
+	private Frm_InpatientAllergy m_DiagnosisAllergy;
 	private String m_Allergy;
 	/* 多國語言變數 */
 	private Language paragraph = Language.getInstance();
@@ -44,7 +44,7 @@ public class Frm_DiagnosisMedicine extends javax.swing.JFrame {
 
 	private final static String DELIMITER = Character.toString((char) 1);
 
-	public Frm_DiagnosisMedicine(Frm_DiagnosisAllergy diagnosisAllergy,
+	public Frm_InpatientMedicine(Frm_InpatientAllergy diagnosisAllergy,
 			String Allergy) {
 		this.m_DiagnosisAllergy = diagnosisAllergy;
 		this.m_Allergy = Allergy;
@@ -53,7 +53,7 @@ public class Frm_DiagnosisMedicine extends javax.swing.JFrame {
 		initLanguage();
 	}
 
-	public Frm_DiagnosisMedicine(Frm_DiagnosisInfo diagnosisInfo, Boolean isDM)
+	public Frm_InpatientMedicine(Frm_InpatientInfo diagnosisInfo, Boolean isDM)
 			throws IOException {
 		this.m_Allergy = "Frm_DiagnosisInfo";
 		this.m_DiagnosisInfo = diagnosisInfo;
@@ -102,7 +102,7 @@ public class Frm_DiagnosisMedicine extends javax.swing.JFrame {
 						+ rs.getString("item").trim();
 
 		} catch (SQLException e) {
-			Logger.getLogger(Frm_DiagnosisTherapy.class.getName()).log(
+			Logger.getLogger(Frm_InpatientTherapy.class.getName()).log(
 					Level.SEVERE, null, e);
 			ErrorMessage.setData(
 					"Diagnosis",
@@ -262,7 +262,7 @@ public class Frm_DiagnosisMedicine extends javax.swing.JFrame {
 			common.TabTools.setHideColumn(tab_Medicine, 4); // Medicine hide
 			common.TabTools.setHideColumn(tab_Medicine, 5); // Medicine hide
 		} catch (SQLException e) {
-			Logger.getLogger(Frm_DiagnosisTherapy.class.getName()).log(
+			Logger.getLogger(Frm_InpatientTherapy.class.getName()).log(
 					Level.SEVERE, null, e);
 			ErrorMessage.setData(
 					"Diagnosis",

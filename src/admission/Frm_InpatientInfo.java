@@ -50,8 +50,8 @@ import common.Tools;
 import errormessage.StoredErrorMessage;
 
 @SuppressWarnings("serial")
-public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
-		DiagnosisInterface {
+public class Frm_InpatientInfo extends javax.swing.JFrame implements
+		InpatientInterface {
 
 	// private final String SYSTEMNAME = "Diagnosis"; //系統名稱
 
@@ -119,11 +119,11 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 	private String m_ICDVersion;
 	private static final String DELIMITER = Character.toString((char) 0);
 
-	public Frm_DiagnosisInfo() {
+	public Frm_InpatientInfo() {
 	}
 
 	// 參數：病患編號 掛號guid worklist停留行號 看診狀態 是否為初診
-	public Frm_DiagnosisInfo(String p_no, String regGuid, int stopRowNo,
+	public Frm_InpatientInfo(String p_no, String regGuid, int stopRowNo,
 			boolean finishState, boolean isFirst) {
 		ResultSet setting = null;
 		try {
@@ -155,7 +155,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 	// 取出病患資料 與 確認是否讀取上次看診資料
 	@SuppressWarnings("deprecation")
 	public void initFrame() {
-		this.setExtendedState(Frm_DiagnosisInfo.MAXIMIZED_BOTH); // 最大化
+		this.setExtendedState(Frm_InpatientInfo.MAXIMIZED_BOTH); // 最大化
 		this.setLocationRelativeTo(this);
 		this.tab_Diagnosis
 				.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); // tabble不可按住多選
@@ -283,12 +283,12 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 			} else {
 				if (m_IsFirst) {
 					this.setEnabled(false);
-					new Frm_DiagnosisAllergy(this, this.txt_No.getText(),
+					new Frm_InpatientAllergy(this, this.txt_No.getText(),
 							this.txt_Name.getText()).setVisible(true);
 				}
 			}
 		} catch (SQLException e) {
-			Logger.getLogger(Frm_DiagnosisInfo.class.getName()).log(
+			Logger.getLogger(Frm_InpatientInfo.class.getName()).log(
 					Level.SEVERE, null, e);
 			ErrorMessage.setData(
 					"Diagnosis",
@@ -1739,7 +1739,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 				// *************************************************
 
 			} catch (SQLException e) {
-				Logger.getLogger(Frm_DiagnosisInfo.class.getName()).log(
+				Logger.getLogger(Frm_InpatientInfo.class.getName()).log(
 						Level.SEVERE, null, e);
 				ErrorMessage.setData(
 						"Diagnosis",
@@ -2001,7 +2001,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 				rowMedicine++;
 			}
 		} catch (SQLException e) {
-			Logger.getLogger(Frm_DiagnosisInfo.class.getName()).log(
+			Logger.getLogger(Frm_InpatientInfo.class.getName()).log(
 					Level.SEVERE, null, e);
 			ErrorMessage.setData(
 					"Diagnosis",
@@ -3496,13 +3496,13 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 
 	private void btn_AllergyActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_AllergyActionPerformed
 		this.setEnabled(false);
-		new Frm_DiagnosisAllergy(this, this.txt_No.getText(),
+		new Frm_InpatientAllergy(this, this.txt_No.getText(),
 				this.txt_Name.getText()).setVisible(true);
 	}// GEN-LAST:event_btn_AllergyActionPerformed
 
 	private void btn_DiagnosisActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_DiagnosisActionPerformed
 		this.setEnabled(false);
-		new Frm_DiagnosisTherapy(this, m_IsDM).setVisible(true);
+		new Frm_InpatientTherapy(this, m_IsDM).setVisible(true);
 		tab_Diagnosis.removeRowSelectionInterval(0,
 				tab_Diagnosis.getRowCount() - 1);
 		tab_DiagnosisFocusGained(null);
@@ -3517,12 +3517,12 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 	private void btn_MedicineActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_MedicineActionPerformed
 		try {
 			this.setEnabled(false);
-			new Frm_DiagnosisMedicine(this, m_IsDM).setVisible(true);
+			new Frm_InpatientMedicine(this, m_IsDM).setVisible(true);
 			tab_Medicine.removeRowSelectionInterval(0,
 					tab_Medicine.getRowCount() - 1);
 			tab_MedicineFocusGained(null);
 		} catch (IOException ex) {
-			Logger.getLogger(Frm_DiagnosisInfo.class.getName()).log(
+			Logger.getLogger(Frm_InpatientInfo.class.getName()).log(
 					Level.SEVERE, null, ex);
 		}
 	}// GEN-LAST:event_btn_MedicineActionPerformed
@@ -3600,7 +3600,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 
 	private void mnit_CasehistoryActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnit_CasehistoryActionPerformed
 		this.setEnabled(false);
-		new Frm_DiagnosisDiagnostic(this, m_Pno, this.txt_Name.getText())
+		new Frm_InpatientDiagnostic(this, m_Pno, this.txt_Name.getText())
 				.setVisible(true);
 	}// GEN-LAST:event_mnit_CasehistoryActionPerformed
 
@@ -3958,7 +3958,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 
 	private void btn_PrescriptionActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_PrescriptionActionPerformed
 		this.setEnabled(false);
-		new Frm_DiagnosisPrescription(this).setVisible(true);
+		new Frm_InpatientPrescription(this).setVisible(true);
 		tab_Prescription.removeRowSelectionInterval(0,
 				tab_Prescription.getRowCount() - 1);
 		tab_PrescriptionFocusGained(null);
@@ -4086,7 +4086,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 				JOptionPane.showMessageDialog(null, "Please Check Days");
 			}
 		} catch (SQLException ex) {
-			Logger.getLogger(Frm_DiagnosisInfo.class.getName()).log(
+			Logger.getLogger(Frm_InpatientInfo.class.getName()).log(
 					Level.SEVERE, null, ex);
 		}
 
