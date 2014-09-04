@@ -46,7 +46,7 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
                 m_Frm.setEnabled(true);
             }
         });
-        String sql = "SELECT * FROM patients_info WHERE p_no = "+m_Pno+"";
+        String sql = "SELECT * FROM patients_info WHERE p_no = '"+m_Pno+"'";
         try {
             ResultSet rs = DBC.executeQuery(sql);
             rs.next();
