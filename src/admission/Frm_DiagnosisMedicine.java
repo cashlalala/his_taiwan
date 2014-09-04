@@ -22,8 +22,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
-import diagnosis.TableTriStateCell.TriStateCellEditor;
-import diagnosis.TableTriStateCell.TriStateCellRenderer;
+import admission.TableTriStateCell.TriStateCellEditor;
+import admission.TableTriStateCell.TriStateCellRenderer;
 import errormessage.StoredErrorMessage;
 import multilingual.Language;
 

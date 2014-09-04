@@ -3984,7 +3984,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 
 	private void mnit_LabHistoryActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnit_LabHistoryActionPerformed
 		this.setEnabled(false);
-		new Frm_LabHistory(this, m_Pno).setVisible(true);
+//		new Frm_LabHistory(this, m_Pno).setVisible(true);
 	}// GEN-LAST:event_mnit_LabHistoryActionPerformed
 
 	private void list_MenuKeyReleased(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_list_MenuKeyReleased
@@ -4040,7 +4040,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 
 	private void mnit_XRayHistoryActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnit_XRayHistoryActionPerformed
 		this.setEnabled(false);
-		new Frm_RadiologyHistory(this, m_Pno).setVisible(true);
+//		new Frm_RadiologyHistory(this, m_Pno).setVisible(true);
 	}// GEN-LAST:event_mnit_XRayHistoryActionPerformed
 
 	private void mnit_ComplicationActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnit_ComplicationActionPerformed

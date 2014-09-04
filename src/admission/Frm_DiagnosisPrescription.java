@@ -29,8 +29,8 @@ import cc.johnwu.sql.DBC;
 
 import common.JMultiLineToolTip;
 
-import diagnosis.TableTriStateCell.TriStateCellEditor;
-import diagnosis.TableTriStateCell.TriStateCellRenderer;
+import admission.TableTriStateCell.TriStateCellEditor;
+import admission.TableTriStateCell.TriStateCellRenderer;
 import errormessage.StoredErrorMessage;
 
 public class Frm_DiagnosisPrescription extends javax.swing.JFrame {
