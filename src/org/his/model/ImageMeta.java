@@ -11,11 +11,11 @@ import java.util.List;
  */
 @Entity
 @Table(name="image_meta")
+@NamedQuery(name="ImageMeta.findAll", query="SELECT i FROM ImageMeta i")
 public class ImageMeta implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String guid;
 
 	@Column(name="file_path")

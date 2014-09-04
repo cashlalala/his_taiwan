@@ -10,11 +10,11 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="shipping_method")
+@NamedQuery(name="ShippingMethod.findAll", query="SELECT s FROM ShippingMethod s")
 public class ShippingMethod implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String value;
 
 	private String descrition;

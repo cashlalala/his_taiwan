@@ -11,14 +11,16 @@ import java.util.List;
  */
 @Entity
 @Table(name="poli_room")
+@NamedQuery(name="PoliRoom.findAll", query="SELECT p FROM PoliRoom p")
 public class PoliRoom implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String guid;
 
 	private String name;
+
+	private String status;
 
 	private String type;
 
@@ -48,6 +50,14 @@ public class PoliRoom implements Serializable {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getStatus() {
+		return this.status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 	public String getType() {

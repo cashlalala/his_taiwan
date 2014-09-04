@@ -11,11 +11,11 @@ import java.util.Date;
  */
 @Entity
 @Table(name="children")
+@NamedQuery(name="Children.findAll", query="SELECT c FROM Children c")
 public class Children implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private int no;
 
 	@Temporal(TemporalType.DATE)
