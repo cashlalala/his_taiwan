@@ -36,13 +36,13 @@ public class RefrashCashier extends Thread{
 
         // 掛號收費
         if (SysName.equals("reg")) {
-            sql = "SELECT registration_info.guid ,registration_info.payment, " +
+            sql = "SELECT registration_info.guid ,registration_info.registration_payment, " +
                     "patients_info.p_no AS 'Pateint No.',"+
                     "CONCAT(patients_info.firstname, ' ' ,patients_info.lastname) AS 'Name', " +
                     "policlinic.name AS 'Dept.', " +
                     "poli_room.name AS 'Clinic' "+
                     "FROM registration_info, shift_table,policlinic , poli_room ,patients_info "+
-                    "WHERE payment IS NULL "+
+                    "WHERE registration_payment IS NULL "+
                     "AND shift_table.guid = registration_info.shift_guid "+
                     "AND policlinic.guid = poli_room.poli_guid "+
                     "AND poli_room.guid = shift_table.room_guid  "+
@@ -57,50 +57,46 @@ public class RefrashCashier extends Thread{
                     "NEWTABLE.gender AS 'Gender', " +
                     "NEWTABLE.reg_time  AS 'Registration time' " +
                     "FROM (" +
-                    "SELECT distinct A.visits_no, A.register, A.reg_time ,A.lab_payment,  A.p_no, " +
+                    "SELECT distinct A.visits_no, A.reg_time ,A.lab_payment,  A.p_no, " +
                     "concat(patients_info.firstname,'  ',patients_info.lastname) AS 'Name', "+
                     "patients_info.birth , patients_info.gender , " +
                     "concat(patients_info.bloodtype,patients_info.rh_type) AS 'Blood', " +
-                    "patients_info.ps, A.guid AS regguid , outpatient_services.guid AS osguid   "+
-                    "FROM registration_info AS A,  patients_info, shift_table,staff_info, prescription " +
-                    "LEFT JOIN outpatient_services ON prescription.os_guid = outpatient_services.guid ,prescription_code  "+
+                    "patients_info.ps, A.guid AS regguid  "+
+                    "FROM registration_info AS A,  patients_info, shift_table,staff_info, prescription, prescription_code " +
                     "WHERE A.shift_guid = shift_table.guid AND shift_table.s_id = staff_info.s_id " +
                     "AND shift_table.shift_date = '"+DateMethod.getTodayYMD()+"' "+
                     "AND shift_table.shift = '"+DateMethod.getNowShiftNum()+"' "+
                     "AND A.p_no = patients_info.p_no AND prescription.code = prescription_code.code  "+
-                    "AND (outpatient_services.reg_guid = A.guid OR prescription.case_guid =A.guid) " +
-                    "AND (SELECT COUNT(code) FROM prescription  LEFT JOIN  outpatient_services ON prescription.os_guid = outpatient_services.guid,  registration_info  "+
+                    "AND prescription.reg_guid = A.guid " +
+                    "AND (SELECT COUNT(code) FROM prescription, registration_info "+
                     "WHERE (prescription.finish <> 'F' OR prescription.finish IS  NULL ) " +
-                    "AND (outpatient_services.reg_guid = registration_info.guid OR prescription.case_guid = registration_info.guid)  " +
+                    "AND prescription.reg_guid = registration_info.guid " +
                     "AND prescription.code = prescription_code.code   "+
                     "AND prescription_code.type <> '"+Constant.X_RAY_CODE+"' " +
                     "AND registration_info.guid = A.guid)  > 0 ) AS NEWTABLE "+
-                    "LEFT JOIN (SELECT distinct case_guid,os_guid,'1' AS status FROM prescription " +
-                    "WHERE prescription.specimen_status = '1') AS pre_status ON (pre_status.os_guid = NEWTABLE.osguid  " +
-                    "OR pre_status.case_guid =  NEWTABLE.regguid)  " +
+                    "LEFT JOIN (SELECT distinct reg_guid, '1' AS status FROM prescription " +
+                    "WHERE prescription.specimen_status = '1') AS pre_status ON pre_status.reg_guid = NEWTABLE.regguid " +
                     "ORDER BY pre_status.status ,NEWTABLE.reg_time DESC, NEWTABLE.visits_no ";
         }  else if (SysName.equals("xray")) {
-            sql = "SELECT distinct A.guid ,A.radiology_paymen, " +
+            sql = "SELECT distinct A.guid ,A.radiology_payment, " +
                     "A.p_no AS 'Patient No.', "+
                     "concat(patients_info.firstname,'  ',patients_info.lastname) AS 'Name', "+
                     "patients_info.gender AS 'Gender', "+
                     "A.reg_time AS 'Registration Time' " +
-                        "FROM registration_info AS A, patients_info, shift_table,staff_info, prescription, outpatient_services, prescription_code "+
+                        "FROM registration_info AS A, patients_info, shift_table,staff_info, prescription, prescription_code "+
                         "WHERE A.shift_guid = shift_table.guid "+
                             "AND shift_table.s_id = staff_info.s_id "+
                             "AND shift_table.shift_date = '"+DateMethod.getTodayYMD()+"' "+
                             "AND shift_table.shift = '"+DateMethod.getNowShiftNum()+"' "+
                             "AND A.p_no = patients_info.p_no "+
                             "AND prescription.code = prescription_code.code "+
-                            "AND prescription.os_guid = outpatient_services.guid "+
-                            "AND outpatient_services.reg_guid = A.guid "+
+                            "AND prescription.reg_guid = A.guid "+
                             "AND (SELECT COUNT(code) " +
-                            "FROM prescription,outpatient_services, registration_info " +
+                            "FROM prescription, registration_info " +
                             "WHERE (prescription.finish <> 'F' OR prescription.finish IS  NULL ) " +
                             "AND prescription.code = prescription_code.code "+
                             "AND prescription_code.type = '"+Constant.X_RAY_CODE+"' "+
-                            "AND outpatient_services.reg_guid = registration_info.guid " +
-                            "AND prescription.os_guid = outpatient_services.guid " +
+                            "AND prescription.reg_guid = registration_info.guid " +
                             "AND registration_info.guid = A.guid)  > 0 "+
                         "ORDER BY A.reg_time DESC, A.visits_no ";
         } else if (SysName.equals("pha")) {
