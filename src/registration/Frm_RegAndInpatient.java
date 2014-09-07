@@ -13,11 +13,15 @@ import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTabbedPane;
+
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+
 import javax.swing.JLabel;
 import javax.swing.JComboBox;
+
+import multilingual.Language;
 
 public class Frm_RegAndInpatient extends JFrame {
 
@@ -27,7 +31,7 @@ public class Frm_RegAndInpatient extends JFrame {
 	private JTabbedPane pan_ClinicOrInpatient;
 	private JTable tab_BedList;
 	private JTable tab_ClinicList;
-
+	private Language paragraph = Language.getInstance();
 	/**
 	 * Launch the application.
 	 */
@@ -100,7 +104,7 @@ public class Frm_RegAndInpatient extends JFrame {
 				0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
 		pan_PatientInfo.setLayout(gbl_pan_PatientInfo);
 
-		JLabel lbl_PatientNo = new JLabel("New label");
+		JLabel lbl_PatientNo = new JLabel(paragraph.getString("PATIENTNO"));
 		GridBagConstraints gbc_lbl_PatientNo = new GridBagConstraints();
 		gbc_lbl_PatientNo.weighty = 0.05;
 		gbc_lbl_PatientNo.weightx = 1.0;
@@ -111,7 +115,7 @@ public class Frm_RegAndInpatient extends JFrame {
 		gbc_lbl_PatientNo.gridy = 0;
 		pan_PatientInfo.add(lbl_PatientNo, gbc_lbl_PatientNo);
 
-		JLabel lbl_NHISNo = new JLabel("New label");
+		JLabel lbl_NHISNo = new JLabel(paragraph.getString("TITLENHISNO"));
 		GridBagConstraints gbc_lbl_NHISNo = new GridBagConstraints();
 		gbc_lbl_NHISNo.weighty = 0.05;
 		gbc_lbl_NHISNo.weightx = 1.0;
@@ -122,7 +126,7 @@ public class Frm_RegAndInpatient extends JFrame {
 		gbc_lbl_NHISNo.gridy = 1;
 		pan_PatientInfo.add(lbl_NHISNo, gbc_lbl_NHISNo);
 
-		JLabel lbl_NIANo = new JLabel("New label");
+		JLabel lbl_NIANo = new JLabel(paragraph.getString("TITLENIANO"));
 		GridBagConstraints gbc_lbl_NIANo = new GridBagConstraints();
 		gbc_lbl_NIANo.weighty = 0.05;
 		gbc_lbl_NIANo.weightx = 1.0;
@@ -133,7 +137,7 @@ public class Frm_RegAndInpatient extends JFrame {
 		gbc_lbl_NIANo.gridy = 2;
 		pan_PatientInfo.add(lbl_NIANo, gbc_lbl_NIANo);
 
-		JLabel lbl_FirstName = new JLabel("New label");
+		JLabel lbl_FirstName = new JLabel(paragraph.getString("TITLEFIRSTNAME"));
 		GridBagConstraints gbc_lbl_FirstName = new GridBagConstraints();
 		gbc_lbl_FirstName.weighty = 0.05;
 		gbc_lbl_FirstName.weightx = 1.0;
@@ -144,7 +148,7 @@ public class Frm_RegAndInpatient extends JFrame {
 		gbc_lbl_FirstName.gridy = 3;
 		pan_PatientInfo.add(lbl_FirstName, gbc_lbl_FirstName);
 
-		JLabel lbl_Last_Name = new JLabel("New label");
+		JLabel lbl_Last_Name = new JLabel(paragraph.getString("TITLELASTNAME"));
 		GridBagConstraints gbc_lbl_Last_Name = new GridBagConstraints();
 		gbc_lbl_Last_Name.weighty = 0.05;
 		gbc_lbl_Last_Name.weightx = 1.0;
@@ -155,7 +159,7 @@ public class Frm_RegAndInpatient extends JFrame {
 		gbc_lbl_Last_Name.gridy = 4;
 		pan_PatientInfo.add(lbl_Last_Name, gbc_lbl_Last_Name);
 
-		JLabel lbl_Birthday = new JLabel("New label");
+		JLabel lbl_Birthday = new JLabel(paragraph.getString("TITLEBIRTHDAY"));
 		GridBagConstraints gbc_lbl_Birthday = new GridBagConstraints();
 		gbc_lbl_Birthday.weighty = 0.05;
 		gbc_lbl_Birthday.weightx = 1.0;
@@ -166,7 +170,7 @@ public class Frm_RegAndInpatient extends JFrame {
 		gbc_lbl_Birthday.gridy = 5;
 		pan_PatientInfo.add(lbl_Birthday, gbc_lbl_Birthday);
 
-		JLabel lbl_Age = new JLabel("New label");
+		JLabel lbl_Age = new JLabel(paragraph.getString("TITLEAGE"));
 		GridBagConstraints gbc_lbl_Age = new GridBagConstraints();
 		gbc_lbl_Age.weighty = 0.05;
 		gbc_lbl_Age.weightx = 1.0;
@@ -177,7 +181,7 @@ public class Frm_RegAndInpatient extends JFrame {
 		gbc_lbl_Age.gridy = 6;
 		pan_PatientInfo.add(lbl_Age, gbc_lbl_Age);
 
-		JLabel lbl_Gender = new JLabel("New label");
+		JLabel lbl_Gender = new JLabel(paragraph.getString("GENDER"));
 		GridBagConstraints gbc_lbl_Gender = new GridBagConstraints();
 		gbc_lbl_Gender.weighty = 0.05;
 		gbc_lbl_Gender.weightx = 1.0;
@@ -188,7 +192,7 @@ public class Frm_RegAndInpatient extends JFrame {
 		gbc_lbl_Gender.gridy = 7;
 		pan_PatientInfo.add(lbl_Gender, gbc_lbl_Gender);
 
-		JLabel lbl_BloodType = new JLabel("New label");
+		JLabel lbl_BloodType = new JLabel(paragraph.getString("TITLEBLOODTYPE"));
 		GridBagConstraints gbc_lbl_BloodType = new GridBagConstraints();
 		gbc_lbl_BloodType.weighty = 0.05;
 		gbc_lbl_BloodType.weightx = 1.0;
@@ -199,7 +203,7 @@ public class Frm_RegAndInpatient extends JFrame {
 		gbc_lbl_BloodType.gridy = 8;
 		pan_PatientInfo.add(lbl_BloodType, gbc_lbl_BloodType);
 
-		JLabel lbl_Height = new JLabel("New label");
+		JLabel lbl_Height = new JLabel(paragraph.getString("TITLEHEIGHT"));
 		GridBagConstraints gbc_lbl_Height = new GridBagConstraints();
 		gbc_lbl_Height.weightx = 1.0;
 		gbc_lbl_Height.weighty = 0.05;
@@ -210,7 +214,7 @@ public class Frm_RegAndInpatient extends JFrame {
 		gbc_lbl_Height.gridy = 9;
 		pan_PatientInfo.add(lbl_Height, gbc_lbl_Height);
 
-		JLabel lbl_Weight = new JLabel("New label");
+		JLabel lbl_Weight = new JLabel(paragraph.getString("TITLEWEIGHT"));
 		GridBagConstraints gbc_lbl_Weight = new GridBagConstraints();
 		gbc_lbl_Weight.weightx = 1.0;
 		gbc_lbl_Weight.weighty = 0.05;
@@ -231,9 +235,9 @@ public class Frm_RegAndInpatient extends JFrame {
 		gbc_pan_Code.gridy = 11;
 		pan_PatientInfo.add(pan_Code, gbc_pan_Code);
 
-		JButton btn_AddPatient = new JButton("New button");
+		JButton btn_AddPatient = new JButton(paragraph.getString("NEWPATIENT"));
 		GridBagConstraints gbc_btn_AddPatient = new GridBagConstraints();
-		gbc_btn_AddPatient.insets = new Insets(0, 0, 5, 5);
+		gbc_btn_AddPatient.insets = new Insets(0, 0, 10, 10);
 		gbc_btn_AddPatient.fill = GridBagConstraints.BOTH;
 		gbc_btn_AddPatient.weightx = 0.4;
 		gbc_btn_AddPatient.weighty = 0.4;
@@ -252,7 +256,7 @@ public class Frm_RegAndInpatient extends JFrame {
 		pan_WholeFrame.add(txt_PatientSearch, gbc_txt_PatientSearch);
 		txt_PatientSearch.setColumns(10);
 
-		JButton btn_PatientSearch = new JButton("New button");
+		JButton btn_PatientSearch = new JButton(paragraph.getString("SEARCH"));
 		GridBagConstraints gbc_btn_PatientSearch = new GridBagConstraints();
 		gbc_btn_PatientSearch.weightx = 0.2;
 		gbc_btn_PatientSearch.weighty = 0.15;
@@ -287,7 +291,7 @@ public class Frm_RegAndInpatient extends JFrame {
 		pan_WholeFrame.add(pan_ClinicOrInpatient, gbc_pan_ClinicOrInpatient);
 
 		JPanel pan_tabClinicInfo = new JPanel();
-		pan_ClinicOrInpatient.addTab("Clinic", pan_tabClinicInfo);
+		pan_ClinicOrInpatient.addTab(paragraph.getString("CLINIC"), pan_tabClinicInfo);
 		GridBagLayout gbl_pan_tabClinicInfo = new GridBagLayout();
 		gbl_pan_tabClinicInfo.columnWidths = new int[] { 231, 388, 0 };
 		gbl_pan_tabClinicInfo.rowHeights = new int[] { 369, 0 };
@@ -316,7 +320,7 @@ public class Frm_RegAndInpatient extends JFrame {
 				0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
 		pan_ClinicInfo.setLayout(gbl_pan_ClinicInfo);
 
-		JLabel lbl_RegistrationMethod = new JLabel("New label");
+		JLabel lbl_RegistrationMethod = new JLabel(paragraph.getString("TITLEVISITS"));
 		GridBagConstraints gbc_lbl_RegistrationMethod = new GridBagConstraints();
 		gbc_lbl_RegistrationMethod.weighty = 0.08;
 		gbc_lbl_RegistrationMethod.weightx = 1.0;
@@ -328,7 +332,7 @@ public class Frm_RegAndInpatient extends JFrame {
 		gbc_lbl_RegistrationMethod.gridy = 0;
 		pan_ClinicInfo.add(lbl_RegistrationMethod, gbc_lbl_RegistrationMethod);
 
-		JLabel lbl_Date = new JLabel("New label");
+		JLabel lbl_Date = new JLabel(paragraph.getString("DATE"));
 		GridBagConstraints gbc_lbl_Date = new GridBagConstraints();
 		gbc_lbl_Date.gridwidth = 2;
 		gbc_lbl_Date.weighty = 0.08;
@@ -351,7 +355,7 @@ public class Frm_RegAndInpatient extends JFrame {
 		gbc_cbb_Date.gridy = 2;
 		pan_ClinicInfo.add(cbb_Date, gbc_cbb_Date);
 
-		JLabel lbl_Division = new JLabel("New label");
+		JLabel lbl_Division = new JLabel(paragraph.getString("DIVISION"));
 		GridBagConstraints gbc_lbl_Division = new GridBagConstraints();
 		gbc_lbl_Division.weighty = 0.08;
 		gbc_lbl_Division.weightx = 1.0;
@@ -374,7 +378,7 @@ public class Frm_RegAndInpatient extends JFrame {
 		gbc_cbb_Division.gridy = 4;
 		pan_ClinicInfo.add(cbb_Division, gbc_cbb_Division);
 
-		JLabel lbl_Shift = new JLabel("New label");
+		JLabel lbl_Shift = new JLabel(paragraph.getString("SHIFT"));
 		GridBagConstraints gbc_lbl_Shift = new GridBagConstraints();
 		gbc_lbl_Shift.weighty = 0.08;
 		gbc_lbl_Shift.weightx = 1.0;
@@ -397,7 +401,7 @@ public class Frm_RegAndInpatient extends JFrame {
 		gbc_cbb_Shift.gridy = 6;
 		pan_ClinicInfo.add(cbb_Shift, gbc_cbb_Shift);
 
-		JLabel lbl_Doctor = new JLabel("New label");
+		JLabel lbl_Doctor = new JLabel(paragraph.getString("DOCTOR"));
 		GridBagConstraints gbc_lbl_Doctor = new GridBagConstraints();
 		gbc_lbl_Doctor.gridwidth = 2;
 		gbc_lbl_Doctor.weighty = 0.08;
@@ -409,7 +413,7 @@ public class Frm_RegAndInpatient extends JFrame {
 		gbc_lbl_Doctor.gridy = 7;
 		pan_ClinicInfo.add(lbl_Doctor, gbc_lbl_Doctor);
 
-		JLabel lbl_Clinic = new JLabel("New label");
+		JLabel lbl_Clinic = new JLabel(paragraph.getString("CLINIC"));
 		GridBagConstraints gbc_lbl_Clinic = new GridBagConstraints();
 		gbc_lbl_Clinic.weighty = 0.08;
 		gbc_lbl_Clinic.weightx = 1.0;
@@ -421,7 +425,7 @@ public class Frm_RegAndInpatient extends JFrame {
 		gbc_lbl_Clinic.gridy = 8;
 		pan_ClinicInfo.add(lbl_Clinic, gbc_lbl_Clinic);
 
-		JLabel lbl_WaitingNo = new JLabel("New label");
+		JLabel lbl_WaitingNo = new JLabel(paragraph.getString("TITLEWAITNO"));
 		GridBagConstraints gbc_lbl_WaitingNo = new GridBagConstraints();
 		gbc_lbl_WaitingNo.gridwidth = 2;
 		gbc_lbl_WaitingNo.weighty = 0.08;
@@ -433,7 +437,7 @@ public class Frm_RegAndInpatient extends JFrame {
 		gbc_lbl_WaitingNo.gridy = 9;
 		pan_ClinicInfo.add(lbl_WaitingNo, gbc_lbl_WaitingNo);
 
-		JButton btn_ClinicSave = new JButton("New button");
+		JButton btn_ClinicSave = new JButton(paragraph.getString("SAVE"));
 		GridBagConstraints gbc_btn_ClinicSave = new GridBagConstraints();
 		gbc_btn_ClinicSave.weightx = 0.5;
 		gbc_btn_ClinicSave.weighty = 0.17;
@@ -444,7 +448,7 @@ public class Frm_RegAndInpatient extends JFrame {
 		gbc_btn_ClinicSave.gridy = 10;
 		pan_ClinicInfo.add(btn_ClinicSave, gbc_btn_ClinicSave);
 
-		JButton btn_ClinicClose = new JButton("New button");
+		JButton btn_ClinicClose = new JButton(paragraph.getString("CLOSE"));
 		GridBagConstraints gbc_btn_ClinicClose = new GridBagConstraints();
 		gbc_btn_ClinicClose.fill = GridBagConstraints.BOTH;
 		gbc_btn_ClinicClose.weighty = 0.17;
@@ -469,7 +473,7 @@ public class Frm_RegAndInpatient extends JFrame {
 		tab_ClinicList.setModel(new DefaultTableModel(matrix, header));
 
 		JPanel pan_tabInpatientInfo = new JPanel();
-		pan_ClinicOrInpatient.addTab("Inpatient", pan_tabInpatientInfo);
+		pan_ClinicOrInpatient.addTab(paragraph.getString("INPATIENT"), pan_tabInpatientInfo);
 		GridBagLayout gbl_pan_tabInpatientInfo = new GridBagLayout();
 		gbl_pan_tabInpatientInfo.columnWidths = new int[] { 231, 388, 0 };
 		gbl_pan_tabInpatientInfo.rowHeights = new int[] { 369, 0 };
@@ -499,7 +503,7 @@ public class Frm_RegAndInpatient extends JFrame {
 				0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
 		pan_InpatientInfo.setLayout(gbl_pan_InpatientInfo);
 
-		JLabel lbl_InpatientDivision = new JLabel("New label");
+		JLabel lbl_InpatientDivision = new JLabel(paragraph.getString("DIVISION"));
 		GridBagConstraints gbc_lbl_InpatientDivision = new GridBagConstraints();
 		gbc_lbl_InpatientDivision.weighty = 0.1;
 		gbc_lbl_InpatientDivision.weightx = 1.0;
@@ -523,7 +527,7 @@ public class Frm_RegAndInpatient extends JFrame {
 		gbc_cbb_InpatientDivision.gridy = 1;
 		pan_InpatientInfo.add(cbb_InpatientDivision, gbc_cbb_InpatientDivision);
 
-		JLabel lbl_InpatientDoctor = new JLabel("New label");
+		JLabel lbl_InpatientDoctor = new JLabel(paragraph.getString("DOCTOR"));
 		GridBagConstraints gbc_lbl_InpatientDoctor = new GridBagConstraints();
 		gbc_lbl_InpatientDoctor.gridwidth = 2;
 		gbc_lbl_InpatientDoctor.weighty = 0.1;
@@ -547,7 +551,7 @@ public class Frm_RegAndInpatient extends JFrame {
 		gbc_cbb_InpatientDoctor.gridy = 3;
 		pan_InpatientInfo.add(cbb_InpatientDoctor, gbc_cbb_InpatientDoctor);
 
-		JLabel lbl_CheckInDate = new JLabel("New label");
+		JLabel lbl_CheckInDate = new JLabel(paragraph.getString("CHECKINDATE"));
 		GridBagConstraints gbc_lbl_CheckInDate = new GridBagConstraints();
 		gbc_lbl_CheckInDate.weighty = 0.1;
 		gbc_lbl_CheckInDate.weightx = 1.0;
@@ -571,7 +575,7 @@ public class Frm_RegAndInpatient extends JFrame {
 		gbc_cbb_CheckInDate.gridy = 5;
 		pan_InpatientInfo.add(cbb_CheckInDate, gbc_cbb_CheckInDate);
 
-		JLabel lbl_CheckOutDate = new JLabel("New label");
+		JLabel lbl_CheckOutDate = new JLabel(paragraph.getString("CHECKOUTDATE"));
 		GridBagConstraints gbc_lbl_CheckOutDate = new GridBagConstraints();
 		gbc_lbl_CheckOutDate.weighty = 0.1;
 		gbc_lbl_CheckOutDate.weightx = 1.0;
@@ -595,7 +599,7 @@ public class Frm_RegAndInpatient extends JFrame {
 		gbc_cbb_CheckOutDate.gridy = 7;
 		pan_InpatientInfo.add(cbb_CheckOutDate, gbc_cbb_CheckOutDate);
 
-		JButton btn_InpatientSave = new JButton("New button");
+		JButton btn_InpatientSave = new JButton(paragraph.getString("SAVE"));
 		GridBagConstraints gbc_btn_InpatientSave = new GridBagConstraints();
 		gbc_btn_InpatientSave.weighty = 0.2;
 		gbc_btn_InpatientSave.weightx = 0.5;
@@ -605,7 +609,7 @@ public class Frm_RegAndInpatient extends JFrame {
 		gbc_btn_InpatientSave.gridy = 8;
 		pan_InpatientInfo.add(btn_InpatientSave, gbc_btn_InpatientSave);
 
-		JButton btn_InpatientClose = new JButton("New button");
+		JButton btn_InpatientClose = new JButton(paragraph.getString("CLOSE"));
 		GridBagConstraints gbc_btn_InpatientClose = new GridBagConstraints();
 		gbc_btn_InpatientClose.weighty = 0.2;
 		gbc_btn_InpatientClose.weightx = 0.5;
