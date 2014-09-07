@@ -2,18 +2,23 @@ package registration;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.List;
 
+import javax.persistence.EntityTransaction;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTabbedPane;
 
+import java.awt.Frame;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
@@ -21,7 +26,15 @@ import java.awt.Insets;
 import javax.swing.JLabel;
 import javax.swing.JComboBox;
 
+import org.his.bind.PatientsInfoJPATable;
+import org.his.dao.PatientsInfoDao;
+import org.his.model.PatientsInfo;
+
 import multilingual.Language;
+import system.Setting;
+
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class Frm_RegAndInpatient extends JFrame {
 
@@ -32,21 +45,12 @@ public class Frm_RegAndInpatient extends JFrame {
 	private JTable tab_BedList;
 	private JTable tab_ClinicList;
 	private Language paragraph = Language.getInstance();
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Frm_RegAndInpatient frame = new Frm_RegAndInpatient();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+	private Setting set = new Setting();
+	private String[] lineSet = set.setSystem("GIS").split("\n");
+
+	private PatientsInfoDao patientsInfoDao = new PatientsInfoDao();
+	private List<PatientsInfo> patientsInfo;
+	private EntityTransaction etx;
 
 	/**
 	 * Create the frame.
@@ -68,10 +72,10 @@ public class Frm_RegAndInpatient extends JFrame {
 				{ "aaa", "bbb", "ccc" }, { "aaa", "bbb", "ccc" },
 				{ "aaa", "bbb", "ccc" }, { "aaa", "bbb", "ccc" } };
 		String[] header = { "111", "222", "333" };
-
+		// Init GUI
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 670, 705);
-				
+
 		pan_WholeFrame = new JPanel();
 		pan_WholeFrame.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(pan_WholeFrame);
@@ -96,8 +100,8 @@ public class Frm_RegAndInpatient extends JFrame {
 		pan_WholeFrame.add(pan_PatientInfo, gbc_pan_PatientInfo);
 		GridBagLayout gbl_pan_PatientInfo = new GridBagLayout();
 		gbl_pan_PatientInfo.columnWidths = new int[] { 139, 93, 0 };
-		gbl_pan_PatientInfo.rowHeights = new int[] { 13, 13, 13, 13, 13, 13, 13,
-				13, 13, 13, 13, 52, 0 };
+		gbl_pan_PatientInfo.rowHeights = new int[] { 13, 13, 13, 13, 13, 13,
+				13, 13, 13, 13, 13, 52, 0 };
 		gbl_pan_PatientInfo.columnWeights = new double[] { 0.0, 0.0,
 				Double.MIN_VALUE };
 		gbl_pan_PatientInfo.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0,
@@ -257,6 +261,11 @@ public class Frm_RegAndInpatient extends JFrame {
 		txt_PatientSearch.setColumns(10);
 
 		JButton btn_PatientSearch = new JButton(paragraph.getString("SEARCH"));
+		btn_PatientSearch.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				btn_PatientSearchactionPerformed(evt);
+			}
+		});
 		GridBagConstraints gbc_btn_PatientSearch = new GridBagConstraints();
 		gbc_btn_PatientSearch.weightx = 0.2;
 		gbc_btn_PatientSearch.weighty = 0.15;
@@ -291,7 +300,8 @@ public class Frm_RegAndInpatient extends JFrame {
 		pan_WholeFrame.add(pan_ClinicOrInpatient, gbc_pan_ClinicOrInpatient);
 
 		JPanel pan_tabClinicInfo = new JPanel();
-		pan_ClinicOrInpatient.addTab(paragraph.getString("CLINIC"), pan_tabClinicInfo);
+		pan_ClinicOrInpatient.addTab(paragraph.getString("CLINIC"),
+				pan_tabClinicInfo);
 		GridBagLayout gbl_pan_tabClinicInfo = new GridBagLayout();
 		gbl_pan_tabClinicInfo.columnWidths = new int[] { 231, 388, 0 };
 		gbl_pan_tabClinicInfo.rowHeights = new int[] { 369, 0 };
@@ -320,7 +330,8 @@ public class Frm_RegAndInpatient extends JFrame {
 				0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
 		pan_ClinicInfo.setLayout(gbl_pan_ClinicInfo);
 
-		JLabel lbl_RegistrationMethod = new JLabel(paragraph.getString("TITLEVISITS"));
+		JLabel lbl_RegistrationMethod = new JLabel(
+				paragraph.getString("TITLEVISITS"));
 		GridBagConstraints gbc_lbl_RegistrationMethod = new GridBagConstraints();
 		gbc_lbl_RegistrationMethod.weighty = 0.08;
 		gbc_lbl_RegistrationMethod.weightx = 1.0;
@@ -473,7 +484,8 @@ public class Frm_RegAndInpatient extends JFrame {
 		tab_ClinicList.setModel(new DefaultTableModel(matrix, header));
 
 		JPanel pan_tabInpatientInfo = new JPanel();
-		pan_ClinicOrInpatient.addTab(paragraph.getString("INPATIENT"), pan_tabInpatientInfo);
+		pan_ClinicOrInpatient.addTab(paragraph.getString("INPATIENT"),
+				pan_tabInpatientInfo);
 		GridBagLayout gbl_pan_tabInpatientInfo = new GridBagLayout();
 		gbl_pan_tabInpatientInfo.columnWidths = new int[] { 231, 388, 0 };
 		gbl_pan_tabInpatientInfo.rowHeights = new int[] { 369, 0 };
@@ -503,7 +515,8 @@ public class Frm_RegAndInpatient extends JFrame {
 				0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
 		pan_InpatientInfo.setLayout(gbl_pan_InpatientInfo);
 
-		JLabel lbl_InpatientDivision = new JLabel(paragraph.getString("DIVISION"));
+		JLabel lbl_InpatientDivision = new JLabel(
+				paragraph.getString("DIVISION"));
 		GridBagConstraints gbc_lbl_InpatientDivision = new GridBagConstraints();
 		gbc_lbl_InpatientDivision.weighty = 0.1;
 		gbc_lbl_InpatientDivision.weightx = 1.0;
@@ -575,7 +588,8 @@ public class Frm_RegAndInpatient extends JFrame {
 		gbc_cbb_CheckInDate.gridy = 5;
 		pan_InpatientInfo.add(cbb_CheckInDate, gbc_cbb_CheckInDate);
 
-		JLabel lbl_CheckOutDate = new JLabel(paragraph.getString("CHECKOUTDATE"));
+		JLabel lbl_CheckOutDate = new JLabel(
+				paragraph.getString("CHECKOUTDATE"));
 		GridBagConstraints gbc_lbl_CheckOutDate = new GridBagConstraints();
 		gbc_lbl_CheckOutDate.weighty = 0.1;
 		gbc_lbl_CheckOutDate.weightx = 1.0;
@@ -630,6 +644,22 @@ public class Frm_RegAndInpatient extends JFrame {
 		tab_BedList = new JTable();
 		scrollPane_Bed.setViewportView(tab_BedList);
 		tab_BedList.setModel(new DefaultTableModel(matrix, header));
+		// End of init GUI
+	}
 
+	public void btn_PatientSearchactionPerformed(ActionEvent evt) {
+		ResultSet rs = null;
+		String target = txt_PatientSearch.getText();
+		patientsInfo = patientsInfoDao.getPatientsBySearch(target);
+		if (patientsInfo.size() != 0) {
+			tab_PatientList.setModel(new PatientsInfoJPATable(patientsInfo));
+		} else {
+			tab_PatientList.setModel(new DefaultTableModel(
+					new String[][] { { "No Information." } },
+					new String[] { "Message" }));
+			JOptionPane.showMessageDialog(new Frame(),
+					paragraph.getString("FIRSTTIMEVISIT"));
+		}
+		txt_PatientSearch.setFocusable(true);
 	}
 }
