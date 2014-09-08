@@ -47,7 +47,7 @@ public class RefrashCashier extends Thread{
                     "AND policlinic.guid = poli_room.poli_guid "+
                     "AND poli_room.guid = shift_table.room_guid  "+
                     "AND shift_table.shift_date = '"+DateMethod.getTodayYMD()+"' "+
-                    "AND shift_table.shift = '"+DateMethod.getNowShiftNum()+"' "+
+                    //"AND shift_table.shift = '"+DateMethod.getNowShiftNum()+"' "+
                     "AND registration_info.p_no = patients_info.p_no ORDER BY registration_info.reg_time DESC";
 
         } else if (SysName.equals("lab")) {
@@ -65,11 +65,12 @@ public class RefrashCashier extends Thread{
                     "FROM registration_info AS A,  patients_info, shift_table,staff_info, prescription, prescription_code " +
                     "WHERE A.shift_guid = shift_table.guid AND shift_table.s_id = staff_info.s_id " +
                     "AND shift_table.shift_date = '"+DateMethod.getTodayYMD()+"' "+
-                    "AND shift_table.shift = '"+DateMethod.getNowShiftNum()+"' "+
+                    //"AND shift_table.shift = '"+DateMethod.getNowShiftNum()+"' "+
                     "AND A.p_no = patients_info.p_no AND prescription.code = prescription_code.code  "+
                     "AND prescription.reg_guid = A.guid " +
                     "AND (SELECT COUNT(code) FROM prescription, registration_info "+
-                    "WHERE (prescription.finish <> 'F' OR prescription.finish IS  NULL ) " +
+                    //"WHERE (prescription.finish <> 'F' OR prescription.finish IS  NULL ) " +
+                    "WHERE lab_payment IS NULL " + 
                     "AND prescription.reg_guid = registration_info.guid " +
                     "AND prescription.code = prescription_code.code   "+
                     "AND prescription_code.type <> '"+Constant.X_RAY_CODE+"' " +
@@ -87,13 +88,14 @@ public class RefrashCashier extends Thread{
                         "WHERE A.shift_guid = shift_table.guid "+
                             "AND shift_table.s_id = staff_info.s_id "+
                             "AND shift_table.shift_date = '"+DateMethod.getTodayYMD()+"' "+
-                            "AND shift_table.shift = '"+DateMethod.getNowShiftNum()+"' "+
+                            //"AND shift_table.shift = '"+DateMethod.getNowShiftNum()+"' "+
                             "AND A.p_no = patients_info.p_no "+
                             "AND prescription.code = prescription_code.code "+
                             "AND prescription.reg_guid = A.guid "+
                             "AND (SELECT COUNT(code) " +
                             "FROM prescription, registration_info " +
-                            "WHERE (prescription.finish <> 'F' OR prescription.finish IS  NULL ) " +
+                            //"WHERE (prescription.finish <> 'F' OR prescription.finish IS  NULL ) " +
+                            "WHERE radiology_payment IS NULL " + 
                             "AND prescription.code = prescription_code.code "+
                             "AND prescription_code.type = '"+Constant.X_RAY_CODE+"' "+
                             "AND prescription.reg_guid = registration_info.guid " +
@@ -111,7 +113,7 @@ public class RefrashCashier extends Thread{
                 "AND shift_table.s_id = staff_info.s_id "+
                 "AND registration_info.p_no = patients_info.p_no "+
                 "AND shift_table.shift_date = '"+DateMethod.getTodayYMD()+"' "+
-                "AND shift_table.shift = '"+DateMethod.getNowShiftNum()+"' "+
+                //"AND shift_table.shift = '"+DateMethod.getNowShiftNum()+"' "+
                 "AND registration_info.finish = 'F' "+
                 "AND registration_info.guid = outpatient_services.reg_guid "+
                 "AND medicine_stock.os_guid = outpatient_services.guid "+

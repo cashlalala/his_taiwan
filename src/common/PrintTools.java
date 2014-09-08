@@ -883,13 +883,13 @@ public class PrintTools {
 				case 11:
 					sql = "SELECT cashier.no, cashier.amount_receivable, cashier.arrears ,"
 							+ "cashier.paid_amount , cashier.payment_time, cashier.p_no, concat(patients_info.firstname,'  ',patients_info.lastname) AS 'name' , cashier.s_no, "
-							+ "CASE cashier.typ "
+							+ "CASE cashier.type "
 							+ "WHEN 'R' THEN 'Registration' "
 							+ "WHEN 'X' THEN 'Radiology(X-RAY)' "
 							+ "WHEN 'L' THEN 'Laboratory' END 'sys' "
 							+ "FROM cashier, patients_info "
 							+ "WHERE cashier.p_no = patients_info.p_no AND reg_guid = '"
-							+ m_RegGuid + "' AND typ = '" + m_CashierType + "'";
+							+ m_RegGuid + "' AND type = '" + m_CashierType + "'";
 					System.out.println(sql);
 					rs = DBC.executeQuery(sql);
 					rs.next();
@@ -930,7 +930,7 @@ public class PrintTools {
 								+ Constant.X_RAY_CODE + "' ";
 					} else if (sys.equals("Registration")) {
 						sql = "SELECT 'Registration' AS Item, "
-								+ "registration_info.cost AS 'Cost' "
+								+ "registration_info.reg_cost AS 'Cost' "
 								+ "FROM registration_info WHERE guid = '"
 								+ m_RegGuid + "' ";
 					} else if (sys.equals("Radiology(X-RAY)")) {
