@@ -212,7 +212,7 @@ public class RefrashWorkList extends Thread {
 					+ "AND shift_table.room_guid = poli_room.guid "
 					+ "AND poli_room.poli_guid = policlinic.guid "
 					+ "AND shift_table.s_id = staff_info.s_id "
-					+ "AND (A.finish = 'F' OR A.finish IS NULL OR A.finish = 'O' OR A.finish = '') "
+					+ "AND (A.finish = 'F' OR A.finish IS NULL OR A.finish = 'O' OR A.finish = 'W') "
 					+ "AND A.p_no = patients_info.p_no "
 					+ "ORDER BY A.finish, A.visits_no";
 		} else if (SysName.equals("lab")) {
@@ -298,7 +298,7 @@ public class RefrashWorkList extends Thread {
 				TabTools.setTabColor(m_Tab, 12, array);
 				TabTools.setHideColumn(this.m_Tab, 0);
 				TabTools.setHideColumn(this.m_Tab, 1);
-				TabTools.setHideColumn(this.m_Tab, 2);
+				//TabTools.setHideColumn(this.m_Tab, 2);
 				TabTools.setHideColumn(this.m_Tab, 3);
 				TabTools.setHideColumn(this.m_Tab, 11);
 				TabTools.setHideColumn(this.m_Tab, 12);
@@ -306,7 +306,7 @@ public class RefrashWorkList extends Thread {
 			} else if (SysName.equals("xray")) {
 				TabTools.setHideColumn(this.m_Tab, 0);
 				TabTools.setHideColumn(this.m_Tab, 1);
-				TabTools.setHideColumn(this.m_Tab, 2);
+				//TabTools.setHideColumn(this.m_Tab, 2);
 				TabTools.setHideColumn(this.m_Tab, 3);
 				TabTools.setHideColumn(this.m_Tab, 11);
 			}
@@ -525,12 +525,14 @@ public class RefrashWorkList extends Thread {
 				Object[][] array = { { "1", new Color(250, 232, 176) } };
 				TabTools.setTabColor(m_Tab, 12, array);
 				TabTools.setHideColumn(this.m_Tab, 0);
+				TabTools.setHideColumn(this.m_Tab, 1);
 				//TabTools.setHideColumn(this.m_Tab, 2);
 				TabTools.setHideColumn(this.m_Tab, 3);
 				TabTools.setHideColumn(this.m_Tab, 11);
 				// TabTools.setHideColumn(this.m_Tab,12);
 			} else if (m_SysName.equals("xray")) {
 				TabTools.setHideColumn(this.m_Tab, 0);
+				TabTools.setHideColumn(this.m_Tab, 1);
 				//TabTools.setHideColumn(this.m_Tab, 2);
 				TabTools.setHideColumn(this.m_Tab, 3);
 				TabTools.setHideColumn(this.m_Tab, 11);

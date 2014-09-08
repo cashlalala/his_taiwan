@@ -368,7 +368,7 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
          lab_mail.setText(paragraph.getString("EMAIL"));
          lab_PlaceOfBirth.setText(paragraph.getString("PLACEOFBIRTH"));
          lab_DateOfBirth.setText(paragraph.getString("DATAOFBIRTH"));
-         lab_Group.setText(paragraph.getString("POSITION") + "/" + paragraph.getString("PERMISSION") + " :");
+         lab_Group.setText("*" + paragraph.getString("POSITION") + "/" + paragraph.getString("PERMISSION") + " :");
          lab_No.setText(paragraph.getString("STAFFNO"));
          lab_ToDepartment.setText(paragraph.getString("DIVISION") + " :");
          lab_FirstName.setText("*" + paragraph.getString("FIRSTNAME"));
@@ -390,6 +390,7 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
  
 
     private boolean isCanSave(){
+    	System.out.println(this.cob_Permission.getSelectedIndex());
         if(!this.txt_FirstName.getText().equals("")
         && !this.txt_LastName.getText().equals("")
         && !this.txt_UserId.getText().equals("")
@@ -398,6 +399,7 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
         && this.txt_UserId.getText() != null
         && this.pwd_PassWord.getPassword() != null
         && this.pwd_Confirmation.getPassword() != null
+        && this.cob_Permission.getSelectedIndex() != 0
        ){
             if(new String(this.pwd_Confirmation.getPassword()).equals(new String(this.pwd_PassWord.getPassword()))){//密碼是否相同
                     return true;
@@ -865,7 +867,7 @@ public class Frm_StaffDetails extends javax.swing.JFrame implements FingerPrintV
     }//GEN-LAST:event_btn_EnrollActionPerformed
 
     private void cob_PermissionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cob_PermissionActionPerformed
-        // TODO add your handling code here:
+        this.btn_Save.setEnabled(isCanSave());
     }//GEN-LAST:event_cob_PermissionActionPerformed
 
     private void txt_FirstNameKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_FirstNameKeyReleased

@@ -90,7 +90,6 @@ public class RefreshPharmacy extends Thread {
 			rs.next();
 			this.tab.setModel(HISModel.getModel(rs, false));
 
-			setCloumnWidth(this.tab);
 			common.TabTools.setHideColumn(this.tab, 9);
 			common.TabTools.setHideColumn(this.tab, 11);
 
@@ -239,30 +238,5 @@ public class RefreshPharmacy extends Thread {
 				e.printStackTrace();
 			}
 		}
-	}
-
-	// 設定column寬度
-	private void setCloumnWidth(javax.swing.JTable tab) {
-		TableColumn columnNo = tab.getColumnModel().getColumn(0);
-		TableColumn columnPNo = tab.getColumnModel().getColumn(1);
-		TableColumn columnName = tab.getColumnModel().getColumn(2);
-		TableColumn columnBirth = tab.getColumnModel().getColumn(3);
-		TableColumn columnGender = tab.getColumnModel().getColumn(4);
-		TableColumn columnPs = tab.getColumnModel().getColumn(5);
-		TableColumn columnPOLI = tab.getColumnModel().getColumn(6);
-		TableColumn columnDoctor = tab.getColumnModel().getColumn(7);
-		TableColumn columnBlood = tab.getColumnModel().getColumn(8);
-		TableColumn columnTime = tab.getColumnModel().getColumn(10);
-		columnNo.setPreferredWidth(30);
-		columnPOLI.setPreferredWidth(120);
-		columnDoctor.setPreferredWidth(100);
-		columnPNo.setPreferredWidth(70);
-		columnName.setPreferredWidth(150);
-		columnBirth.setPreferredWidth(90);
-		columnGender.setPreferredWidth(50);
-		columnBlood.setPreferredWidth(50);
-		columnPs.setPreferredWidth(200);
-		columnTime.setPreferredWidth(375);
-		tab.setRowHeight(30);
 	}
 }

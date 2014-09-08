@@ -171,6 +171,12 @@ public class DBC {
         Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
         return stmt.executeQuery(sql);
     }
+    
+    public static Statement getQueryStatement() throws SQLException {
+        cc.johnwu.login.OnlineState.OnlineState();
+        Connection conn = DriverManager.getConnection(s_ServerURL,s_ServerName,s_ServerPasswd);
+        return conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+    }
 
     public static ResultSet executeQueryLogin(String sql) throws SQLException {
         Connection conn = DriverManager.getConnection(s_ServerURL,s_ServerName,s_ServerPasswd);

@@ -90,10 +90,10 @@ public class Frm_CashierList extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Cashier");
 
-        jLabel1.setFont(new java.awt.Font("新細明體", 1, 14));
+        //jLabel1.setFont(new java.awt.Font("新細明體", 1, 14));
         jLabel1.setText("System:");
 
-        cbox_System.setFont(new java.awt.Font("新細明體", 1, 14)); // NOI18N
+        //cbox_System.setFont(new java.awt.Font("新細明體", 1, 14)); // NOI18N
         cbox_System.setModel(new javax.swing.DefaultComboBoxModel(new String[] { " ", "Registration", "Laboratory", "Radiology(X-RAY)" }));
         cbox_System.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -182,7 +182,8 @@ public class Frm_CashierList extends javax.swing.JFrame {
         jButton2.setText("Close");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                //jButton2ActionPerformed(evt);
+            	mnit_CloseActionPerformed(evt);
             }
         });
 
@@ -278,7 +279,10 @@ public class Frm_CashierList extends javax.swing.JFrame {
 
 
         if(evt.getStateChange() == java.awt.event.ItemEvent.SELECTED && cbox_System.getSelectedIndex() != 0) {
-           // m_RefrashCashier.interrupt();  // 終止重複讀取掛號表單
+        	if(m_RefrashCashier != null) {
+        		m_RefrashCashier.interrupt();  // 終止重複讀取掛號表單
+                m_Clock.interrupt();
+        	}
             m_RefrashCashier = new RefrashCashier(this.tab_Cashier, Constant.REFRASHTIME, m_SysName, lab_WaitCount);
             m_RefrashCashier.start();
         }
@@ -292,7 +296,6 @@ public class Frm_CashierList extends javax.swing.JFrame {
 }//GEN-LAST:event_mnit_EnterActionPerformed
 
     private void mnit_CloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnit_CloseActionPerformed
-
         m_RefrashCashier.interrupt();  // 終止重複讀取掛號表單
         m_Clock.interrupt();
         new Frm_Main().setVisible(true);
