@@ -1479,9 +1479,9 @@ public void ShowGpsFrom() {
         	"NULL,"+ 
         	"100,"+                                        //reg_cost 
         	"100,"+                                        //dia_cost
-        	"'F',"+                                        //registration_payment 
-        	"'F',"+                                        //diagnosis_payment 
-        	"'F',"+                                        //pharmacy_payment 
+        	"NULL,"+                                       //registration_payment 
+        	"'Z',"+                                        //diagnosis_payment 
+        	"'Z',"+                                        //pharmacy_payment 
         	"'Z',"+                                        //lab_payment
         	"'Z',"+                                        //radiology_payment
         	"'Z',"+                                        //bed_payment
