@@ -54,9 +54,7 @@ import java.awt.image.BufferedImage;
 
 public class Frm_RegAndInpatient extends JFrame implements
 		FingerPrintViewerInterface, DateInterface, PatientsInterface {
-
 	private JPanel pan_WholeFrame;
-
 	// GUI for left top patient info
 	private JPanel pan_PatientInfo;
 	private JLabel lbl_PatientNo;
@@ -128,21 +126,8 @@ public class Frm_RegAndInpatient extends JFrame implements
 	 * Create the frame.
 	 */
 	public Frm_RegAndInpatient() {
-		String[][] matrix = { { "aaa", "bbb", "ccc" }, { "aaa", "bbb", "ccc" },
-				{ "aaa", "bbb", "ccc" }, { "aaa", "bbb", "ccc" },
-				{ "aaa", "bbb", "ccc" }, { "aaa", "bbb", "ccc" },
-				{ "aaa", "bbb", "ccc" }, { "aaa", "bbb", "ccc" },
-				{ "aaa", "bbb", "ccc" }, { "aaa", "bbb", "ccc" },
-				{ "aaa", "bbb", "ccc" }, { "aaa", "bbb", "ccc" },
-				{ "aaa", "bbb", "ccc" }, { "aaa", "bbb", "ccc" },
-				{ "aaa", "bbb", "ccc" }, { "aaa", "bbb", "ccc" },
-				{ "aaa", "bbb", "ccc" }, { "aaa", "bbb", "ccc" },
-				{ "aaa", "bbb", "ccc" }, { "aaa", "bbb", "ccc" },
-				{ "aaa", "bbb", "ccc" }, { "aaa", "bbb", "ccc" },
-				{ "aaa", "bbb", "ccc" }, { "aaa", "bbb", "ccc" },
-				{ "aaa", "bbb", "ccc" }, { "aaa", "bbb", "ccc" },
-				{ "aaa", "bbb", "ccc" }, { "aaa", "bbb", "ccc" },
-				{ "aaa", "bbb", "ccc" }, { "aaa", "bbb", "ccc" } };
+		Object[][] matrix = { { true, "bbb", "ccc" }, { true, "bbb", "ccc" },
+				{ true, "bbb", "ccc" }, { true, "bbb", "ccc" }};
 		String[] header = { "111", "222", "333" };
 		// Init GUI
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -796,7 +781,28 @@ public class Frm_RegAndInpatient extends JFrame implements
 
 		tab_BedList = new JTable();
 		scrollPane_Bed.setViewportView(tab_BedList);
-		tab_BedList.setModel(new DefaultTableModel(matrix, header));
+		tab_BedList.setModel(new DefaultTableModel(matrix, header) {
+			@Override
+			public boolean isCellEditable(int rowIndex, int columnIndex) {
+				if (columnIndex == 0)
+					return true;
+				else
+					return false;
+			}
+            @Override
+            public Class getColumnClass(int column) {
+                switch (column) {
+                    case 0:
+                        return Boolean.class;
+                    case 1:
+                        return String.class;
+                    case 2:
+                        return String.class;
+                    default:
+                    	return Boolean.class;
+                }
+            }
+		});
 		// End of init GUI
 		initClinicInfo();
 	}
@@ -1261,8 +1267,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 
 	@Override
 	public void onDateChanged() {
-		// TODO Auto-generated method stub
-
+		refreshClinicInfo();
 	}
 
 	@Override
