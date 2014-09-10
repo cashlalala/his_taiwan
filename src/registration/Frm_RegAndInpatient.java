@@ -111,6 +111,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 	private JButton btn_InpatientClose;
 	private JScrollPane scrollPane_Bed;
 	private JTable tab_BedList;
+	// GUI define End
 
 	private Language paragraph = Language.getInstance();
 	private Setting set = new Setting();
@@ -118,7 +119,13 @@ public class Frm_RegAndInpatient extends JFrame implements
 
 	private PatientsInfoDao patientsInfoDao = new PatientsInfoDao();
 	private List<PatientsInfo> patientsInfo;
-	private EntityTransaction etx;
+
+	// cached DB info
+	private String selectedDoctorName;
+	private String selectedDoctorID;
+	private String selectedDoctorNo;
+	private String selectedShiftGUID;
+	private String selectedPatientGUID;
 
 	boolean dead = true;
 
@@ -127,7 +134,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 	 */
 	public Frm_RegAndInpatient() {
 		Object[][] matrix = { { true, "bbb", "ccc" }, { true, "bbb", "ccc" },
-				{ true, "bbb", "ccc" }, { true, "bbb", "ccc" }};
+				{ true, "bbb", "ccc" }, { true, "bbb", "ccc" } };
 		String[] header = { "111", "222", "333" };
 		// Init GUI
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -789,19 +796,20 @@ public class Frm_RegAndInpatient extends JFrame implements
 				else
 					return false;
 			}
-            @Override
-            public Class getColumnClass(int column) {
-                switch (column) {
-                    case 0:
-                        return Boolean.class;
-                    case 1:
-                        return String.class;
-                    case 2:
-                        return String.class;
-                    default:
-                    	return Boolean.class;
-                }
-            }
+
+			@Override
+			public Class getColumnClass(int column) {
+				switch (column) {
+				case 0:
+					return Boolean.class;
+				case 1:
+					return String.class;
+				case 2:
+					return String.class;
+				default:
+					return Boolean.class;
+				}
+			}
 		});
 		// End of init GUI
 		initClinicInfo();
@@ -844,12 +852,11 @@ public class Frm_RegAndInpatient extends JFrame implements
 				|| tab_PatientList.getColumnCount() == 1) {
 			return;
 		} else {
-			String sql = "SELECT * "
-					+ "FROM patients_info "
-					+ "WHERE exist = 1 "
-					+ "AND p_no = '"
-					+ tab_PatientList.getValueAt(
-							tab_PatientList.getSelectedRow(), 0) + "' ";
+			selectedPatientGUID = (String) tab_PatientList.getValueAt(
+					tab_PatientList.getSelectedRow(), 0);
+			String sql = "SELECT * " + "FROM patients_info "
+					+ "WHERE exist = 1 " + "AND p_no = '" + selectedPatientGUID
+					+ "' ";
 			showImage(null, "");
 			ResultSet rs = null;
 
@@ -909,21 +916,20 @@ public class Frm_RegAndInpatient extends JFrame implements
 				|| tab_ClinicList.getColumnCount() == 1) {
 			return;
 		} else {
-			String sqlDocAndRoom = "SELECT poli_room.name,"
-					+ "concat(staff_info.firstname,'  ',staff_info.lastname) AS '"
-					+ paragraph.getString("DOCTOR")
-					+ "' "
+			selectedShiftGUID = (String) tab_ClinicList.getValueAt(
+					tab_ClinicList.getSelectedRow(), 0);
+
+			String sqlDocAndRoom = "SELECT poli_room.name, staff_info.s_id, staff_info.s_no,"
+					+ "concat(staff_info.firstname,'  ',staff_info.lastname) AS 'Doctor' "
 					+ "FROM shift_table, staff_info, poli_room "
 					+ "WHERE shift_table.guid = '"
-					+ tab_ClinicList.getValueAt(
-							tab_ClinicList.getSelectedRow(), 0) + "' "
+					+ selectedShiftGUID + "' "
 					+ "AND shift_table.s_id = staff_info.s_id "
 					+ "AND shift_table.room_guid = poli_room.guid ";
 			String sqlWait = "SELECT COUNT(guid) AS count "
 					+ "FROM registration_info "
 					+ "WHERE shift_guid = '"
-					+ tab_ClinicList.getValueAt(
-							tab_ClinicList.getSelectedRow(), 0) + "' "
+					+ selectedShiftGUID + "' "
 					+ "AND finish = 'W' ";
 			showImage(null, "");
 			ResultSet rs = null;
@@ -934,6 +940,11 @@ public class Frm_RegAndInpatient extends JFrame implements
 						+ rs.getString("Doctor"));
 				this.lbl_Room.setText(paragraph.getString("TITLEROOM")
 						+ rs.getString("poli_room.name"));
+				
+				selectedDoctorID=rs.getString("staff_info.s_id");
+				selectedDoctorNo=rs.getString("staff_info.s_no");
+				selectedDoctorName=rs.getString("Doctor");
+				
 				rs = DBC.executeQuery(sqlWait);
 				rs.next();
 				this.lbl_WaitingNo.setText(paragraph.getString("TITLEWAITNO")
@@ -995,10 +1006,8 @@ public class Frm_RegAndInpatient extends JFrame implements
 				+ paragraph.getString("DIVISION") + ", "
 				+ "CASE shift_table.shift " + "WHEN '1' THEN 'Morning' "
 				+ "WHEN '2' THEN 'Afternoon' " + "WHEN '3' THEN 'Night' "
-				+ "ELSE 'All Night'" + "END '" + paragraph.getString("SHIFT")
-				+ "' , "
-				+ "concat(staff_info.firstname,'  ',staff_info.lastname) AS '"
-				+ paragraph.getString("DOCTOR") + "' "
+				+ "ELSE 'All Night'" + "END 'Shift', " 
+				+ "concat(staff_info.firstname,'  ',staff_info.lastname) AS 'Doctor' "
 				+ "FROM staff_info,shift_table,policlinic,poli_room "
 				+ "WHERE shift_table.shift_date = '"
 				+ pan_ClinicDate.getValue() + "' "
@@ -1072,21 +1081,13 @@ public class Frm_RegAndInpatient extends JFrame implements
 		try {
 			sql = "INSERT INTO registration_info SELECT " + "uuid()," + // guid
 					"NULL," + // bed_guid
-					"'"
-					+ this.lbl_PatientNo.getText().replace(
-							paragraph.getString("PATIENTNO"), "")
-					+ "',"
-					+ // p_no
-					"now(),"
-					+ // reg_time
-					"NULL,"
-					+ // gis_guid
-					" '"
-					+ tab_ClinicList.getValueAt(
-							tab_ClinicList.getSelectedRow(), 0)
-					+ "', "
-					+ // shift_guid
-						// first visit start
+					"'"	+ selectedPatientGUID + "',"                    // p_no
+					+ "now(),"                                          // reg_time
+					+ "NULL,"                                           // gis_guid
+					+ " '"
+					+ selectedShiftGUID
+					+ "', "                                             // shift_guid
+					+ 													// first visit start
 					"(SELECT CASE "
 					+ "WHEN (SELECT COUNT(*) from registration_info WHERE p_no='"
 					+ tab_ClinicList.getValueAt(
@@ -1094,8 +1095,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 					+ "')=0 "
 					+ "THEN 'Y' "
 					+ "ELSE 'N' END),"
-					+
-					// first visit end
+					+													// first visit end
 					"NULL,"
 					+ "'O',"
 					+ // type
@@ -1120,7 +1120,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 					+ // radiology_payment
 					"'Z',"
 					+ // bed_payment
-						// visit_no_start
+					// visit_no_start
 					"(SELECT COUNT(*) from registration_info "
 					+ "WHERE shift_guid='"
 					+ tab_ClinicList.getValueAt(
@@ -1196,8 +1196,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 					+ m_Number
 					+ "' AS waitno, "
 					+ "'"
-					+ lbl_Doctor.getText().replace(
-							paragraph.getString("TITLEDOCTORNAME"), "")
+					+ selectedDoctorName
 					+ "' AS doctor,"
 					+ "'"
 					+ lbl_RegistrationMethod.getText().replace(
@@ -1205,8 +1204,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 					+ "' AS type "
 					+ "FROM patients_info "
 					+ "WHERE exist = 1 AND p_no = '"
-					+ lbl_PatientNo.getText().replace(
-							paragraph.getString("PATIENTNO"), "") + "' ";
+					+ selectedPatientGUID + "' ";
 
 			rs = DBC.executeQuery(sql);
 			rs.next();
