@@ -12,7 +12,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
@@ -45,68 +47,70 @@ public class RefrashWorkList extends Thread {
 
 	private Statement stmt = null;
 
-	
 	protected String getLABSQLString(String date) {
 		String sql = "SELECT "
-			    + " NEWTABLE.visits_no AS 'NO.',"
-			    + " NEWTABLE.visits_no AS 'Register',"
-			    + " NEWTABLE.finish as 'Finish',"
-			    + " NULL,"
-			    + " NEWTABLE.reg_time AS 'Reg time',"
-			    + " NEWTABLE.p_no AS 'Patient No.',"
-			    + " NEWTABLE.Name AS 'Name',"
-			    + " NEWTABLE.birth AS 'Birthday',"
-			    + " NEWTABLE.gender AS 'Gender',"
-			    + " NEWTABLE.Blood,"
-			    + " NEWTABLE.ps AS 'P.S.',"
-			    + " NEWTABLE.regguid AS guid,"
-			    + " pre_status.status AS status"
-			    + " FROM"
-			    + " (SELECT distinct"
-			    + " A.visits_no,"
-			    + " A.reg_time,"
-			    + " A.p_no,"
-			    + " concat(patients_info.firstname, '  ', patients_info.lastname) AS 'Name',"
-			    + " patients_info.birth,"
-			    + " patients_info.gender,"
-			    + " concat(patients_info.bloodtype, patients_info.rh_type) AS 'Blood',"
-			    + " patients_info.ps,"
-			    + " A.guid AS regguid, prescription.finish"
-			    + " FROM"
-			    + " registration_info AS A, patients_info, shift_table, staff_info, prescription"
-			    + " LEFT JOIN prescription_code ON prescription.code = prescription_code.code"
-			    + " WHERE"
-			    + " A.shift_guid = shift_table.guid"
-			    + " AND shift_table.s_id = staff_info.s_id"
-			    + " AND A.p_no = patients_info.p_no"
-			    + " AND prescription.code = prescription_code.code"
-			    + " AND prescription.reg_guid = A.guid"
-			    + " AND prescription_code.type <> '" + Constant.X_RAY_CODE + "' ";
-//			    + " AND (SELECT" 
-//			    + " COUNT(prescription.code)"
-//			    + " FROM"
-//			    + " prescription, registration_info, prescription_code"
-//			    + " WHERE"
-//			    + " (prescription.finish <> 'F'"
-//			    + " OR prescription.finish IS NULL)"
-//			    + " AND prescription.reg_guid = registration_info.guid"
-//			    + " AND prescription.code = prescription_code.code"
-//			    + " AND prescription_code.type <> 'X-RAY'"
-//			    + " AND registration_info.guid = A.guid) > 0 "
-			    if (date.compareTo("") != 0)			    
-			    	sql += " AND A.reg_time LIKE '"	+ date + "%'"
-			    + ") AS NEWTABLE"
-			    + " LEFT JOIN"
-			    + " (SELECT distinct"
-			    + " reg_guid, '1' AS status"
-			    + " FROM"
-			    + " prescription"
-			    + " WHERE"
-			    + " prescription.specimen_status = '1') AS pre_status ON (pre_status.reg_guid = NEWTABLE.regguid)"
-			    + " ORDER BY NEWTABLE.Finish ASC, pre_status.status , NEWTABLE.reg_time DESC , NEWTABLE.visits_no";
+				+ " NEWTABLE.visits_no AS 'NO.',"
+				+ " NEWTABLE.visits_no AS 'Register',"
+				+ " NEWTABLE.finish as 'Finish',"
+				+ " NULL,"
+				+ " NEWTABLE.reg_time AS 'Reg time',"
+				+ " NEWTABLE.p_no AS 'Patient No.',"
+				+ " NEWTABLE.Name AS 'Name',"
+				+ " NEWTABLE.birth AS 'Birthday',"
+				+ " NEWTABLE.gender AS 'Gender',"
+				+ " NEWTABLE.Blood,"
+				+ " NEWTABLE.ps AS 'P.S.',"
+				+ " NEWTABLE.regguid AS guid,"
+				+ " pre_status.status AS status"
+				+ " FROM"
+				+ " (SELECT distinct"
+				+ " A.visits_no,"
+				+ " A.reg_time,"
+				+ " A.p_no,"
+				+ " concat(patients_info.firstname, '  ', patients_info.lastname) AS 'Name',"
+				+ " patients_info.birth,"
+				+ " patients_info.gender,"
+				+ " concat(patients_info.bloodtype, patients_info.rh_type) AS 'Blood',"
+				+ " patients_info.ps,"
+				+ " A.guid AS regguid, prescription.finish"
+				+ " FROM"
+				+ " registration_info AS A, patients_info, shift_table, staff_info, prescription"
+				+ " LEFT JOIN prescription_code ON prescription.code = prescription_code.code"
+				+ " WHERE" + " A.shift_guid = shift_table.guid"
+				+ " AND shift_table.s_id = staff_info.s_id"
+				+ " AND A.p_no = patients_info.p_no"
+				+ " AND prescription.code = prescription_code.code"
+				+ " AND prescription.reg_guid = A.guid"
+				+ " AND prescription_code.type <> '" + Constant.X_RAY_CODE
+				+ "' ";
+		// + " AND (SELECT"
+		// + " COUNT(prescription.code)"
+		// + " FROM"
+		// + " prescription, registration_info, prescription_code"
+		// + " WHERE"
+		// + " (prescription.finish <> 'F'"
+		// + " OR prescription.finish IS NULL)"
+		// + " AND prescription.reg_guid = registration_info.guid"
+		// + " AND prescription.code = prescription_code.code"
+		// + " AND prescription_code.type <> 'X-RAY'"
+		// + " AND registration_info.guid = A.guid) > 0 "
+		if (date.compareTo("") != 0)
+			sql += " AND A.reg_time LIKE '"
+					+ date
+					+ "%'"
+					+ ") AS NEWTABLE"
+					+ " LEFT JOIN"
+					+ " (SELECT distinct"
+					+ " reg_guid, '1' AS status"
+					+ " FROM"
+					+ " prescription"
+					+ " WHERE"
+					+ " prescription.specimen_status = '1') AS pre_status ON (pre_status.reg_guid = NEWTABLE.regguid)"
+					+ " ORDER BY NEWTABLE.Finish ASC, pre_status.status , NEWTABLE.reg_time DESC , NEWTABLE.visits_no";
 		return sql;
 	}
-	
+
+	@SuppressWarnings("deprecation")
 	protected String getXRAYSQLString(String date) {
 		String sql = "SELECT distinct A.visits_no AS '"
 				+ paragraph.getLanguage(line, "COL_NO")
@@ -144,20 +148,26 @@ public class RefrashWorkList extends Thread {
 				+ "AND A.p_no = patients_info.p_no "
 				+ "AND prescription.code = prescription_code.code "
 				+ "AND prescription.reg_guid = A.guid "
-				+ "AND prescription_code.type = '" + Constant.X_RAY_CODE + "' "
-//				+ "AND (SELECT COUNT(code) "
-//				+ "FROM prescription, registration_info "
-//				+ "WHERE (prescription.finish <> 'F' OR prescription.finish IS  NULL ) "
-//				+ "AND prescription.code = prescription_code.code "
-//				+ "AND prescription_code.type = '"
-//				+ Constant.X_RAY_CODE
-//				+ "' "
-//				+ "AND prescription.reg_guid = registration_info.guid "
-//				+ "AND registration_info.guid = A.guid)  > 0 "
-				+ "AND A.reg_time LIKE '" + date + "%' "
+				+ "AND prescription_code.type = '"
+				+ Constant.X_RAY_CODE
+				+ "' "
+				// + "AND (SELECT COUNT(code) "
+				// + "FROM prescription, registration_info "
+				// +
+				// "WHERE (prescription.finish <> 'F' OR prescription.finish IS  NULL ) "
+				// + "AND prescription.code = prescription_code.code "
+				// + "AND prescription_code.type = '"
+				// + Constant.X_RAY_CODE
+				// + "' "
+				// + "AND prescription.reg_guid = registration_info.guid "
+				// + "AND registration_info.guid = A.guid)  > 0 "
+				+ "AND A.reg_time LIKE '"
+				+ date
+				+ "%' "
 				+ "ORDER BY prescription.Finish ASC, A.reg_time DESC, A.visits_no ";
 		return sql;
 	}
+
 	@SuppressWarnings("deprecation")
 	protected RefrashWorkList(javax.swing.JTable tab, long time, String SysName) {
 		m_SysName = SysName;
@@ -218,7 +228,7 @@ public class RefrashWorkList extends Thread {
 		} else if (SysName.equals("lab")) {
 			Date today = new Date();
 			SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd");
-			sql = getLABSQLString(sdFormat.format(today)); 
+			sql = getLABSQLString(sdFormat.format(today));
 		} else if (SysName.equals("xray")) {
 			Date today = new Date();
 			SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -271,11 +281,34 @@ public class RefrashWorkList extends Thread {
 					+ "AND A.p_no = patients_info.p_no "
 					+ "AND policlinic.type = 'DM' "
 					+ "ORDER BY Status, A.visits_no";
+		} else if (SysName.equals("inp")) {
+			List<String> colList = Arrays.asList(paragraph.getString("COL_NO"),
+					paragraph.getString("STATUS"), paragraph.getString("COL_CHECKINTIME"), 
+					paragraph.getString("COL_NAME"),
+					paragraph.getString("COL_BIRTH"),
+					paragraph.getString("COL_AGE"),
+					paragraph.getString("COL_GENDER"),
+					paragraph.getString("COL_BLOOD"), "MainDoctor",
+					paragraph.getString("COL_POLICLINIC"), 
+					paragraph.getString("COL_BED_NO"), 
+					paragraph.getString("COL_NOTE"));
+			
+			sql = String
+					.format("SELECT bd_rec.p_no as '%s', bd_rec.status as '%s', bd_rec.checkinTime as '%s',"
+							+ "concat(pInfo.firstname,' ',pInfo.lastname) as '%s', pInfo.birth as '%s', "
+							+ "TIMESTAMPDIFF(year,pInfo.birth, now()) as '%s', "
+							+ "pInfo.gender as '%s', concat(pInfo.bloodtype,pInfo.rh_type) as '%s', "
+							+ "concat(staff_info.firstname,' ',staff_info.lastname) as '%s', policlinic.name as '%s',"
+							+ "bed_code.guid as '%s', bd_rec.note as '%s' "
+							+ "FROM bed_record bd_rec, bed_code, patients_info pInfo, staff_info, policlinic, registration_info reg "
+							+ "WHERE reg.type = 'I' and reg.bed_guid = bd_rec.guid and bd_rec.status = 'N' "
+							+ "and bd_rec.bed_guid = bed_code.guid and bd_rec.p_no = pInfo.p_no "
+							+ "and bed_code.poli_guid = policlinic.guid and bd_rec.mainDr_no = staff_info.s_no",
+							colList.toArray());
 		}
 		this.m_Tab = tab;
 		this.m_Time = time;
 		try {
-			System.out.println(sql);
 			rs = DBC.executeQuery(sql);
 			((DefaultTableModel) this.m_Tab.getModel()).setRowCount(0);
 			this.m_Tab.setModel(HISModel.getModel(rs));
@@ -298,7 +331,7 @@ public class RefrashWorkList extends Thread {
 				TabTools.setTabColor(m_Tab, 12, array);
 				TabTools.setHideColumn(this.m_Tab, 0);
 				TabTools.setHideColumn(this.m_Tab, 1);
-				//TabTools.setHideColumn(this.m_Tab, 2);
+				// TabTools.setHideColumn(this.m_Tab, 2);
 				TabTools.setHideColumn(this.m_Tab, 3);
 				TabTools.setHideColumn(this.m_Tab, 11);
 				TabTools.setHideColumn(this.m_Tab, 12);
@@ -306,7 +339,7 @@ public class RefrashWorkList extends Thread {
 			} else if (SysName.equals("xray")) {
 				TabTools.setHideColumn(this.m_Tab, 0);
 				TabTools.setHideColumn(this.m_Tab, 1);
-				//TabTools.setHideColumn(this.m_Tab, 2);
+				// TabTools.setHideColumn(this.m_Tab, 2);
 				TabTools.setHideColumn(this.m_Tab, 3);
 				TabTools.setHideColumn(this.m_Tab, 11);
 			}
@@ -375,18 +408,19 @@ public class RefrashWorkList extends Thread {
 								+ "AND shift_table.shift = '"
 								+ DateMethod.getNowShiftNum() + "' ";
 					}
-					System.out.println(check_sql);
-					rs = stmt.executeQuery(check_sql);
-					if (rs.next()
-							&& (rs.getString(1) == null || rs.getString(1)
-									.equals(m_LastTouchTime))) {
-						RefrashWorkList.sleep(m_Time);
-						continue;
-					}
-					m_LastTouchTime = rs.getString(1);
-					rs.close();
 
-					System.out.println(sql);
+					if (!m_SysName.equals("inp")) {
+						rs = stmt.executeQuery(check_sql);
+						if (rs.next()
+								&& (rs.getString(1) == null || rs.getString(1)
+										.equals(m_LastTouchTime))) {
+							RefrashWorkList.sleep(m_Time);
+							continue;
+						}
+						m_LastTouchTime = rs.getString(1);
+						rs.close();
+					}
+
 					rs = stmt.executeQuery(sql);
 					if (rs.last()) {
 						int row = 0;
@@ -411,7 +445,8 @@ public class RefrashWorkList extends Thread {
 			e.printStackTrace();
 		} finally {
 			try {
-				DBC.closeConnection(rs);
+				if (!m_SysName.equals("inp"))
+					DBC.closeConnection(rs);
 			} catch (SQLException e) {
 				e.printStackTrace();
 				try {
@@ -454,7 +489,7 @@ public class RefrashWorkList extends Thread {
 	@SuppressWarnings("deprecation")
 	public void getSelectDate(String date) {
 		if (m_SysName.equals("lab")) {
-			sql = getLABSQLString(date); 
+			sql = getLABSQLString(date);
 		} else if (m_SysName.equals("xray")) {
 			sql = getXRAYSQLString(date);
 		} else if (m_SysName.equals("case")) {
@@ -526,14 +561,14 @@ public class RefrashWorkList extends Thread {
 				TabTools.setTabColor(m_Tab, 12, array);
 				TabTools.setHideColumn(this.m_Tab, 0);
 				TabTools.setHideColumn(this.m_Tab, 1);
-				//TabTools.setHideColumn(this.m_Tab, 2);
+				// TabTools.setHideColumn(this.m_Tab, 2);
 				TabTools.setHideColumn(this.m_Tab, 3);
 				TabTools.setHideColumn(this.m_Tab, 11);
 				// TabTools.setHideColumn(this.m_Tab,12);
 			} else if (m_SysName.equals("xray")) {
 				TabTools.setHideColumn(this.m_Tab, 0);
 				TabTools.setHideColumn(this.m_Tab, 1);
-				//TabTools.setHideColumn(this.m_Tab, 2);
+				// TabTools.setHideColumn(this.m_Tab, 2);
 				TabTools.setHideColumn(this.m_Tab, 3);
 				TabTools.setHideColumn(this.m_Tab, 11);
 			}
