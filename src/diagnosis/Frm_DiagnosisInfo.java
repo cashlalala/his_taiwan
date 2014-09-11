@@ -1302,6 +1302,11 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 		}
 	}
 
+	private String escapeDBReserveWords(String sql) {
+		String newSql = sql.replaceAll("'", "\\\\'");
+		return newSql;
+	}
+
 	// 診斷碼 TABLE 上移下移鍵 Enable 狀態
 	public void setMoveBtnEnable() {
 		if (tab_Diagnosis.getSelectedRow() != -1) {
@@ -1457,10 +1462,11 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 									+ "-"
 									+ icdVer
 									+ "', 0, '"
-									+ txta_Summary.getText().trim()
+									+ escapeDBReserveWords(txta_Summary
+											.getText().trim())
 									+ "', '"
-									+ txt_Message.getText().trim()
-									+ "')";
+									+ escapeDBReserveWords(txt_Message.getText()
+											.trim()) + "')";
 							DBC.executeUpdate(sql);
 						}
 					}
@@ -1525,8 +1531,9 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 							ps = null;
 						} else {
 							ps = "'"
-									+ this.tab_Medicine.getValueAt(i, 12)
-											.toString().trim() + "'";
+									+ escapeDBReserveWords(this.tab_Medicine
+											.getValueAt(i, 12).toString()
+											.trim()) + "'";
 						}
 
 						String sql = "INSERT medicine_stock(guid, reg_guid, m_code,"
