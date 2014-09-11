@@ -47,6 +47,18 @@ public class RefrashWorkList extends Thread {
 
 	private Statement stmt = null;
 
+	private Frm_WorkList parentFrame;
+
+	public Frm_WorkList getParentFrame() {
+		return parentFrame;
+	}
+
+	public void setParentFrame(Frm_WorkList parentFrame) {
+		this.parentFrame = parentFrame;
+	}
+
+	public int curItemCnt;
+
 	protected String getLABSQLString(String date) {
 		String sql = "SELECT "
 				+ " NEWTABLE.visits_no AS 'NO.',"
@@ -171,6 +183,7 @@ public class RefrashWorkList extends Thread {
 	@SuppressWarnings("deprecation")
 	protected RefrashWorkList(javax.swing.JTable tab, long time, String SysName) {
 		m_SysName = SysName;
+		curItemCnt = 0;
 
 		if (SysName.equals("dia")) {
 			sql = "SELECT A.visits_no AS '"
@@ -283,16 +296,17 @@ public class RefrashWorkList extends Thread {
 					+ "ORDER BY Status, A.visits_no";
 		} else if (SysName.equals("inp")) {
 			List<String> colList = Arrays.asList(paragraph.getString("COL_NO"),
-					paragraph.getString("STATUS"), paragraph.getString("COL_CHECKINTIME"), 
+					paragraph.getString("STATUS"),
+					paragraph.getString("COL_CHECKINTIME"),
 					paragraph.getString("COL_NAME"),
 					paragraph.getString("COL_BIRTH"),
 					paragraph.getString("COL_AGE"),
 					paragraph.getString("COL_GENDER"),
 					paragraph.getString("COL_BLOOD"), "MainDoctor",
-					paragraph.getString("COL_POLICLINIC"), 
-					paragraph.getString("COL_BED_NO"), 
+					paragraph.getString("COL_POLICLINIC"),
+					paragraph.getString("COL_BED_NO"),
 					paragraph.getString("COL_NOTE"));
-			
+
 			sql = String
 					.format("SELECT bd_rec.p_no as '%s', bd_rec.status as '%s', bd_rec.checkinTime as '%s',"
 							+ "concat(pInfo.firstname,' ',pInfo.lastname) as '%s', pInfo.birth as '%s', "
@@ -372,6 +386,8 @@ public class RefrashWorkList extends Thread {
 		try {
 			while (isRunning) {
 				try {
+					parentFrame.btn_Diagnostic.setEnabled(curItemCnt != 0);
+
 					String check_sql = "";
 					if (m_SysName.equals("dia")) {
 						check_sql = "SELECT MAX(touchtime) "
@@ -422,17 +438,17 @@ public class RefrashWorkList extends Thread {
 					}
 
 					rs = stmt.executeQuery(sql);
+					curItemCnt = 0;
 					if (rs.last()) {
-						int row = 0;
 						this.m_Guid = new String[rs.getRow()];
 						((DefaultTableModel) m_Tab.getModel()).setRowCount(rs
 								.getRow());
 						rs.beforeFirst();
 						while (rs.next()) {
 							for (int col = 0; col < 11; col++)
-								m_Tab.setValueAt(rs.getString(col + 1), row,
-										col);
-							row++;
+								m_Tab.setValueAt(rs.getString(col + 1),
+										curItemCnt, col);
+							curItemCnt++;
 						}
 					}
 					rs.close();
