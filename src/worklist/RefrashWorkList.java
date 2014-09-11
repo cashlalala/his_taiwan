@@ -237,7 +237,7 @@ public class RefrashWorkList extends Thread {
 			sql = "SELECT A.visits_no AS '"
 					+ paragraph.getLanguage(line, "COL_NO")
 					+ "', "
-					+ "A.register AS '"
+					+ "'' AS '"
 					+ paragraph.getLanguage(line, "COL_REGISTER")
 					+ "', "
 					+ "(SELECT CASE COUNT(registration_info.guid) "
@@ -496,7 +496,7 @@ public class RefrashWorkList extends Thread {
 			sql = "SELECT A.visits_no AS '"
 					+ paragraph.getLanguage(line, "COL_NO")
 					+ "', "
-					+ "A.register AS '"
+					+ "'' AS '"
 					+ paragraph.getLanguage(line, "COL_REGISTER")
 					+ "', "
 					+ "(SELECT CASE COUNT(registration_info.guid) "

@@ -199,8 +199,8 @@ public class Frm_Main extends javax.swing.JFrame {
 		//btn_Anamnesis.setEnabled(false);
 		//btn_AnamnesisReturn.setEnabled(false);
 		btn_Statistic.setEnabled(false);
-		btn_Sms.setEnabled(false);
-		btn_Case.setEnabled(false);
+		//btn_Sms.setEnabled(false);
+		//btn_Case.setEnabled(false);
 		btn_BedManagement.setEnabled(false);
 		//btn_Cashier.setEnabled(false);
 	}
