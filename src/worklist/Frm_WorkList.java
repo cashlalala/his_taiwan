@@ -1,20 +1,16 @@
 package worklist;
 
-import java.awt.Color;
-import java.awt.Font;
 import java.awt.Frame;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.print.PageFormat;
-import java.awt.print.Printable;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.JButton;
 import javax.swing.JOptionPane;
+import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListSelectionModel;
 
 import laboratory.Frm_Laboratory;
@@ -23,21 +19,11 @@ import multilingual.Language;
 import radiology.Frm_Radiology;
 import admission.Frm_InpatientInfo;
 import casemgmt.Frm_Case;
-import cc.johnwu.date.DateMethod;
 import cc.johnwu.login.UserInfo;
-import cc.johnwu.sql.DBC;
 import diagnosis.Frm_DiagnosisDiagnostic;
 import diagnosis.Frm_DiagnosisInfo;
 import diagnosis.Frm_DiagnosisPrintChooser;
 import errormessage.StoredErrorMessage;
-
-import javax.swing.JButton;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.GroupLayout;
-import javax.swing.LayoutStyle.ComponentPlacement;
-
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 public class Frm_WorkList extends javax.swing.JFrame {
 
@@ -135,6 +121,7 @@ public class Frm_WorkList extends javax.swing.JFrame {
 		});
 		this.m_RefrashWorkList = new RefrashWorkList(this.tab_WorkList,
 				REFRASHTIME, m_SysName);
+		m_RefrashWorkList.setParentFrame(this);
 		this.m_RefrashWorkList.start();
 		this.m_Clock = new Thread() { // Clock
 			@Override
@@ -825,5 +812,5 @@ public class Frm_WorkList extends javax.swing.JFrame {
 	private javax.swing.JTable tab_WorkList;
 	private javax.swing.JTextField txt_Name;
 	private javax.swing.JTextField txt_Poli;
-	private JButton btn_Diagnostic;
+	public JButton btn_Diagnostic;
 }
