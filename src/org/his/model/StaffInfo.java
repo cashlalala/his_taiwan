@@ -23,7 +23,6 @@ public class StaffInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	@Column(name="s_no")
 	private int sNo;
 

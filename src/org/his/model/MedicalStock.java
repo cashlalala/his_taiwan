@@ -2,7 +2,6 @@ package org.his.model;
 
 import java.io.Serializable;
 import javax.persistence.*;
-import java.util.List;
 
 
 /**
@@ -11,27 +10,26 @@ import java.util.List;
  */
 @Entity
 @Table(name="medical_stock")
+@NamedQuery(name="MedicalStock.findAll", query="SELECT m FROM MedicalStock m")
 public class MedicalStock implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String guid;
 
 	@Column(name="current_amount")
-	private int currentAmount;
+	private float currentAmount;
+
+	@Column(name="default_unit_price")
+	private float defaultUnitPrice;
 
 	@Column(name="item_guid")
 	private String itemGuid;
 
 	@Column(name="minimal_amount")
-	private int minimalAmount;
+	private float minimalAmount;
 
 	private String type;
-
-	//bi-directional many-to-one association to MedicalStockChangeRecord
-	@OneToMany(mappedBy="medicalStock")
-	private List<MedicalStockChangeRecord> medicalStockChangeRecords;
 
 	public MedicalStock() {
 	}
@@ -44,12 +42,20 @@ public class MedicalStock implements Serializable {
 		this.guid = guid;
 	}
 
-	public int getCurrentAmount() {
+	public float getCurrentAmount() {
 		return this.currentAmount;
 	}
 
-	public void setCurrentAmount(int currentAmount) {
+	public void setCurrentAmount(float currentAmount) {
 		this.currentAmount = currentAmount;
+	}
+
+	public float getDefaultUnitPrice() {
+		return this.defaultUnitPrice;
+	}
+
+	public void setDefaultUnitPrice(float defaultUnitPrice) {
+		this.defaultUnitPrice = defaultUnitPrice;
 	}
 
 	public String getItemGuid() {
@@ -60,11 +66,11 @@ public class MedicalStock implements Serializable {
 		this.itemGuid = itemGuid;
 	}
 
-	public int getMinimalAmount() {
+	public float getMinimalAmount() {
 		return this.minimalAmount;
 	}
 
-	public void setMinimalAmount(int minimalAmount) {
+	public void setMinimalAmount(float minimalAmount) {
 		this.minimalAmount = minimalAmount;
 	}
 
@@ -74,28 +80,6 @@ public class MedicalStock implements Serializable {
 
 	public void setType(String type) {
 		this.type = type;
-	}
-
-	public List<MedicalStockChangeRecord> getMedicalStockChangeRecords() {
-		return this.medicalStockChangeRecords;
-	}
-
-	public void setMedicalStockChangeRecords(List<MedicalStockChangeRecord> medicalStockChangeRecords) {
-		this.medicalStockChangeRecords = medicalStockChangeRecords;
-	}
-
-	public MedicalStockChangeRecord addMedicalStockChangeRecord(MedicalStockChangeRecord medicalStockChangeRecord) {
-		getMedicalStockChangeRecords().add(medicalStockChangeRecord);
-		medicalStockChangeRecord.setMedicalStock(this);
-
-		return medicalStockChangeRecord;
-	}
-
-	public MedicalStockChangeRecord removeMedicalStockChangeRecord(MedicalStockChangeRecord medicalStockChangeRecord) {
-		getMedicalStockChangeRecords().remove(medicalStockChangeRecord);
-		medicalStockChangeRecord.setMedicalStock(null);
-
-		return medicalStockChangeRecord;
 	}
 
 }

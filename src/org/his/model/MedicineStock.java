@@ -11,11 +11,11 @@ import java.util.Date;
  */
 @Entity
 @Table(name="medicine_stock")
+@NamedQuery(name="MedicineStock.findAll", query="SELECT m FROM MedicineStock m")
 public class MedicineStock implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String guid;
 
 	private float dosage;
