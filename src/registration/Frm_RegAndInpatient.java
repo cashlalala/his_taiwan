@@ -126,6 +126,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 	private String selectedDoctorNo;
 	private String selectedShiftGUID;
 	private String selectedPatientGUID;
+	private boolean selectedPatientWithBirthdayInfo = false;
 
 	boolean dead = true;
 
@@ -863,6 +864,10 @@ public class Frm_RegAndInpatient extends JFrame implements
 			try {
 				rs = DBC.executeQuery(sql);
 				rs.next();
+				selectedPatientWithBirthdayInfo = false;
+				if (rs.getString("birth") != null) {
+					selectedPatientWithBirthdayInfo = true;
+				}
 				this.lbl_PatientNo.setText(paragraph.getString("PATIENTNO")
 						+ rs.getString("p_no"));
 				this.lbl_NHISNo.setText(paragraph.getString("TITLENHISNO")
@@ -877,8 +882,8 @@ public class Frm_RegAndInpatient extends JFrame implements
 				this.lbl_Birthday.setText(paragraph.getString("TITLEBIRTHDAY")
 						+ rs.getString("birth"));
 				this.lbl_Age.setText(paragraph.getString("TITLEAGE")
-						+ ((lbl_Birthday.getText() == null || lbl_Birthday
-								.getText().isEmpty()) ? "" : DateMethod
+						+ ((!selectedPatientWithBirthdayInfo || lbl_Birthday
+								.getText().isEmpty()) ? "null" : DateMethod
 								.getAgeWithMonth(rs.getDate("birth"))));
 				this.lbl_Gender.setText(paragraph.getString("GENDER")
 						+ rs.getString("gender"));
@@ -923,14 +928,13 @@ public class Frm_RegAndInpatient extends JFrame implements
 					+ "concat(staff_info.firstname,'  ',staff_info.lastname) AS 'Doctor' "
 					+ "FROM shift_table, staff_info, poli_room "
 					+ "WHERE shift_table.guid = '"
-					+ selectedShiftGUID + "' "
+					+ selectedShiftGUID
+					+ "' "
 					+ "AND shift_table.s_id = staff_info.s_id "
 					+ "AND shift_table.room_guid = poli_room.guid ";
 			String sqlWait = "SELECT COUNT(guid) AS count "
-					+ "FROM registration_info "
-					+ "WHERE shift_guid = '"
-					+ selectedShiftGUID + "' "
-					+ "AND finish = 'W' ";
+					+ "FROM registration_info " + "WHERE shift_guid = '"
+					+ selectedShiftGUID + "' " + "AND finish = 'W' ";
 			showImage(null, "");
 			ResultSet rs = null;
 			try {
@@ -940,11 +944,10 @@ public class Frm_RegAndInpatient extends JFrame implements
 						+ rs.getString("Doctor"));
 				this.lbl_Room.setText(paragraph.getString("TITLEROOM")
 						+ rs.getString("poli_room.name"));
-				
-				selectedDoctorID=rs.getString("staff_info.s_id");
-				selectedDoctorNo=rs.getString("staff_info.s_no");
-				selectedDoctorName=rs.getString("Doctor");
-				
+
+				selectedDoctorID = rs.getString("staff_info.s_id");
+				selectedDoctorNo = rs.getString("staff_info.s_no");
+				selectedDoctorName = rs.getString("Doctor");
 				rs = DBC.executeQuery(sqlWait);
 				rs.next();
 				this.lbl_WaitingNo.setText(paragraph.getString("TITLEWAITNO")
@@ -981,7 +984,6 @@ public class Frm_RegAndInpatient extends JFrame implements
 			while (rs.next()) {
 				this.cbb_Division.addItem(rs.getString("name"));
 			}
-			DBC.closeConnection(rs);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -997,16 +999,20 @@ public class Frm_RegAndInpatient extends JFrame implements
 		this.cbb_Shift.addItem(paragraph.getString("NOON"));
 		this.cbb_Shift.addItem(paragraph.getString("NIGHT"));
 		this.cbb_Shift.setSelectedIndex(DateMethod.getNowShiftNum());
-		// refreshClinicInfo();
+		refreshClinicInfo();
 	}
 
 	private void refreshClinicInfo() {
 		ResultSet rs = null;
 		String sql = "SELECT shift_table.guid, policlinic.name AS "
-				+ paragraph.getString("DIVISION") + ", "
-				+ "CASE shift_table.shift " + "WHEN '1' THEN 'Morning' "
-				+ "WHEN '2' THEN 'Afternoon' " + "WHEN '3' THEN 'Night' "
-				+ "ELSE 'All Night'" + "END 'Shift', " 
+				+ paragraph.getString("DIVISION")
+				+ ", "
+				+ "CASE shift_table.shift "
+				+ "WHEN '1' THEN 'Morning' "
+				+ "WHEN '2' THEN 'Afternoon' "
+				+ "WHEN '3' THEN 'Night' "
+				+ "ELSE 'All Night'"
+				+ "END 'Shift', "
 				+ "concat(staff_info.firstname,'  ',staff_info.lastname) AS 'Doctor' "
 				+ "FROM staff_info,shift_table,policlinic,poli_room "
 				+ "WHERE shift_table.shift_date = '"
@@ -1081,13 +1087,15 @@ public class Frm_RegAndInpatient extends JFrame implements
 		try {
 			sql = "INSERT INTO registration_info SELECT " + "uuid()," + // guid
 					"NULL," + // bed_guid
-					"'"	+ selectedPatientGUID + "',"                    // p_no
-					+ "now(),"                                          // reg_time
-					+ "NULL,"                                           // gis_guid
+					"'"
+					+ selectedPatientGUID
+					+ "'," // p_no
+					+ "now()," // reg_time
+					+ "NULL," // gis_guid
 					+ " '"
 					+ selectedShiftGUID
-					+ "', "                                             // shift_guid
-					+ 													// first visit start
+					+ "', " // shift_guid
+					+ // first visit start
 					"(SELECT CASE "
 					+ "WHEN (SELECT COUNT(*) from registration_info WHERE p_no='"
 					+ tab_ClinicList.getValueAt(
@@ -1095,7 +1103,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 					+ "')=0 "
 					+ "THEN 'Y' "
 					+ "ELSE 'N' END),"
-					+													// first visit end
+					+ // first visit end
 					"NULL,"
 					+ "'O',"
 					+ // type
@@ -1120,7 +1128,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 					+ // radiology_payment
 					"'Z',"
 					+ // bed_payment
-					// visit_no_start
+						// visit_no_start
 					"(SELECT COUNT(*) from registration_info "
 					+ "WHERE shift_guid='"
 					+ tab_ClinicList.getValueAt(
@@ -1201,10 +1209,9 @@ public class Frm_RegAndInpatient extends JFrame implements
 					+ "'"
 					+ lbl_RegistrationMethod.getText().replace(
 							paragraph.getString("TITLEVISITS"), "")
-					+ "' AS type "
-					+ "FROM patients_info "
-					+ "WHERE exist = 1 AND p_no = '"
-					+ selectedPatientGUID + "' ";
+					+ "' AS type " + "FROM patients_info "
+					+ "WHERE exist = 1 AND p_no = '" + selectedPatientGUID
+					+ "' ";
 
 			rs = DBC.executeQuery(sql);
 			rs.next();
@@ -1249,6 +1256,36 @@ public class Frm_RegAndInpatient extends JFrame implements
 			e.printStackTrace();
 		}
 
+	}
+
+	private void initInpatientInfo() {
+		// Date chooser initialed in constructor
+		// Init Division
+		ResultSet rs = null;
+		try {
+			this.cbb_InpatientDivision.removeAllItems();
+			this.cbb_InpatientDivision.addItem(paragraph.getString("ALL"));
+			String sql = "SELECT name FROM policlinic";
+			rs = DBC.executeQuery(sql);
+			while (rs.next()) {
+				this.cbb_InpatientDivision.addItem(rs.getString("name"));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				DBC.closeConnection(rs);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		// Init Shift
+		this.cbb_Shift.addItem(paragraph.getString("ALL"));
+		this.cbb_Shift.addItem(paragraph.getString("MORNING"));
+		this.cbb_Shift.addItem(paragraph.getString("NOON"));
+		this.cbb_Shift.addItem(paragraph.getString("NIGHT"));
+		this.cbb_Shift.setSelectedIndex(DateMethod.getNowShiftNum());
+		refreshClinicInfo();
 	}
 
 	@Override
