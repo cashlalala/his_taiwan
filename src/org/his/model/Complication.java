@@ -11,11 +11,11 @@ import java.util.Date;
  */
 @Entity
 @Table(name="complication")
+@NamedQuery(name="Complication.findAll", query="SELECT c FROM Complication c")
 public class Complication implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String guid;
 
 	private String angina;

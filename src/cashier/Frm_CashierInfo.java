@@ -117,15 +117,14 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
                         "prescription.code AS 'Code', " +
                         "prescription_code.name AS 'Name', " +
                         "prescription.cost AS 'Cost' " +
-                        "FROM prescription LEFT JOIN outpatient_services ON prescription.os_guid = outpatient_services.guid, registration_info, " +
+                        "FROM prescription, registration_info, " +
                              "prescription_code, shift_table, policlinic,poli_room,staff_info " +
                         "WHERE registration_info.guid = '"+m_Guid+"' " +
                             "AND registration_info.shift_guid = shift_table.guid " +
                             "AND shift_table.room_guid = poli_room.guid " +
                             "AND poli_room.poli_guid = policlinic.guid " +
                             "AND staff_info.s_id = shift_table.s_id " +
-                            "AND  (outpatient_services.reg_guid = registration_info.guid " +
-                            "OR prescription.case_guid = registration_info.guid) " +
+                            "AND prescription.reg_guid = registration_info.guid " +
                             "AND prescription_code.code = prescription.code " +
                             "AND prescription_code.type <> '"+Constant.X_RAY_CODE+"' ";
                     rs = DBC.executeQuery(sql);
@@ -161,9 +160,9 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
                     "CONCAT(patients_info.firstname, ' ' ,patients_info.lastname) AS 'Name', " +
                     "policlinic.name AS 'Dept.', " +
                     "poli_room.name AS 'Clinic', "+
-                    "registration_info.cost AS 'Cost' "+
+                    "registration_info.reg_cost AS 'Cost' "+
                     "FROM registration_info, shift_table,policlinic , poli_room ,patients_info "+
-                    "WHERE payment IS NULL "+
+                    "WHERE registration_payment IS NULL "+
                     "AND shift_table.guid = registration_info.shift_guid "+
                     "AND policlinic.guid = poli_room.poli_guid "+
                     "AND poli_room.guid = shift_table.room_guid  "+
@@ -204,16 +203,15 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
                 "prescription.code AS 'Code', " +
                 "prescription_code.name AS 'Name', " +
                 "prescription.cost AS 'Cost' " +
-                "FROM prescription, outpatient_services, registration_info, " +
+                "FROM prescription, registration_info, " +
                      "prescription_code, shift_table, policlinic,poli_room,staff_info " +
                 "WHERE registration_info.guid = '"+m_Guid+"' " +
                     "AND registration_info.shift_guid = shift_table.guid " +
                     "AND shift_table.room_guid = poli_room.guid " +
                     "AND poli_room.poli_guid = policlinic.guid " +
                     "AND staff_info.s_id = shift_table.s_id " +
-                    "AND prescription.os_guid = outpatient_services.guid " +
+                    "AND prescription.reg_guid = registration_info.guid " +
                     "AND prescription_code.code = prescription.code " +
-                    "AND outpatient_services.reg_guid = registration_info.guid " +
                     "AND prescription_code.type = '"+Constant.X_RAY_CODE+"' ";
 
               rs = DBC.executeQuery(sql);
@@ -300,7 +298,7 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
                 } else if (m_Sysname.equals("reg")) {
                     paymentType = "R";
                     sqlStr = "RE";
-                     sql = "UPDATE registration_info SET payment = '"+finish+"'";
+                     sql = "UPDATE registration_info SET registration_payment = '"+finish+"'";
                 }else if (m_Sysname.equals("xray")) {
                     sqlStr = "XR";
                     paymentType = "X";
@@ -314,7 +312,7 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
                 DBC.executeUpdate(sql);
 
                 // 儲存付費記錄
-                sql = "INSERT INTO cashier(no, reg_guid, p_no, typ, payment_time, amount_receivable, paid_amount, arrears, s_no) " +
+                sql = "INSERT INTO cashier(no, reg_guid, p_no, type, payment_time, amount_receivable, paid_amount, arrears, s_no) " +
                         "SELECT CASE  WHEN  MAX(`no`)  IS  NULL THEN '"+sqlStr+"00000001' ELSE "+
                         " INSERT (MAX(`no`), "+
                         "LENGTH(MAX(`no`)) - LENGTH(SUBSTRING(MAX(`no`),3)+1) + 1, "+
@@ -630,7 +628,7 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
             } else if (m_Sysname.equals("reg")) {
                 for (int i = 0; i < tab_Payment.getRowCount() ; i++) {
                     if (common.Tools.isNumber(tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1).toString())) {
-                            sql = "UPDATE registration_info SET cost = " + tab_Payment.getValueAt(i, tab_Payment.getColumnCount() - 1) + " WHERE guid = '" + tab_Payment.getValueAt(i, 0) + "'";
+                            sql = "UPDATE registration_info SET reg_cost = " + tab_Payment.getValueAt(i, tab_Payment.getColumnCount() - 1) + " WHERE guid = '" + tab_Payment.getValueAt(i, 0) + "'";
                             DBC.executeUpdate(sql);
                     }
                 }

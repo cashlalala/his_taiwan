@@ -21,6 +21,7 @@ import laboratory.Frm_Laboratory;
 import main.Frm_Main;
 import multilingual.Language;
 import radiology.Frm_Radiology;
+import admission.Frm_InpatientInfo;
 import casemgmt.Frm_Case;
 import cc.johnwu.date.DateMethod;
 import cc.johnwu.login.UserInfo;
@@ -115,11 +116,12 @@ public class Frm_WorkList extends javax.swing.JFrame {
 			lab_Finish.setVisible(false);
 			lab_FinishCount.setVisible(false);
 			btn_RePrint.setVisible(false);
-		} else if (m_SysName.equals("hos")) {
+		} else if (m_SysName.equals("inp")) {
 			this.setTitle("住院病患列表");
 			dateComboBox.setVisible(false);
 			btn_Search.setVisible(false);
 			lab_Date.setVisible(false);
+			this.setTitle(paragraph.getString("INPATIENT_WORKLIST"));
 		}
 
 		this.setExtendedState(Frm_WorkList.MAXIMIZED_BOTH); // 最大化
@@ -231,6 +233,16 @@ public class Frm_WorkList extends javax.swing.JFrame {
 				new Frm_Case(m_Pno, m_RegGuid, false, "").setVisible(true);
 			}
 
+		} else if (m_SysName.equals("inp")) {
+			boolean getFirst = false; // 是否為初診(用於彈出過敏設定)
+			if (tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 1) != null
+					&& tab_WorkList
+							.getValueAt(tab_WorkList.getSelectedRow(), 1)
+							.toString().equals("*")) {
+				getFirst = true;
+			}
+			new Frm_InpatientInfo(m_Pno, m_RegGuid, getSelectRow, finishState,
+					getFirst).setVisible(true);
 		}
 		this.dispose();
 	}

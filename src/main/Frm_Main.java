@@ -199,8 +199,8 @@ public class Frm_Main extends javax.swing.JFrame {
 		//btn_Anamnesis.setEnabled(false);
 		//btn_AnamnesisReturn.setEnabled(false);
 		btn_Statistic.setEnabled(false);
-		btn_Sms.setEnabled(false);
-		btn_Case.setEnabled(false);
+		//btn_Sms.setEnabled(false);
+		//btn_Case.setEnabled(false);
 		btn_BedManagement.setEnabled(false);
 		//btn_Cashier.setEnabled(false);
 	}
@@ -450,7 +450,7 @@ public class Frm_Main extends javax.swing.JFrame {
 		
 		btn_Inpatient.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				btn_DiagnosisActionPerformed(evt);
+				btn_AdmissionActionPerformed(evt);
 			}
 		});
 
@@ -1214,6 +1214,13 @@ public class Frm_Main extends javax.swing.JFrame {
 		this.dispose();
 	}// GEN-LAST:event_btn_DiagnosisActionPerformed
 
+	private void btn_AdmissionActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_DiagnosisActionPerformed
+		// 開啟看診 視窗
+		new worklist.Frm_WorkList(0, "inp").setVisible(true);
+		// 關閉此視窗
+		this.dispose();
+	}// GEN-LAST:event_btn_DiagnosisActionPerformed
+	
 	private void btn_PharmacyActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_PharmacyActionPerformed
 		new pharmacy.Frm_Pharmacy().setVisible(true);
 		// 關閉此視窗
