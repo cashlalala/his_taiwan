@@ -1364,18 +1364,6 @@ public class Frm_RegAndInpatient extends JFrame implements
 				e.printStackTrace();
 			}
 		}
-/*
-		if (DateMethod.getDaysRange(pan_ClinicDate.getValue()) > 0
-				|| (DateMethod.getDaysRange(pan_ClinicDate.getValue()) == 0 && cbb_Shift
-						.getSelectedIndex() > DateMethod.getNowShiftNum())) {
-			this.lbl_RegistrationMethod.setText(paragraph
-					.getString("TITLEVISITS")
-					+ paragraph.getString("RESERVATION"));
-		} else {
-			this.lbl_RegistrationMethod
-					.setText(paragraph.getString("TITLEVISITS")
-							+ paragraph.getString("LOCALITY"));
-		}*/
 	}
 
 	@Override
@@ -1392,8 +1380,12 @@ public class Frm_RegAndInpatient extends JFrame implements
 
 	@Override
 	public void onDateChanged() {
-		refreshClinicInfo();
-		refreshInpatientInfo();
+		if(pan_ClinicOrInpatient.getSelectedIndex()==0){
+			refreshClinicInfo();
+		}
+		else if(pan_ClinicOrInpatient.getSelectedIndex()==1){
+			refreshInpatientInfo();
+		}
 	}
 
 	@Override
