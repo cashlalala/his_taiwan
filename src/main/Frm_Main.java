@@ -1137,7 +1137,8 @@ public class Frm_Main extends javax.swing.JFrame {
 
 	private void btn_RegisterActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_RegisterActionPerformed
 		// 開啟掛號視窗
-		new registration.Frm_Registration().setVisible(true);
+		new registration.Frm_RegAndInpatient().setVisible(true);
+		//new registration.Frm_Registration().setVisible(true);
 		// 關閉此視窗
 		this.dispose();
 	}// GEN-LAST:event_btn_RegisterActionPerformed

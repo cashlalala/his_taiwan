@@ -1525,7 +1525,7 @@ public void ShowGpsFrom() {
             sql = "INSERT INTO gis(guid, gis, reg_guid, address) " +
                   "VALUES(uuid(),'" + m_Gis + "','" + m_Guid + "','" + m_Country+ "' ) ";
             DBC.executeUpdate(sql);
-             //*****儲存目前位置*****//
+            //*****儲存目前位置*****//
             //****掛號成功訊息******//
 
 
