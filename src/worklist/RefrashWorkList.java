@@ -237,7 +237,7 @@ public class RefrashWorkList extends Thread {
 					+ "AND shift_table.s_id = staff_info.s_id "
 					+ "AND (A.finish = 'F' OR A.finish IS NULL OR A.finish = 'O' OR A.finish = 'W') "
 					+ "AND A.p_no = patients_info.p_no "
-					+ "ORDER BY A.finish, A.visits_no";
+					+ "ORDER BY A.finish DESC, A.visits_no";
 		} else if (SysName.equals("lab")) {
 			Date today = new Date();
 			SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd");
