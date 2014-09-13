@@ -386,7 +386,10 @@ public class RefrashWorkList extends Thread {
 		try {
 			while (isRunning) {
 				try {
-					parentFrame.btn_Diagnostic.setEnabled(curItemCnt != 0);
+					Boolean isShowBtn = curItemCnt != 0;
+					parentFrame.btn_Diagnostic.setEnabled(isShowBtn);
+					parentFrame.btn_Clinic.setEnabled(isShowBtn);
+					parentFrame.btn_Reg.setEnabled(isShowBtn);
 
 					String check_sql = "";
 					if (m_SysName.equals("dia")) {
