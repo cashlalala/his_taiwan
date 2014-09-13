@@ -1,10 +1,16 @@
 package worklist;
 
 import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.ResourceBundle;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -16,28 +22,25 @@ import javax.swing.ListSelectionModel;
 import laboratory.Frm_Laboratory;
 import main.Frm_Main;
 import multilingual.Language;
+
+import org.jdesktop.beansbinding.AutoBinding;
+import org.jdesktop.beansbinding.AutoBinding.UpdateStrategy;
+import org.jdesktop.beansbinding.BeanProperty;
+import org.jdesktop.beansbinding.Bindings;
+
 import radiology.Frm_Radiology;
 import registration.Frm_RegAndInpatient;
 import admission.Frm_InpatientInfo;
+import admission.SysName2Visible;
 import casemgmt.Frm_Case;
 import cc.johnwu.login.UserInfo;
+import cc.johnwu.sql.DBC;
 import diagnosis.Frm_DiagnosisDiagnostic;
 import diagnosis.Frm_DiagnosisInfo;
 import diagnosis.Frm_DiagnosisPrintChooser;
 import errormessage.StoredErrorMessage;
-
-import java.util.ResourceBundle;
-
-import org.jdesktop.beansbinding.BeanProperty;
-import org.jdesktop.beansbinding.AutoBinding;
-import org.jdesktop.beansbinding.Bindings;
-import org.jdesktop.beansbinding.Converter;
-import org.jdesktop.beansbinding.AutoBinding.UpdateStrategy;
-
-import admission.SysName2Visible;
-
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import javax.swing.JLabel;
+import admission.SysName2Invisible;
 
 public class Frm_WorkList extends javax.swing.JFrame {
 
@@ -548,8 +551,13 @@ public class Frm_WorkList extends javax.swing.JFrame {
 			}
 		});
 
-		btn_Clinic = new JButton(ResourceBundle
-				.getBundle("lang.language").getString("CLINIC")); //$NON-NLS-1$ //$NON-NLS-2$
+		btn_CheckOut = new JButton(ResourceBundle
+				.getBundle("lang.language").getString("CHECKOUT")); //$NON-NLS-1$ //$NON-NLS-2$
+		btn_CheckOut.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				onCheckOut(e);
+			}
+		});
 
 		javax.swing.GroupLayout pan_RightLayout = new javax.swing.GroupLayout(
 				pan_Right);
@@ -577,7 +585,7 @@ public class Frm_WorkList extends javax.swing.JFrame {
 										.addComponent(btn_Reg,
 												GroupLayout.DEFAULT_SIZE, 133,
 												Short.MAX_VALUE)
-										.addComponent(btn_Clinic,
+										.addComponent(btn_CheckOut,
 												GroupLayout.DEFAULT_SIZE, 133,
 												Short.MAX_VALUE))
 						.addContainerGap()));
@@ -594,7 +602,7 @@ public class Frm_WorkList extends javax.swing.JFrame {
 						.addPreferredGap(ComponentPlacement.RELATED)
 						.addComponent(btn_Reg)
 						.addPreferredGap(ComponentPlacement.RELATED)
-						.addComponent(btn_Clinic)
+						.addComponent(btn_CheckOut)
 						.addContainerGap(277, Short.MAX_VALUE)));
 		pan_Right.setLayout(pan_RightLayout);
 
@@ -715,6 +723,19 @@ public class Frm_WorkList extends javax.swing.JFrame {
 		m_RefrashWorkList.interrupt(); // 終止重複讀取掛號表單
 		m_Clock.interrupt();
 		this.dispose();
+	}
+
+	private void onCheckOut(ActionEvent e) {
+		String bedRecGuid = (String) tab_WorkList.getValueAt(
+				tab_WorkList.getSelectedRow(), 12);
+		String sql = String
+				.format("update bed_record set status = 'L', checkoutTime = now() where bed_record.guid = '%s'",
+						bedRecGuid);
+		try {
+			DBC.executeUpdate(sql);
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
 	}
 
 	private void onRegistrationClicked(MouseEvent e) {
@@ -874,22 +895,33 @@ public class Frm_WorkList extends javax.swing.JFrame {
 	private javax.swing.JTextField txt_Name;
 	private javax.swing.JTextField txt_Poli;
 	public JButton btn_Diagnostic;
-	public JButton btn_Clinic;
+	public JButton btn_CheckOut;
 	public JButton btn_Reg;
-
 	protected void initDataBindings() {
-		BeanProperty<JButton, Boolean> jButtonBeanProperty = BeanProperty
-				.create("visible");
-		AutoBinding<String, String, JButton, Boolean> autoBinding = Bindings
-				.createAutoBinding(UpdateStrategy.READ, m_SysName, btn_Clinic,
-						jButtonBeanProperty, "bindBtnClinVis2Sys");
+		BeanProperty<JButton, Boolean> jButtonBeanProperty = BeanProperty.create("visible");
+		AutoBinding<String, String, JButton, Boolean> autoBinding = Bindings.createAutoBinding(UpdateStrategy.READ, m_SysName, btn_CheckOut, jButtonBeanProperty, "bindBtnClinVis2Sys");
 		autoBinding.setConverter(new SysName2Visible());
 		autoBinding.bind();
 		//
-		AutoBinding<String, String, JButton, Boolean> autoBinding_1 = Bindings
-				.createAutoBinding(UpdateStrategy.READ, m_SysName, btn_Reg,
-						jButtonBeanProperty, "bindBtnRegVis2Sys");
+		AutoBinding<String, String, JButton, Boolean> autoBinding_1 = Bindings.createAutoBinding(UpdateStrategy.READ, m_SysName, btn_Reg, jButtonBeanProperty, "bindBtnRegVis2Sys");
 		autoBinding_1.setConverter(new SysName2Visible());
 		autoBinding_1.bind();
+		//
+		BeanProperty<JLabel, Boolean> jLabelBeanProperty = BeanProperty.create("visible");
+		AutoBinding<String, String, JLabel, Boolean> autoBinding_2 = Bindings.createAutoBinding(UpdateStrategy.READ, m_SysName, lab_Wait, jLabelBeanProperty);
+		autoBinding_2.setConverter(new SysName2Invisible());
+		autoBinding_2.bind();
+		//
+		AutoBinding<String, String, JLabel, Boolean> autoBinding_3 = Bindings.createAutoBinding(UpdateStrategy.READ, m_SysName, lab_WaitCount, jLabelBeanProperty);
+		autoBinding_3.setConverter(new SysName2Invisible());
+		autoBinding_3.bind();
+		//
+		AutoBinding<String, String, JLabel, Boolean> autoBinding_4 = Bindings.createAutoBinding(UpdateStrategy.READ, m_SysName, lab_Finish, jLabelBeanProperty);
+		autoBinding_4.setConverter(new SysName2Invisible());
+		autoBinding_4.bind();
+		//
+		AutoBinding<String, String, JLabel, Boolean> autoBinding_5 = Bindings.createAutoBinding(UpdateStrategy.READ, m_SysName, lab_FinishCount, jLabelBeanProperty);
+		autoBinding_5.setConverter(new SysName2Invisible());
+		autoBinding_5.bind();
 	}
 }
