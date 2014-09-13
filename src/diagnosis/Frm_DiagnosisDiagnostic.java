@@ -5,11 +5,13 @@ import java.awt.event.WindowEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.swing.JFrame;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
+import worklist.Frm_WorkList;
 import multilingual.Language;
 import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
@@ -58,7 +60,7 @@ public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
 		initLanguage();
 		this.btn_Insert.setVisible(false);
 	}
-
+	
 	// 初始化
 	public void initFrame() {
 		this.setExtendedState(Frm_DiagnosisDiagnostic.MAXIMIZED_BOTH); // 最大化
@@ -1020,10 +1022,16 @@ public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
 	}// </editor-fold>//GEN-END:initComponents
 
 	private void btn_CloseActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_CloseActionPerformed
-		if (m_Frame != null) {
-			m_Frame.reSetEnable();
-		} else {
-			m_DiagnosisInfo.reSetEnable();
+		if (!isFromDiagInfo) {
+			Frm_WorkList workList = new Frm_WorkList(0, "dia");
+			workList.setVisible(true);
+		}
+		else {
+			if (m_Frame != null) {
+				m_Frame.reSetEnable();
+			} else {
+				m_DiagnosisInfo.reSetEnable();
+			}			
 		}
 		this.dispose();
 	}// GEN-LAST:event_btn_CloseActionPerformed
