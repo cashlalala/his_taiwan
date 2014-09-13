@@ -1,59 +1,53 @@
 package registration;
 
-import java.awt.BorderLayout;
-import java.awt.EventQueue;
+import java.awt.Frame;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import javax.persistence.EntityTransaction;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
-import javax.swing.JButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTabbedPane;
 
-import java.awt.Frame;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-
-import javax.swing.JLabel;
-import javax.swing.JComboBox;
+import main.Frm_Main;
+import multilingual.Language;
 
 import org.his.bind.PatientsInfoJPATable;
 import org.his.dao.PatientsInfoDao;
 import org.his.model.PatientsInfo;
 
-import common.PrintTools;
-
+import patients.Frm_PatientMod;
+import patients.PatientsInterface;
+import system.Setting;
 import cc.johnwu.date.DateInterface;
 import cc.johnwu.date.DateMethod;
 import cc.johnwu.finger.FingerPrintViewerInterface;
 import cc.johnwu.sql.DBC;
-import cc.johnwu.sql.HISModel;
-import patients.Frm_PatientMod;
-import patients.PatientsInterface;
-import main.Frm_Main;
-import multilingual.Language;
-import system.Setting;
 
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.awt.image.BufferedImage;
+import common.PrintTools;
 
 public class Frm_RegAndInpatient extends JFrame implements
 		FingerPrintViewerInterface, DateInterface, PatientsInterface {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JPanel pan_WholeFrame;
 	// GUI for left top patient info
 	private JPanel pan_PatientInfo;
@@ -130,10 +124,20 @@ public class Frm_RegAndInpatient extends JFrame implements
 
 	boolean dead = true;
 
+	private JFrame parentFrame;
+
+	public Frm_RegAndInpatient(JFrame parentFrame, String p_no) {
+		this();
+		selectedPatientGUID = p_no;
+		setPatientInfo(p_no);
+		this.parentFrame = parentFrame;
+	}
+
 	/**
 	 * Create the frame.
 	 */
 	public Frm_RegAndInpatient() {
+		this.parentFrame = null;
 		Object[][] matrix = { { true, "bbb", "ccc" }, { true, "bbb", "ccc" },
 				{ true, "bbb", "ccc" }, { true, "bbb", "ccc" } };
 		String[] header = { "111", "222", "333" };
@@ -840,12 +844,67 @@ public class Frm_RegAndInpatient extends JFrame implements
 
 	private void btn_EditPatientactionPerformed(ActionEvent evt) {
 		showImage(null, "");
-		new Frm_PatientMod(this, lbl_PatientNo.getText()).setVisible(true);
+		new Frm_PatientMod(this, this.lbl_PatientNo.getText().replace(
+				paragraph.getString("PATIENTNO"), "")).setVisible(true);
 		this.setEnabled(false);
 	}
 
 	private void tab_PatientListKeyPressed(java.awt.event.KeyEvent evt) {
 		tab_PatientListMouseClicked(null);
+	}
+
+	private void setPatientInfo(String p_no) {
+		String sql = "SELECT * " + "FROM patients_info " + "WHERE exist = 1 "
+				+ "AND p_no = '" + p_no + "' ";
+		showImage(null, "");
+		ResultSet rs = null;
+
+		try {
+			rs = DBC.executeQuery(sql);
+			rs.next();
+			selectedPatientWithBirthdayInfo = false;
+			if (rs.getString("birth") != null) {
+				selectedPatientWithBirthdayInfo = true;
+			}
+			this.lbl_PatientNo.setText(paragraph.getString("PATIENTNO")
+					+ rs.getString("p_no"));
+			this.lbl_NHISNo.setText(paragraph.getString("TITLENHISNO")
+					+ rs.getString("nhis_no"));
+			this.lbl_NIANo.setText(paragraph.getString("TITLENIANO")
+					+ rs.getString("nia_no"));
+			this.lbl_FirstName.setText(paragraph.getString("TITLEFIRSTNAME")
+					+ rs.getString("firstname"));
+			this.lbl_LastName.setText(paragraph.getString("TITLELASTNAME")
+					+ rs.getString("lastname"));
+			this.lbl_Birthday.setText(paragraph.getString("TITLEBIRTHDAY")
+					+ rs.getString("birth"));
+			this.lbl_Age.setText(paragraph.getString("TITLEAGE")
+					+ ((!selectedPatientWithBirthdayInfo || lbl_Birthday
+							.getText().isEmpty()) ? "null" : DateMethod
+							.getAgeWithMonth(rs.getDate("birth"))));
+			this.lbl_Gender.setText(paragraph.getString("GENDER")
+					+ rs.getString("gender"));
+			this.lbl_BloodType.setText(paragraph.getString("TITLEBLOODTYPE")
+					+ rs.getString("bloodtype"));
+			this.lbl_Height.setText(paragraph.getString("TITLEHEIGHT")
+					+ rs.getString("height"));
+			this.lbl_Weight.setText(paragraph.getString("TITLEWEIGHT")
+					+ rs.getString("weight"));
+			if (rs.getString("dead_guid") != null) {
+				dead = true;
+			} else {
+				dead = false;
+			}
+			btn_EditPatient.setEnabled(true);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				DBC.closeConnection(rs);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private void tab_PatientListMouseClicked(java.awt.event.MouseEvent evt) {
@@ -855,60 +914,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 		} else {
 			selectedPatientGUID = (String) tab_PatientList.getValueAt(
 					tab_PatientList.getSelectedRow(), 0);
-			String sql = "SELECT * " + "FROM patients_info "
-					+ "WHERE exist = 1 " + "AND p_no = '" + selectedPatientGUID
-					+ "' ";
-			showImage(null, "");
-			ResultSet rs = null;
-
-			try {
-				rs = DBC.executeQuery(sql);
-				rs.next();
-				selectedPatientWithBirthdayInfo = false;
-				if (rs.getString("birth") != null) {
-					selectedPatientWithBirthdayInfo = true;
-				}
-				this.lbl_PatientNo.setText(paragraph.getString("PATIENTNO")
-						+ rs.getString("p_no"));
-				this.lbl_NHISNo.setText(paragraph.getString("TITLENHISNO")
-						+ rs.getString("nhis_no"));
-				this.lbl_NIANo.setText(paragraph.getString("TITLENIANO")
-						+ rs.getString("nia_no"));
-				this.lbl_FirstName.setText(paragraph
-						.getString("TITLEFIRSTNAME")
-						+ rs.getString("firstname"));
-				this.lbl_LastName.setText(paragraph.getString("TITLELASTNAME")
-						+ rs.getString("lastname"));
-				this.lbl_Birthday.setText(paragraph.getString("TITLEBIRTHDAY")
-						+ rs.getString("birth"));
-				this.lbl_Age.setText(paragraph.getString("TITLEAGE")
-						+ ((!selectedPatientWithBirthdayInfo || lbl_Birthday
-								.getText().isEmpty()) ? "null" : DateMethod
-								.getAgeWithMonth(rs.getDate("birth"))));
-				this.lbl_Gender.setText(paragraph.getString("GENDER")
-						+ rs.getString("gender"));
-				this.lbl_BloodType.setText(paragraph
-						.getString("TITLEBLOODTYPE")
-						+ rs.getString("bloodtype"));
-				this.lbl_Height.setText(paragraph.getString("TITLEHEIGHT")
-						+ rs.getString("height"));
-				this.lbl_Weight.setText(paragraph.getString("TITLEWEIGHT")
-						+ rs.getString("weight"));
-				if (rs.getString("dead_guid") != null) {
-					dead = true;
-				} else {
-					dead = false;
-				}
-				btn_EditPatient.setEnabled(true);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} finally {
-				try {
-					DBC.closeConnection(rs);
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
+			setPatientInfo(selectedPatientGUID);
 		}
 	}
 
@@ -968,7 +974,10 @@ public class Frm_RegAndInpatient extends JFrame implements
 	}
 
 	private void btn_ClinicCloseactionPerformed(ActionEvent evt) {
-		new Frm_Main().setVisible(true);
+		if (parentFrame == null)
+			new Frm_Main().setVisible(true);
+		else
+			parentFrame.setVisible(true);
 		this.dispose();
 	}
 
