@@ -1323,9 +1323,13 @@ public class Frm_RegAndInpatient extends JFrame implements
 		// Init Division
 		ResultSet rs = null;
 		try {
+			
 			this.cbb_InpatientType.removeAllItems();
 			this.cbb_InpatientType.addItem("On Desk Inpatient");
+			this.cbb_InpatientType.addItem("Make Reservation");
+			this.cbb_InpatientType.addItem("Reserved Check In");
 			this.cbb_InpatientType.setSelectedIndex(0);
+			
 			this.cbb_InpatientDivision.removeAllItems();
 			this.cbb_InpatientDivision.addItem(paragraph.getString("ALL"));
 			String sql = "SELECT name FROM policlinic";
@@ -1333,6 +1337,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 			while (rs.next()) {
 				this.cbb_InpatientDivision.addItem(rs.getString("name"));
 			}
+			
 			sql = "SELECT concat(staff_info.firstname,'  ',staff_info.lastname) AS 'Doctor' "
 					+ " FROM staff_info " + "WHERE grp_name='Doctor'";
 			rs = DBC.executeQuery(sql);
@@ -1340,6 +1345,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 			while (rs.next()) {
 				this.cbb_InpatientDoctor.addItem(rs.getString("Doctor"));
 			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -1520,6 +1526,9 @@ public class Frm_RegAndInpatient extends JFrame implements
 		if (cbb_InpatientType.getSelectedIndex() == 0) {
 			selectedType = "N";
 		}
+		else if (cbb_InpatientType.getSelectedIndex() == 1) {
+			selectedType = "R";
+		}
 		try {
 			// get doctor No
 			sql = "SELECT staff_info.s_no FROM staff_info WHERE concat(staff_info.firstname,'  ',staff_info.lastname)"
@@ -1537,11 +1546,19 @@ public class Frm_RegAndInpatient extends JFrame implements
 				sql = sql + "NULL," + " '" + pan_CheckInDate.getValue()
 						+ " 00:00:00" + "', NULL, ";
 			}
+			else if (selectedType == "R") {
+				sql = sql + " '" + pan_CheckInDate.getValue()
+						+ " 00:00:00" + "', NULL, NULL, ";
+			}
 			// todo else
 			sql = sql + " '" + pan_CheckOutDate.getValue() + " 23:59:59"
 					+ "', " + "NULL," + "'" + doctorNo + "', NULL, NULL, NULL";
 			DBC.executeUpdate(sql);
 
+			if (selectedType == "R") {
+				return;
+			}
+			
 			// Insert registration_info
 			sql = "INSERT INTO registration_info SELECT " + "uuid()," // guid
 					+ "'"
