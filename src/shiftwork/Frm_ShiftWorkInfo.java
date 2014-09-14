@@ -130,7 +130,7 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
     public void setPoliCob() {
         ResultSet rsPoliclinic = null;
         try {
-             String sql = "SELECT name FROM policlinic";
+             String sql = "SELECT name FROM policlinic WHERE status = 'N'";
              rsPoliclinic = DBC.executeQuery(sql);
              while (rsPoliclinic.next()) {
                 cob_Policlinic.addItem(rsPoliclinic.getString("name"));
@@ -156,6 +156,8 @@ public class Frm_ShiftWorkInfo extends javax.swing.JFrame {
             String sql = "SELECT poli_room.name " +
                          "FROM poli_room, policlinic " +
                          "WHERE policlinic.name = '" + cob_Policlinic.getSelectedItem() + "' " +
+                         "AND policlinic.status = 'N' " +
+                         "AND poli_room.status = 'N' " +
                          "AND poli_room.poli_guid = policlinic.guid ORDER BY poli_room.name";
             rsPolRoom = DBC.executeQuery(sql);
             while (rsPolRoom.next()) {
