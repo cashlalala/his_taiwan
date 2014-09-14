@@ -90,7 +90,7 @@ public class Frm_Radiology extends javax.swing.JFrame {
             }
         });
         
-        String sql = "SELECT * FROM patients_info WHERE p_no = "+m_Pno+"";
+        String sql = "SELECT * FROM patients_info WHERE p_no = '" + m_Pno + "'";
         try {
             ResultSet rs = DBC.executeQuery(sql);
             rs.next();
@@ -98,7 +98,8 @@ public class Frm_Radiology extends javax.swing.JFrame {
             this.txt_No.setText(rs.getString("p_no"));
             this.txt_Name.setText(rs.getString("firstname")+" "+rs.getString("lastname"));
             this.txt_Sex.setText(rs.getString("gender"));
-            this.txt_Age.setText(DateMethod.getAgeWithMonth(rs.getDate("birth")));
+            if(rs.getString("birth") != null && rs.getString("birth").compareTo("") != 0)
+            	this.txt_Age.setText(DateMethod.getAgeWithMonth(rs.getDate("birth")));
             this.txt_Bloodtype.setText(rs.getString("bloodtype") + " " + rs.getString("rh_type"));
             this.txt_Height.setText(rs.getString("height"));
             this.txt_Weight.setText(rs.getString("weight"));
@@ -652,15 +653,14 @@ public class Frm_Radiology extends javax.swing.JFrame {
                 "prescription.date_results AS 'Date of Results', " +
                 "prescription.specimen_status AS 'Specimen status', " +
                 "prescription.specimen_received " +
-                "FROM prescription LEFT JOIN outpatient_services ON prescription.os_guid = outpatient_services.guid, registration_info, " +
+                "FROM prescription, registration_info, " +
                      "prescription_code, shift_table, policlinic,poli_room,staff_info " +
                 "WHERE registration_info.guid = '"+m_RegistrationGuid+"' " +
                     "AND registration_info.shift_guid = shift_table.guid " +
                     "AND shift_table.room_guid = poli_room.guid " +
                     "AND poli_room.poli_guid = policlinic.guid " +
                     "AND staff_info.s_id = shift_table.s_id " +
-                    "AND  (outpatient_services.reg_guid = registration_info.guid " +
-                    "OR prescription.case_guid = registration_info.guid) " +
+                    "AND prescription.reg_guid = registration_info.guid " +
                     "AND prescription_code.code = prescription.code " +
                     "AND prescription_code.type = '"+Constant.X_RAY_CODE+"' ";
             rsPrescription = DBC.executeQuery(sqlPrescription);

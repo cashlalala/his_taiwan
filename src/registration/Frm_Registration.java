@@ -181,10 +181,11 @@ public class Frm_Registration extends javax.swing.JFrame implements FingerPrintV
                     m_ReSearchGps.interrupt();
                 }
                 
+                m_RefrashRecord.stopRunning();
+                m_RefrashRecord.interrupt();
+                
                 if(isEnabled()){
-                    
                     FingerPrintScanner.stop();
-                    m_RefrashRecord.interrupt();
                     new Frm_Main().setVisible(true);
                     dispose();
                     
@@ -1445,7 +1446,9 @@ public void ShowGpsFrom() {
         FingerPrintScanner.stop();
 	    if (IsConnGPS) {
 	    	m_ReSearchGps.SetGpsConnClose();
-	    }    
+	    }
+        m_RefrashRecord.stopRunning();
+        m_RefrashRecord.interrupt();
         new Frm_Main().setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btn_BackActionPerformed
@@ -1454,8 +1457,7 @@ public void ShowGpsFrom() {
     private void btn_SaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_SaveActionPerformed
     	String sql = "";
         m_Number = 0;
-        try {
-        	
+        try {    	
         	sql="INSERT INTO registration_info SELECT "+
         	"uuid(),"+                                     //guid 
         	"NULL,"+                                       //bed_guid
@@ -1472,14 +1474,14 @@ public void ShowGpsFrom() {
         	"NULL,"+ 
         	"'O',"+                                        //type
         	"NULL,"+ 
-        	"NULL,"+                                       //finish
+        	"'W',"+                                        //finish
         	"NULL,"+ 
         	"NULL,"+ 
         	"100,"+                                        //reg_cost 
         	"100,"+                                        //dia_cost
-        	"'F',"+                                        //registration_payment 
-        	"'F',"+                                        //diagnosis_payment 
-        	"'F',"+                                        //pharmacy_payment 
+        	"NULL,"+                                       //registration_payment 
+        	"'Z',"+                                        //diagnosis_payment 
+        	"'Z',"+                                        //pharmacy_payment 
         	"'Z',"+                                        //lab_payment
         	"'Z',"+                                        //radiology_payment
         	"'Z',"+                                        //bed_payment
@@ -1497,8 +1499,6 @@ public void ShowGpsFrom() {
         	"FROM (SELECT touchtime FROM registration_info) AS B " +
         	"WHERE B.touchtime LIKE concat(DATE_FORMAT(now(),'%Y%m%d%H%i%S'),'%')),20,'000000'), " +
         	//touchtime end
-        	"NULL,"+ 
-        	"NULL,"+
         	"NULL,"+
         	"NULL;";
 
@@ -1507,7 +1507,7 @@ public void ShowGpsFrom() {
             sql = "SELECT visits_no, guid FROM registration_info " +
                   "WHERE shift_guid = '"+m_RegShiftGuid+"' " +
                   "AND p_no ='"+this.lab_PNo.getText()+"' " +
-                  "AND finish IS NULL " +
+                  "AND finish='W' " +
                   "AND touchtime LIKE concat(DATE_FORMAT(now(),'%Y%m%d%H%i'),'%') ";
             ResultSet rs = DBC.executeQuery(sql);
             if(rs.next()){
@@ -1525,7 +1525,7 @@ public void ShowGpsFrom() {
             sql = "INSERT INTO gis(guid, gis, reg_guid, address) " +
                   "VALUES(uuid(),'" + m_Gis + "','" + m_Guid + "','" + m_Country+ "' ) ";
             DBC.executeUpdate(sql);
-             //*****儲存目前位置*****//
+            //*****儲存目前位置*****//
             //****掛號成功訊息******//
 
 
@@ -1545,7 +1545,6 @@ public void ShowGpsFrom() {
             pt = new PrintTools();
             //pt.DoPrint(1, rs);
 
-            System.out.println("aaaaaaaaaaaaaaaaa\n");
             System.out.println(cob_Policlinic.getSelectedItem().toString());
             
             if (cob_Policlinic.getSelectedItem().toString().equals(POLINAME_DM)) {

@@ -10,11 +10,11 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="set_diagnostic")
+@NamedQuery(name="SetDiagnostic.findAll", query="SELECT s FROM SetDiagnostic s")
 public class SetDiagnostic implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String guid;
 
 	private String name;

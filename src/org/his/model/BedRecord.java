@@ -12,11 +12,11 @@ import java.util.List;
  */
 @Entity
 @Table(name="bed_record")
+@NamedQuery(name="BedRecord.findAll", query="SELECT b FROM BedRecord b")
 public class BedRecord implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String guid;
 
 	@Temporal(TemporalType.TIMESTAMP)

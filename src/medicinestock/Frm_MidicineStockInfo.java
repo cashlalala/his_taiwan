@@ -14,6 +14,7 @@ import javax.swing.table.TableColumn;
 
 import multilingual.Language;
 import autocomplete.CompleterComboBox;
+import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
 import cc.johnwu.sql.HISModel;
 import cc.johnwu.sql.HISModel.EditableTableModel;
@@ -37,6 +38,7 @@ public class Frm_MidicineStockInfo extends javax.swing.JFrame implements cc.john
         this.tab_MedicineList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);  // tabble不可按住多選
         this.setLocationRelativeTo(this);
         this.tab_MedicineList.setAutoCreateRowSorter(true);
+        tab_MedicineList.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
         addWindowListener(new WindowAdapter() {  // 畫面關閉原視窗enable
         @Override
         public void windowClosing(WindowEvent windowevent) {
@@ -112,6 +114,12 @@ public class Frm_MidicineStockInfo extends javax.swing.JFrame implements cc.john
                 tab_MedicineListMouseClicked(evt);
             }
         });
+        
+        tab_MedicineList.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+            	tab_MedicineListMouseReleased(evt);
+            }
+        });//tab_MedicineListMouseReleased
         
         span_MedicineList.setViewportView(tab_MedicineList);
 
@@ -281,11 +289,32 @@ public class Frm_MidicineStockInfo extends javax.swing.JFrame implements cc.john
     		float threshold = Float.parseFloat(tab_MedicineList.getValueAt(i,3).toString());
     		float defaultPrice = Float.parseFloat(tab_MedicineList.getValueAt(i,4).toString());
     		String item_code = tab_MedicineList.getValueAt(i,0).toString();
-    		String sql = "UPDATE medical_stock SET `minimal_amount`='" + threshold + "', `default_unit_price`='" + defaultPrice + "'  WHERE type ='P' AND item_guid = '" + item_code + "'";
-    		try {
+    		
+    		String sqlChangeRecord = "";
+    		ResultSet rsStockSQL= null;
+    		try{
+	        	String stockSQL = "SELECT * FROM medical_stock WHERE type ='P' AND item_guid = '" + item_code + "'";
+	        	rsStockSQL= DBC.executeQuery(stockSQL);
+	            if(rsStockSQL.next()) {
+	            	float minimalAmount = rsStockSQL.getFloat("minimal_amount");
+	            	float defaultUnitPrice = rsStockSQL.getFloat("default_unit_price");
+	                float diffMinimal = threshold - minimalAmount;
+	                float diffPrice = defaultPrice - defaultUnitPrice;
+	                if(diffMinimal == 0 && diffPrice == 0)	continue;
+	                
+	                sqlChangeRecord = "INSERT INTO medical_stock_change_record (`guid`, `action`, `item_guid`, `type`, "
+	                		+ " `s_no`, `diff_price`, `diff_minimal_amount`) "
+	                		+ " VALUES (uuid(), 'M', '" + item_code + "', 'P', '" + UserInfo.getUserNO() + "', '" + diffPrice + "', '" + diffMinimal + "');";
+	            }
+	            DBC.closeConnection(rsStockSQL);
+	            String sql = "UPDATE medical_stock SET `minimal_amount`='" + threshold + "', `default_unit_price`='" + defaultPrice + "'  WHERE type ='P' AND item_guid = '" + item_code + "'";
+
 				DBC.executeUpdate(sql);
+				DBC.executeUpdate(sqlChangeRecord);
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
+                ErrorMessage.setData("MedicineStock", "Frm_MedicineStockPurchase" ,"saveDefaultPriceAndThreshold() - DBC.closeConnection",
+                		e.toString().substring(e.toString().lastIndexOf(".")+1, e.toString().length()));
 				e.printStackTrace();
 			}
     	}
@@ -327,13 +356,20 @@ public class Frm_MidicineStockInfo extends javax.swing.JFrame implements cc.john
 
     }//GEN-LAST:event_btn_MoreActionPerformed
 
+    private void tab_MedicineListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tab_MedicineListMouseClicked
+        if (evt.getClickCount() == 2) 
+        	if ((tab_MedicineList.getSelectedColumn() == 3 || tab_MedicineList.getSelectedColumn() == 4))
+            	btn_saveModification.setEnabled(true);
+    }//GEN-LAST:event_tab_MedicineListMouseClicked
+    
     private void tab_MedicineListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tab_MedicineListMouseClicked
         if (tab_MedicineList.getSelectedRow() != -1) {
         	btn_History.setEnabled(true);
         }else {btn_History.setEnabled(false);}
        
-        if((tab_MedicineList.getSelectedColumn() == 3 || tab_MedicineList.getSelectedColumn() == 4))
-        	btn_saveModification.setEnabled(true);
+        //if ((tab_MedicineList.getSelectedColumn() == 3 || tab_MedicineList.getSelectedColumn() == 4))
+        //	btn_saveModification.setEnabled(true);
+        
         if (evt.getClickCount() == 2) 
             btn_MoreActionPerformed(null);
     }//GEN-LAST:event_tab_MedicineListMouseClicked

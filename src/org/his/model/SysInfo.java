@@ -10,11 +10,11 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="sys_info")
+@NamedQuery(name="SysInfo.findAll", query="SELECT s FROM SysInfo s")
 public class SysInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	@Column(name="hos_name")
 	private String hosName;
 

@@ -116,7 +116,9 @@
                           <Component id="lab_Finish" min="-2" max="-2" attributes="0"/>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Component id="lab_FinishCount" min="-2" pref="72" max="-2" attributes="0"/>
-                          <EmptySpace pref="318" max="32767" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="btn_ReturnToMerchant" min="-2" pref="95" max="-2" attributes="1"/>
+                          <EmptySpace max="-2" attributes="0"/>
                           <Component id="btn_Reprint" min="-2" pref="89" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="btn_Check" min="-2" pref="105" max="-2" attributes="1"/>
@@ -137,6 +139,7 @@
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="lab_Finish" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="lab_FinishCount" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="btn_ReturnToMerchant" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="btn_Close" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="btn_Check" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="btn_Reprint" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -182,6 +185,15 @@
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btn_CheckActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JButton" name="btn_ReturnToMerchant">
+          <Properties>
+            <Property name="text" type="java.lang.String" value=""/>
+            <Property name="enabled" type="boolean" value="false"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btn_ReturnToMerchantActionPerformed"/>
           </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="lab_FinishCount">

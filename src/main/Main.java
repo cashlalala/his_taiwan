@@ -15,5 +15,4 @@ public class Main {
         //取得登入使用者資訊，使用者登入後，打開視窗。
         new UserInfo(true).openFrame(new Frm_Main());
     }
-
 }

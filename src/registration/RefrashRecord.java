@@ -53,11 +53,17 @@ public class RefrashRecord extends Thread{
         }catch (SQLException ex) {System.out.println("RefrashRecord : "+ex);
         }finally{ try{ DBC.closeConnection(rs); }catch(SQLException ex){} }
     }
+    
+    private boolean isRunning = true;
+
+	public void stopRunning() {
+		this.isRunning = false;
+	}
 
     @Override
     public void run(){
         ResultSet rs = null;
-        try{ while(true){
+        try{ while(isRunning){
             try{
                 String check_sql = "SELECT MAX(touchtime) " +
                                    "FROM registration_info,shift_table " +
@@ -90,8 +96,18 @@ public class RefrashRecord extends Thread{
                     TabTools.setHideColumn(tab,5);
                 }
                 DBC.closeConnection(rs);
-            }catch (SQLException ex) {System.out.println("Record SQLException : "+ex);
-            }finally{ try{ DBC.closeConnection(rs); }catch(SQLException ex){} }
-        }}catch(InterruptedException e) {}
+            }catch (SQLException ex) {
+            	System.out.println("Record SQLException : "+ex);
+            	ex.printStackTrace();
+            }
+        } } catch(InterruptedException e) {
+        	e.printStackTrace();
+        } finally {
+			try {
+				DBC.closeConnection(rs);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+        }
     }
 }

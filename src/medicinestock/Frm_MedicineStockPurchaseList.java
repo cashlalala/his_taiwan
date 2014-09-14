@@ -11,7 +11,7 @@ import java.sql.*;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.TableColumn;
 
-import pharmacy.RefrashPharmacy;
+import pharmacy.RefreshPharmacy;
 import errormessage.StoredErrorMessage;
 import multilingual.Language;
 

@@ -205,7 +205,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface{
             this.lab_Pno.setText(rs.getString("p_no"));
             this.lab_Name.setText(rs.getString("firstname") + " " + rs.getString("lastname"));
             this.lab_Gender.setText(rs.getString("gender"));
-            this.lab_Age.setText(DateMethod.getAgeWithMonth(rs.getDate("birth")));
+            this.lab_Age.setText((rs.getDate("birth") == null)? "" : DateMethod.getAgeWithMonth(rs.getDate("birth")));
             this.txt_Height.setText(rs.getString("height"));
             this.txt_Weight.setText(rs.getString("weight"));
             this.txt_AC.setText(Tools.getPrescriptionResult("BGAc", m_Pno));
@@ -641,7 +641,6 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface{
             String sql_MT = "SELECT medicine_stock.m_code AS 'code', medicines.item AS 'item', medicine_stock.ps AS 'ps', medicine_stock.teach_complete AS 'teach_complete', concat(staff_info.firstname,'  ',staff_info.lastname) AS 'user', medicine_stock.s_id AS 'sid'"
                     + " FROM  medicine_stock LEFT JOIN staff_info ON staff_info.s_id = medicine_stock.s_id , medicines, registration_info, outpatient_services "
                     + " WHERE  medicines.code= medicine_stock.m_code "
-                    + " AND medicine_stock.os_guid = outpatient_services.guid "
                     + " AND outpatient_services.reg_guid = registration_info.guid "
                     + " AND registration_info.p_no = '" + m_Pno + "' "
                     + " AND registration_info.guid = '" + m_RegGuid + "'";
@@ -735,7 +734,6 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface{
             String sqlPrescription = "SELECT prescription.code, prescription_code.name, prescription_code.type, prescription.place " +
                     "FROM prescription, registration_info, prescription_code " +
                     "WHERE registration_info.guid = '" + m_RegGuid + "' " +
-                    "AND prescription.case_guid = '" + m_RegGuid + "' " +
                     "AND prescription_code.code = prescription.code ";
 
             rs = DBC.executeQuery(sqlPrescription);

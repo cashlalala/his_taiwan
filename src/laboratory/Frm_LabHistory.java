@@ -109,7 +109,7 @@ public class Frm_LabHistory extends javax.swing.JFrame {
                            "concat(staff_info.firstname,'  ',staff_info.lastname) AS 'Name', " +
                            "A.guid " +
                     "FROM registration_info AS A, " +
-                    "patients_info, shift_table,staff_info, prescription LEFT JOIN  outpatient_services ON prescription.os_guid = outpatient_services.guid ,poli_room , prescription_code, policlinic " +
+                    "patients_info, shift_table,staff_info, prescription ,poli_room , prescription_code, policlinic " +
                     "WHERE A.p_no = '"+m_Pno+"' " +
                     "AND policlinic.name LIKE '"+policlinic+"' " +
                     "AND A.shift_guid = shift_table.guid " +
@@ -118,12 +118,9 @@ public class Frm_LabHistory extends javax.swing.JFrame {
                     "AND A.shift_guid = shift_table.guid AND shift_table.s_id = staff_info.s_id " +
                     "AND A.p_no = patients_info.p_no " +
                     "AND prescription.code = prescription_code.code " +
-                    "AND (outpatient_services.reg_guid = A.guid " +
-                    "OR prescription.case_guid =A.guid) " +
-                    "AND (SELECT COUNT(code) FROM prescription  LEFT JOIN  outpatient_services " +
-                    "ON prescription.os_guid = outpatient_services.guid,  registration_info " +
-                    "WHERE  (outpatient_services.reg_guid = registration_info.guid " +
-                    "OR prescription.case_guid = registration_info.guid)  " +
+                    "AND prescription.reg_guid =A.guid " +
+                    "AND (SELECT COUNT(code) FROM prescription,  registration_info " +
+                    "WHERE prescription.reg_guid = registration_info.guid" +
                     "AND prescription.code = prescription_code.code  " +
                     "AND prescription_code.type <> '"+X_RAY_CODE+"' "+
                     "AND registration_info.guid = A.guid)  > 0 " +
@@ -465,15 +462,14 @@ public class Frm_LabHistory extends javax.swing.JFrame {
                 "concat(staff_info.firstname,'  ',staff_info.lastname) AS Doctor, " +
                 "prescription.date_test AS 'Date of Test', " +
                 "prescription.date_results AS 'Results Date' " +
-                "FROM prescription LEFT JOIN outpatient_services ON prescription.os_guid = outpatient_services.guid, registration_info, " +
+                "FROM prescription , registration_info, " +
                      "prescription_code, shift_table, policlinic,poli_room,staff_info " +
                 "WHERE registration_info.guid = '"+m_RegistrationGuid+"' " +
                     "AND registration_info.shift_guid = shift_table.guid " +
                     "AND shift_table.room_guid = poli_room.guid " +
                     "AND poli_room.poli_guid = policlinic.guid " +
                     "AND staff_info.s_id = shift_table.s_id " +
-                    "AND  (outpatient_services.reg_guid = registration_info.guid " +
-                    "OR prescription.case_guid = registration_info.guid) " +
+                    "AND prescription.reg_guid = registration_info.guid " +
                     "AND prescription_code.code = prescription.code " +
                     "AND prescription_code.type <> '"+X_RAY_CODE+"' ";
 
@@ -718,11 +714,10 @@ public class Frm_LabHistory extends javax.swing.JFrame {
                 String sql =
                     "SELECT prescription_code.code AS code, prescription_code.name AS name, prescription.place, prescription_code.type, prescription.cost AS cost, prescription.result AS result, " +
                     "CASE prescription.isnormal WHEN 1 THEN 'Y' ELSE 'N' END 'Normal' " +
-                    "FROM prescription, prescription_code, outpatient_services, registration_info " +
+                    "FROM prescription, prescription_code, registration_info " +
                     "WHERE registration_info.guid = '"+m_RegistrationGuid+"' " +
-                      "AND prescription.os_guid = outpatient_services.guid " +
+                      "AND prescription.reg_guid = '"+m_RegistrationGuid+"' " +
                       "AND prescription_code.code = prescription.code " +
-                      "AND outpatient_services.reg_guid = registration_info.guid " +
                       "AND prescription_code.type <> '"+X_RAY_CODE+"'";
                 rs = DBC.executeQuery(sql);
                 g2.drawString("Prescription", 80, i);

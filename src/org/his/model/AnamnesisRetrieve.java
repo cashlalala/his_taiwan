@@ -1,7 +1,9 @@
 package org.his.model;
 
 import java.io.Serializable;
+
 import javax.persistence.*;
+
 import java.util.Date;
 import java.util.List;
 
@@ -12,11 +14,11 @@ import java.util.List;
  */
 @Entity
 @Table(name="anamnesis_retrieve")
+@NamedQuery(name="AnamnesisRetrieve.findAll", query="SELECT a FROM AnamnesisRetrieve a")
 public class AnamnesisRetrieve implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String guid;
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -24,7 +26,7 @@ public class AnamnesisRetrieve implements Serializable {
 	private Date borrowTime;
 
 	@Column(name="p_no")
-	private int pNo;
+	private String pNo;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="return_time")
@@ -65,11 +67,11 @@ public class AnamnesisRetrieve implements Serializable {
 		this.borrowTime = borrowTime;
 	}
 
-	public int getPNo() {
+	public String getPNo() {
 		return this.pNo;
 	}
 
-	public void setPNo(int pNo) {
+	public void setPNo(String pNo) {
 		this.pNo = pNo;
 	}
 

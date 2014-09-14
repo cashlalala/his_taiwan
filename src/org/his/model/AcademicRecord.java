@@ -11,11 +11,11 @@ import java.util.Date;
  */
 @Entity
 @Table(name="academic_record")
+@NamedQuery(name="AcademicRecord.findAll", query="SELECT a FROM AcademicRecord a")
 public class AcademicRecord implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private int no;
 
 	@Temporal(TemporalType.DATE)
