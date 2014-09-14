@@ -5,6 +5,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -203,30 +205,65 @@ public class Frm_InpatientHistory extends javax.swing.JFrame {
 					+ "concat(staff_info.firstname,'  ',staff_info.lastname) AS 'Doctor', "
 					+ "registration_info.guid, "
 					+ "registration_info.type "
-//					+ "registration_info.bed_guid "
 					+ "FROM registration_info, shift_table, policlinic, poli_room, staff_info "
-					+ "WHERE registration_info.p_no = '"
-					+ m_Pno
-					+ "' "
-					+ "AND policlinic.name LIKE '"
-					+ policlinic
-					+ "' "
+					+ "WHERE registration_info.p_no = '" + m_Pno + "' "
+					+ "AND policlinic.name LIKE '" + policlinic + "' "
 					+ "AND registration_info.shift_guid = shift_table.guid "
 					+ "AND shift_table.room_guid = poli_room.guid "
 					+ "AND poli_room.poli_guid = policlinic.guid "
 					+ "AND staff_info.s_id = shift_table.s_id "
-					+ "AND ((registration_info.finish = 'F' AND registration_info.type = 'O') "
-					+ "OR registration_info.type = 'I') "
+					+ "AND registration_info.finish = 'F' "
+					+ "AND registration_info.type = 'O' "
 					+ "ORDER BY registration_info.reg_time DESC";
 			rsRecord = DBC.executeQuery(sqlRecord);
-			if (rsRecord.next()) {
-				this.tab_Record.setModel(HISModel.getModel(rsRecord, true));
-				setHideColumn(tab_Record, 5);
-				setTabRecordSelect();
-			} else {
+
+			InpatientHistModel tableModel = new InpatientHistModel();
+			List<HashMap<Integer, String>> model = tableModel.getModel();
+			int colCnt = rsRecord.getMetaData().getColumnCount();
+			while (rsRecord.next()) {
+				HashMap<Integer, String> item = new HashMap<Integer, String>();
+				for (int i = 0; i < colCnt; ++i) {
+					item.put(i, rsRecord.getString(i + 1));
+				}
+				model.add(item);
+			}
+
+			DBC.closeConnection(rsRecord);
+
+			sqlRecord = String
+					.format("select bed_record.checkinTime AS '%s', "
+							+ "'' as 'Shift', policlinic.name AS '%s', "
+							+ "concat(staff_info.firstname,' ',staff_info.lastname) AS '%s', "
+							+ "reg.guid, reg.type "
+							+ "from registration_info reg, policlinic, staff_info, bed_record, bed_code "
+							+ "where reg.p_no = '%s' and reg.type = 'I' "
+							+ "and reg.shift_guid is null "
+							+ "and reg.bed_guid = bed_record.guid "
+							+ "and policlinic.name LIKE '%s' "
+							+ "and bed_code.guid = bed_record.bed_guid "
+							+ "and bed_code.poli_guid = policlinic.guid "
+							+ "and staff_info.s_no = bed_record.mainDr_no "
+							+ "order by bed_record.checkinTime desc",
+							paragraph.getString("DATE"),
+							paragraph.getString("COL_POLICLINIC"),
+							paragraph.getString("COL_NAME"), m_Pno, policlinic);
+			rsRecord = DBC.executeQuery(sqlRecord);
+			while (rsRecord.next()) {
+				HashMap<Integer, String> item = new HashMap<Integer, String>();
+				for (int i = 0; i < colCnt; ++i) {
+					item.put(i, rsRecord.getString(i + 1));
+				}
+				model.add(item);
+			}
+
+			if (model.size() == 0) {
 				tab_Record.setModel(getModle(new String[] { "Message" },
 						new String[][] { { "No Information." } }));
 				btn_Insert.setEnabled(false);
+			} else {
+				tab_Record.setModel(tableModel);
+				setHideColumn(tab_Record, 5);
+				setTabRecordSelect();
 			}
 
 			// 設定寬度與最小寬度
@@ -258,6 +295,13 @@ public class Frm_InpatientHistory extends javax.swing.JFrame {
 					"setTabRecord()",
 					e.toString().substring(e.toString().lastIndexOf(".") + 1,
 							e.toString().length()));
+			e.printStackTrace();
+		} finally {
+			try {
+				DBC.closeConnection(rsRecord);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -1134,10 +1178,8 @@ public class Frm_InpatientHistory extends javax.swing.JFrame {
 						+ "from bed_record, registration_info reg, staff_info "
 						+ "where reg.guid = '%s' and reg.type = 'I' "
 						+ "and reg.bed_guid = bed_record.guid "
-						//+ "and reg.reg_time <= bed_record.checkinTime "
 						+ "and bed_record.status in ('L','N') "
-						+ "and staff_info.s_no = bed_record.mainDr_no "
-						+ "order by bed_record.checkinTime asc",
+						+ "and staff_info.s_no = bed_record.mainDr_no ",
 						paragraph.getString("COL_BED_NO"),
 						paragraph.getString("COL_CHECKINTIME"),
 						paragraph.getString("COL_CHECKOUTTIME"),
