@@ -6,6 +6,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -40,6 +42,7 @@ import patients.PatientsInterface;
 import system.Setting;
 import cc.johnwu.date.DateInterface;
 import cc.johnwu.date.DateMethod;
+import cc.johnwu.finger.FingerPrintScanner;
 import cc.johnwu.finger.FingerPrintViewerInterface;
 import cc.johnwu.sql.DBC;
 import common.PrintTools;
@@ -94,10 +97,10 @@ public class Frm_RegAndInpatient extends JFrame implements
 	private JScrollPane scrollPane_Clinic;
 	private JTable tab_ClinicList;
 	// GUI for Inpatient tab
-	private JLabel lbl_InpatientType = new JLabel("Inpatient Type:");
-	private JComboBox cbb_InpatientType;
 	private JPanel pan_tabInpatientInfo;
 	private JPanel pan_InpatientInfo;
+	private JLabel lbl_InpatientType;
+	private JComboBox cbb_InpatientType;
 	private JLabel lbl_InpatientDivision;
 	private JComboBox cbb_InpatientDivision;
 	private JLabel lbl_InpatientDoctor;
@@ -120,14 +123,14 @@ public class Frm_RegAndInpatient extends JFrame implements
 	private List<PatientsInfo> patientsInfo;
 
 	// cached DB info
-	private String selectedDoctorName;
-	private String selectedDoctorID;
-	private String selectedDoctorNo;
-	private String selectedShiftGUID;
-	private String selectedPatientGUID;
+	private String selectedDoctorName = "";
+	private String selectedDoctorID = "";
+	private String selectedDoctorNo = "";
+	private String selectedShiftGUID = "";
+	private String selectedPatientGUID = "";
 	private boolean selectedPatientWithBirthdayInfo = false;
-	private String selectedBedGUID;
-	private String selectedBedDevision;
+	private String selectedBedGUID = "";
+	private String selectedBedDevision = "";
 
 	boolean dead = true;
 
@@ -146,7 +149,18 @@ public class Frm_RegAndInpatient extends JFrame implements
 	public Frm_RegAndInpatient() {
 		this.parentFrame = null;
 		// Init GUI
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setExtendedState(Frm_Registration.MAXIMIZED_BOTH);
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent windowevent)
+            {
+                if(isEnabled()){
+                    FingerPrintScanner.stop();
+                    new Frm_Main().setVisible(true);
+                    dispose();
+                }
+            }
+        });
 		setBounds(100, 100, 670, 705);
 
 		pan_WholeFrame = new JPanel();
@@ -567,7 +581,8 @@ public class Frm_RegAndInpatient extends JFrame implements
 		gbc_lbl_WaitingNo.gridy = 9;
 		pan_ClinicInfo.add(lbl_WaitingNo, gbc_lbl_WaitingNo);
 
-		btn_MobSave = new JButton("Mob");
+		btn_MobSave = new JButton(paragraph.getString("BOBILEREGISTRATION"));
+		btn_MobSave.setEnabled(false);
 		GridBagConstraints gbc_btn_MobSave = new GridBagConstraints();
 		gbc_btn_MobSave.weighty = 0.2;
 		gbc_btn_MobSave.weightx = 0.3;
@@ -665,6 +680,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 				0.08, 0.08, 0.08, 0.08, 0.08, 0.08, 0.08, 0.2, Double.MIN_VALUE };
 		pan_InpatientInfo.setLayout(gbl_pan_InpatientInfo);
 
+		lbl_InpatientType = new JLabel(paragraph.getString("INPATIENTTYPE"));
 		GridBagConstraints gbc_lbl_InpatientType = new GridBagConstraints();
 		gbc_lbl_InpatientType.weighty = 0.08;
 		gbc_lbl_InpatientType.weightx = 1.0;
@@ -685,6 +701,22 @@ public class Frm_RegAndInpatient extends JFrame implements
 		gbc_cbb_InpatientType.gridx = 0;
 		gbc_cbb_InpatientType.gridy = 1;
 		pan_InpatientInfo.add(cbb_InpatientType, gbc_cbb_InpatientType);
+		cbb_InpatientType.addItemListener(new java.awt.event.ItemListener() {
+			public void itemStateChanged(java.awt.event.ItemEvent evt) {
+				refreshInpatientInfo();
+			}
+		});
+
+		lbl_InpatientDivision = new JLabel(paragraph.getString("DIVISION"));
+		GridBagConstraints gbc_lbl_InpatientDivision = new GridBagConstraints();
+		gbc_lbl_InpatientDivision.weighty = 0.08;
+		gbc_lbl_InpatientDivision.weightx = 1.0;
+		gbc_lbl_InpatientDivision.fill = GridBagConstraints.BOTH;
+		gbc_lbl_InpatientDivision.insets = new Insets(0, 0, 5, 0);
+		gbc_lbl_InpatientDivision.gridwidth = 2;
+		gbc_lbl_InpatientDivision.gridx = 0;
+		gbc_lbl_InpatientDivision.gridy = 2;
+		pan_InpatientInfo.add(lbl_InpatientDivision, gbc_lbl_InpatientDivision);
 
 		cbb_InpatientDivision = new JComboBox();
 		GridBagConstraints gbc_cbb_InpatientDivision = new GridBagConstraints();
@@ -704,16 +736,16 @@ public class Frm_RegAndInpatient extends JFrame implements
 					}
 				});
 
-		lbl_InpatientDivision = new JLabel(paragraph.getString("DIVISION"));
-		GridBagConstraints gbc_lbl_InpatientDivision = new GridBagConstraints();
-		gbc_lbl_InpatientDivision.weighty = 0.08;
-		gbc_lbl_InpatientDivision.weightx = 1.0;
-		gbc_lbl_InpatientDivision.fill = GridBagConstraints.BOTH;
-		gbc_lbl_InpatientDivision.insets = new Insets(0, 0, 5, 0);
-		gbc_lbl_InpatientDivision.gridwidth = 2;
-		gbc_lbl_InpatientDivision.gridx = 0;
-		gbc_lbl_InpatientDivision.gridy = 2;
-		pan_InpatientInfo.add(lbl_InpatientDivision, gbc_lbl_InpatientDivision);
+		lbl_InpatientDoctor = new JLabel(paragraph.getString("DOCTOR"));
+		GridBagConstraints gbc_lbl_InpatientDoctor = new GridBagConstraints();
+		gbc_lbl_InpatientDoctor.weighty = 0.08;
+		gbc_lbl_InpatientDoctor.weightx = 1.0;
+		gbc_lbl_InpatientDoctor.fill = GridBagConstraints.BOTH;
+		gbc_lbl_InpatientDoctor.insets = new Insets(0, 0, 5, 0);
+		gbc_lbl_InpatientDoctor.gridwidth = 2;
+		gbc_lbl_InpatientDoctor.gridx = 0;
+		gbc_lbl_InpatientDoctor.gridy = 4;
+		pan_InpatientInfo.add(lbl_InpatientDoctor, gbc_lbl_InpatientDoctor);
 
 		cbb_InpatientDoctor = new JComboBox();
 		GridBagConstraints gbc_cbb_InpatientDoctor = new GridBagConstraints();
@@ -731,17 +763,6 @@ public class Frm_RegAndInpatient extends JFrame implements
 						.getSelectedItem();
 			}
 		});
-
-		lbl_InpatientDoctor = new JLabel(paragraph.getString("DOCTOR"));
-		GridBagConstraints gbc_lbl_InpatientDoctor = new GridBagConstraints();
-		gbc_lbl_InpatientDoctor.weighty = 0.08;
-		gbc_lbl_InpatientDoctor.weightx = 1.0;
-		gbc_lbl_InpatientDoctor.fill = GridBagConstraints.BOTH;
-		gbc_lbl_InpatientDoctor.insets = new Insets(0, 0, 5, 0);
-		gbc_lbl_InpatientDoctor.gridwidth = 2;
-		gbc_lbl_InpatientDoctor.gridx = 0;
-		gbc_lbl_InpatientDoctor.gridy = 4;
-		pan_InpatientInfo.add(lbl_InpatientDoctor, gbc_lbl_InpatientDoctor);
 
 		lbl_CheckInDate = new JLabel(paragraph.getString("CHECKINDATE"));
 		GridBagConstraints gbc_lbl_CheckInDate = new GridBagConstraints();
@@ -848,7 +869,6 @@ public class Frm_RegAndInpatient extends JFrame implements
 	}
 
 	private void btn_PatientSearchactionPerformed(ActionEvent evt) {
-		ResultSet rs = null;
 		String target = txt_PatientSearch.getText();
 		patientsInfo = patientsInfoDao.getPatientsBySearch(target);
 		if (patientsInfo.size() != 0) {
@@ -948,6 +968,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 			selectedPatientGUID = (String) tab_PatientList.getValueAt(
 					tab_PatientList.getSelectedRow(), 0);
 			setPatientInfo(selectedPatientGUID);
+			refreshInpatientInfo();
 		}
 	}
 
@@ -993,6 +1014,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 						+ rs.getString("count"));
 				if (dead == false) {
 					btn_ClinicSave.setEnabled(true);
+					btn_MobSave.setEnabled(true);
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -1138,7 +1160,11 @@ public class Frm_RegAndInpatient extends JFrame implements
 	private void btn_ClinicSaveactionPerformed(java.awt.event.ActionEvent evt,
 			String type) {
 		String sql = "";
-
+		if (this.lbl_RegistrationMethod.getText().replace(
+				paragraph.getString("TITLEVISITS"), "") == paragraph
+				.getString("RESERVATION")) {
+			type = "R";
+		}
 		try {
 			sql = "INSERT INTO registration_info SELECT " + "uuid()," + // guid
 					"NULL," + // bed_guid
@@ -1153,7 +1179,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 					+ // first visit start
 					"(SELECT CASE "
 					+ "WHEN (SELECT COUNT(*) from registration_info WHERE p_no='"
-					+ selectedShiftGUID
+					+ selectedPatientGUID
 					+ "')=0 "
 					+ "THEN 'Y' "
 					+ "ELSE 'N' END),"
@@ -1323,13 +1349,13 @@ public class Frm_RegAndInpatient extends JFrame implements
 		// Init Division
 		ResultSet rs = null;
 		try {
-			
+
 			this.cbb_InpatientType.removeAllItems();
-			this.cbb_InpatientType.addItem("On Desk Inpatient");
-			this.cbb_InpatientType.addItem("Make Reservation");
-			this.cbb_InpatientType.addItem("Reserved Check In");
+			this.cbb_InpatientType.addItem(paragraph.getString("ONDESKINPATIENT"));
+			this.cbb_InpatientType.addItem(paragraph.getString("MAKERESERVATION"));
+			this.cbb_InpatientType.addItem(paragraph.getString("RESERVEDCHECKIN"));
 			this.cbb_InpatientType.setSelectedIndex(0);
-			
+
 			this.cbb_InpatientDivision.removeAllItems();
 			this.cbb_InpatientDivision.addItem(paragraph.getString("ALL"));
 			String sql = "SELECT name FROM policlinic";
@@ -1337,7 +1363,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 			while (rs.next()) {
 				this.cbb_InpatientDivision.addItem(rs.getString("name"));
 			}
-			
+
 			sql = "SELECT concat(staff_info.firstname,'  ',staff_info.lastname) AS 'Doctor' "
 					+ " FROM staff_info " + "WHERE grp_name='Doctor'";
 			rs = DBC.executeQuery(sql);
@@ -1345,7 +1371,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 			while (rs.next()) {
 				this.cbb_InpatientDoctor.addItem(rs.getString("Doctor"));
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -1360,109 +1386,168 @@ public class Frm_RegAndInpatient extends JFrame implements
 	}
 
 	private void refreshInpatientInfo() {
-		ResultSet rs = null;
-		String plannedCheckInTime = "'" + pan_CheckInDate.getValue()
-				+ " 00:00:00'";
-		String plannedCheckOutTime = "'" + pan_CheckOutDate.getValue()
-				+ " 23:59:59'";
-		String sql = "SELECT bed_code.guid, bed_code.description, policlinic.name "
-				+ "FROM bed_code, policlinic "
-				+ "WHERE bed_code.guid NOT IN "
-				+ "("
-				+ "SELECT distinct bed_record.bed_guid FROM bed_record "
-				+ "WHERE (" + "(" + "bed_record.plannedCheckOutTime > "
-				+ plannedCheckInTime
-				+ " AND bed_record.status = 'N'"
-				+ ")"
-				+ " OR "
-				+ "("
-				+ "("
-				+ "("
-				+ "bed_record.plannedCheckInTime > "
-				+ plannedCheckInTime
-				+ " AND "
-				+ "bed_record.plannedCheckInTime < "
-				+ plannedCheckOutTime
-				+ ")"
-				+ " OR "
-				+ "("
-				+ "bed_record.plannedCheckOutTime > "
-				+ plannedCheckInTime
-				+ " AND "
-				+ "bed_record.plannedCheckOutTime < "
-				+ plannedCheckOutTime
-				+ ")"
-				+ " OR "
-				+ "("
-				+ "bed_record.plannedCheckInTime < "
-				+ plannedCheckInTime
-				+ " AND "
-				+ "bed_record.plannedCheckOutTime > "
-				+ plannedCheckOutTime
-				+ ")"
-				+ ")"
-				+ " AND bed_record.status = 'R'"
-				+ ")"
-				+ ")"
-				+ ")"
-				+ " AND policlinic.guid = bed_code.poli_guid";
+		if (cbb_InpatientType.getSelectedIndex() == 0
+				|| cbb_InpatientType.getSelectedIndex() == 1) {
+			ResultSet rs = null;
+			String plannedCheckInTime = "'" + pan_CheckInDate.getValue()
+					+ " 00:00:00'";
+			String plannedCheckOutTime = "'" + pan_CheckOutDate.getValue()
+					+ " 23:59:59'";
+			String sql = "SELECT bed_code.guid, bed_code.description, policlinic.name "
+					+ "FROM bed_code, policlinic "
+					+ "WHERE bed_code.guid NOT IN "
+					+ "("
+					+ "SELECT distinct bed_record.bed_guid FROM bed_record "
+					+ "WHERE (" + "(" + "bed_record.plannedCheckOutTime > "
+					+ plannedCheckInTime
+					+ " AND bed_record.status = 'N'"
+					+ ")"
+					+ " OR "
+					+ "("
+					+ "("
+					+ "("
+					+ "bed_record.plannedCheckInTime > "
+					+ plannedCheckInTime
+					+ " AND "
+					+ "bed_record.plannedCheckInTime < "
+					+ plannedCheckOutTime
+					+ ")"
+					+ " OR "
+					+ "("
+					+ "bed_record.plannedCheckOutTime > "
+					+ plannedCheckInTime
+					+ " AND "
+					+ "bed_record.plannedCheckOutTime < "
+					+ plannedCheckOutTime
+					+ ")"
+					+ " OR "
+					+ "("
+					+ "bed_record.plannedCheckInTime < "
+					+ plannedCheckInTime
+					+ " AND "
+					+ "bed_record.plannedCheckOutTime > "
+					+ plannedCheckOutTime
+					+ ")"
+					+ ")"
+					+ " AND bed_record.status = 'R'"
+					+ ")"
+					+ ")"
+					+ ")"
+					+ " AND policlinic.guid = bed_code.poli_guid";
 
-		System.out.print(sql);
-
-		if (cbb_InpatientDivision.getSelectedItem() != null
-				&& !cbb_InpatientDivision.getSelectedItem().toString()
-						.equals("All")) {
-			sql = sql + " AND policlinic.name = '"
-					+ cbb_InpatientDivision.getSelectedItem().toString() + "' "
-					+ "AND policlinic.guid = bed_code.poli_guid";
-		}
-		try {
-			rs = DBC.executeQuery(sql);
-			// convert rs to model and tab_ClinicList.setModel
-			String[] bedHeader = { paragraph.getString("COL_BED_NO"),
-					paragraph.getString("BEDDESCRIPTION"),
-					paragraph.getString("DIVISION") };
-			rs.last();
-			if (rs.getRow() == 0) {
-				tab_BedList.setModel(new DefaultTableModel(
-						new String[][] { { "No Information." } },
-						new String[] { "Message" }) {
-					@Override
-					public boolean isCellEditable(int row, int column) {
-						// all cells false
-						return false;
-					}
-				});
-			} else {
-				ResultSetMetaData rsMetaData = rs.getMetaData();
-				Integer rowCount = rs.getRow();
-				String[][] bedMatrix = new String[rowCount][rsMetaData
-						.getColumnCount()];
-				int i;
-				int j;
-				rs.beforeFirst();
-				for (i = 0; i < rowCount; i++) {
-					rs.next();
-					for (j = 0; j < rsMetaData.getColumnCount(); j++) {
-						bedMatrix[i][j] = rs.getString(j + 1);
-					}
-				}
-				tab_BedList
-						.setModel(new DefaultTableModel(bedMatrix, bedHeader) {
-							@Override
-							public boolean isCellEditable(int row, int column) {
-								// all cells false
-								return false;
-							}
-						});
+			if (cbb_InpatientDivision.getSelectedItem() != null
+					&& !cbb_InpatientDivision.getSelectedItem().toString()
+							.equals("All")) {
+				sql = sql + " AND policlinic.name = '"
+						+ cbb_InpatientDivision.getSelectedItem().toString()
+						+ "' " + "AND policlinic.guid = bed_code.poli_guid";
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
 			try {
-				DBC.closeConnection(rs);
+				rs = DBC.executeQuery(sql);
+				// convert rs to model and tab_ClinicList.setModel
+				String[] bedHeader = { paragraph.getString("COL_BED_NO"),
+						paragraph.getString("BEDDESCRIPTION"),
+						paragraph.getString("DIVISION") };
+				rs.last();
+				if (rs.getRow() == 0) {
+					tab_BedList.setModel(new DefaultTableModel(
+							new String[][] { { "No Information." } },
+							new String[] { "Message" }) {
+						@Override
+						public boolean isCellEditable(int row, int column) {
+							// all cells false
+							return false;
+						}
+					});
+				} else {
+					ResultSetMetaData rsMetaData = rs.getMetaData();
+					Integer rowCount = rs.getRow();
+					String[][] bedMatrix = new String[rowCount][rsMetaData
+							.getColumnCount()];
+					int i;
+					int j;
+					rs.beforeFirst();
+					for (i = 0; i < rowCount; i++) {
+						rs.next();
+						for (j = 0; j < rsMetaData.getColumnCount(); j++) {
+							bedMatrix[i][j] = rs.getString(j + 1);
+						}
+					}
+					tab_BedList.setModel(new DefaultTableModel(bedMatrix,
+							bedHeader) {
+						@Override
+						public boolean isCellEditable(int row, int column) {
+							// all cells false
+							return false;
+						}
+					});
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
+			} finally {
+				try {
+					DBC.closeConnection(rs);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		} else {
+			ResultSet rs = null;
+			try {
+				String sql = "SELECT bed_record.guid, "
+						+ "bed_record.plannedCheckInTime, "
+						+ "bed_record.plannedCheckOutTime FROM bed_record "
+						+ "WHERE bed_record.status='R' "
+						+ "AND UPPER(bed_record.p_no) LIKE UPPER('%"
+						+ selectedPatientGUID.replace(" ", "%") + "%') ";
+				System.out.print(sql);
+				rs = DBC.executeQuery(sql);
+
+				String[] bedHeader = { paragraph.getString("COL_BED_NO"),
+						paragraph.getString("CHECKINDATE"),
+						paragraph.getString("CHECKOUTDATE") };
+				rs.last();
+				if (rs.getRow() == 0) {
+					tab_BedList.setModel(new DefaultTableModel(
+							new String[][] { { "No Information." } },
+							new String[] { "Message" }) {
+						@Override
+						public boolean isCellEditable(int row, int column) {
+							// all cells false
+							return false;
+						}
+					});
+				} else {
+					ResultSetMetaData rsMetaData = rs.getMetaData();
+					Integer rowCount = rs.getRow();
+					String[][] bedMatrix = new String[rowCount][rsMetaData
+							.getColumnCount()];
+					int i;
+					int j;
+					rs.beforeFirst();
+					for (i = 0; i < rowCount; i++) {
+						rs.next();
+						for (j = 0; j < rsMetaData.getColumnCount(); j++) {
+							bedMatrix[i][j] = rs.getString(j + 1);
+						}
+					}
+					tab_BedList.setModel(new DefaultTableModel(bedMatrix,
+							bedHeader) {
+						@Override
+						public boolean isCellEditable(int row, int column) {
+							// all cells false
+							return false;
+						}
+					});
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					DBC.closeConnection(rs);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -1508,12 +1593,55 @@ public class Frm_RegAndInpatient extends JFrame implements
 		if (tab_BedList.getSelectedRow() < 0
 				|| tab_BedList.getColumnCount() == 1) {
 			return;
-		} else {
+		} else if (cbb_InpatientType.getSelectedIndex() != 2) {
 			selectedBedGUID = (String) tab_BedList.getValueAt(
 					tab_BedList.getSelectedRow(), 0);
 			selectedBedDevision = (String) tab_BedList.getValueAt(
 					tab_BedList.getSelectedRow(), 2);
 			btn_InpatientSave.setEnabled(true);
+		} else if (cbb_InpatientType.getSelectedIndex() == 2) {
+			ResultSet rs = null;
+			String sql = "SELECT distinct policlinic.name,"
+					+ "concat(staff_info.firstname,'  ',staff_info.lastname) AS 'Doctor'"
+					+ " FROM bed_record,bed_code,policlinic,staff_info "
+					+ " WHERE bed_record.guid='"
+					+ (String) tab_BedList.getValueAt(
+							tab_BedList.getSelectedRow(), 0) + "'"
+					+ " AND bed_record.bed_guid=bed_code.guid "
+					+ " AND bed_code.poli_guid=policlinic.guid "
+					+ " AND bed_record.mainDr_no=staff_info.s_no";
+			try {
+				Integer cachedRow = tab_BedList.getSelectedRow();
+				rs = DBC.executeQuery(sql);
+				rs.next();
+				cbb_InpatientDivision.setSelectedItem(rs
+						.getString("policlinic.name"));
+				cbb_InpatientDoctor.setSelectedItem(rs.getString("Doctor"));
+				tab_BedList.setRowSelectionInterval(cachedRow, cachedRow);
+				String plannedCheckInDate = (String) tab_BedList.getValueAt(
+						tab_BedList.getSelectedRow(), 1);
+				plannedCheckInDate = plannedCheckInDate.split(" ")[0];
+				plannedCheckInDate = plannedCheckInDate.split("-")[2] + "-"
+						+ plannedCheckInDate.split("-")[1] + "-"
+						+ plannedCheckInDate.split("-")[0];
+				pan_CheckInDate.setValue(plannedCheckInDate);
+				String plannedCheckOutDate = (String) tab_BedList.getValueAt(
+						tab_BedList.getSelectedRow(), 2);
+				plannedCheckOutDate = plannedCheckOutDate.split(" ")[0];
+				plannedCheckOutDate = plannedCheckOutDate.split("-")[2] + "-"
+						+ plannedCheckOutDate.split("-")[1] + "-"
+						+ plannedCheckOutDate.split("-")[0];
+				pan_CheckOutDate.setValue(plannedCheckOutDate);
+				btn_InpatientSave.setEnabled(true);
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					DBC.closeConnection(rs);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 
@@ -1525,40 +1653,52 @@ public class Frm_RegAndInpatient extends JFrame implements
 		String selectedType = "";
 		if (cbb_InpatientType.getSelectedIndex() == 0) {
 			selectedType = "N";
-		}
-		else if (cbb_InpatientType.getSelectedIndex() == 1) {
+		} else if (cbb_InpatientType.getSelectedIndex() == 1) {
 			selectedType = "R";
+		} else {
+			selectedType = "Checkin";
 		}
 		try {
-			// get doctor No
-			sql = "SELECT staff_info.s_no FROM staff_info WHERE concat(staff_info.firstname,'  ',staff_info.lastname)"
-					+ "='" + selectedDoctorName + "'";
-			rs = DBC.executeQuery(sql);
-			rs.next();
-			String doctorNo = rs.getString("staff_info.s_no");
+			if (selectedType == "N" || selectedType == "R") {
+				// get doctor No
+				sql = "SELECT staff_info.s_no FROM staff_info WHERE "
+						+ "concat(staff_info.firstname,'  ',staff_info.lastname)"
+						+ "='" + selectedDoctorName + "'";
+				rs = DBC.executeQuery(sql);
+				rs.next();
+				String doctorNo = rs.getString("staff_info.s_no");
 
-			// Insert bed_record
-			sql = "INSERT INTO bed_record SELECT '" + newBedRecordUUID + "', "
-					+ " '" + selectedPatientGUID + "', " + " '"
-					+ selectedBedGUID + "', " + "NULL, " + " '" + selectedType
-					+ "', ";
-			if (selectedType == "N") {
-				sql = sql + "NULL," + " '" + pan_CheckInDate.getValue()
-						+ " 00:00:00" + "', NULL, ";
+				// Insert bed_record
+				sql = "INSERT INTO bed_record SELECT '" + newBedRecordUUID
+						+ "', " + " '" + selectedPatientGUID + "', " + " '"
+						+ selectedBedGUID + "', " + "NULL, " + " '"
+						+ selectedType + "', ";
+				if (selectedType == "N") {
+					sql = sql + "NULL," + " '" + pan_CheckInDate.getValue()
+							+ " 00:00:00" + "', NULL, ";
+				} else if (selectedType == "R") {
+					sql = sql + " '" + pan_CheckInDate.getValue() + " 00:00:00"
+							+ "', NULL, NULL, ";
+				}
+				sql = sql + " '" + pan_CheckOutDate.getValue() + " 23:59:59"
+						+ "', " + "NULL," + "'" + doctorNo
+						+ "', NULL, NULL, NULL";
+				DBC.executeUpdate(sql);
+			} else {
+				sql = "UPDATE bed_record SET bed_record.status='N' WHERE guid='"
+						+ (String) tab_BedList.getValueAt(
+								tab_BedList.getSelectedRow(), 0) + "'";
+				DBC.executeUpdate(sql);
 			}
-			else if (selectedType == "R") {
-				sql = sql + " '" + pan_CheckInDate.getValue()
-						+ " 00:00:00" + "', NULL, NULL, ";
-			}
-			// todo else
-			sql = sql + " '" + pan_CheckOutDate.getValue() + " 23:59:59"
-					+ "', " + "NULL," + "'" + doctorNo + "', NULL, NULL, NULL";
-			DBC.executeUpdate(sql);
 
 			if (selectedType == "R") {
 				return;
 			}
-			
+
+			if (selectedType == "Checkin") {
+				newBedRecordUUID = (String) tab_BedList.getValueAt(
+						tab_BedList.getSelectedRow(), 0);
+			}
 			// Insert registration_info
 			sql = "INSERT INTO registration_info SELECT " + "uuid()," // guid
 					+ "'"
@@ -1570,12 +1710,14 @@ public class Frm_RegAndInpatient extends JFrame implements
 					+ "now()," // reg_time
 					+ "NULL," // gis_guid
 					+ "NULL," // shift_guid
-					+ "(SELECT CASE " // first visit start
+					// first visit start
+					+ "(SELECT CASE "
 					+ "WHEN (SELECT COUNT(*) from registration_info WHERE p_no='"
-					+ selectedShiftGUID
+					+ selectedPatientGUID
 					+ "')=0 "
 					+ "THEN 'Y' "
-					+ "ELSE 'N' END)," // first visit end
+					+ "ELSE 'N' END),"
+					// first visit end
 					+ "NULL,"
 					+ "'I'," // type
 					+ "NULL,"
@@ -1625,8 +1767,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 
 	@Override
 	public void reLoad() {
-		// TODO Auto-generated method stub
-
+		this.setEnabled(true);
 	}
 
 	@Override
