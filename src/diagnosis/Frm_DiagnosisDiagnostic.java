@@ -262,7 +262,7 @@ public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
 					+ tab_Record.getValueAt(tab_Record.getSelectedRow(), 5)
 					+ "' "
 					+ "AND diagnostic.reg_guid = registration_info.guid "
-					+ "AND diagnosis_code.icd_code = diagnostic.dia_code";
+					+ "AND diagnosis_code.dia_code = diagnostic.dia_code";
 
 			rsDiagnosis = DBC.executeQuery(sqlDiagnosis);
 			if (rsDiagnosis.next()) {
