@@ -11,12 +11,20 @@ import java.util.List;
  */
 @Entity
 @Table(name="medicines")
+@NamedQuery(name="Medicine.findAll", query="SELECT m FROM Medicine m")
 public class Medicine implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String code;
+
+	private String ATC_code;
+
+	@Column(name="default_freq")
+	private String defaultFreq;
+
+	@Column(name="default_way")
+	private String defaultWay;
 
 	private byte effective;
 
@@ -43,6 +51,10 @@ public class Medicine implements Serializable {
 	@OneToMany(mappedBy="medicine")
 	private List<Allergy> allergies;
 
+	//bi-directional many-to-one association to MedicalStockChangeRecord
+	@OneToMany(mappedBy="medicine")
+	private List<MedicalStockChangeRecord> medicalStockChangeRecords;
+
 	//bi-directional many-to-one association to MedicineFavorite
 	@OneToMany(mappedBy="medicine")
 	private List<MedicineFavorite> medicineFavorites;
@@ -68,6 +80,30 @@ public class Medicine implements Serializable {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public String getATC_code() {
+		return this.ATC_code;
+	}
+
+	public void setATC_code(String ATC_code) {
+		this.ATC_code = ATC_code;
+	}
+
+	public String getDefaultFreq() {
+		return this.defaultFreq;
+	}
+
+	public void setDefaultFreq(String defaultFreq) {
+		this.defaultFreq = defaultFreq;
+	}
+
+	public String getDefaultWay() {
+		return this.defaultWay;
+	}
+
+	public void setDefaultWay(String defaultWay) {
+		this.defaultWay = defaultWay;
 	}
 
 	public byte getEffective() {
@@ -162,6 +198,28 @@ public class Medicine implements Serializable {
 		allergy.setMedicine(null);
 
 		return allergy;
+	}
+
+	public List<MedicalStockChangeRecord> getMedicalStockChangeRecords() {
+		return this.medicalStockChangeRecords;
+	}
+
+	public void setMedicalStockChangeRecords(List<MedicalStockChangeRecord> medicalStockChangeRecords) {
+		this.medicalStockChangeRecords = medicalStockChangeRecords;
+	}
+
+	public MedicalStockChangeRecord addMedicalStockChangeRecord(MedicalStockChangeRecord medicalStockChangeRecord) {
+		getMedicalStockChangeRecords().add(medicalStockChangeRecord);
+		medicalStockChangeRecord.setMedicine(this);
+
+		return medicalStockChangeRecord;
+	}
+
+	public MedicalStockChangeRecord removeMedicalStockChangeRecord(MedicalStockChangeRecord medicalStockChangeRecord) {
+		getMedicalStockChangeRecords().remove(medicalStockChangeRecord);
+		medicalStockChangeRecord.setMedicine(null);
+
+		return medicalStockChangeRecord;
 	}
 
 	public List<MedicineFavorite> getMedicineFavorites() {

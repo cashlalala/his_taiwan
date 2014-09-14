@@ -11,11 +11,11 @@ import java.util.List;
  */
 @Entity
 @Table(name="prescription_code")
+@NamedQuery(name="PrescriptionCode.findAll", query="SELECT p FROM PrescriptionCode p")
 public class PrescriptionCode implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String code;
 
 	private float cost;
@@ -31,6 +31,8 @@ public class PrescriptionCode implements Serializable {
 	private String equipment_ID;
 
 	private String guideline;
+
+	private String ICDVersion;
 
 	@Lob
 	private String limit;
@@ -110,6 +112,14 @@ public class PrescriptionCode implements Serializable {
 
 	public void setGuideline(String guideline) {
 		this.guideline = guideline;
+	}
+
+	public String getICDVersion() {
+		return this.ICDVersion;
+	}
+
+	public void setICDVersion(String ICDVersion) {
+		this.ICDVersion = ICDVersion;
 	}
 
 	public String getLimit() {

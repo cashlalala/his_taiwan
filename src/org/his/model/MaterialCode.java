@@ -10,11 +10,11 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="material_code")
+@NamedQuery(name="MaterialCode.findAll", query="SELECT m FROM MaterialCode m")
 public class MaterialCode implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String guid;
 
 	@Lob

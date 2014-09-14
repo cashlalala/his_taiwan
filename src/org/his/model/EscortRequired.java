@@ -10,11 +10,11 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="escort_required")
+@NamedQuery(name="EscortRequired.findAll", query="SELECT e FROM EscortRequired e")
 public class EscortRequired implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String value;
 
 	private String descrition;

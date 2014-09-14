@@ -11,26 +11,39 @@ import java.util.Date;
  */
 @Entity
 @Table(name="medical_stock_change_record")
+@NamedQuery(name="MedicalStockChangeRecord.findAll", query="SELECT m FROM MedicalStockChangeRecord m")
 public class MedicalStockChangeRecord implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String guid;
 
 	private String action;
 
-	private int amount;
+	@Column(name="diff_amount")
+	private float diffAmount;
+
+	@Column(name="diff_minimal_amount")
+	private float diffMinimalAmount;
+
+	@Column(name="diff_price")
+	private float diffPrice;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date createtime;
+	@Column(name="purchase_date")
+	private Date purchaseDate;
 
 	private String type;
 
-	//bi-directional many-to-one association to MedicalStock
+	@Column(name="unit_cost")
+	private float unitCost;
+
+	private String vendor;
+
+	//bi-directional many-to-one association to Medicine
 	@ManyToOne
 	@JoinColumn(name="item_guid")
-	private MedicalStock medicalStock;
+	private Medicine medicine;
 
 	//bi-directional many-to-one association to StaffInfo
 	@ManyToOne
@@ -56,20 +69,36 @@ public class MedicalStockChangeRecord implements Serializable {
 		this.action = action;
 	}
 
-	public int getAmount() {
-		return this.amount;
+	public float getDiffAmount() {
+		return this.diffAmount;
 	}
 
-	public void setAmount(int amount) {
-		this.amount = amount;
+	public void setDiffAmount(float diffAmount) {
+		this.diffAmount = diffAmount;
 	}
 
-	public Date getCreatetime() {
-		return this.createtime;
+	public float getDiffMinimalAmount() {
+		return this.diffMinimalAmount;
 	}
 
-	public void setCreatetime(Date createtime) {
-		this.createtime = createtime;
+	public void setDiffMinimalAmount(float diffMinimalAmount) {
+		this.diffMinimalAmount = diffMinimalAmount;
+	}
+
+	public float getDiffPrice() {
+		return this.diffPrice;
+	}
+
+	public void setDiffPrice(float diffPrice) {
+		this.diffPrice = diffPrice;
+	}
+
+	public Date getPurchaseDate() {
+		return this.purchaseDate;
+	}
+
+	public void setPurchaseDate(Date purchaseDate) {
+		this.purchaseDate = purchaseDate;
 	}
 
 	public String getType() {
@@ -80,12 +109,28 @@ public class MedicalStockChangeRecord implements Serializable {
 		this.type = type;
 	}
 
-	public MedicalStock getMedicalStock() {
-		return this.medicalStock;
+	public float getUnitCost() {
+		return this.unitCost;
 	}
 
-	public void setMedicalStock(MedicalStock medicalStock) {
-		this.medicalStock = medicalStock;
+	public void setUnitCost(float unitCost) {
+		this.unitCost = unitCost;
+	}
+
+	public String getVendor() {
+		return this.vendor;
+	}
+
+	public void setVendor(String vendor) {
+		this.vendor = vendor;
+	}
+
+	public Medicine getMedicine() {
+		return this.medicine;
+	}
+
+	public void setMedicine(Medicine medicine) {
+		this.medicine = medicine;
 	}
 
 	public StaffInfo getStaffInfo() {

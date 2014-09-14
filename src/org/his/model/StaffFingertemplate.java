@@ -10,11 +10,11 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="staff_fingertemplate")
+@NamedQuery(name="StaffFingertemplate.findAll", query="SELECT s FROM StaffFingertemplate s")
 public class StaffFingertemplate implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String guid;
 
 	@Lob

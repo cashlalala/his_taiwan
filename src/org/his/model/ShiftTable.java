@@ -12,11 +12,11 @@ import java.util.List;
  */
 @Entity
 @Table(name="shift_table")
+@NamedQuery(name="ShiftTable.findAll", query="SELECT s FROM ShiftTable s")
 public class ShiftTable implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String guid;
 
 	private String shift;

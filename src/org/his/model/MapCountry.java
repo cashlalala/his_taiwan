@@ -10,11 +10,11 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="map_country")
+@NamedQuery(name="MapCountry.findAll", query="SELECT m FROM MapCountry m")
 public class MapCountry implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String id;
 
 	private String name;

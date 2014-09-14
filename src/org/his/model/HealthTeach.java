@@ -10,11 +10,11 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="health_teach")
+@NamedQuery(name="HealthTeach.findAll", query="SELECT h FROM HealthTeach h")
 public class HealthTeach implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String guid;
 
 	private String acceptance;
