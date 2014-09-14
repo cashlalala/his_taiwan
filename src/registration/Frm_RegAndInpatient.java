@@ -1685,7 +1685,8 @@ public class Frm_RegAndInpatient extends JFrame implements
 						+ "', NULL, NULL, NULL";
 				DBC.executeUpdate(sql);
 			} else {
-				sql = "UPDATE bed_record SET bed_record.status='N' WHERE guid='"
+				sql = "UPDATE bed_record SET bed_record.status='N',"
+						+ "checkinTime=now() WHERE guid='"
 						+ (String) tab_BedList.getValueAt(
 								tab_BedList.getSelectedRow(), 0) + "'";
 				DBC.executeUpdate(sql);
