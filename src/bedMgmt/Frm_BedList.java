@@ -174,7 +174,7 @@ public class Frm_BedList extends JFrame {
             }
          }
          catch (SQLException ex){
-             Logger.getLogger(RefreshBedList.class.getName()).log(Level.SEVERE, null, ex);
+             Logger.getLogger(Frm_BedList.class.getName()).log(Level.SEVERE, null, ex);
          }
 	}
 	@SuppressWarnings("deprecation")
@@ -532,7 +532,7 @@ public class Frm_BedList extends JFrame {
             }
          }
          catch (SQLException ex){
-             Logger.getLogger(RefreshBedList.class.getName()).log(Level.SEVERE, null, ex);
+             Logger.getLogger(Frm_BedList.class.getName()).log(Level.SEVERE, null, ex);
          }
         // setup status combobox
    		setUpDivisionColumn(tab_BedList, tab_BedList.getColumnModel().getColumn(4));
