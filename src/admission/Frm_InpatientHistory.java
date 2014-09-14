@@ -1,22 +1,42 @@
 package admission;
 
+import java.awt.Color;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListSelectionModel;
+import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
 import multilingual.Language;
+
+import org.jdesktop.beansbinding.AutoBinding;
+import org.jdesktop.beansbinding.AutoBinding.UpdateStrategy;
+import org.jdesktop.beansbinding.BeanProperty;
+import org.jdesktop.beansbinding.Bindings;
+
 import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
 import cc.johnwu.sql.HISModel;
+
+import com.jgoodies.forms.factories.FormFactory;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.RowSpec;
+
 import errormessage.StoredErrorMessage;
 
-public class Frm_InpatientDiagnostic extends javax.swing.JFrame {
+public class Frm_InpatientHistory extends javax.swing.JFrame {
 	/**
 	 * 
 	 */
@@ -35,7 +55,7 @@ public class Frm_InpatientDiagnostic extends javax.swing.JFrame {
 	/* 輸出錯誤資訊變數 */
 	StoredErrorMessage ErrorMessage = new StoredErrorMessage();
 
-	public Frm_InpatientDiagnostic(Frm_InpatientInfo diagnosisInfo, String pno,
+	public Frm_InpatientHistory(Frm_InpatientInfo diagnosisInfo, String pno,
 			String pname) {
 		this.m_Pname = pname;
 		this.m_Pno = pno;
@@ -47,7 +67,10 @@ public class Frm_InpatientDiagnostic extends javax.swing.JFrame {
 		initLanguage();
 	}
 
-	public Frm_InpatientDiagnostic(InpatientInterface frame, String pno,
+	/**
+	 * @wbp.parser.constructor
+	 */
+	public Frm_InpatientHistory(InpatientInterface frame, String pno,
 			String pname) {
 		this.m_Pname = pname;
 		this.m_Pno = pno;
@@ -61,7 +84,7 @@ public class Frm_InpatientDiagnostic extends javax.swing.JFrame {
 
 	// 初始化
 	public void initFrame() {
-		this.setExtendedState(Frm_InpatientDiagnostic.MAXIMIZED_BOTH); // 最大化
+		this.setExtendedState(Frm_InpatientHistory.MAXIMIZED_BOTH); // 最大化
 		this.txta_Summary.setLineWrap(true);
 		this.tab_Record.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); // tabble不可按住多選
 		this.tab_Diagnosis
@@ -82,10 +105,10 @@ public class Frm_InpatientDiagnostic extends javax.swing.JFrame {
 		((DefaultTableModel) tab_Prescription.getModel()).setRowCount(0);
 		((DefaultTableModel) tab_Medicine.getModel()).setRowCount(0);
 	}
-	
+
 	private boolean isFromDiagInfo;
-	
-	public void setIsFromDiagInfo(boolean isFromDiagInfo){
+
+	public void setIsFromDiagInfo(boolean isFromDiagInfo) {
 		this.isFromDiagInfo = isFromDiagInfo;
 	}
 
@@ -178,15 +201,22 @@ public class Frm_InpatientDiagnostic extends javax.swing.JFrame {
 					+ "', "
 					+ "policlinic.name AS 'Poli', "
 					+ "concat(staff_info.firstname,'  ',staff_info.lastname) AS 'Doctor', "
-					+ "registration_info.guid "
+					+ "registration_info.guid, "
+					+ "registration_info.type, "
+//					+ "registration_info.bed_guid "
 					+ "FROM registration_info, shift_table, policlinic, poli_room, staff_info "
-					+ "WHERE registration_info.p_no = '" + m_Pno + "' "
-					+ "AND policlinic.name LIKE '" + policlinic + "' "
+					+ "WHERE registration_info.p_no = '"
+					+ m_Pno
+					+ "' "
+					+ "AND policlinic.name LIKE '"
+					+ policlinic
+					+ "' "
 					+ "AND registration_info.shift_guid = shift_table.guid "
 					+ "AND shift_table.room_guid = poli_room.guid "
 					+ "AND poli_room.poli_guid = policlinic.guid "
 					+ "AND staff_info.s_id = shift_table.s_id "
-					+ "AND registration_info.finish = 'F' "
+					+ "AND ((registration_info.finish = 'F' AND registration_info.type = 'O') "
+					+ "OR registration_info.type = 'I') "
 					+ "ORDER BY registration_info.reg_time DESC";
 			rsRecord = DBC.executeQuery(sqlRecord);
 			if (rsRecord.next()) {
@@ -260,7 +290,7 @@ public class Frm_InpatientDiagnostic extends javax.swing.JFrame {
 					+ tab_Record.getValueAt(tab_Record.getSelectedRow(), 5)
 					+ "' "
 					+ "AND diagnostic.reg_guid = registration_info.guid "
-					+ "AND diagnosis_code.icd_code = diagnostic.dia_code";
+					+ "AND diagnosis_code.dia_code = diagnostic.dia_code";
 
 			rsDiagnosis = DBC.executeQuery(sqlDiagnosis);
 			if (rsDiagnosis.next()) {
@@ -453,7 +483,7 @@ public class Frm_InpatientDiagnostic extends javax.swing.JFrame {
 						/**
 								 * 
 								 */
-								private static final long serialVersionUID = 8018976528701814935L;
+						private static final long serialVersionUID = 8018976528701814935L;
 
 						@Override
 						// 設定欄位可否編輯
@@ -470,7 +500,7 @@ public class Frm_InpatientDiagnostic extends javax.swing.JFrame {
 					/**
 							 * 
 							 */
-							private static final long serialVersionUID = 7671361675848330232L;
+					private static final long serialVersionUID = 7671361675848330232L;
 
 					@Override
 					// 設定欄位可否編輯
@@ -559,7 +589,6 @@ public class Frm_InpatientDiagnostic extends javax.swing.JFrame {
 		this.setAlwaysOnTop(true);
 	}
 
-	
 	// <editor-fold defaultstate="collapsed"
 	// desc="Generated Code">//GEN-BEGIN:initComponents
 	private void initComponents() {
@@ -604,7 +633,7 @@ public class Frm_InpatientDiagnostic extends javax.swing.JFrame {
 			/**
 					 * 
 					 */
-					private static final long serialVersionUID = 1513713184594101009L;
+			private static final long serialVersionUID = 1513713184594101009L;
 			boolean[] canEdit = new boolean[] { false, false, false, false,
 					false, false, false, false };
 
@@ -633,7 +662,7 @@ public class Frm_InpatientDiagnostic extends javax.swing.JFrame {
 			/**
 							 * 
 							 */
-							private static final long serialVersionUID = -4409373919019254517L;
+			private static final long serialVersionUID = -4409373919019254517L;
 			boolean[] canEdit = new boolean[] { false, false, false, false,
 					false };
 
@@ -667,7 +696,7 @@ public class Frm_InpatientDiagnostic extends javax.swing.JFrame {
 			/**
 							 * 
 							 */
-							private static final long serialVersionUID = 4850207119924028297L;
+			private static final long serialVersionUID = 4850207119924028297L;
 			boolean[] canEdit = new boolean[] { false, false, false };
 
 			public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -689,7 +718,7 @@ public class Frm_InpatientDiagnostic extends javax.swing.JFrame {
 			/**
 							 * 
 							 */
-							private static final long serialVersionUID = 8484744495481923745L;
+			private static final long serialVersionUID = 8484744495481923745L;
 			boolean[] canEdit = new boolean[] { false, false, false };
 
 			public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -728,63 +757,71 @@ public class Frm_InpatientDiagnostic extends javax.swing.JFrame {
 						javax.swing.GroupLayout.DEFAULT_SIZE, 111,
 						Short.MAX_VALUE));
 
+		panel = new JPanel();
+		panel.setBorder(new LineBorder(Color.GRAY));
+
 		javax.swing.GroupLayout pan_CenterLayout = new javax.swing.GroupLayout(
 				pan_Center);
-		pan_Center.setLayout(pan_CenterLayout);
 		pan_CenterLayout
 				.setHorizontalGroup(pan_CenterLayout
-						.createParallelGroup(
-								javax.swing.GroupLayout.Alignment.LEADING)
+						.createParallelGroup(Alignment.TRAILING)
 						.addGroup(
-								javax.swing.GroupLayout.Alignment.TRAILING,
 								pan_CenterLayout
 										.createSequentialGroup()
 										.addContainerGap()
 										.addGroup(
 												pan_CenterLayout
 														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.TRAILING)
+																Alignment.TRAILING)
 														.addComponent(
 																span_Medicine,
-																javax.swing.GroupLayout.Alignment.LEADING,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																796,
+																Alignment.LEADING,
+																GroupLayout.DEFAULT_SIZE,
+																800,
 																Short.MAX_VALUE)
 														.addComponent(
 																span_Prescription,
-																javax.swing.GroupLayout.Alignment.LEADING,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																796,
+																Alignment.LEADING,
+																GroupLayout.DEFAULT_SIZE,
+																800,
 																Short.MAX_VALUE)
 														.addGroup(
 																pan_CenterLayout
 																		.createSequentialGroup()
-																		.addComponent(
-																				span_Record,
-																				javax.swing.GroupLayout.DEFAULT_SIZE,
-																				398,
-																				Short.MAX_VALUE)
-																		.addPreferredGap(
-																				javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 																		.addGroup(
 																				pan_CenterLayout
 																						.createParallelGroup(
-																								javax.swing.GroupLayout.Alignment.LEADING)
+																								Alignment.TRAILING)
+																						.addComponent(
+																								panel,
+																								GroupLayout.DEFAULT_SIZE,
+																								400,
+																								Short.MAX_VALUE)
+																						.addComponent(
+																								span_Record,
+																								GroupLayout.DEFAULT_SIZE,
+																								400,
+																								Short.MAX_VALUE))
+																		.addPreferredGap(
+																				ComponentPlacement.RELATED)
+																		.addGroup(
+																				pan_CenterLayout
+																						.createParallelGroup(
+																								Alignment.LEADING)
 																						.addComponent(
 																								span_Diagnosis,
-																								javax.swing.GroupLayout.DEFAULT_SIZE,
-																								392,
+																								GroupLayout.DEFAULT_SIZE,
+																								394,
 																								Short.MAX_VALUE)
 																						.addComponent(
 																								pan_CenterTop,
-																								javax.swing.GroupLayout.DEFAULT_SIZE,
-																								javax.swing.GroupLayout.DEFAULT_SIZE,
+																								GroupLayout.DEFAULT_SIZE,
+																								394,
 																								Short.MAX_VALUE))))
 										.addContainerGap()));
 		pan_CenterLayout
 				.setVerticalGroup(pan_CenterLayout
-						.createParallelGroup(
-								javax.swing.GroupLayout.Alignment.LEADING)
+						.createParallelGroup(Alignment.LEADING)
 						.addGroup(
 								pan_CenterLayout
 										.createSequentialGroup()
@@ -792,39 +829,75 @@ public class Frm_InpatientDiagnostic extends javax.swing.JFrame {
 										.addGroup(
 												pan_CenterLayout
 														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.LEADING)
-														.addComponent(
-																span_Record,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																249,
-																Short.MAX_VALUE)
+																Alignment.LEADING)
 														.addGroup(
 																pan_CenterLayout
 																		.createSequentialGroup()
 																		.addComponent(
 																				pan_CenterTop,
-																				javax.swing.GroupLayout.PREFERRED_SIZE,
-																				javax.swing.GroupLayout.DEFAULT_SIZE,
-																				javax.swing.GroupLayout.PREFERRED_SIZE)
+																				GroupLayout.PREFERRED_SIZE,
+																				GroupLayout.DEFAULT_SIZE,
+																				GroupLayout.PREFERRED_SIZE)
 																		.addPreferredGap(
-																				javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+																				ComponentPlacement.RELATED)
 																		.addComponent(
 																				span_Diagnosis,
-																				javax.swing.GroupLayout.DEFAULT_SIZE,
+																				GroupLayout.DEFAULT_SIZE,
 																				132,
+																				Short.MAX_VALUE))
+														.addGroup(
+																pan_CenterLayout
+																		.createSequentialGroup()
+																		.addComponent(
+																				span_Record,
+																				GroupLayout.PREFERRED_SIZE,
+																				190,
+																				GroupLayout.PREFERRED_SIZE)
+																		.addPreferredGap(
+																				ComponentPlacement.RELATED)
+																		.addComponent(
+																				panel,
+																				GroupLayout.DEFAULT_SIZE,
+																				53,
 																				Short.MAX_VALUE)))
 										.addPreferredGap(
-												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-										.addComponent(
-												span_Prescription,
-												javax.swing.GroupLayout.DEFAULT_SIZE,
-												115, Short.MAX_VALUE)
+												ComponentPlacement.RELATED)
+										.addComponent(span_Prescription,
+												GroupLayout.DEFAULT_SIZE, 115,
+												Short.MAX_VALUE)
 										.addPreferredGap(
-												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-										.addComponent(
-												span_Medicine,
-												javax.swing.GroupLayout.DEFAULT_SIZE,
-												111, Short.MAX_VALUE)));
+												ComponentPlacement.RELATED)
+										.addComponent(span_Medicine,
+												GroupLayout.DEFAULT_SIZE, 111,
+												Short.MAX_VALUE)));
+		panel.setLayout(new FormLayout(new ColumnSpec[] {
+				FormFactory.DEFAULT_COLSPEC, FormFactory.DEFAULT_COLSPEC, },
+				new RowSpec[] { FormFactory.DEFAULT_ROWSPEC,
+						FormFactory.DEFAULT_ROWSPEC,
+						FormFactory.DEFAULT_ROWSPEC,
+						FormFactory.DEFAULT_ROWSPEC, }));
+
+		lbl_BedNo = new JLabel(paragraph.getString("COL_BED_NO"));
+		lbl_BedNoText = new JLabel(" ");
+		panel.add(lbl_BedNo, "1,1, left, default");
+		panel.add(lbl_BedNoText, "2, 1, right, default");
+
+		lbl_ChkInTime = new JLabel(paragraph.getString("COL_CHECKINTIME"));
+		lbl_ChkInTimeText = new JLabel(" ");
+		panel.add(lbl_ChkInTime, "1,3, left, default");
+		panel.add(lbl_ChkInTimeText, "2, 3, right, default");
+
+		lbl_ChkOutTime = new JLabel(paragraph.getString("COL_CHECKOUTTIME"));
+		lbl_ChkOutTimeText = new JLabel(" ");
+		panel.add(lbl_ChkOutTime, "1, 4, left, default");
+		panel.add(lbl_ChkOutTimeText, "2, 4, right, default");
+
+		lbl_MainDoc = new JLabel(paragraph.getString("COL_MAIN_DOCTOR"));
+		lbl_MainDocText = new JLabel(" ");
+		panel.add(lbl_MainDoc, "1,2, left, default");
+		panel.add(lbl_MainDocText, "2, 2, right, default");
+
+		pan_Center.setLayout(pan_CenterLayout);
 
 		lab_Policlinic.setText("Department ：");
 
@@ -1017,6 +1090,7 @@ public class Frm_InpatientDiagnostic extends javax.swing.JFrame {
 								.addContainerGap()));
 
 		pack();
+		initDataBindings();
 	}// </editor-fold>//GEN-END:initComponents
 
 	private void btn_CloseActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_CloseActionPerformed
@@ -1039,6 +1113,7 @@ public class Frm_InpatientDiagnostic extends javax.swing.JFrame {
 			} else {
 				btn_Insert.setEnabled(false);
 			}
+			setInPatientInfo();
 			setTab_Diagnosis(); // set當次看診icd code的紀錄
 			settxta_Summary(); // set 當次看診摘要
 			setTab_Prescription(); // set 當次診斷
@@ -1046,6 +1121,55 @@ public class Frm_InpatientDiagnostic extends javax.swing.JFrame {
 		}
 
 	}// GEN-LAST:event_tab_RecordMouseClicked
+
+	private void setInPatientInfo() {
+		String regGuid = (String) tab_Record.getValueAt(
+				tab_Record.getSelectedRow(), 5);
+
+		String sql = String
+				.format("select bed_record.bed_guid as '%s', "
+						+ "bed_record.checkinTime as '%s', "
+						+ "bed_record.checkoutTime as '%s', "
+						+ "CONCAT(staff_info.firstname, ' ', staff_info.lastname) as '%s'"
+						+ "from bed_record, registration_info reg, staff_info "
+						+ "where reg.guid = '%s' and reg.type = 'I' "
+						+ "and reg.bed_guid = bed_record.bed_guid "
+						+ "and reg.reg_time <= bed_record.checkinTime "
+						+ "and bed_record.status in ('L','N') "
+						+ "and staff_info.s_no = bed_record.mainDr_no "
+						+ "order by bed_record.checkinTime asc",
+						paragraph.getString("COL_BED_NO"),
+						paragraph.getString("COL_CHECKINTIME"),
+						paragraph.getString("COL_CHECKOUTTIME"),
+						paragraph.getString("COL_MAIN_DOCTOR"), regGuid);
+
+		ResultSet rs = null;
+		try {
+			rs = DBC.executeQuery(sql);
+
+			if (rs.next()) {
+				lbl_BedNoText.setText(rs.getString(1));
+				lbl_ChkInTimeText.setText(rs.getString(2));
+				lbl_ChkOutTimeText.setText(rs.getString(3));
+				lbl_MainDocText.setText(rs.getString(4));
+			} else {
+				lbl_BedNoText.setText("");
+				lbl_ChkInTimeText.setText("");
+				lbl_ChkOutTimeText.setText("");
+				lbl_MainDocText.setText("");
+			}
+
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		} finally {
+			try {
+				DBC.closeConnection(rs);
+			} catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+		}
+
+	}
 
 	private void cob_PoliclinicItemStateChanged(java.awt.event.ItemEvent evt) {// GEN-FIRST:event_cob_PoliclinicItemStateChanged
 		if (evt.getStateChange() == java.awt.event.ItemEvent.SELECTED
@@ -1076,12 +1200,14 @@ public class Frm_InpatientDiagnostic extends javax.swing.JFrame {
 	}// GEN-LAST:event_btn_InsertActionPerformed
 
 	private void txta_SummaryMouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_txta_SummaryMouseClicked
-		new Summary(this, txta_Summary.getText().trim(),
+		summaryFrm = new Summary(this, txta_Summary.getText().trim(),
 				pan_CenterTop.getLocationOnScreen(), pan_CenterTop.getWidth(),
-				pan_CenterTop.getHeight(), txta_Summary.getLineCount(), false)
-				.setVisible(true);
+				pan_CenterTop.getHeight(), txta_Summary.getLineCount(), false);
+		summaryFrm.setVisible(true);
 		this.setAlwaysOnTop(false);
 	}// GEN-LAST:event_txta_SummaryMouseClicked
+
+	private Summary summaryFrm = null;
 
 	// Variables declaration - do not modify//GEN-BEGIN:variables
 	private javax.swing.JButton btn_Close;
@@ -1110,6 +1236,24 @@ public class Frm_InpatientDiagnostic extends javax.swing.JFrame {
 	private javax.swing.JTable tab_Record;
 	private javax.swing.JTextField txt_Ps;
 	private javax.swing.JTextArea txta_Summary;
-	// End of variables declaration//GEN-END:variables
+	private JLabel lbl_BedNo;
+	private JLabel lbl_BedNoText;
+	private JLabel lbl_ChkInTime;
+	private JLabel lbl_ChkInTimeText;
+	private JLabel lbl_ChkOutTime;
+	private JLabel lbl_ChkOutTimeText;
+	private JLabel lbl_MainDoc;
+	private JLabel lbl_MainDocText;
+	private JPanel panel;
 
+	protected void initDataBindings() {
+		BeanProperty<JScrollPane, Integer> jScrollPaneBeanProperty = BeanProperty
+				.create("width");
+		BeanProperty<JPanel, Integer> jPanelBeanProperty = BeanProperty
+				.create("width");
+		AutoBinding<JScrollPane, Integer, JPanel, Integer> autoBinding = Bindings
+				.createAutoBinding(UpdateStrategy.READ, span_Record,
+						jScrollPaneBeanProperty, panel, jPanelBeanProperty);
+		autoBinding.bind();
+	}
 }
