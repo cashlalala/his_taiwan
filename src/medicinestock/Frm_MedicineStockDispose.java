@@ -37,38 +37,39 @@ public class Frm_MedicineStockDispose extends JFrame implements DateInterface {
         showCombo();
         this.date_Choose.setParentFrame(this);
         setAddEnable();
-        this.tab_Purchase.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);  // table不可按住多選
-        this.tab_Purchase.setAutoCreateRowSorter(true);
+        this.tab_Dispose.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);  // table不可按住多選
+        this.tab_Dispose.setAutoCreateRowSorter(true);
         this.setLocationRelativeTo(this);
         addWindowListener(new WindowAdapter() {  // 畫面關閉原視窗enable
         @Override
         public void windowClosing(WindowEvent windowevent) {
             btn_CloseActionPerformed(null);
         }});
-        if (!UserInfo.getSelectPow("Stock")) {
-            setHidePrice();
-        }       
+        //if (!UserInfo.getSelectPow("Stock")) {
+        //    setHidePrice();
+        //}       
     }
 
     private void initLanguage() {
     	this.lab_MedicineCode.setText(paragraph.getString("CODE"));
-        this.lab_Date.setText(paragraph.getString("PURCHASEDATE"));
-        this.lab_Company.setText(paragraph.getString("VENDOR"));
+        this.lab_Date.setText(paragraph.getString("DISPOSALEDATE"));
+        //this.lab_Company.setText(paragraph.getString("VENDOR"));
         this.lab_Quantity.setText(paragraph.getString("QUANTITY"));
-        this.lab_Price.setText(paragraph.getString("TOTALCOST"));
+        //this.lab_Price.setText(paragraph.getString("TOTALCOST"));
         this.btn_Delete.setText(paragraph.getString("DELETE"));
         this.btn_Add.setText(paragraph.getString("ADD"));
         this.btn_Send.setText(paragraph.getString("SEND"));
         this.btn_Close.setText(paragraph.getString("CLOSE"));
-        this.setTitle(paragraph.getString("TITLEMEDICINEPURCHASE"));
+        this.setTitle(paragraph.getString("TITLEPHARMACYDISPOSE"));
     }
     /**目前庫存頁  藥品的combo選單*/
     private void showCombo(){//
         ResultSet rsArray= null;
    
         try{
-            String ArraySql="SELECT medicines.code AS name FROM medicines WHERE effective = 1";
-            rsArray= DBC.executeQuery(ArraySql);
+            //String ArraySQL="SELECT medicines.code AS name FROM medicines WHERE effective = 1";
+        	String ArraySQL = "SELECT item_guid as 'name' FROM medical_stock WHERE type = 'P' order by item_guid asc";
+            rsArray= DBC.executeQuery(ArraySQL);
             rsArray.last();
             String[] medicineArray = new String[(rsArray.getRow()+1)];
             rsArray.beforeFirst();
@@ -102,7 +103,7 @@ public class Frm_MedicineStockDispose extends JFrame implements DateInterface {
     }
     // 加入鍵是否可按
     public void setAddEnable() {
-        if (txt_Price.isVisible()) {
+        /*if (txt_Price.isVisible()) {
             if (txt_Quantity.getText() != null && txt_Company.getText() != null && txt_Price.getText() != null
             && !m_Cobww.getSelectedItem().equals(null) && !txt_Company.getText().trim().equals("")
             && !txt_Quantity.getText().trim().equals("") && !m_Cobww.getSelectedItem().equals("") && !txt_Price.getText().trim().equals("")
@@ -120,16 +121,16 @@ public class Frm_MedicineStockDispose extends JFrame implements DateInterface {
             } else {
                 btn_Add.setEnabled(false);
             }
-        }
+        }*/
         
     }
 
     // 隱藏成本
-    public void setHidePrice() {
-        txt_Price.setVisible(false);
-        lab_Price.setVisible(false);
-        setHideColumn(tab_Purchase, 4);
-    }
+    //public void setHidePrice() {
+        //txt_Price.setVisible(false);
+        //lab_Price.setVisible(false);
+    //    setHideColumn(tab_Dispose, 4);
+    //}
 
     // 隱藏欄位
     public void setHideColumn(javax.swing.JTable table,int index){
@@ -155,18 +156,18 @@ public class Frm_MedicineStockDispose extends JFrame implements DateInterface {
     private void initComponents() {
 
         span_Purchase = new javax.swing.JScrollPane();
-        tab_Purchase = new javax.swing.JTable();
+        tab_Dispose = new javax.swing.JTable();
         pan_PurListRight = new javax.swing.JPanel();
         lab_MedicineCode = new javax.swing.JLabel();
         lab_Quantity = new javax.swing.JLabel();
-        lab_Company = new javax.swing.JLabel();
+        //lab_Company = new javax.swing.JLabel();
         lab_Date = new javax.swing.JLabel();
         txt_Quantity = new javax.swing.JTextField();
-        txt_Company = new javax.swing.JTextField();
+        //txt_Company = new javax.swing.JTextField();
         btn_Add = new javax.swing.JButton();
         date_Choose = new cc.johnwu.date.DateChooser();
-        lab_Price = new javax.swing.JLabel();
-        txt_Price = new javax.swing.JTextField();
+        //lab_Price = new javax.swing.JLabel();
+        //txt_Price = new javax.swing.JTextField();
         btn_Delete = new javax.swing.JButton();
         btn_Send = new javax.swing.JButton();
         btn_Close = new javax.swing.JButton();
@@ -175,16 +176,16 @@ public class Frm_MedicineStockDispose extends JFrame implements DateInterface {
         //setTitle("Medicine Purchase");
         //setAlwaysOnTop(true);
 
-        tab_Purchase.setModel(new javax.swing.table.DefaultTableModel(
+        tab_Dispose.setModel(new javax.swing.table.DefaultTableModel(
         		new Object [][] {
 
                 },
                 new String [] {
                     paragraph.getString("PHARMACY"), 
-                    paragraph.getString("VENDOR"), 
+                    //paragraph.getString("VENDOR"), 
                     paragraph.getString("QUANTITY"), 
-                    paragraph.getString("DATE"), 
-                    paragraph.getString("TOTALCOST")
+                    paragraph.getString("DATE")//, 
+                    //paragraph.getString("TOTALCOST")
                 }
             ) {
             boolean[] canEdit = new boolean [] {
@@ -195,18 +196,18 @@ public class Frm_MedicineStockDispose extends JFrame implements DateInterface {
                 return canEdit [columnIndex];
             }
         });
-        tab_Purchase.getTableHeader().setReorderingAllowed(false);
-        tab_Purchase.addMouseListener(new java.awt.event.MouseAdapter() {
+        tab_Dispose.getTableHeader().setReorderingAllowed(false);
+        tab_Dispose.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 tab_PurchaseMouseClicked(evt);
             }
         });
-        span_Purchase.setViewportView(tab_Purchase);
-        tab_Purchase.getColumnModel().getColumn(0).setResizable(false);
-        tab_Purchase.getColumnModel().getColumn(1).setResizable(false);
-        tab_Purchase.getColumnModel().getColumn(2).setResizable(false);
-        tab_Purchase.getColumnModel().getColumn(3).setResizable(false);
-        tab_Purchase.getColumnModel().getColumn(4).setResizable(false);
+        span_Purchase.setViewportView(tab_Dispose);
+        //tab_Dispose.getColumnModel().getColumn(0).setResizable(false);
+        //tab_Dispose.getColumnModel().getColumn(1).setResizable(false);
+        //tab_Dispose.getColumnModel().getColumn(2).setResizable(false);
+        //tab_Dispose.getColumnModel().getColumn(3).setResizable(false);
+        //tab_Dispose.getColumnModel().getColumn(4).setResizable(false);
 
         txt_Quantity.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
@@ -214,11 +215,11 @@ public class Frm_MedicineStockDispose extends JFrame implements DateInterface {
             }
         });
 
-        txt_Company.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                txt_CompanyKeyReleased(evt);
-            }
-        });
+        //txt_Company.addKeyListener(new java.awt.event.KeyAdapter() {
+        //    public void keyReleased(java.awt.event.KeyEvent evt) {
+        //        txt_CompanyKeyReleased(evt);
+        //    }
+        //});
 
         btn_Add.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -226,11 +227,11 @@ public class Frm_MedicineStockDispose extends JFrame implements DateInterface {
             }
         });
 
-        txt_Price.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                txt_PriceKeyReleased(evt);
-            }
-        });
+        //txt_Price.addKeyListener(new java.awt.event.KeyAdapter() {
+        //    public void keyReleased(java.awt.event.KeyEvent evt) {
+        //        txt_PriceKeyReleased(evt);
+        //    }
+        //});
 
         btn_Delete.setEnabled(false);
         btn_Delete.addActionListener(new java.awt.event.ActionListener() {
@@ -262,10 +263,11 @@ public class Frm_MedicineStockDispose extends JFrame implements DateInterface {
                     	.addGroup(pan_PurListRightLayout.createSequentialGroup()
                             .addGroup(pan_PurListRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(lab_Quantity)
-                                .addComponent(lab_Price))
+                                //.addComponent(lab_Price)
+                                )
                             .addGap(18, 18, 18)
                             .addGroup(pan_PurListRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(txt_Price, javax.swing.GroupLayout.DEFAULT_SIZE, 174, Short.MAX_VALUE)
+                                //.addComponent(txt_Price, javax.swing.GroupLayout.DEFAULT_SIZE, 174, Short.MAX_VALUE)
                                 .addComponent(txt_Quantity))
                         )
                                 
@@ -275,12 +277,13 @@ public class Frm_MedicineStockDispose extends JFrame implements DateInterface {
                             .addComponent(btn_Add, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(pan_PurListRightLayout.createSequentialGroup()
                             .addGroup(pan_PurListRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(lab_Company)
+                                //.addComponent(lab_Company)
                                 .addComponent(lab_Date))
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addGroup(pan_PurListRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(date_Choose, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(txt_Company, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                //.addComponent(txt_Company, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                ))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         pan_PurListRightLayout.setVerticalGroup(
@@ -290,31 +293,36 @@ public class Frm_MedicineStockDispose extends JFrame implements DateInterface {
                 .addGroup(pan_PurListRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                 .addComponent(lab_MedicineCode)
                 )
+                .addGap(18, 18, 18)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 //.addComponent(lab_MedicineName)
                 //.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
                 .addGroup(pan_PurListRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(lab_Date)
                     .addComponent(date_Choose, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(pan_PurListRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lab_Company)
-                    .addComponent(txt_Company, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    //.addComponent(lab_Company)
+                    //.addComponent(txt_Company, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    )
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(pan_PurListRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txt_Quantity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lab_Quantity))
+                .addGap(18, 18, 18)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(pan_PurListRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txt_Price, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lab_Price))
+                    //.addComponent(txt_Price, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    //.addComponent(lab_Price)
+                    )
                 .addGap(12, 12, 12)
                 .addGroup(pan_PurListRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btn_Add)
                     .addComponent(btn_Delete)))
         );
 
-        btn_Send.setText("Send");
+        btn_Send.setText(paragraph.getString("DISPOSE"));
         btn_Send.setEnabled(false);
         btn_Send.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -365,17 +373,22 @@ public class Frm_MedicineStockDispose extends JFrame implements DateInterface {
 
     private void btn_AddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_AddActionPerformed
 
-    	 ((DefaultTableModel)this.tab_Purchase.getModel()).addRow(new Object[] {
-            m_Cobww.getSelectedItem(),txt_Company.getText(),txt_Quantity.getText(),date_Choose.getValue(),txt_Price.getText()}) ;
-        tab_Purchase.setRowSelectionInterval(tab_Purchase.getRowCount()-1, tab_Purchase.getRowCount()-1);
-        tab_Purchase.changeSelection(tab_Purchase.getSelectedRow(), 0, false, false);
-        m_Cobww.setSelectedIndex(0);
-        txt_Quantity.setText(null);
-        txt_Company.setText(null);
-        txt_Price.setText(null);
-        if (tab_Purchase.getRowCount() != 0) {
-            btn_Send.setEnabled(true);
-        }
+    	 ((DefaultTableModel)this.tab_Dispose.getModel()).addRow(new Object[] {
+            m_Cobww.getSelectedItem(),
+            //txt_Company.getText(),
+            txt_Quantity.getText(),
+            date_Choose.getValue()//,
+            //txt_Price.getText()
+            }) ;
+		tab_Dispose.setRowSelectionInterval(tab_Dispose.getRowCount()-1, tab_Dispose.getRowCount()-1);
+		tab_Dispose.changeSelection(tab_Dispose.getSelectedRow(), 0, false, false);
+		m_Cobww.setSelectedIndex(0);
+		txt_Quantity.setText(null);
+		//txt_Company.setText(null);
+		//txt_Price.setText(null);
+		if (tab_Dispose.getRowCount() != 0) {
+		    btn_Send.setEnabled(true);
+		}
 }//GEN-LAST:event_btn_AddActionPerformed
 
     private void btn_CloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_CloseActionPerformed
@@ -387,15 +400,15 @@ public class Frm_MedicineStockDispose extends JFrame implements DateInterface {
 
     private void btn_SendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_SendActionPerformed
         //String sql = null;
-        if(this.tab_Purchase.getRowCount() != 0){
+        if(this.tab_Dispose.getRowCount() != 0){
            try {
-                for(int i = 0; i < tab_Purchase.getRowCount(); i++){
+                for(int i = 0; i < tab_Dispose.getRowCount(); i++){
                 	
-                	String code = tab_Purchase.getValueAt(i, 0).toString();
-                	float purchasedAmount = Float.parseFloat(tab_Purchase.getValueAt(i, 2).toString());
-                	String vendor = tab_Purchase.getValueAt(i, 1).toString();
-                	String date = tab_Purchase.getValueAt(i, 3).toString();
-                	float cost = Float.parseFloat(tab_Purchase.getValueAt(i, 4).toString()) / purchasedAmount; 
+                	String code = tab_Dispose.getValueAt(i, 0).toString();
+                	float purchasedAmount = Float.parseFloat(tab_Dispose.getValueAt(i, 1).toString());
+                	//String vendor = tab_Dispose.getValueAt(i, 1).toString();
+                	String date = tab_Dispose.getValueAt(i, 2).toString();
+                	//float cost = Float.parseFloat(tab_Dispose.getValueAt(i, 4).toString()) / purchasedAmount; 
                 	
                 	String sql;
                 	String sqlChangeRecord;
@@ -407,24 +420,26 @@ public class Frm_MedicineStockDispose extends JFrame implements DateInterface {
                     if(rsStockSQL.next()) {
                     	String guid = rsStockSQL.getString("guid");
                     	float currentAmount = rsStockSQL.getFloat("current_amount");
-	                    float newCurrentAmount = currentAmount + purchasedAmount;
+	                    float newCurrentAmount = currentAmount - purchasedAmount;
+	                    if(newCurrentAmount < 0) {
+	                    	JOptionPane.showMessageDialog(null, paragraph.getString("CANNOTDISPOSE") + " " + code);
+	                    	continue;
+	                    }
 	                    sql = "UPDATE medical_stock SET `current_amount`='" + newCurrentAmount + "' WHERE guid = '" + guid + "'";
-                    } else {
-                    	sql = "INSERT INTO medical_stock (`guid`, `type`, `item_guid`, `current_amount`) VALUES (uuid(), 'P', '" + code + "', '" + purchasedAmount + "');";
-                    }
                     
-                    sqlChangeRecord = "INSERT INTO medical_stock_change_record (`guid`, `action`, `item_guid`, `type`, "
-                    		+ "`diff_amount`, `s_no`, `purchase_date`, `unit_cost`, `vendor`) "
-                    		+ " VALUES (uuid(), 'P', '" + code + "', 'P', '" + purchasedAmount + "', '" + UserInfo.getUserNO() + "', '" + date + "', '" + cost + "', '" + vendor + "');";
-                    try {DBC.closeConnection(rsStockSQL);}
-                    catch (SQLException e){
-                        ErrorMessage.setData("MedicineStock", "Frm_MedicineStockPurchase" ,"btn_SendActionPerformed() - DBC.closeConnection",
-                        		e.toString().substring(e.toString().lastIndexOf(".")+1, e.toString().length()));
+	                    sqlChangeRecord = "INSERT INTO medical_stock_change_record (`guid`, `action`, `item_guid`, `type`, "
+	                    		+ "`diff_amount`, `s_no`, `purchase_date` ) "
+	                    		+ " VALUES (uuid(), 'D', '" + code + "', 'P', '" + purchasedAmount + "', '" + 
+	                    		UserInfo.getUserNO() + "', '" + date + "');";
+	                    try {DBC.closeConnection(rsStockSQL);}
+	                    catch (SQLException e){
+	                        ErrorMessage.setData("MedicineStock", "Frm_MedicineStockPurchase" ,"btn_SendActionPerformed() - DBC.closeConnection",
+	                        		e.toString().substring(e.toString().lastIndexOf(".")+1, e.toString().length()));
                     }
                     
                     DBC.executeUpdate(sql);
                     DBC.executeUpdate(sqlChangeRecord);
-                    
+                    }
                 	/*
                     if (txt_Price.isVisible()) {
                         sql = "INSERT INTO medicine_stock VALUES " +
@@ -462,8 +477,9 @@ public class Frm_MedicineStockDispose extends JFrame implements DateInterface {
     }//GEN-LAST:event_btn_SendActionPerformed
 
     private void btn_DeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_DeleteActionPerformed
-        ((DefaultTableModel)this.tab_Purchase.getModel()).removeRow(this.tab_Purchase.getSelectedRow());
-        if (tab_Purchase.getRowCount() == 0) {
+    	if(this.tab_Dispose.getSelectedRow() == -1) return;
+        ((DefaultTableModel)this.tab_Dispose.getModel()).removeRow(this.tab_Dispose.getSelectedRow());
+        if (tab_Dispose.getRowCount() == 0) {
             btn_Send.setEnabled(false);
         }
     }//GEN-LAST:event_btn_DeleteActionPerformed
@@ -472,17 +488,17 @@ public class Frm_MedicineStockDispose extends JFrame implements DateInterface {
         btn_Delete.setEnabled(true);
     }//GEN-LAST:event_tab_PurchaseMouseClicked
 
-    private void txt_CompanyKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_CompanyKeyReleased
-        setAddEnable();
-    }//GEN-LAST:event_txt_CompanyKeyReleased
+    //private void txt_CompanyKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_CompanyKeyReleased
+    //    setAddEnable();
+    //}//GEN-LAST:event_txt_CompanyKeyReleased
 
     private void txt_QuantityKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_QuantityKeyReleased
         setAddEnable();
     }//GEN-LAST:event_txt_QuantityKeyReleased
 
-    private void txt_PriceKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_PriceKeyReleased
-        setAddEnable();
-    }//GEN-LAST:event_txt_PriceKeyReleased
+    //private void txt_PriceKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_PriceKeyReleased
+    //    setAddEnable();
+    //}//GEN-LAST:event_txt_PriceKeyReleased
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_Add;
@@ -490,16 +506,16 @@ public class Frm_MedicineStockDispose extends JFrame implements DateInterface {
     private javax.swing.JButton btn_Delete;
     private javax.swing.JButton btn_Send;
     private cc.johnwu.date.DateChooser date_Choose;
-    private javax.swing.JLabel lab_Company;
+    //private javax.swing.JLabel lab_Company;
     private javax.swing.JLabel lab_Date;
     private javax.swing.JLabel lab_MedicineCode;
-    private javax.swing.JLabel lab_Price;
+    //private javax.swing.JLabel lab_Price;
     private javax.swing.JLabel lab_Quantity;
     private javax.swing.JPanel pan_PurListRight;
     private javax.swing.JScrollPane span_Purchase;
-    private javax.swing.JTable tab_Purchase;
-    private javax.swing.JTextField txt_Company;
-    private javax.swing.JTextField txt_Price;
+    private javax.swing.JTable tab_Dispose;
+    //private javax.swing.JTextField txt_Company;
+    //private javax.swing.JTextField txt_Price;
     private javax.swing.JTextField txt_Quantity;
     // End of variables declaration//GEN-END:variables
 

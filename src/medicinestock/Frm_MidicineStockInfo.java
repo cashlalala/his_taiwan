@@ -18,6 +18,9 @@ import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
 import cc.johnwu.sql.HISModel;
 import cc.johnwu.sql.HISModel.EditableTableModel;
+
+import common.PrintPharmacyTable;
+
 import errormessage.StoredErrorMessage;
 
 
@@ -48,6 +51,7 @@ public class Frm_MidicineStockInfo extends javax.swing.JFrame implements cc.john
 
     }
     private void initLanguage() {
+    	this.btn_Print.setText(paragraph.getString("PRINT"));
         this.btn_Search.setText(paragraph.getString("SEARCH"));
         this.btn_Purchase.setText(paragraph.getString("PURCHASE"));
         this.btn_Dispose.setText(paragraph.getString("DISPOSE"));
@@ -71,6 +75,7 @@ public class Frm_MidicineStockInfo extends javax.swing.JFrame implements cc.john
         btn_Purchase = new javax.swing.JButton();
         btn_Dispose = new javax.swing.JButton();
         btn_Close = new javax.swing.JButton();
+        btn_Print = new javax.swing.JButton();
         btn_History = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -142,6 +147,12 @@ public class Frm_MidicineStockInfo extends javax.swing.JFrame implements cc.john
                 btn_CloseActionPerformed(evt);
             }
         });
+        
+        btn_Print.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_PrintActionPerformed(evt);
+            }
+        });
 
         btn_History.setEnabled(false);
         btn_History.addActionListener(new java.awt.event.ActionListener() {
@@ -161,6 +172,7 @@ public class Frm_MidicineStockInfo extends javax.swing.JFrame implements cc.john
                     .addComponent(btn_Dispose, javax.swing.GroupLayout.DEFAULT_SIZE, 86, Short.MAX_VALUE)
                     .addComponent(btn_History, javax.swing.GroupLayout.DEFAULT_SIZE, 86, Short.MAX_VALUE)
                     .addComponent(btn_saveModification, javax.swing.GroupLayout.DEFAULT_SIZE, 86, Short.MAX_VALUE)
+                    .addComponent(btn_Print, javax.swing.GroupLayout.DEFAULT_SIZE, 86, Short.MAX_VALUE)
                     .addComponent(btn_Close, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 86, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -174,6 +186,8 @@ public class Frm_MidicineStockInfo extends javax.swing.JFrame implements cc.john
                 .addComponent(btn_History)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btn_saveModification)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btn_Print)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btn_Close)
                 .addContainerGap(396, Short.MAX_VALUE))
@@ -283,6 +297,14 @@ public class Frm_MidicineStockInfo extends javax.swing.JFrame implements cc.john
         this.dispose();
     }//GEN-LAST:event_btn_CloseActionPerformed
 
+    private void btn_PrintActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_CloseActionPerformed
+    	PrintPharmacyTable pt = null;
+        pt = new PrintPharmacyTable();
+        pt.DoPrint();
+    	//new main.Frm_Main().setVisible(true);
+        //this.dispose();
+    }
+    
     // 判斷進貨輸入的值是否為數字
     public boolean isNumber(String str) {
         Pattern pattern = Pattern.compile("[0-9,.]*");
@@ -400,6 +422,7 @@ public class Frm_MidicineStockInfo extends javax.swing.JFrame implements cc.john
     }//GEN-LAST:event_text_SearchKeyPressed
    
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btn_Print;
     private javax.swing.JButton btn_Close;
     private javax.swing.JButton btn_History;
     private javax.swing.JButton btn_Purchase;
