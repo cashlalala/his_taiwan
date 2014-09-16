@@ -40,11 +40,12 @@ public class PrintPharmacyTable {
 		//m_RegGuid = regGuid;
 		//m_CashierType = cashierType;
 		//m_Type = i;
-		// if (pj.printDialog()) {
-		try {
-			pj.print();
-		} catch (PrinterException e) {
-
+		if (pj.printDialog()) {
+			try {
+				pj.print();
+			} catch (PrinterException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -52,9 +53,9 @@ public class PrintPharmacyTable {
 
 		public int print(Graphics g, PageFormat pf, int pageIndex) {
 			try {
-				String sqlData = "";
+				//String sqlData = "";
 				int x = 0;
-				int y = 0; // 起始值
+				int y = 250; // 起始值
 				int index = 0;
 				int space = 0; // 間距
 				int rowNo = 0;
@@ -66,30 +67,32 @@ public class PrintPharmacyTable {
 				g2.setPaint(Color.black);
 				int i = 100;
 
-				
-					String sql = "SELECT * FROM medical_stock";
+					String sql = "SELECT B.code, B.ATC_code, B.item, A.current_amount FROM medical_stock A, medicines B where A.item_guid = B.code";
 
 					m_RsData = DBC.executeQuery(sql);
 					setLogoTitle(g2, "Pharmacy List");
 					x = 60;
-					y = setPatientInfoTitle(g2);
+					//y = setPatientInfoTitle(g2);
 					space = 50; // 間距
 					g2.setFont(new Font("Serif", Font.PLAIN, 32)); // 表頭
-					g2.drawString("Urgent", x - 45, y);
-					g2.drawString("Item", x + 70, y);
-					g2.drawString("Type", x + 1100, y);
+					//g2.drawString("Urgent", x - 45, y);
+					g2.drawString("code", x + 70, y);
+					g2.drawString("ATC code", x + 300, y);
+					g2.drawString("pharmacy ", x + 500, y);
+					g2.drawString("amount", x + 1100, y);
 					g2.setFont(new Font("Serif", Font.BOLD, 32)); // 資料
 					y += 40;
 					while (m_RsData.next()) {
-						g2.drawString(
-								++rowNo + ". " + m_RsData.getString("item_guid")
-										+ " " + m_RsData.getString("current_amount"),
-								x + 75, y);
-						g2.drawString(m_RsData.getString("minimal_amount"), x + 1105, y);
+						//if(rowNo % 34 == 0)
+						g2.drawString(++rowNo + ".", x + 10, y);
+						g2.drawString(m_RsData.getString("code"), x + 70, y);
+						if(m_RsData.getString("ATC_code") != null)
+							g2.drawString(m_RsData.getString("ATC_code"), x + 300, y);
+						g2.drawString(m_RsData.getString("item"), x + 500, y);
+						g2.drawString(m_RsData.getString("current_amount"), x + 1100, y);
 						y += space;
 					}
 
-					
 				return PAGE_EXISTS;
 			} catch (SQLException ex) {
 				Logger.getLogger(PrintTools.class.getName()).log(Level.SEVERE,
@@ -104,60 +107,6 @@ public class PrintPharmacyTable {
 			// }
 
 			return 0;
-		}
-
-		private int setPatientInfoTitle(Graphics2D g2, int sety, String sys,
-				String pno, String name, String no, String date, String cashier) {
-			int x = 130;
-			int y = 180; // 起始值
-			int space = 60;// 間距
-
-			if (sety != -1) {
-				y = sety;
-			}
-
-			g2.setFont(new Font("Serif", Font.PLAIN, 36));
-
-			g2.drawString("System:", x, y += space);
-
-			g2.drawString("Patient No.:", x, y += space);
-			g2.drawString("Name:", x, y += space);
-
-			x = 820;
-			y = 180;
-			if (sety != -1) {
-				y = sety;
-			}
-			g2.drawString("No.:", x, y += space);
-			g2.drawString("Date:", x, y += space);
-
-			g2.drawString("Cashier:", x, y += space);
-
-			g2.setFont(new Font("Serif", Font.BOLD, 32));
-
-			x = 320;
-			y = 180;
-			if (sety != -1) {
-				y = sety;
-			}
-			g2.drawString(sys, x, y += space);// system
-			g2.drawString(pno, x - 15, y += space);// pa_no
-			g2.drawString(name, x - 55, y += space);// 塞Name
-
-			x = 960;
-			y = 180;
-			if (sety != -1) {
-				y = sety;
-			}
-			g2.drawString(no, x - 40, y += space);// NO
-			g2.drawString(date, x - 35, y += space);// 繳費時間
-			g2.drawString(cashier, x - 15, y += space);// 收費人員
-
-			g2.drawString(
-					"========================================"
-							+ "==============================================================",
-					0, y += space);
-			return (y + space);
 		}
 
 		private int setPatientInfoTitle(Graphics2D g2) {
