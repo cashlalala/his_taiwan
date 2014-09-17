@@ -38,13 +38,14 @@ import admission.SysName2Visible;
 import casemgmt.Frm_Case;
 import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
+import diagnosis.DiagnosisInterface;
 import diagnosis.Frm_DiagnosisDiagnostic;
 import diagnosis.Frm_DiagnosisInfo;
 import diagnosis.Frm_DiagnosisPrintChooser;
 import errormessage.StoredErrorMessage;
 
 public class Frm_WorkList extends javax.swing.JFrame implements
-		InpatientInterface {
+		InpatientInterface, DiagnosisInterface {
 
 	/**
 	 * 
@@ -76,7 +77,7 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 		// ----------------------------------
 		initWorkList();
 		initLanguage();
-		if (m_SysName.equals("dia")) {
+		if (m_SysName.equals("dia") || m_SysName.equals("inp")) {
 			btn_Diagnostic.setVisible(true);
 		}
 		if (tab_WorkList.getRowCount() != 0) {
@@ -219,8 +220,9 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 							.toString().equals("*")) {
 				getFirst = true;
 			}
-			new Frm_DiagnosisInfo(m_Pno, m_RegGuid, getSelectRow, finishState,
-					getFirst).setVisible(true);
+			this.dummy = "dia_hist";
+			new Frm_DiagnosisInfo(null, m_Pno, m_RegGuid, getSelectRow,
+					finishState, getFirst).setVisible(true);
 		} else if (m_SysName.equals("lab")) {
 			m_Pno = (String) this.tab_WorkList.getValueAt(
 					tab_WorkList.getSelectedRow(), 5);
@@ -242,11 +244,15 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 			}
 
 		} else if (m_SysName.equals("inp")) {
+			this.dummy = "inp_hist";
 			String pname = (String) tab_WorkList.getValueAt(
 					tab_WorkList.getSelectedRow(), 3);
+			m_RegGuid = (String) tab_WorkList.getValueAt(
+					tab_WorkList.getSelectedRow(), 13);
 			m_Pno = (String) tab_WorkList.getValueAt(
 					tab_WorkList.getSelectedRow(), 0);
-			new Frm_InpatientHistory(this, m_Pno, pname).setVisible(true);
+			new Frm_DiagnosisInfo(this, m_Pno, m_RegGuid, getSelectRow, true,
+					false).setVisible(true);
 		}
 		this.dispose();
 	}
@@ -693,30 +699,41 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 		initDataBindings();
 	}// </editor-fold>//GEN-END:initComponents
 
+	private String dummy = "";
+
 	private void onDiagnosticClicked(java.awt.event.ActionEvent evt) {
-		m_Pno = (String) tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(),
-				4);
+		if (m_SysName.equals("dia")) {
+			dummy = "dia_hist";
 
-		m_RegGuid = (String) tab_WorkList.getValueAt(
-				tab_WorkList.getSelectedRow(), 11);
+			m_Pno = (String) tab_WorkList.getValueAt(
+					tab_WorkList.getSelectedRow(), 4);
 
-		boolean finishState = false;
-		if (tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 2) != null
-				&& tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 2)
-						.toString().equals("F")) {
-			finishState = true;
+			m_RegGuid = (String) tab_WorkList.getValueAt(
+					tab_WorkList.getSelectedRow(), 11);
+
+			boolean finishState = false;
+			if (tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 2) != null
+					&& tab_WorkList
+							.getValueAt(tab_WorkList.getSelectedRow(), 2)
+							.toString().equals("F")) {
+				finishState = true;
+			}
+
+			int getSelectRow = tab_WorkList.getSelectedRow();
+
+			Frm_DiagnosisDiagnostic frm_DiagnosisDiagnostic = new Frm_DiagnosisDiagnostic(
+					this, m_Pno, (String) tab_WorkList.getValueAt(
+							tab_WorkList.getSelectedRow(), 1), m_RegGuid);
+			frm_DiagnosisDiagnostic.setEntry("clinic_worklist_hist");
+			frm_DiagnosisDiagnostic.setVisible(true);
+		} else {
+			dummy = "inp_hist";
+			String pname = (String) tab_WorkList.getValueAt(
+					tab_WorkList.getSelectedRow(), 3);
+			m_Pno = (String) tab_WorkList.getValueAt(
+					tab_WorkList.getSelectedRow(), 0);
+			new Frm_InpatientHistory(this, m_Pno, pname).setVisible(true);
 		}
-
-		int getSelectRow = tab_WorkList.getSelectedRow();
-
-		Frm_DiagnosisDiagnostic frm_DiagnosisDiagnostic = new Frm_DiagnosisDiagnostic(
-				new Frm_DiagnosisInfo(m_Pno, m_RegGuid, getSelectRow,
-						finishState, false), m_Pno,
-				(String) tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(),
-						1));
-		frm_DiagnosisDiagnostic.setIsFromDiagInfo(false);
-		frm_DiagnosisDiagnostic.setVisible(true);
-
 		m_RefrashWorkList.stopRunning();
 		m_RefrashWorkList.interrupt(); // 終止重複讀取掛號表單
 		m_Clock.interrupt();
@@ -951,12 +968,15 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 
 	@Override
 	public void reSetEnable() {
-		new Frm_WorkList(0, "inp").setVisible(true);
+		new Frm_WorkList(0, m_SysName).setVisible(true);
 	}
 
 	@Override
 	public void getAllergy() {
-		// TODO Auto-generated method stub
+	}
 
+	@Override
+	public String from() {
+		return this.getClass().getName() + dummy;
 	}
 }
