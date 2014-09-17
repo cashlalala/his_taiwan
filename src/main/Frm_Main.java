@@ -60,6 +60,7 @@ public class Frm_Main extends javax.swing.JFrame {
 		this.setLocationRelativeTo(this);
 
 		btn_MedicineStock.setVisible(true);
+		btn_MaterialStock.setVisible(true);
 		btn_BedManagement.setVisible(true);
 		btn_DepartmentManagement.setVisible(true);
 		btn_PositionManagement.setVisible(true);
@@ -126,6 +127,7 @@ public class Frm_Main extends javax.swing.JFrame {
 
 		this.btn_Inpatient.setText("InPatient");
 		this.btn_MedicineStock.setText(paragraph.getString("PHARMACYSTOCK"));
+		this.btn_MaterialStock.setText(paragraph.getString("MATERIALSTOCK"));
 		this.btn_BedManagement.setText(paragraph.getString("BEDMANAGEMENT"));
 		this.btn_Pharmacy.setText(paragraph.getString("PHARMACY"));
 		this.btn_PositionManagement.setText(paragraph
@@ -184,6 +186,7 @@ public class Frm_Main extends javax.swing.JFrame {
 				.getSelectPow("Position Management"));
 		btn_Pharmacy.setEnabled(UserInfo.getSelectPow("Pharmacy"));
 		btn_MedicineStock.setEnabled(UserInfo.getSelectPow("Medicine Stock"));
+		btn_MaterialStock.setEnabled(UserInfo.getSelectPow("Material Stock"));
 		btn_Premission.setEnabled(UserInfo.getSelectPow("Permission"));
 		btn_Laboratory.setEnabled(UserInfo.getSelectPow("Laboratory"));
 		btn_Radiology.setEnabled(UserInfo.getSelectPow("Radiology"));
@@ -192,7 +195,6 @@ public class Frm_Main extends javax.swing.JFrame {
 		btn_Sms.setEnabled(UserInfo.getSelectPow("Mobile Health"));
 		btn_Case.setEnabled(UserInfo.getSelectPow("Case Management"));
 		btn_Cashier.setEnabled(UserInfo.getSelectPow("Cashier"));
-		//btn_MedicineStock.setEnabled(UserInfo.getSelectPow("Stock"));
 		btn_BedManagement.setEnabled(UserInfo.getSelectPow("Bed Management"));
 		btn_Inpatient.setEnabled(UserInfo.getSelectPow("InPatient"));
 		
@@ -235,6 +237,7 @@ public class Frm_Main extends javax.swing.JFrame {
 		btn_PositionManagement = new javax.swing.JButton();
 		btn_DepartmentManagement = new javax.swing.JButton();
 		btn_MedicineStock = new javax.swing.JButton();
+		btn_MaterialStock = new javax.swing.JButton();
 		btn_BedManagement = new javax.swing.JButton();
 		btn_Inpatient = new javax.swing.JButton();
 		pan_Case = new javax.swing.JPanel();
@@ -610,7 +613,7 @@ public class Frm_Main extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(pan_StockManagementLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(btn_MedicineStock, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
-                        //.addComponent(btn_System, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
+                        .addComponent(btn_MaterialStock, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
                         //.addComponent(btn_Statistic, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                         )
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -620,8 +623,8 @@ public class Frm_Main extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pan_StockManagementLayout.createSequentialGroup()
             	.addContainerGap()
                 .addComponent(btn_MedicineStock, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                //.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                //.addComponent(btn_System, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btn_MaterialStock, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                 //.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 //.addComponent(btn_Statistic, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -838,6 +841,11 @@ public class Frm_Main extends javax.swing.JFrame {
 						btn_MedicineStockActionPerformed(evt);
 					}
 				});
+		btn_MaterialStock.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				btn_MaterialStockActionPerformed(evt);
+			}
+		});
 		
 		btn_BedManagement
 				.addActionListener(new java.awt.event.ActionListener() {
@@ -1263,6 +1271,11 @@ public class Frm_Main extends javax.swing.JFrame {
 		this.dispose();
 	}// GEN-LAST:event_btn_PositionManagementActionPerformed
 
+	private void btn_MaterialStockActionPerformed(java.awt.event.ActionEvent evt) {
+		new medicinestock.Frm_MaterialStockInfo().setVisible(true);
+		this.dispose();
+	}
+	
 	private void btn_MedicineStockActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_MedicineStockActionPerformed
 		new medicinestock.Frm_MidicineStockInfo().setVisible(true);
 		this.dispose();
@@ -1358,6 +1371,7 @@ public class Frm_Main extends javax.swing.JFrame {
 	private javax.swing.JButton btn_Diagnosis;
 	private javax.swing.JButton btn_Laboratory;
 	private javax.swing.JButton btn_MedicineStock;
+	private javax.swing.JButton btn_MaterialStock;
 	private javax.swing.JButton btn_BedManagement;
 	private javax.swing.JButton btn_Inpatient;
 	private javax.swing.JButton btn_Patients;
