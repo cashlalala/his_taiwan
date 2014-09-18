@@ -1,4 +1,4 @@
-package medicinestock;
+package materialstock;
 
 import autocomplete.CompleterComboBox;
 import cc.johnwu.login.UserInfo;
@@ -16,10 +16,25 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
+import common.TabTools;
+
 import errormessage.StoredErrorMessage;
 import multilingual.Language;
 
 public class Frm_MaterialStockPurchase extends javax.swing.JFrame implements cc.johnwu.date.DateInterface {
+	private class MaterialClass {
+		public String guid;
+		public String name;
+		public MaterialClass(String _guid, String _name) {
+			guid = _guid;
+			name = _name;
+		}
+		public String toString()  
+        {  
+            return name;  
+        } 
+	}
+	
     private CompleterComboBox m_Cobww;
     private Frm_MaterialStockInfo m_MaterialStockInfo;
     /*多國語言變數*/
@@ -50,7 +65,7 @@ public class Frm_MaterialStockPurchase extends javax.swing.JFrame implements cc.
     }
 
     private void initLanguage() {
-    	this.lab_MedicineCode.setText(paragraph.getString("CODE"));
+    	this.lab_MedicineCode.setText(paragraph.getString("NAME"));
         this.lab_Date.setText(paragraph.getString("PURCHASEDATE"));
         this.lab_Company.setText(paragraph.getString("VENDOR"));
         this.lab_Quantity.setText(paragraph.getString("QUANTITY"));
@@ -59,27 +74,30 @@ public class Frm_MaterialStockPurchase extends javax.swing.JFrame implements cc.
         this.btn_Add.setText(paragraph.getString("ADD"));
         this.btn_Send.setText(paragraph.getString("SEND"));
         this.btn_Close.setText(paragraph.getString("CLOSE"));
-        this.setTitle(paragraph.getString("TITLEMEDICINEPURCHASE"));
+        this.setTitle(paragraph.getString("MATERIALPURCHASE"));
     }
     /**目前庫存頁  藥品的combo選單*/
     private void showCombo(){//
         ResultSet rsArray= null;
    
         try{
-            String ArraySql="SELECT medicines.code AS name FROM medicines WHERE effective = 1";
+            String ArraySql="SELECT material_code.guid AS guid, material_code.name AS name FROM material_code WHERE effective = 1";
             rsArray= DBC.executeQuery(ArraySql);
             rsArray.last();
-            String[] medicineArray = new String[(rsArray.getRow()+1)];
+            MaterialClass[] materialArray = new MaterialClass[(rsArray.getRow()+1)];
+            //String[] medicineArray = new String[(rsArray.getRow()+1)];
             rsArray.beforeFirst();
-            medicineArray[0]="";
+            //medicineArray[0]="";
+            materialArray[0] = new MaterialClass("", "");
             int pathArray=1;
             while(rsArray.next()){
-                medicineArray[pathArray]=rsArray.getString("name");
+                //medicineArray[pathArray]=rsArray.getString("name");
+            	materialArray[pathArray] = new MaterialClass(rsArray.getString("guid"), rsArray.getString("name")); 
                 pathArray++;
             }
-            new CompleterComboBox(medicineArray);
-            m_Cobww = new CompleterComboBox(medicineArray);
-            m_Cobww.setBounds(85, 10, 170, 25);
+            new CompleterComboBox(materialArray);
+            m_Cobww = new CompleterComboBox(materialArray);
+            m_Cobww.setBounds(85, 10, 200, 25);
             m_Cobww.addItemListener(new java.awt.event.ItemListener() {
                 public void itemStateChanged(java.awt.event.ItemEvent evt) {
                            setAddEnable();
@@ -89,12 +107,12 @@ public class Frm_MaterialStockPurchase extends javax.swing.JFrame implements cc.
             m_Cobww.setSelectedIndex(0);
        
         }catch(SQLException e) {
-            ErrorMessage.setData("MedicineStock", "Frm_MedicineStockPurchase" ,"showCombo()",
+            ErrorMessage.setData("MaterialStockPurchase", "Frm_MaterialStockPurchase" ,"showCombo()",
                 e.toString().substring(e.toString().lastIndexOf(".")+1, e.toString().length()));
         } finally {
             try {DBC.closeConnection(rsArray);}
             catch (SQLException e){
-                ErrorMessage.setData("MedicineStock", "Frm_MedicineStockPurchase" ,"showCombo() - DBC.closeConnection",
+                ErrorMessage.setData("MaterialStockPurchase", "Frm_MaterialStockPurchase" ,"showCombo() - DBC.closeConnection",
                 e.toString().substring(e.toString().lastIndexOf(".")+1, e.toString().length()));
             }
         }
@@ -179,7 +197,8 @@ public class Frm_MaterialStockPurchase extends javax.swing.JFrame implements cc.
 
                 },
                 new String [] {
-                    paragraph.getString("PHARMACY"), 
+        			"guid",
+                    paragraph.getString("MATERIAL"), 
                     paragraph.getString("VENDOR"), 
                     paragraph.getString("QUANTITY"), 
                     paragraph.getString("DATE"), 
@@ -206,6 +225,8 @@ public class Frm_MaterialStockPurchase extends javax.swing.JFrame implements cc.
         tab_Purchase.getColumnModel().getColumn(2).setResizable(false);
         tab_Purchase.getColumnModel().getColumn(3).setResizable(false);
         tab_Purchase.getColumnModel().getColumn(4).setResizable(false);
+        tab_Purchase.getColumnModel().getColumn(5).setResizable(false);
+        TabTools.setHideColumn(tab_Purchase, 0);
 
         txt_Quantity.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
@@ -363,9 +384,14 @@ public class Frm_MaterialStockPurchase extends javax.swing.JFrame implements cc.
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_AddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_AddActionPerformed
-
+    	MaterialClass material = (MaterialClass) m_Cobww.getSelectedItem();
     	 ((DefaultTableModel)this.tab_Purchase.getModel()).addRow(new Object[] {
-            m_Cobww.getSelectedItem(),txt_Company.getText(),txt_Quantity.getText(),date_Choose.getValue(),txt_Price.getText()}) ;
+    		material.guid,
+    		material.name,
+            txt_Company.getText(),
+            txt_Quantity.getText(),
+            date_Choose.getValue(),
+            txt_Price.getText()}) ;
         tab_Purchase.setRowSelectionInterval(tab_Purchase.getRowCount()-1, tab_Purchase.getRowCount()-1);
         tab_Purchase.changeSelection(tab_Purchase.getSelectedRow(), 0, false, false);
         m_Cobww.setSelectedIndex(0);
@@ -389,71 +415,46 @@ public class Frm_MaterialStockPurchase extends javax.swing.JFrame implements cc.
         if(this.tab_Purchase.getRowCount() != 0){
            try {
                 for(int i = 0; i < tab_Purchase.getRowCount(); i++){
-                	
-                	String code = tab_Purchase.getValueAt(i, 0).toString();
-                	float purchasedAmount = Float.parseFloat(tab_Purchase.getValueAt(i, 2).toString());
-                	String vendor = tab_Purchase.getValueAt(i, 1).toString();
-                	String date = tab_Purchase.getValueAt(i, 3).toString();
-                	float cost = Float.parseFloat(tab_Purchase.getValueAt(i, 4).toString()) / purchasedAmount; 
+                	String guid = tab_Purchase.getValueAt(i, 0).toString();
+                	String name = tab_Purchase.getValueAt(i, 1).toString();
+                	float purchasedAmount = Float.parseFloat(tab_Purchase.getValueAt(i, 3).toString());
+                	String vendor = tab_Purchase.getValueAt(i, 2).toString();
+                	String date = tab_Purchase.getValueAt(i, 4).toString();
+                	float cost = Float.parseFloat(tab_Purchase.getValueAt(i, 5).toString()) / purchasedAmount; 
                 	
                 	String sql;
                 	String sqlChangeRecord;
                 	
                 	ResultSet rsStockSQL= null;
                     //try{
-                	String stockSQL = "SELECT * FROM medical_stock where type = 'P' AND item_guid = '" + code + "'";
+                	String stockSQL = "SELECT * FROM medical_stock where type = 'M' AND item_guid = '" + guid + "'";
                 	rsStockSQL= DBC.executeQuery(stockSQL);
                     if(rsStockSQL.next()) {
-                    	String guid = rsStockSQL.getString("guid");
+                    	String stock_guid = rsStockSQL.getString("guid");
                     	float currentAmount = rsStockSQL.getFloat("current_amount");
 	                    float newCurrentAmount = currentAmount + purchasedAmount;
-	                    sql = "UPDATE medical_stock SET `current_amount`='" + newCurrentAmount + "' WHERE guid = '" + guid + "'";
+	                    sql = "UPDATE medical_stock SET `current_amount`='" + newCurrentAmount + "' WHERE guid = '" + stock_guid + "'";
                     } else {
-                    	sql = "INSERT INTO medical_stock (`guid`, `type`, `item_guid`, `current_amount`) VALUES (uuid(), 'P', '" + code + "', '" + purchasedAmount + "');";
+                    	sql = "INSERT INTO medical_stock (`guid`, `type`, `item_guid`, `current_amount`) VALUES (uuid(), 'M', '" + guid + "', '" + purchasedAmount + "');";
                     }
                     
                     sqlChangeRecord = "INSERT INTO medical_stock_change_record (`guid`, `action`, `item_guid`, `type`, "
                     		+ "`diff_amount`, `s_no`, `purchase_date`, `unit_cost`, `vendor`) "
-                    		+ " VALUES (uuid(), 'P', '" + code + "', 'P', '" + purchasedAmount + "', '" + UserInfo.getUserNO() + "', '" + date + "', '" + cost + "', '" + vendor + "');";
+                    		+ " VALUES (uuid(), 'P', '" + guid + "', 'M', '" + purchasedAmount + "', '" + UserInfo.getUserNO() + "', '" + date + "', '" + cost + "', '" + vendor + "');";
                     try {DBC.closeConnection(rsStockSQL);}
                     catch (SQLException e){
-                        ErrorMessage.setData("MedicineStock", "Frm_MedicineStockPurchase" ,"btn_SendActionPerformed() - DBC.closeConnection",
+                        ErrorMessage.setData("MaterialStockPurchase", "Frm_MaterialStockPurchase" ,"btn_SendActionPerformed() - DBC.closeConnection",
                         		e.toString().substring(e.toString().lastIndexOf(".")+1, e.toString().length()));
                     }
                     
                     DBC.executeUpdate(sql);
                     DBC.executeUpdate(sqlChangeRecord);
-                    
-                	/*
-                    if (txt_Price.isVisible()) {
-                        sql = "INSERT INTO medicine_stock VALUES " +
-                            "(uuid(), null,'" +
-                            tab_Purchase.getValueAt(i, 0) +"' ,'" +
-                            tab_Purchase.getValueAt(i, 3)+"', '" +
-                            tab_Purchase.getValueAt(i, 1)+"', " +
-                            tab_Purchase.getValueAt(i, 4)+ 
-                            " , null, null, null, null,'" +
-                            tab_Purchase.getValueAt(i, 2) +
-                            "',null,null,null,1)";
-                    } else {
-                        sql = "INSERT INTO medicine_stock VALUES " +
-                            "(uuid(), null,'" +
-                            tab_Purchase.getValueAt(i, 0) +"' ,'" +
-                            tab_Purchase.getValueAt(i, 3)+"', '" +
-                            tab_Purchase.getValueAt(i, 1)+"', " +
-                            "1 "+
-                            " , null, null, null, null,'" +
-                            tab_Purchase.getValueAt(i, 2) +
-                            "',null,null,null,1)";
-                    }
-                    DBC.executeUpdate(sql);
-                    */
                 }
                
                 JOptionPane.showMessageDialog(null, paragraph.getString("SAVECOMPLETE"));
                 btn_CloseActionPerformed(null);
             } catch (SQLException e) {
-                ErrorMessage.setData("MedicineStock", "Frm_MedicineStockPurchase" ,"btn_SendActionPerformed()",
+                ErrorMessage.setData("MaterialStockPurchase", "Frm_MaterialStockPurchase" ,"btn_SendActionPerformed()",
                 e.toString().substring(e.toString().lastIndexOf(".")+1, e.toString().length()));
                 e.printStackTrace();
             }

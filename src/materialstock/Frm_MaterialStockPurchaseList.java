@@ -1,4 +1,4 @@
-package medicinestock;
+package materialstock;
 
 import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
@@ -20,8 +20,8 @@ public class Frm_MaterialStockPurchaseList extends javax.swing.JFrame {
     private Frm_MaterialStockInfo m_MaterialStockInfo;
     /*多國語言變數*/
     private Language paragraph = Language.getInstance();
-    private String[] line = new String(paragraph.setlanguage("MEDICINESTOCKPURCHASELIST")).split("\n") ;
-    private String[] message = new String(paragraph.setlanguage("MESSAGE")).split("\n") ;
+    //private String[] line = new String(paragraph.setlanguage("MEDICINESTOCKPURCHASELIST")).split("\n") ;
+    //private String[] message = new String(paragraph.setlanguage("MESSAGE")).split("\n") ;
     /*輸出錯誤資訊變數*/
     StoredErrorMessage ErrorMessage = new StoredErrorMessage() ;
 

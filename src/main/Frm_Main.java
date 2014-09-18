@@ -1272,7 +1272,7 @@ public class Frm_Main extends javax.swing.JFrame {
 	}// GEN-LAST:event_btn_PositionManagementActionPerformed
 
 	private void btn_MaterialStockActionPerformed(java.awt.event.ActionEvent evt) {
-		new medicinestock.Frm_MaterialStockInfo().setVisible(true);
+		new materialstock.Frm_MaterialStockInfo().setVisible(true);
 		this.dispose();
 	}
 	
