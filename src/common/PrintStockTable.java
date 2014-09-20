@@ -28,7 +28,10 @@ public class PrintStockTable {
 	//private ResultSet m_Rs; // 基本資料
 	//private ResultSet m_RsData; // 迴圈列印資料
 	private int print_mode;
+	//private int nextPageStartItem;
+	private Vector<Integer> pageStartItem;
 	private Vector<String[]> m_printData;
+	private int lastPageIndex;
 
 	//private String m_RegGuid; // 迴圈列印資料
 	//private String m_CashierType; // 收據類別
@@ -78,6 +81,10 @@ private void prepareMaterialData() {
 		Paper paper = new Paper();
 		pf.setPaper(paper);
 		pj.setPrintable(new MyPrintable(), pf);
+		pageStartItem = new Vector<Integer>();
+		
+		pageStartItem.add(0, 0);
+		lastPageIndex = 0;
 		switch(print_mode) {
 			case 1:
 				preparePharmacyData();
@@ -107,8 +114,19 @@ private void prepareMaterialData() {
 			int x = 0;
 			int y = 220; // 起始值
 			int space = 50; // 間距
-			int itemPerPage = 32;
-			int start = pageIndex * itemPerPage;
+			int linePerPage = 32;
+			//int itemPerPage = 32;
+			//int start = pageIndex * itemPerPage;
+			//int currentPageStartItem = nextPageStartItem;
+			int retLineNum = 0;
+			//int maxLineNum = 0;
+			int usedLineNum = 0;
+			int totalUsedLineNum = 0;
+			int i;
+			boolean itemPrinted = false;
+
+			if(pageStartItem.size() <= pageIndex + 1) 
+				pageStartItem.add(pageIndex + 1, 0);
 
 			//System.out.println("pageIndex = " + pageIndex + ", start = " + start);
 			
@@ -130,16 +148,38 @@ private void prepareMaterialData() {
 					g2.drawString("amount", x + 1150, y);
 					g2.setFont(new Font("Serif", Font.BOLD, 32)); // 資料
 					y += 80;
-					for(int i = start; i < start + itemPerPage; i++) {
-						if (i >= m_printData.size()) break;
+					i = pageStartItem.get(pageIndex);
+					while (totalUsedLineNum < linePerPage && i < m_printData.size()) {
+						usedLineNum = 0;
+						itemPrinted = true;
 						g2.drawString((i + 1) + ".", x, y);
-						if(m_printData.get(i)[0] != null) g2.drawString(m_printData.get(i)[0], x + 80, y);
-						if(m_printData.get(i)[1] != null) g2.drawString(m_printData.get(i)[1], x + 300, y);
-						if(m_printData.get(i)[2] != null) g2.drawString(m_printData.get(i)[2], x + 500, y);
-						if(m_printData.get(i)[3] != null) g2.drawString(m_printData.get(i)[3], x + 1150, y);
-						y += space;
+						if(m_printData.get(i)[0] != null) {
+							retLineNum = drawStringWithWidth(g2, m_printData.get(i)[0], x + 80, y, 12, space); //g2.drawString(m_printData.get(i)[0], x + 100, y);
+							//System.out.println(retLineNum);
+							if(usedLineNum < retLineNum) usedLineNum = retLineNum;
+						}
+						if(m_printData.get(i)[1] != null) {
+							retLineNum = drawStringWithWidth(g2, m_printData.get(i)[1], x + 300, y, 10, space); //g2.drawString(m_printData.get(i)[1], x + 500, y);
+							//System.out.println(retLineNum);
+							if(usedLineNum < retLineNum) usedLineNum = retLineNum;
+						}
+						if(m_printData.get(i)[2] != null) {
+							retLineNum = drawStringWithWidth(g2, m_printData.get(i)[2], x + 500, y, 30, space); //g2.drawString(m_printData.get(i)[1], x + 500, y);
+							//System.out.println(retLineNum);
+							if(usedLineNum < retLineNum) usedLineNum = retLineNum;
+						}
+						if(m_printData.get(i)[3] != null) {
+							g2.drawString(m_printData.get(i)[3], x + 1150, y);
+						}
+						y += usedLineNum * space;
+						i++;
+						totalUsedLineNum += usedLineNum;
+						pageStartItem.set(pageIndex + 1, i);
 					}
-					if(start < m_printData.size())
+					//System.out.println("pageIndex = " + pageIndex + ", lastPageIndex = " + lastPageIndex + ", i = " + i);
+					if(itemPrinted) lastPageIndex = pageIndex;
+					
+					if(pageIndex <= lastPageIndex)
 						return PAGE_EXISTS;
 					else
 						return NO_SUCH_PAGE;
@@ -155,21 +195,53 @@ private void prepareMaterialData() {
 					g2.drawString("amount", x + 1150, y);
 					g2.setFont(new Font("Serif", Font.BOLD, 32)); // 資料
 					y += 80;
-					for(int i = start; i < start + itemPerPage; i++) {
-						if (i >= m_printData.size()) break;
+					i = pageStartItem.get(pageIndex);
+					while (totalUsedLineNum < linePerPage && i < m_printData.size()) {
+						usedLineNum = 0;
+						itemPrinted = true;
 						g2.drawString((i + 1) + ".", x, y);
-						if(m_printData.get(i)[0] != null) g2.drawString(m_printData.get(i)[0], x + 100, y);
-						if(m_printData.get(i)[1] != null) g2.drawString(m_printData.get(i)[1], x + 500, y);
-						if(m_printData.get(i)[2] != null) g2.drawString(m_printData.get(i)[2], x + 1150, y);
-						y += space;
+						if(m_printData.get(i)[0] != null) {
+							retLineNum = drawStringWithWidth(g2, m_printData.get(i)[0], x + 100, y, 16, space); //g2.drawString(m_printData.get(i)[0], x + 100, y);
+							//System.out.println(retLineNum);
+							if(usedLineNum < retLineNum) usedLineNum = retLineNum;
+						}
+						if(m_printData.get(i)[1] != null) {
+							retLineNum = drawStringWithWidth(g2, m_printData.get(i)[1], x + 500, y, 25, space); //g2.drawString(m_printData.get(i)[1], x + 500, y);
+							//System.out.println(retLineNum);
+							if(usedLineNum < retLineNum) usedLineNum = retLineNum;
+						}
+						if(m_printData.get(i)[2] != null) {
+							g2.drawString(m_printData.get(i)[2], x + 1150, y);
+						}
+						y += usedLineNum * space;
+						i++;
+						totalUsedLineNum += usedLineNum;
+						pageStartItem.set(pageIndex + 1, i);
 					}
-					if(start < m_printData.size())
+					
+					if(itemPrinted) lastPageIndex = pageIndex;
+					
+					if(pageIndex <= lastPageIndex)
 						return PAGE_EXISTS;
 					else
 						return NO_SUCH_PAGE;
 				default:
 					return NO_SUCH_PAGE;
 			}
+		}
+		
+		private int drawStringWithWidth(Graphics2D g2, String str, int x, int y, int charPerLine, int lineHeight) {
+			int endCharPrint = 0;
+			int usedLine = (int) Math.ceil(((double)str.length()) / charPerLine);
+			//System.out.println(str);
+			//System.out.println("str.length() = " + str.length() + ", charPerLine = " + charPerLine + ", usedLine = " + usedLine);
+			for (int i = 0; i < usedLine; i++) {
+				if((i+1)*charPerLine > str.length()) endCharPrint = str.length();
+				else endCharPrint = (i+1)*charPerLine;
+				g2.drawString(str.substring(i * charPerLine, endCharPrint), x, y + i*lineHeight);
+				//System.out.println(str.substring(i * charPerLine, endCharPrint));
+			}
+			return usedLine;
 		}
 
 		private int setPatientInfoTitle(Graphics2D g2) {
