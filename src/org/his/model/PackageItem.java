@@ -10,11 +10,11 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="package_item")
+@NamedQuery(name="PackageItem.findAll", query="SELECT p FROM PackageItem p")
 public class PackageItem implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String id;
 
 	private int days;

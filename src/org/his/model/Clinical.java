@@ -10,11 +10,11 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="clinical")
+@NamedQuery(name="Clinical.findAll", query="SELECT c FROM Clinical c")
 public class Clinical implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private int no;
 
 	//bi-directional many-to-one association to Policlinic

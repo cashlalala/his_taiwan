@@ -12,6 +12,7 @@ import java.util.List;
  */
 @Entity
 @Table(name="registration_info")
+@NamedQuery(name="RegistrationInfo.findAll", query="SELECT r FROM RegistrationInfo r")
 public class RegistrationInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
 

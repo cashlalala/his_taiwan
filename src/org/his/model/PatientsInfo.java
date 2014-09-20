@@ -143,9 +143,9 @@ public class PatientsInfo implements Serializable {
 	@OneToMany(mappedBy = "patientsInfo",fetch = FetchType.LAZY)
 	private List<Allergy> allergies;
 
-	// bi-directional many-to-one association to Anamnesi
-	@OneToMany(mappedBy = "patientsInfo",fetch = FetchType.LAZY)
-	private List<Anamnesi> anamnesis;
+	//bi-directional one-to-one association to Anamnesi
+	@OneToOne(mappedBy="patientsInfo",fetch = FetchType.LAZY)
+	private Anamnesi anamnesi;
 
 	// bi-directional many-to-one association to BedRecord
 	@OneToMany(mappedBy = "patientsInfo",fetch = FetchType.LAZY)
@@ -557,26 +557,12 @@ public class PatientsInfo implements Serializable {
 		return allergy;
 	}
 
-	public List<Anamnesi> getAnamnesis() {
-		return this.anamnesis;
+	public Anamnesi getAnamnesi() {
+		return this.anamnesi;
 	}
 
-	public void setAnamnesis(List<Anamnesi> anamnesis) {
-		this.anamnesis = anamnesis;
-	}
-
-	public Anamnesi addAnamnesi(Anamnesi anamnesi) {
-		getAnamnesis().add(anamnesi);
-		anamnesi.setPatientsInfo(this);
-
-		return anamnesi;
-	}
-
-	public Anamnesi removeAnamnesi(Anamnesi anamnesi) {
-		getAnamnesis().remove(anamnesi);
-		anamnesi.setPatientsInfo(null);
-
-		return anamnesi;
+	public void setAnamnesi(Anamnesi anamnesi) {
+		this.anamnesi = anamnesi;
 	}
 
 	public List<BedRecord> getBedRecords() {

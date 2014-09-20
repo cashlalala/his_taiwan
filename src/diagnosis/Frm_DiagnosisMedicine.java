@@ -1,6 +1,7 @@
 package diagnosis;
 
 import autocomplete.CompleterComboBox;
+import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.*;
 
 import java.awt.event.ItemEvent;
@@ -40,8 +41,8 @@ public class Frm_DiagnosisMedicine extends javax.swing.JFrame {
 	private String[] message = paragraph.setlanguage("MESSAGE").split("\n");
 	/* 輸出錯誤資訊變數 */
 	StoredErrorMessage ErrorMessage = new StoredErrorMessage();
-	
-	private final static String DELIMITER = Character.toString((char)1); 
+
+	private final static String DELIMITER = Character.toString((char) 1);
 
 	public Frm_DiagnosisMedicine(Frm_DiagnosisAllergy diagnosisAllergy,
 			String Allergy) {
@@ -83,9 +84,14 @@ public class Frm_DiagnosisMedicine extends javax.swing.JFrame {
 		String[] medicineCob = null;
 		ResultSet rs = null;
 		try {
-			String sql = "SELECT code, item, injection, unit_dosage, unit "
-					+ "FROM medicines ORDER BY sort";
-			rs = DBC.localExecuteQuery(sql);
+			String sql = String
+					.format("SELECT code,item,injection,unit_dosage,unit,sort, "
+							+ "case when (select count(1) from medicine_favorite where s_no = %s and medicine_favorite.m_code = medicines.code) = 0 "
+							+ "then 0 "
+							+ "else (select usedTime from medicine_favorite where s_no = %s and medicine_favorite.m_code = medicines.code) end as freq "
+							+ "FROM medicines WHERE code in (select b.item_guid from medical_stock b) ORDER BY freq desc, sort",
+							UserInfo.getUserNO(), UserInfo.getUserNO());
+			rs = DBC.executeQuery(sql);
 			rs.last();
 			medicineCob = new String[rs.getRow() + 1];
 			rs.beforeFirst();
@@ -158,8 +164,14 @@ public class Frm_DiagnosisMedicine extends javax.swing.JFrame {
 		try {
 			Object[] title = { "", "Medicine Code", "Item", "Information",
 					"Unit Dosage", "Unit" };
-			String sql = "SELECT * FROM medicines WHERE " + condition
-					+ "  ORDER BY sort";
+			String sql = String
+					.format("SELECT *, "
+							+ "case when (select count(1) from medicine_favorite where s_no = %s and medicine_favorite.m_code = medicines.code) = 0 "
+							+ "then 0 "
+							+ "else (select usedTime from medicine_favorite where s_no = %s and medicine_favorite.m_code = medicines.code) end as freq "
+							+ "FROM medicines WHERE code in (select b.item_guid from medical_stock b) and %s ORDER BY freq desc, sort",
+							UserInfo.getUserNO(), UserInfo.getUserNO(),
+							condition);
 			String[] medicineArray = new String[m_ChooseHashMap.size()];
 			int x = 0;
 			Collection collection = m_ChooseHashMap.values();
@@ -169,7 +181,7 @@ public class Frm_DiagnosisMedicine extends javax.swing.JFrame {
 				sql += " AND item <> '" + medicineArray[x] + "'";
 				x++;
 			}
-			rsTabMedicine = DBC.localExecuteQuery(sql);
+			rsTabMedicine = DBC.executeQuery(sql);
 			rsTabMedicine.last();
 			dataArray = new Object[rsTabMedicine.getRow()][6];
 			rsTabMedicine.beforeFirst();
@@ -179,7 +191,8 @@ public class Frm_DiagnosisMedicine extends javax.swing.JFrame {
 					dataArray[i][1] = rsTabMedicine.getString("code");
 					dataArray[i][2] = rsTabMedicine.getString("item");
 					dataArray[i][3] = rsTabMedicine.getString("injection");
-					dataArray[i][4] = String.valueOf(rsTabMedicine.getFloat("unit_dosage"));
+					dataArray[i][4] = String.valueOf(rsTabMedicine
+							.getFloat("unit_dosage"));
 					dataArray[i][5] = rsTabMedicine.getString("unit");
 					if (rsTabMedicine.getString("effective").equals("true")
 							|| rsTabMedicine.getBoolean("effective")) {
@@ -206,7 +219,8 @@ public class Frm_DiagnosisMedicine extends javax.swing.JFrame {
 													+ search.toLowerCase()
 													+ "</font>") + "</html>";
 					dataArray[i][3] = rsTabMedicine.getString("injection");
-					dataArray[i][4] = String.valueOf(rsTabMedicine.getFloat("unit_dosage"));
+					dataArray[i][4] = String.valueOf(rsTabMedicine
+							.getFloat("unit_dosage"));
 					dataArray[i][5] = rsTabMedicine.getString("unit");
 					if (rsTabMedicine.getString("effective").equals("true")
 							|| rsTabMedicine.getBoolean("effective")) {
@@ -342,7 +356,8 @@ public class Frm_DiagnosisMedicine extends javax.swing.JFrame {
 	private void comboBoxItemStateChanged(ItemEvent evt) {
 		if (evt.getStateChange() == ItemEvent.SELECTED) {
 			String[] condition = m_Cobww.getSelectedItem().toString().trim()
-					.split(DELIMITER); // get select table condition from m_Cobww
+					.split(DELIMITER); // get select table condition from
+										// m_Cobww
 			if (condition.length > 1 || condition[0].trim().equals("")) {
 				setModel("code LIKE '" + condition[0] + "%'", "");
 			} else {

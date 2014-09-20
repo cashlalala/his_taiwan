@@ -10,11 +10,11 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="administrative")
+@NamedQuery(name="Administrative.findAll", query="SELECT a FROM Administrative a")
 public class Administrative implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private int no;
 
 	//bi-directional many-to-one association to Department

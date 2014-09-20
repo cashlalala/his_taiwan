@@ -11,11 +11,11 @@ import java.sql.Time;
  */
 @Entity
 @Table(name="case_manage")
+@NamedQuery(name="CaseManage.findAll", query="SELECT c FROM CaseManage c")
 public class CaseManage implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String guid;
 
 	@Column(name="finish_time")

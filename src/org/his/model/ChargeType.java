@@ -10,11 +10,11 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="charge_type")
+@NamedQuery(name="ChargeType.findAll", query="SELECT c FROM ChargeType c")
 public class ChargeType implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String value;
 
 	private String descrition;
