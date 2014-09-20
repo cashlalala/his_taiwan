@@ -3600,7 +3600,7 @@ public class Frm_InpatientInfo extends javax.swing.JFrame implements
 
 	private void mnit_CasehistoryActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnit_CasehistoryActionPerformed
 		this.setEnabled(false);
-		new Frm_InpatientDiagnostic(this, m_Pno, this.txt_Name.getText())
+		new Frm_InpatientHistory(this, m_Pno, this.txt_Name.getText())
 				.setVisible(true);
 	}// GEN-LAST:event_mnit_CasehistoryActionPerformed
 

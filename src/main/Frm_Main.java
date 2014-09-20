@@ -193,15 +193,17 @@ public class Frm_Main extends javax.swing.JFrame {
 		btn_Case.setEnabled(UserInfo.getSelectPow("Case Management"));
 		btn_Cashier.setEnabled(UserInfo.getSelectPow("Cashier"));
 		//btn_MedicineStock.setEnabled(UserInfo.getSelectPow("Stock"));
+		btn_BedManagement.setEnabled(UserInfo.getSelectPow("Bed Management"));
+		btn_Inpatient.setEnabled(UserInfo.getSelectPow("InPatient"));
 		
-		btn_Inpatient.setEnabled(true);
+		//btn_Inpatient.setEnabled(true);
 		
 		//btn_Anamnesis.setEnabled(false);
 		//btn_AnamnesisReturn.setEnabled(false);
 		btn_Statistic.setEnabled(false);
 		//btn_Sms.setEnabled(false);
 		//btn_Case.setEnabled(false);
-		btn_BedManagement.setEnabled(false);
+		//btn_BedManagement.setEnabled(false);
 		//btn_Cashier.setEnabled(false);
 	}
 
@@ -840,7 +842,7 @@ public class Frm_Main extends javax.swing.JFrame {
 		btn_BedManagement
 				.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent evt) {
-						//btn_BedManagementActionPerformed(evt);
+						btn_BedManagementActionPerformed(evt);
 					}
 				});
 
@@ -1287,6 +1289,11 @@ public class Frm_Main extends javax.swing.JFrame {
 		this.dispose();
 	}// GEN-LAST:event_btn_RadiologyActionPerformed
 
+	private void btn_BedManagementActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_LaboratoryActionPerformed
+		new bedMgmt.Frm_BedList(0).setVisible(true);
+		this.dispose();
+	}
+	
 	private void btn_LaboratoryActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_LaboratoryActionPerformed
 		new worklist.Frm_WorkList(0, "lab").setVisible(true);
 		this.dispose();

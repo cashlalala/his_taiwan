@@ -68,7 +68,7 @@ public class Frm_PatientsList extends javax.swing.JFrame implements
 		conditions = null;
 	}
 
-	@SuppressWarnings({ "unchecked", "deprecation" })
+	@SuppressWarnings({ "deprecation" })
 	private void initLanguage() {
 		this.btn_Search.setText(paragraph.getLanguage(message, "SEARCH"));
 		this.btn_Add.setText(paragraph.getLanguage(line, "ADD"));
@@ -87,7 +87,7 @@ public class Frm_PatientsList extends javax.swing.JFrame implements
 		this.setTitle(paragraph.getLanguage(line, "TITLEPATIENTLIST"));
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "deprecation" })
 	private void showPatientsList() {
 		switch (this.cob_Conditions.getSelectedIndex()) {
 		case 0: // ALL
@@ -174,6 +174,11 @@ public class Frm_PatientsList extends javax.swing.JFrame implements
 	/** 設定表單預設模型。 */
 	private DefaultTableModel getModle(String[] title, String[][] data) {
 		return new DefaultTableModel(data, title) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -8353119633827856967L;
+
 			@Override
 			public boolean isCellEditable(int r, int c) {
 				return false;
@@ -181,7 +186,7 @@ public class Frm_PatientsList extends javax.swing.JFrame implements
 		};
 	}
 
-	@SuppressWarnings("unchecked")
+	
 	// <editor-fold defaultstate="collapsed"
 	// desc="Generated Code">//GEN-BEGIN:initComponents
 	private void initComponents() {
@@ -878,6 +883,7 @@ public class Frm_PatientsList extends javax.swing.JFrame implements
 		tab_ListMouseClicked(null);
 	}// GEN-LAST:event_tab_ListKeyPressed
 
+	@SuppressWarnings("deprecation")
 	private void btn_OkActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_OkActionPerformed
 		sql_FingerSelect = "SELECT fingertemplate.id AS id,fingertemplate.template AS template "
 				+ "FROM fingertemplate LEFT JOIN patients_info "
@@ -968,9 +974,9 @@ public class Frm_PatientsList extends javax.swing.JFrame implements
 	public void onPatientMod(String pno) {
 	}
 
+	@SuppressWarnings("deprecation")
 	public void onFingerDown() {
 		ResultSet rs = null;
-		String sql = null;
 		long start = 0;
 		long finish = 0;
 		try {

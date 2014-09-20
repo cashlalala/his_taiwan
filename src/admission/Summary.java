@@ -14,7 +14,7 @@ import laboratory.Frm_Laboratory;
 public class Summary extends javax.swing.JFrame {
     private final int MAX_SUMMARY_HEIGHT = 600;
     private Frm_InpatientInfo m_DiagnosisInfo;
-    private Frm_InpatientDiagnostic m_Diagnostic;
+    private Frm_InpatientHistory m_Diagnostic;
     private Frm_Laboratory m_Laboratory;
     private Frm_LabHistory m_Labhistory;
     private Frm_Radiology m_XRay;
@@ -23,6 +23,9 @@ public class Summary extends javax.swing.JFrame {
     private int m_State = 0;    // 1 lab 2 xray  0 dia
 
 
+    /**
+     * @wbp.parser.constructor
+     */
     public Summary(Frm_Laboratory frm, JTextArea txt, boolean edit, JPanel pan) {
         initComponents();
         m_State = 1;
@@ -97,7 +100,7 @@ public class Summary extends javax.swing.JFrame {
         m_lineCount = txta_Summary.getLineCount();
     }
 
-    public Summary(Frm_InpatientDiagnostic diagnostic,String txtSummary, Point Localtion, int width, int height, int rowCount, boolean edit ) {
+    public Summary(Frm_InpatientHistory diagnostic,String txtSummary, Point Localtion, int width, int height, int rowCount, boolean edit ) {
         initComponents();
         txta_Summary.setEditable(edit);
         txta_Summary.setLineWrap(true);  // txta_Summary 自動換行
