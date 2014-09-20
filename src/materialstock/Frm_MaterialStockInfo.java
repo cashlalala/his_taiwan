@@ -19,7 +19,7 @@ import cc.johnwu.sql.DBC;
 import cc.johnwu.sql.HISModel;
 import cc.johnwu.sql.HISModel.EditableTableModel;
 
-import common.PrintPharmacyTable;
+import common.PrintStockTable;
 
 import errormessage.StoredErrorMessage;
 
@@ -241,7 +241,7 @@ public class Frm_MaterialStockInfo extends javax.swing.JFrame implements cc.john
     public void showMedTabList(){ // 剩餘總量
         ResultSet tabArray= null;
         try{
-        	String ArraySql = "SELECT material_code.name as name, material_code.description as Description, medical_stock.current_amount as Quantity, "
+        	String ArraySql = "SELECT material_code.guid as material_guid, material_code.name as name, material_code.description as Description, medical_stock.current_amount as Quantity, "
         			+ " medical_stock.minimal_amount as Threshold, medical_stock.default_unit_price as 'Default price' "
         			+ " FROM medical_stock, material_code " 
         			+ " WHERE material_code.guid = medical_stock.item_guid "
@@ -249,8 +249,8 @@ public class Frm_MaterialStockInfo extends javax.swing.JFrame implements cc.john
         			+ " ORDER BY item_guid";
             tabArray= DBC.executeQuery(ArraySql);
             EditableTableModel dtm = HISModel.getModel(tabArray, false);
-            dtm.setCellEditable(3, true);
             dtm.setCellEditable(4, true);
+            dtm.setCellEditable(5, true);
             this.tab_MaterialList.setModel(dtm);
             DBC.closeConnection(tabArray);
         }catch(SQLException e) {
@@ -262,12 +262,16 @@ public class Frm_MaterialStockInfo extends javax.swing.JFrame implements cc.john
 
     private void setCloumnWidth(javax.swing.JTable tab){
         //設定column寬度
-        TableColumn columnVisitNo = tab.getColumnModel().getColumn(0);
-        TableColumn columnVisitName = tab.getColumnModel().getColumn(1);
-        TableColumn columnVisitQuantity = tab.getColumnModel().getColumn(2);
-        columnVisitNo.setPreferredWidth(30);
-        columnVisitName.setPreferredWidth(250);
-        columnVisitQuantity.setPreferredWidth(150);
+        //TableColumn columnVisitNo = tab.getColumnModel().getColumn(0);
+        TableColumn columnMaterialGUID = tab.getColumnModel().getColumn(0);
+        TableColumn columnName = tab.getColumnModel().getColumn(1);
+        TableColumn columnDesc = tab.getColumnModel().getColumn(2);
+        TableColumn columnQuantity = tab.getColumnModel().getColumn(3);
+        //columnMaterialGUID.setMaxWidth(0);
+        tab.getTableHeader().getColumnModel().getColumn(0).setMaxWidth(0);
+        columnName.setPreferredWidth(250);
+        columnDesc.setPreferredWidth(250);
+        columnQuantity.setPreferredWidth(50);
         tab.setRowHeight(30);
     }
 
@@ -298,9 +302,9 @@ public class Frm_MaterialStockInfo extends javax.swing.JFrame implements cc.john
     }//GEN-LAST:event_btn_CloseActionPerformed
 
     private void btn_PrintActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_CloseActionPerformed
-    	PrintPharmacyTable pt = null;
-        pt = new PrintPharmacyTable();
-        pt.DoPrint();
+    	PrintStockTable pt = null;
+        pt = new PrintStockTable();
+        pt.DoPrint(2);
     	//new main.Frm_Main().setVisible(true);
         //this.dispose();
     }
@@ -327,14 +331,14 @@ public class Frm_MaterialStockInfo extends javax.swing.JFrame implements cc.john
     	}
     	
     	for(int i = 0; i < rowCount; i++) {
-    		float threshold = Float.parseFloat(tab_MaterialList.getValueAt(i,3).toString());
-    		float defaultPrice = Float.parseFloat(tab_MaterialList.getValueAt(i,4).toString());
+    		float threshold = Float.parseFloat(tab_MaterialList.getValueAt(i,4).toString());
+    		float defaultPrice = Float.parseFloat(tab_MaterialList.getValueAt(i,5).toString());
     		String item_code = tab_MaterialList.getValueAt(i,0).toString();
     		
     		String sqlChangeRecord = "";
     		ResultSet rsStockSQL= null;
     		try{
-	        	String stockSQL = "SELECT * FROM medical_stock WHERE type ='P' AND item_guid = '" + item_code + "'";
+	        	String stockSQL = "SELECT * FROM medical_stock WHERE type ='M' AND item_guid = '" + item_code + "'";
 	        	rsStockSQL= DBC.executeQuery(stockSQL);
 	            if(rsStockSQL.next()) {
 	            	float minimalAmount = rsStockSQL.getFloat("minimal_amount");
@@ -345,10 +349,10 @@ public class Frm_MaterialStockInfo extends javax.swing.JFrame implements cc.john
 	                
 	                sqlChangeRecord = "INSERT INTO medical_stock_change_record (`guid`, `action`, `item_guid`, `type`, "
 	                		+ " `s_no`, `diff_price`, `diff_minimal_amount`) "
-	                		+ " VALUES (uuid(), 'M', '" + item_code + "', 'P', '" + UserInfo.getUserNO() + "', '" + diffPrice + "', '" + diffMinimal + "');";
+	                		+ " VALUES (uuid(), 'M', '" + item_code + "', 'M', '" + UserInfo.getUserNO() + "', '" + diffPrice + "', '" + diffMinimal + "');";
 	            }
 	            DBC.closeConnection(rsStockSQL);
-	            String sql = "UPDATE medical_stock SET `minimal_amount`='" + threshold + "', `default_unit_price`='" + defaultPrice + "'  WHERE type ='P' AND item_guid = '" + item_code + "'";
+	            String sql = "UPDATE medical_stock SET `minimal_amount`='" + threshold + "', `default_unit_price`='" + defaultPrice + "'  WHERE type ='M' AND item_guid = '" + item_code + "'";
 
 				DBC.executeUpdate(sql);
 				DBC.executeUpdate(sqlChangeRecord);
@@ -369,17 +373,18 @@ public class Frm_MaterialStockInfo extends javax.swing.JFrame implements cc.john
     private void btn_SearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_SearchActionPerformed
         ResultSet tabArray= null;
         if(!text_Search.getText().equals("")){
-            String conditions = "AND (UPPER(medicines.code) LIKE UPPER('%" + text_Search.getText().replace(" ", "%") + "%') ) ";
+            String conditions = "AND (UPPER(material_code.name) LIKE UPPER('%" + text_Search.getText().replace(" ", "%") + "%') ) ";
             try{
-            	String ArraySql="SELECT medical_stock.item_guid as Code, medicines.item as Description, medical_stock.current_amount as Quantity, "
-        			+ " medical_stock.minimal_amount as Threshold, medical_stock.default_unit_price as 'Default price' "
-            			+ " FROM medical_stock, medicines "
-            			+ " WHERE medicines.code = medical_stock.item_guid AND type = 'P' "
-            			+ conditions;
+            	String ArraySql = "SELECT material_code.guid as material_guid, material_code.name as name, material_code.description as Description, medical_stock.current_amount as Quantity, "
+            			+ " medical_stock.minimal_amount as Threshold, medical_stock.default_unit_price as 'Default price' "
+            			+ " FROM medical_stock, material_code "
+            			+ " WHERE material_code.guid = medical_stock.item_guid AND type = 'M' "
+            			+ conditions
+            			+ " ORDER BY material_code.name";
                 tabArray= DBC.executeQuery(ArraySql);
                 EditableTableModel dtm = HISModel.getModel(tabArray, false);
-                dtm.setCellEditable(3, true);
                 dtm.setCellEditable(4, true);
+                dtm.setCellEditable(5, true);
                 this.tab_MaterialList.setModel(dtm);
                 DBC.closeConnection(tabArray);
             }catch(SQLException e) {
@@ -392,14 +397,14 @@ public class Frm_MaterialStockInfo extends javax.swing.JFrame implements cc.john
     }//GEN-LAST:event_btn_SearchActionPerformed
 
     private void btn_MoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_MoreActionPerformed
-        this.setEnabled(false);
+        this.setEnabled(false);;
         new Frm_MaterialStockPurchaseList(this, tab_MaterialList.getValueAt(tab_MaterialList.getSelectedRow(), 0)).setVisible(true);
 
     }//GEN-LAST:event_btn_MoreActionPerformed
 
     private void tab_MedicineListMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tab_MedicineListMouseClicked
         if (evt.getClickCount() == 2) 
-        	if ((tab_MaterialList.getSelectedColumn() == 3 || tab_MaterialList.getSelectedColumn() == 4))
+        	if ((tab_MaterialList.getSelectedColumn() == 4 || tab_MaterialList.getSelectedColumn() == 5))
             	btn_saveModification.setEnabled(true);
     }//GEN-LAST:event_tab_MedicineListMouseClicked
     
@@ -407,9 +412,6 @@ public class Frm_MaterialStockInfo extends javax.swing.JFrame implements cc.john
         if (tab_MaterialList.getSelectedRow() != -1) {
         	btn_History.setEnabled(true);
         }else {btn_History.setEnabled(false);}
-       
-        //if ((tab_MaterialList.getSelectedColumn() == 3 || tab_MaterialList.getSelectedColumn() == 4))
-        //	btn_saveModification.setEnabled(true);
         
         if (evt.getClickCount() == 2) 
             btn_MoreActionPerformed(null);

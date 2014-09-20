@@ -87,11 +87,12 @@ public class Frm_MaterialStockPurchaseList extends javax.swing.JFrame {
 
     private void ShowList(){
         ResultSet rs = null;
-        String Sql = "SELECT item_guid AS 'Code', vendor AS 'Vendor' , " 
-        		+ " diff_amount AS 'Quantity', unit_cost AS 'Unit cost', "
+        String Sql = "SELECT material_code.name as 'Name', vendor AS 'Vendor' , " 
+        		+ " diff_amount AS 'Quantity', medical_stock_change_record.unit_cost AS 'Unit cost', "
         		+ " DATE_FORMAT(purchase_date,'%Y-%m-%d') AS 'Purchase date' "
-        		+ " FROM medical_stock_change_record "
-        		+ " WHERE type = 'P' AND action = 'P' "
+        		+ " FROM medical_stock_change_record, material_code "
+        		+ " WHERE material_code.guid = medical_stock_change_record.item_guid "
+        		+ " AND type = 'M' AND action = 'P' "
         		+ " AND item_guid= '" + m_code + "' ";
         /*String Sql="SELECT medicines.code AS 'Medicine',medicine_stock.druggist AS 'Druggist' ,medicine_stock.quantity AS 'Quantity',medicine_stock.price AS 'Price'," +
                     " DATE_FORMAT(medicine_stock.replenish_date,'%Y-%m-%d') AS 'Date' " +

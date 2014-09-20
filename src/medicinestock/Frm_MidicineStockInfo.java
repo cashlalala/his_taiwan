@@ -19,7 +19,7 @@ import cc.johnwu.sql.DBC;
 import cc.johnwu.sql.HISModel;
 import cc.johnwu.sql.HISModel.EditableTableModel;
 
-import common.PrintPharmacyTable;
+import common.PrintStockTable;
 
 import errormessage.StoredErrorMessage;
 
@@ -298,9 +298,9 @@ public class Frm_MidicineStockInfo extends javax.swing.JFrame implements cc.john
     }//GEN-LAST:event_btn_CloseActionPerformed
 
     private void btn_PrintActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_CloseActionPerformed
-    	PrintPharmacyTable pt = null;
-        pt = new PrintPharmacyTable();
-        pt.DoPrint();
+    	PrintStockTable pt = null;
+        pt = new PrintStockTable();
+        pt.DoPrint(1);
     	//new main.Frm_Main().setVisible(true);
         //this.dispose();
     }

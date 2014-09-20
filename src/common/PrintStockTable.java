@@ -23,11 +23,11 @@ import javax.imageio.ImageIO;
 
 import cc.johnwu.sql.DBC;
 
-public class PrintPharmacyTable {
+public class PrintStockTable {
 	//private int m_Type;
 	//private ResultSet m_Rs; // 基本資料
 	//private ResultSet m_RsData; // 迴圈列印資料
-	private int rowNo;
+	private int print_mode;
 	private Vector<String[]> m_printData;
 
 	//private String m_RegGuid; // 迴圈列印資料
@@ -53,13 +53,42 @@ public class PrintPharmacyTable {
 		}
 	}
 	
-	public void DoPrint() {
+private void prepareMaterialData() {
+		
+		m_printData = new Vector<String[]>();
+		String sql = "SELECT B.name, B.description, A.current_amount FROM medical_stock A, material_code B Where A.item_guid = B.guid order by B.name asc";
+		try {
+			ResultSet m_RsData = DBC.executeQuery(sql);
+			while (m_RsData.next()) {
+				m_printData.add(new String[] {m_RsData.getString("name"),
+						m_RsData.getString("description"),
+						m_RsData.getString("current_amount")});
+			}
+			DBC.closeConnection(m_RsData);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void DoPrint(int mode) {
+		print_mode = mode;
 		PrinterJob pj = PrinterJob.getPrinterJob();
 		PageFormat pf = pj.defaultPage();
 		Paper paper = new Paper();
 		pf.setPaper(paper);
 		pj.setPrintable(new MyPrintable(), pf);
-		preparePharmacyData();
+		switch(print_mode) {
+			case 1:
+				preparePharmacyData();
+				break;
+			case 2:
+				prepareMaterialData();
+				break;
+			default:
+				return;
+		}
+		
 		
 		if (pj.printDialog()) {
 			try {
@@ -86,32 +115,61 @@ public class PrintPharmacyTable {
 			Graphics2D g2 = (Graphics2D) g;
 			g2.setFont(new Font("Serif", Font.PLAIN, 10));
 			g2.setPaint(Color.black);
-				
-			setLogoTitle(g2, "Pharmacy Stock");
-			x = 60;
-			//y = setPatientInfoTitle(g2);
+			
+			switch(print_mode) {
+				case 1:
+					setLogoTitle(g2, "Pharmacy Stock");
+					x = 60;
+					//y = setPatientInfoTitle(g2);
 
-			g2.setFont(new Font("Serif", Font.PLAIN, 32)); // 表頭
-			//g2.drawString("Urgent", x - 45, y);
-			g2.drawString("code", x + 80, y);
-			g2.drawString("ATC code", x + 300, y);
-			g2.drawString("pharmacy ", x + 500, y);
-			g2.drawString("amount", x + 1150, y);
-			g2.setFont(new Font("Serif", Font.BOLD, 32)); // 資料
-			y += 80;
-			for(int i = start; i < start + itemPerPage; i++) {
-				if (i >= m_printData.size()) break;
-				g2.drawString((i + 1) + ".", x, y);
-				if(m_printData.get(i)[0] != null) g2.drawString(m_printData.get(i)[0], x + 80, y);
-				if(m_printData.get(i)[1] != null) g2.drawString(m_printData.get(i)[1], x + 300, y);
-				if(m_printData.get(i)[2] != null) g2.drawString(m_printData.get(i)[2], x + 500, y);
-				if(m_printData.get(i)[3] != null) g2.drawString(m_printData.get(i)[3], x + 1150, y);
-				y += space;
+					g2.setFont(new Font("Serif", Font.PLAIN, 32)); // 表頭
+					//g2.drawString("Urgent", x - 45, y);
+					g2.drawString("code", x + 80, y);
+					g2.drawString("ATC code", x + 300, y);
+					g2.drawString("pharmacy ", x + 500, y);
+					g2.drawString("amount", x + 1150, y);
+					g2.setFont(new Font("Serif", Font.BOLD, 32)); // 資料
+					y += 80;
+					for(int i = start; i < start + itemPerPage; i++) {
+						if (i >= m_printData.size()) break;
+						g2.drawString((i + 1) + ".", x, y);
+						if(m_printData.get(i)[0] != null) g2.drawString(m_printData.get(i)[0], x + 80, y);
+						if(m_printData.get(i)[1] != null) g2.drawString(m_printData.get(i)[1], x + 300, y);
+						if(m_printData.get(i)[2] != null) g2.drawString(m_printData.get(i)[2], x + 500, y);
+						if(m_printData.get(i)[3] != null) g2.drawString(m_printData.get(i)[3], x + 1150, y);
+						y += space;
+					}
+					if(start < m_printData.size())
+						return PAGE_EXISTS;
+					else
+						return NO_SUCH_PAGE;
+				case 2:
+					setLogoTitle(g2, "Material Stock");
+					x = 60;
+					//y = setPatientInfoTitle(g2);
+
+					g2.setFont(new Font("Serif", Font.PLAIN, 32)); // 表頭
+					//g2.drawString("Urgent", x - 45, y);
+					g2.drawString("name", x + 100, y);
+					g2.drawString("description", x + 500, y);
+					g2.drawString("amount", x + 1150, y);
+					g2.setFont(new Font("Serif", Font.BOLD, 32)); // 資料
+					y += 80;
+					for(int i = start; i < start + itemPerPage; i++) {
+						if (i >= m_printData.size()) break;
+						g2.drawString((i + 1) + ".", x, y);
+						if(m_printData.get(i)[0] != null) g2.drawString(m_printData.get(i)[0], x + 100, y);
+						if(m_printData.get(i)[1] != null) g2.drawString(m_printData.get(i)[1], x + 500, y);
+						if(m_printData.get(i)[2] != null) g2.drawString(m_printData.get(i)[2], x + 1150, y);
+						y += space;
+					}
+					if(start < m_printData.size())
+						return PAGE_EXISTS;
+					else
+						return NO_SUCH_PAGE;
+				default:
+					return NO_SUCH_PAGE;
 			}
-			if(start < m_printData.size())
-				return PAGE_EXISTS;
-			else
-				return NO_SUCH_PAGE;
 		}
 
 		private int setPatientInfoTitle(Graphics2D g2) {
