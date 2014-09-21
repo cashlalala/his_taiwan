@@ -1701,6 +1701,16 @@ public class Frm_RegAndInpatient extends JFrame implements
 			selectedType = "Checkin";
 		}
 		try {
+			sql="SELECT bed_record.guid FROM bed_record WHERE bed_record.p_no="
+					+ selectedPatientGUID 
+					+ " AND bed_record.status='N'";
+			rs = DBC.executeQuery(sql);
+			if(rs.next()){
+				JOptionPane.showMessageDialog(new Frame(),paragraph.getString("ERRORALREADYINPATIENT"));
+				return;
+			}
+			
+			
 			if (selectedType == "N" || selectedType == "R") {
 				// get doctor No
 				sql = "SELECT staff_info.s_no FROM staff_info WHERE "
@@ -1716,8 +1726,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 						+ selectedBedGUID + "', " + "NULL, " + " '"
 						+ selectedType + "', ";
 				if (selectedType == "N") {
-					sql = sql + "NULL," + " '" + pan_CheckInDate.getValue()
-							+ " 00:00:00" + "', NULL, ";
+					sql = sql + "NULL, now(), NULL, ";
 				} else if (selectedType == "R") {
 					sql = sql + " '" + pan_CheckInDate.getValue() + " 00:00:00"
 							+ "', NULL, NULL, ";
