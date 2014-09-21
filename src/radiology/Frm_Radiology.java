@@ -8,6 +8,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,6 +20,7 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -32,9 +34,11 @@ import worklist.Frm_WorkList;
 import cc.johnwu.date.DateMethod;
 import cc.johnwu.sql.DBC;
 import cc.johnwu.sql.HISModel;
+
 import common.Constant;
 import common.PrintTools;
 import common.TabTools;
+
 import diagnosis.Summary;
 
 /**
@@ -47,14 +51,17 @@ public class Frm_Radiology extends javax.swing.JFrame {
     private boolean m_FinishState;      //
     private int m_WorkListRowNo;        // Frm_DiagnosisWorkList's stop rowNo
     private String m_TmpGuid;   // 暫存Gued
-    private Vector<String> filePath;
-    private int filePathIndex;
+    //private Vector<String> filePath;
+    //private int filePathIndex;
+    private Vector<String> saveFilePath;
+    private Vector<Image> images;
+    private int imageIndex;
     
     
      /*多國語言變數*/
     private Language paragraph = Language.getInstance();
-    private String[] line = paragraph.setlanguage("LABORATORY").split("\n") ;
-    private String[] message = paragraph.setlanguage("MESSAGE").split("\n") ;
+    //private String[] line = paragraph.setlanguage("LABORATORY").split("\n") ;
+    //private String[] message = paragraph.setlanguage("MESSAGE").split("\n") ;
     /*輸出錯誤資訊變數*/
     public Frm_Radiology(String p_no,String regGuid, int stopRowNo, boolean finishState) {
         this.m_Pno=p_no;
@@ -69,7 +76,7 @@ public class Frm_Radiology extends javax.swing.JFrame {
 
     private void initLanguage() {
         //this.lab_DateOfTest.setText(paragraph.getLanguage(line, "DATEOfTEST"));
-        this.lab_NameOfTest.setText(paragraph.getLanguage(line, "NAMEOfTEST"));
+        this.lab_NameOfTest.setText(paragraph.getString("NAMEOfTEST"));
         //this.lab_ResultsCollectionDate.setText(paragraph.getLanguage(line, "RESYLTSCOLLECTIONDATE"));
         //this.btn_Close.setText(paragraph.getLanguage(message, "CLOSE"));
         this.setTitle("Radiology(X-RAY)");
@@ -81,6 +88,8 @@ public class Frm_Radiology extends javax.swing.JFrame {
 
     private void init(){
 
+    	lab_ImgCount.setText("0 figures");
+    	
         this.setExtendedState(Frm_Radiology.MAXIMIZED_BOTH);  // 最大化
         this.setLocationRelativeTo(this);//視窗顯示至中
         this.tab_Prescription.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);     // tabble不可按住多選
@@ -124,6 +133,7 @@ public class Frm_Radiology extends javax.swing.JFrame {
         jPanel1Left = new javax.swing.JPanel();
         jPanel1Right = new javax.swing.JPanel();
         lab_NameOfTest = new javax.swing.JLabel();
+        lab_ImgCount = new javax.swing.JLabel();
         txt_TestName = new javax.swing.JTextField();
         lab_ResultsCollectionDate1 = new javax.swing.JLabel();
         pan_Summary = new javax.swing.JPanel();
@@ -167,7 +177,8 @@ public class Frm_Radiology extends javax.swing.JFrame {
         mnit_XRayRecord = new javax.swing.JMenuItem();
         mnit_Close = new javax.swing.JMenuItem();
         
-        filePath = new Vector<String>();
+        images = new Vector<Image>();
+        saveFilePath = new Vector<String>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Radiology(X-RAY)");
@@ -241,19 +252,19 @@ public class Frm_Radiology extends javax.swing.JFrame {
         	@Override
 			public void mouseClicked(MouseEvent e) {
 				// TODO Auto-generated method stub
-        		int fileNum = filePath.size();
-        		if(fileNum <= 0) return;
+        		int imageNum = images.size();
+        		if(imageNum <= 0) return;
         		if (e.getButton() == MouseEvent.BUTTON1) {	// left button
-        			int next = (filePathIndex + 1) % fileNum;
+        			int next = (imageIndex + 1) % imageNum;
         			//System.out.println("next = " + next);
-        			filePathIndex = next;
-        			lab_RadioImg.setIcon(scaledIcon(filePath.get(filePathIndex), 190));
+        			imageIndex = next;
+        			lab_RadioImg.setIcon(scaledIcon(images.get(imageIndex), 190));
                 }
                 if (e.getButton() == MouseEvent.BUTTON3) {	// right button
-                	int next = (filePathIndex + fileNum - 1) % fileNum;
+                	int next = (imageIndex + imageNum - 1) % imageNum;
                 	//System.out.println("next = " + next);
-        			filePathIndex = next;
-        			lab_RadioImg.setIcon(scaledIcon(filePath.get(filePathIndex), 190));
+                	imageIndex = next;
+        			lab_RadioImg.setIcon(scaledIcon(images.get(imageIndex), 190));
                 }
 				
 			}
@@ -336,7 +347,9 @@ public class Frm_Radiology extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 456, Short.MAX_VALUE)
                                 .addComponent(btn_add, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
-                                .addComponent(btn_loadImg, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(btn_loadImg, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
+                                .addComponent(lab_ImgCount, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                             )
                             .addComponent(txt_TestName, javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(pan_Summary, javax.swing.GroupLayout.Alignment.LEADING))
@@ -371,6 +384,7 @@ public class Frm_Radiology extends javax.swing.JFrame {
                             .addComponent(radiobtn_Unnormal)
                             .addComponent(btn_add)
                             .addComponent(btn_loadImg)
+                            .addComponent(lab_ImgCount)
                             ))
                     )
                 .addContainerGap(14, Short.MAX_VALUE))
@@ -383,7 +397,6 @@ public class Frm_Radiology extends javax.swing.JFrame {
             .addGroup(jPanel1RightLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                		//.addComponent(btn_loadImg, javax.swing.GroupLayout.Alignment.TRAILING)
                 		.addComponent(lab_RadioImg, javax.swing.GroupLayout.Alignment.TRAILING)
                 ).addContainerGap())
         );
@@ -391,10 +404,6 @@ public class Frm_Radiology extends javax.swing.JFrame {
         		jPanel1RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1RightLayout.createSequentialGroup()
                 .addContainerGap()
-                //.addGroup(jPanel1RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                //    .addComponent(btn_loadImg)
-                //)
-                //.addGap(8, 8, 8)
                 .addGroup(jPanel1RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lab_RadioImg)
                 )
@@ -838,8 +847,10 @@ public class Frm_Radiology extends javax.swing.JFrame {
             btn_add.setEnabled(false);
             
             lab_RadioImg.setIcon(null);
-            filePath.clear();
-            filePathIndex = 0;
+            imageIndex = 0;
+            images.clear();
+            saveFilePath.clear();
+            lab_ImgCount.setText("0 figures");
             
     }
 
@@ -871,18 +882,21 @@ public class Frm_Radiology extends javax.swing.JFrame {
             //System.out.println(sql);
             DBC.executeUpdate(sql);
             
-            sql = "UPDATE image_meta SET status = 'D' WHERE item_guid = '" + m_TmpGuid + "'";
+            sql = "DELETE FROM image_meta WHERE item_guid = '" + m_TmpGuid + "'";
         	DBC.executeUpdate(sql);
         	
-            for(int i = 0; i < filePath.size(); i++) {
-				sql = "INSERT INTO image_meta(guid, p_no, item_guid, file_path, type) VALUES(?, ? ,?, ?, ?)";
+            for(int i = 0; i < saveFilePath.size(); i++) {
+				sql = "INSERT INTO image_meta(guid, p_no, item_guid, type, image_data) VALUES(?, ? ,?, ?, ?)";
 				Connection conn = DBC.getConnectionExternel();
 				PreparedStatement prestate =  conn.prepareStatement(sql); //先建立一個 SQL 語句並回傳一個 PreparedStatement 物件
 				prestate.setString(1, UUID.randomUUID().toString()); 
 				prestate.setString(2, m_Pno); 
 				prestate.setString(3, m_TmpGuid); 
-				prestate.setString(4, filePath.get(i)); 
-				prestate.setString(5, Constant.X_RAY_CODE); 
+				//prestate.setString(4, filePath.get(i)); 
+				prestate.setString(4, Constant.X_RAY_CODE);
+				File file = new File(saveFilePath.get(i));
+				FileInputStream fis = new FileInputStream(file);
+				prestate.setBinaryStream(5, fis, (int) file.length()); 
 				prestate.executeUpdate();  //真正執行
 				DBC.closeConnectionExternel(conn);
             }
@@ -890,7 +904,7 @@ public class Frm_Radiology extends javax.swing.JFrame {
             initValue();
             setTab_Prescription();
             JOptionPane.showMessageDialog(null,"Saved successfully.");
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(Frm_Radiology.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -940,20 +954,23 @@ public class Frm_Radiology extends javax.swing.JFrame {
              
              // load image if existed.
              String pre_guid = (String) tab_Prescription.getValueAt(tab_Prescription.getSelectedRow(), 1);
-             String sql = "SELECT file_path FROM image_meta WHERE status = 'N' AND item_guid = '" + pre_guid + "'";
+             String sql = "SELECT * FROM image_meta WHERE status = 'N' AND item_guid = '" + pre_guid + "'";
              try {
                  ResultSet rs = DBC.executeQuery(sql);
-                 filePath.clear();
+                 //filePath.clear();
+                 images.clear();
                  int counter = 0;
                  while (rs.next()) {
-                	 filePath.add(counter, rs.getString("file_path"));
+                	 //filePath.add(counter, rs.getString("file_path"));
+                	 images.add(counter, ImageIO.read(rs.getBinaryStream("image_data")));
                 	 counter++;
                  }
-                 if(filePath.size() > 0) {
-	                 lab_RadioImg.setIcon(scaledIcon(filePath.get(0), 190));
-	                 filePathIndex = 0;
+                 if(images.size() > 0) {
+                	 imageIndex = 0;
+	                 lab_RadioImg.setIcon(scaledIcon(images.get(imageIndex), 190));
                  }
-             } catch (SQLException ex) {
+                 lab_ImgCount.setText(images.size() + " figures");
+             } catch (Exception ex) {
                  Logger.getLogger(Frm_Radiology.class.getName()).log(Level.SEVERE, null, ex);
              }
              
@@ -1003,15 +1020,15 @@ public class Frm_Radiology extends javax.swing.JFrame {
         setSavePre();
     }//GEN-LAST:event_btn_addActionPerformed
     
-    private ImageIcon scaledIcon(String absolutePath, int height) {
-    	String path = "./img/nofile.png";
-    	if(absolutePath != null) {
-    		File file = new File(absolutePath);
-        	if(file.exists()) path = absolutePath;
-    	}
+    private ImageIcon scaledIcon(Image img, int height) {
+    	//String path = "./img/nofile.png";
+    	//if(absolutePath != null) {
+    	//	File file = new File(absolutePath);
+        //	if(file.exists()) path = absolutePath;
+    	//}
         
-    	ImageIcon image = new ImageIcon(path);
-        Image img = image.getImage();
+    	//ImageIcon image = new ImageIcon(path);
+        //Image img = image.getImage();
         int scaledY = height;// (scaledX * img.getHeight(null))/img.getWidth(null);
         int scaledX = (scaledY * img.getWidth(null))/img.getHeight(null);
         BufferedImage bi = new BufferedImage(scaledX, scaledY, BufferedImage.TYPE_INT_ARGB);
@@ -1022,19 +1039,26 @@ public class Frm_Radiology extends javax.swing.JFrame {
     } 
     
     private void btn_LoadImageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addActionPerformed
-    	jFileChooser1 = new javax.swing.JFileChooser();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("JPG, GIF and PNG Images", "jpg", "jpeg", "gif", "png");
-        jFileChooser1.setFileFilter(filter);
-        jFileChooser1.setMultiSelectionEnabled(true);
-		int returnVal = jFileChooser1.showOpenDialog(null);
-		if(returnVal == JFileChooser.APPROVE_OPTION) {
-			//txt_HosIcon.setText(jFileChooser1.getSelectedFile().getAbsolutePath());
-			filePath.clear();
-			for(File file : jFileChooser1.getSelectedFiles()) {
-				filePath.add(file.getAbsolutePath());
+    	try {
+	    	jFileChooser1 = new javax.swing.JFileChooser();
+	        FileNameExtensionFilter filter = new FileNameExtensionFilter("JPG, GIF and PNG Images", "jpg", "jpeg", "gif", "png");
+	        jFileChooser1.setFileFilter(filter);
+	        jFileChooser1.setMultiSelectionEnabled(true);
+			int returnVal = jFileChooser1.showOpenDialog(null);
+			if(returnVal == JFileChooser.APPROVE_OPTION) {
+				//txt_HosIcon.setText(jFileChooser1.getSelectedFile().getAbsolutePath());
+				images.clear();
+				saveFilePath.clear();
+				for(File file : jFileChooser1.getSelectedFiles()) {
+					images.add(ImageIO.read(new FileInputStream(file.getAbsolutePath())));
+					saveFilePath.add(file.getAbsolutePath());
+				}
+				imageIndex = 0;
+				lab_RadioImg.setIcon(scaledIcon(images.get(imageIndex), 190));
+				lab_ImgCount.setText(images.size() + " figures");
 			}
-			lab_RadioImg.setIcon(scaledIcon(filePath.get(0), 190));
-			filePathIndex = 0;
+    	} catch (Exception e) {
+			e.printStackTrace();
 		}
     }//GEN-LAST:event_btn_addActionPerformed
 
@@ -1097,6 +1121,7 @@ public class Frm_Radiology extends javax.swing.JFrame {
     private javax.swing.JTextField txt_Weight;
     
     private javax.swing.JFileChooser jFileChooser1;
+    private javax.swing.JLabel lab_ImgCount;
     
     // End of variables declaration//GEN-END:variables
 //    class MyPrintable implements Printable {
