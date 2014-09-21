@@ -1,6 +1,8 @@
 package diagnosis;
 
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -16,7 +18,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,12 +33,11 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
-import com.mysql.jdbc.Statement;
-
 import laboratory.Frm_LabDM;
 import laboratory.Frm_LabHistory;
 import multilingual.Language;
 import radiology.Frm_RadiologyHistory;
+import registration.Frm_RegAndInpatient;
 import worklist.Frm_WorkList;
 import casemgmt.Frm_Case;
 import cc.johnwu.date.DateMethod;
@@ -119,12 +119,18 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 	private String m_ICDVersion;
 	private static final String DELIMITER = Character.toString((char) 0);
 
+	private DiagnosisInterface parentFrm;
+
 	public Frm_DiagnosisInfo() {
+		parentFrm = null;
 	}
 
 	// 參數：病患編號 掛號guid worklist停留行號 看診狀態 是否為初診
-	public Frm_DiagnosisInfo(String p_no, String regGuid, int stopRowNo,
-			boolean finishState, boolean isFirst) {
+	public Frm_DiagnosisInfo(DiagnosisInterface diagnosisInterface,
+			String p_no, String regGuid, int stopRowNo, boolean finishState,
+			boolean isFirst) {
+		this();
+		parentFrm = diagnosisInterface;
 		ResultSet setting = null;
 		try {
 			setting = DBC.executeQuery("Select icdversion from setting");
@@ -186,7 +192,8 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 
 		String sql = "SELECT * FROM patients_info WHERE p_no = '" + this.m_Pno
 				+ "'";
-		String sqlRecord = "SELECT shift_table.shift_date AS date, "
+		String sqlRecord = (parentFrm == null || parentFrm.from().contains(
+				"dia_hist")) ? "SELECT shift_table.shift_date AS date, "
 				+ "concat(staff_info.firstname,'  ',staff_info.lastname) AS name, "
 				+ "registration_info.guid, diagnostic.summary, diagnostic.ps, "
 				+ "registration_info.reg_time "
@@ -199,7 +206,20 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 				+ "AND staff_info.s_id = shift_table.s_id "
 				+ "AND registration_info.finish = 'F' "
 				+ "AND diagnostic.reg_guid = registration_info.guid "
-				+ "ORDER BY registration_info.reg_time DESC";
+				+ "ORDER BY registration_info.reg_time DESC"
+				: String.format(
+						"SELECT reg.reg_time AS date, "
+								+ "concat(staff_info.firstname,'  ',staff_info.lastname) AS name,"
+								+ "reg.guid,diagnostic.summary,diagnostic.ps,"
+								+ "reg.reg_time "
+								+ "FROM registration_info reg,diagnostic,bed_record,staff_info "
+								+ "WHERE staff_info.s_no = bed_record.mainDr_no "
+								+ "and reg.bed_guid = bed_record.guid and reg.p_no = '%s' AND "
+								+ "reg.guid = '%s' AND reg.shift_guid is null AND "
+								+ "diagnostic.reg_guid = reg.guid "
+								+ "ORDER BY reg.reg_time DESC", m_Pno,
+						m_RegistrationGuid);
+
 		try {
 			// 取出病患基本資料
 			rs = DBC.executeQuery(sql);
@@ -227,9 +247,12 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 			if (rsRecord.next()) {
 				if (m_FinishState == true) {
 					// 修改病歷
-					setEditCasehistory(rsRecord.getString("summary"),
-							m_RegistrationGuid, rsRecord.getString("date")
-									+ " " + rsRecord.getString("name"));
+					setEditCasehistory(
+							rsRecord.getString("ps"),
+							rsRecord.getString("summary"),
+							m_RegistrationGuid,
+							rsRecord.getString("date") + " "
+									+ rsRecord.getString("name"));
 					txt_Message.setText(rsRecord.getString("ps"));
 				} else if (m_FinishState == false) {
 					// 糖尿病判斷
@@ -261,24 +284,27 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 					// 取出看診資料
 					Object[] options = { paragraph.getLanguage(message, "YES"),
 							paragraph.getLanguage(message, "NO") };
-					int dialog = JOptionPane
-							.showOptionDialog(
-									null,
-									rsRecord.getString("date")
-											+ "  "
-											+ rsRecord.getString("name")
-											+ paragraph.getLanguage(line,
-													"DOCTOR")
-											+ " \n Do you want to review Diagnosis of the patient data?",
-									paragraph.getLanguage(message, "MESSAGE"),
-									JOptionPane.YES_OPTION,
-									JOptionPane.QUESTION_MESSAGE, null,
-									options, options[0]);
-					if (dialog == 0) {
-						getCasehistory(rsRecord.getString("summary"),
-								rsRecord.getString("guid"));
+					if (parentFrm == null) {
+						int dialog = JOptionPane
+								.showOptionDialog(
+										null,
+										rsRecord.getString("date")
+												+ "  "
+												+ rsRecord.getString("name")
+												+ paragraph.getLanguage(line,
+														"DOCTOR")
+												+ " \n Do you want to review Diagnosis of the patient data?",
+										paragraph.getLanguage(message,
+												"MESSAGE"),
+										JOptionPane.YES_OPTION,
+										JOptionPane.QUESTION_MESSAGE, null,
+										options, options[0]);
+						if (dialog == 0) {
+							getCasehistory(rsRecord.getString("ps"),
+									rsRecord.getString("summary"),
+									rsRecord.getString("guid"));
+						}
 					}
-
 				}
 			} else {
 				if (m_IsFirst) {
@@ -1256,9 +1282,9 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 	}
 
 	// 修改看診資料
-	public void setEditCasehistory(String summary, String regGuid,
+	public void setEditCasehistory(String ps, String summary, String regGuid,
 			String message) {
-		getCasehistory(summary, regGuid);
+		getCasehistory(ps, summary, regGuid);
 		m_RegistrationGuid = regGuid;
 		this.setTitle("Edit " + message + " data");
 		btn_Send.setText("Edit");
@@ -1410,7 +1436,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 
 		if (diagnosisIsNull == true && medicineIsNull == true) {
 			try {
-				String os_uuid = UUID.randomUUID().toString();
+				// String os_uuid = UUID.randomUUID().toString();
 				// if (m_FinishState == true) { // 將舊看診資訊刪除
 				// String sqlDelete =
 				// "DELETE FROM outpatient_services WHERE reg_guid = '"
@@ -1465,8 +1491,8 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 									+ escapeDBReserveWords(txta_Summary
 											.getText().trim())
 									+ "', '"
-									+ escapeDBReserveWords(txt_Message.getText()
-											.trim()) + "')";
+									+ escapeDBReserveWords(txt_Message
+											.getText().trim()) + "')";
 							DBC.executeUpdate(sql);
 						}
 					}
@@ -1737,15 +1763,20 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 					txt_PackageType.setText(packageSetAll);
 					this.setEnabled(false);
 				} else {
-					int workListRowCount = m_WorkListRowNo;
-					Frm_WorkList frm_diagnosisWorkList = new Frm_WorkList(
-							workListRowCount, "dia");
-					frm_diagnosisWorkList.setVisible(true);
+					if (this.parentFrm == null) {
+						int workListRowCount = m_WorkListRowNo;
+						Frm_WorkList frm_diagnosisWorkList = new Frm_WorkList(
+								workListRowCount, "dia");
+						frm_diagnosisWorkList.setVisible(true);
+					} else {
+						this.parentFrm.reSetEnable();
+					}
 					this.dispose();
 				}
 				// *************************************************
 
 			} catch (SQLException e) {
+				e.printStackTrace();
 				Logger.getLogger(Frm_DiagnosisInfo.class.getName()).log(
 						Level.SEVERE, null, e);
 				ErrorMessage.setData(
@@ -1762,6 +1793,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 					DBC.closeConnection(rsModifyCount);
 					DBC.closeConnection(rsFavoriteMed);
 				} catch (SQLException e) {
+					e.printStackTrace();
 					ErrorMessage.setData(
 							"Diagnosis",
 							"Frm_DiagnosisInfo",
@@ -1890,7 +1922,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 
 	// 將過去病史帶入
 	@SuppressWarnings("rawtypes")
-	public void getCasehistory(String summary, String guid) {
+	public void getCasehistory(String ps, String summary, String guid) {
 		TabTools.setClearTableValue(tab_Diagnosis);
 		TabTools.setClearTableValue(tab_Prescription);
 		TabTools.setClearTableValue(tab_Medicine);
@@ -1900,8 +1932,10 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 		try {
 			// 取出看診診斷
 			getTxtaSummary(summary);
+			txt_Message.setText(ps);
+
 			// 取出看診ICD CODE
-			String sqlDiagnosis = "SELECT diagnosis_code.icd_code, diagnosis_code.name "
+			String sqlDiagnosis = "SELECT diagnosis_code.icd_code, diagnosis_code.name, diagnostic.ps "
 					+ "FROM  diagnosis_code, diagnostic, registration_info "
 					+ "WHERE registration_info.guid = '"
 					+ guid
@@ -2129,6 +2163,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 	// 回到看診畫面 畫面重設為可編輯
 	public void reSetEnable() {
 		this.setEnabled(true);
+		this.setVisible(true);
 	}
 
 	// 套餐 V1&V3
@@ -2210,6 +2245,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 		btn_Diagnosis = new javax.swing.JButton();
 		btn_Prescription = new javax.swing.JButton();
 		btn_CaseManagement = new javax.swing.JButton();
+		btn_MakeReservation = new javax.swing.JButton();
 		lab_Ps = new javax.swing.JLabel();
 		menubar = new javax.swing.JMenuBar();
 		menu_Send = new javax.swing.JMenu();
@@ -3054,6 +3090,16 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 			}
 		});
 
+		btn_MakeReservation.setText(paragraph.getString("MAKERESERVATION"));
+		btn_MakeReservation.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				btn_ReservationActionPerformed(e);
+			}
+		});
+
 		btn_CaseManagement.setText("Case Management");
 		btn_CaseManagement
 				.addActionListener(new java.awt.event.ActionListener() {
@@ -3085,6 +3131,9 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 										.addPreferredGap(
 												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 										.addComponent(btn_CaseManagement)
+										.addPreferredGap(
+												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+										.addComponent(btn_MakeReservation)
 										.addContainerGap(171, Short.MAX_VALUE)));
 		pan_FunctionLayout
 				.setVerticalGroup(pan_FunctionLayout
@@ -3116,6 +3165,11 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 												javax.swing.GroupLayout.PREFERRED_SIZE)
 										.addComponent(
 												btn_CaseManagement,
+												javax.swing.GroupLayout.PREFERRED_SIZE,
+												30,
+												javax.swing.GroupLayout.PREFERRED_SIZE)
+										.addComponent(
+												btn_MakeReservation,
 												javax.swing.GroupLayout.PREFERRED_SIZE,
 												30,
 												javax.swing.GroupLayout.PREFERRED_SIZE)));
@@ -3578,6 +3632,11 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 		System.out.println("鎖定藥品");
 	}// GEN-LAST:event_tab_MedicineFocusGained
 
+	private void btn_ReservationActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_SendActionPerformed
+		this.setVisible(false);
+		new Frm_RegAndInpatient(this, m_Pno).setVisible(true);
+	}
+
 	@SuppressWarnings("deprecation")
 	private void btn_SendActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_SendActionPerformed
 		setAllRemoveEditAndSelection();
@@ -3607,7 +3666,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 
 	private void mnit_CasehistoryActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnit_CasehistoryActionPerformed
 		this.setEnabled(false);
-		new Frm_DiagnosisDiagnostic(this, m_Pno, this.txt_Name.getText())
+		new Frm_DiagnosisDiagnostic(this, m_Pno, this.txt_Name.getText(), m_RegistrationGuid)
 				.setVisible(true);
 	}// GEN-LAST:event_mnit_CasehistoryActionPerformed
 
@@ -3616,7 +3675,10 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 	}// GEN-LAST:event_mnit_AllergyActionPerformed
 
 	private void mnit_BackActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnit_BackActionPerformed
-		new Frm_WorkList(m_WorkListRowNo, "dia").setVisible(true);
+		if (parentFrm == null)
+			new Frm_WorkList(m_WorkListRowNo, "dia").setVisible(true);
+		else
+			parentFrm.reSetEnable();
 		this.dispose();
 	}// GEN-LAST:event_mnit_BackActionPerformed
 
@@ -4102,6 +4164,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 	// Variables declaration - do not modify//GEN-BEGIN:variables
 	private javax.swing.JButton btn_Allergy;
 	private javax.swing.JButton btn_CaseManagement;
+	private javax.swing.JButton btn_MakeReservation;
 	private javax.swing.JButton btn_Close;
 	private javax.swing.JButton btn_Diagnosis;
 	private javax.swing.JButton btn_Down;
@@ -4186,6 +4249,12 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 	private javax.swing.JTextField txt_Sex;
 	private javax.swing.JTextField txt_Weight;
 	private javax.swing.JTextArea txta_Summary;
+
 	// End of variables declaration//GEN-END:variables
+
+	@Override
+	public String from() {
+		return this.getClass().getName();
+	}
 
 }

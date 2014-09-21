@@ -12,4 +12,5 @@ package diagnosis;
 public abstract interface DiagnosisInterface {
     public abstract void reSetEnable();
     public abstract void getAllergy();
+    public abstract String from();
 }
