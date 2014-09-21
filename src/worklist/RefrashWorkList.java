@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import javax.swing.JLabel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
@@ -24,7 +25,6 @@ import cc.johnwu.date.DateMethod;
 import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
 import cc.johnwu.sql.HISModel;
-
 import common.Constant;
 import common.TabTools;
 
@@ -313,7 +313,7 @@ public class RefrashWorkList extends Thread {
 							+ "TIMESTAMPDIFF(year,pInfo.birth, now()) as '%s', "
 							+ "pInfo.gender as '%s', concat(pInfo.bloodtype,pInfo.rh_type) as '%s', "
 							+ "concat(staff_info.firstname,' ',staff_info.lastname) as '%s', policlinic.name as '%s',"
-							+ "bed_code.guid as '%s', bd_rec.note as '%s', bd_rec.guid "
+							+ "bed_code.guid as '%s', bd_rec.note as '%s', bd_rec.guid, reg.guid as 'REG_GUID' "
 							+ "FROM bed_record bd_rec, bed_code, patients_info pInfo, staff_info, policlinic, registration_info reg "
 							+ "WHERE reg.type = 'I' and reg.bed_guid = bd_rec.guid and bd_rec.status = 'N' "
 							+ "and bd_rec.bed_guid = bed_code.guid and bd_rec.p_no = pInfo.p_no "
@@ -358,6 +358,7 @@ public class RefrashWorkList extends Thread {
 				TabTools.setHideColumn(this.m_Tab, 11);
 			} else if (SysName.equals("inp")) {
 				TabTools.setHideColumn(this.m_Tab, 12);
+				TabTools.setHideColumn(this.m_Tab, 13);
 			}
 
 			DBC.closeConnection(rs);
@@ -456,10 +457,11 @@ public class RefrashWorkList extends Thread {
 										curItemCnt, col);
 							curItemCnt++;
 						}
-					}
-					else {
+					} else {
 						((DefaultTableModel) m_Tab.getModel()).setRowCount(0);
 					}
+					parentFrame.lbl_InpNoVal
+							.setText(String.valueOf(curItemCnt));
 					rs.close();
 				} catch (SQLException ex) {
 					System.out.println("WorkList:" + ex);
