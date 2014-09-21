@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import javax.swing.JLabel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
@@ -24,7 +25,6 @@ import cc.johnwu.date.DateMethod;
 import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
 import cc.johnwu.sql.HISModel;
-
 import common.Constant;
 import common.TabTools;
 
@@ -457,10 +457,11 @@ public class RefrashWorkList extends Thread {
 										curItemCnt, col);
 							curItemCnt++;
 						}
-					}
-					else {
+					} else {
 						((DefaultTableModel) m_Tab.getModel()).setRowCount(0);
 					}
+					parentFrame.lbl_InpNoVal
+							.setText(String.valueOf(curItemCnt));
 					rs.close();
 				} catch (SQLException ex) {
 					System.out.println("WorkList:" + ex);

@@ -1,12 +1,15 @@
 package worklist;
 
 import java.awt.Frame;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -19,6 +22,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 
 import laboratory.Frm_Laboratory;
 import main.Frm_Main;
@@ -127,6 +131,9 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 			dateComboBox.setVisible(false);
 			btn_Search.setVisible(false);
 			lab_Date.setVisible(false);
+			lbl_InpNo.setVisible(true);
+			lbl_InpNoVal.setVisible(true);
+			this.repaint();
 			this.setTitle(paragraph.getString("INPATIENT_WORKLIST"));
 		}
 
@@ -245,8 +252,6 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 
 		} else if (m_SysName.equals("inp")) {
 			this.dummy = "inp_hist";
-			String pname = (String) tab_WorkList.getValueAt(
-					tab_WorkList.getSelectedRow(), 3);
 			m_RegGuid = (String) tab_WorkList.getValueAt(
 					tab_WorkList.getSelectedRow(), 13);
 			m_Pno = (String) tab_WorkList.getValueAt(
@@ -266,17 +271,9 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 		tab_WorkList = new javax.swing.JTable();
 		pan_Top = new javax.swing.JPanel();
 		lab_Name = new javax.swing.JLabel();
-		lab_poli = new javax.swing.JLabel();
-		lab_Finish = new javax.swing.JLabel();
-		lab_FinishCount = new javax.swing.JLabel();
-		lab_Wait = new javax.swing.JLabel();
-		lab_WaitCount = new javax.swing.JLabel();
+		lab_Name.setHorizontalAlignment(SwingConstants.LEFT);
 		txt_Name = new javax.swing.JTextField();
-		txt_Poli = new javax.swing.JTextField();
-		lab_SystemTime = new javax.swing.JLabel();
-		dateComboBox = new cc.johnwu.date.DateComboBox();
-		btn_Search = new javax.swing.JButton();
-		lab_Date = new javax.swing.JLabel();
+		txt_Name.setHorizontalAlignment(SwingConstants.LEFT);
 		pan_Right = new javax.swing.JPanel();
 		btn_Close = new javax.swing.JButton();
 		btn_Enter = new javax.swing.JButton();
@@ -306,6 +303,7 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 				tab_WorkListKeyPressed(evt);
 			}
 		});
+
 		span_WaitDiagnosis.setViewportView(tab_WorkList);
 
 		javax.swing.GroupLayout pan_CenterLayout = new javax.swing.GroupLayout(
@@ -335,179 +333,7 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 
 		lab_Name.setText("Doctor");
 
-		lab_poli.setText("Department");
-
-		lab_Finish.setText("Finish");
-
-		lab_FinishCount.setText("-----");
-
-		lab_Wait.setText("Await");
-
-		lab_WaitCount.setText("-----");
-
 		txt_Name.setEditable(false);
-
-		txt_Poli.setEditable(false);
-
-		lab_SystemTime.setFont(new java.awt.Font("UnDotum", 0, 18));
-		lab_SystemTime.setText("-----");
-
-		btn_Search.setText("Search");
-		btn_Search.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				btn_SearchActionPerformed(evt);
-			}
-		});
-
-		lab_Date.setText("Date:");
-
-		javax.swing.GroupLayout pan_TopLayout = new javax.swing.GroupLayout(
-				pan_Top);
-		pan_Top.setLayout(pan_TopLayout);
-		pan_TopLayout
-				.setHorizontalGroup(pan_TopLayout
-						.createParallelGroup(
-								javax.swing.GroupLayout.Alignment.LEADING)
-						.addGroup(
-								pan_TopLayout
-										.createSequentialGroup()
-										.addContainerGap()
-										.addGroup(
-												pan_TopLayout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.LEADING)
-														.addComponent(lab_Wait)
-														.addComponent(lab_Name)
-														.addComponent(lab_Date))
-										.addPreferredGap(
-												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-										.addGroup(
-												pan_TopLayout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.LEADING)
-														.addGroup(
-																pan_TopLayout
-																		.createSequentialGroup()
-																		.addGroup(
-																				pan_TopLayout
-																						.createParallelGroup(
-																								javax.swing.GroupLayout.Alignment.LEADING)
-																						.addComponent(
-																								txt_Name,
-																								javax.swing.GroupLayout.PREFERRED_SIZE,
-																								160,
-																								javax.swing.GroupLayout.PREFERRED_SIZE)
-																						.addComponent(
-																								lab_WaitCount,
-																								javax.swing.GroupLayout.PREFERRED_SIZE,
-																								29,
-																								javax.swing.GroupLayout.PREFERRED_SIZE))
-																		.addPreferredGap(
-																				javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-																		.addGroup(
-																				pan_TopLayout
-																						.createParallelGroup(
-																								javax.swing.GroupLayout.Alignment.LEADING)
-																						.addComponent(
-																								lab_poli)
-																						.addComponent(
-																								lab_Finish))
-																		.addPreferredGap(
-																				javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-																		.addGroup(
-																				pan_TopLayout
-																						.createParallelGroup(
-																								javax.swing.GroupLayout.Alignment.LEADING)
-																						.addGroup(
-																								pan_TopLayout
-																										.createSequentialGroup()
-																										.addComponent(
-																												txt_Poli,
-																												javax.swing.GroupLayout.PREFERRED_SIZE,
-																												160,
-																												javax.swing.GroupLayout.PREFERRED_SIZE)
-																										.addPreferredGap(
-																												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-																										.addComponent(
-																												lab_SystemTime,
-																												javax.swing.GroupLayout.PREFERRED_SIZE,
-																												207,
-																												javax.swing.GroupLayout.PREFERRED_SIZE))
-																						.addComponent(
-																								lab_FinishCount,
-																								javax.swing.GroupLayout.PREFERRED_SIZE,
-																								20,
-																								javax.swing.GroupLayout.PREFERRED_SIZE)))
-														.addGroup(
-																pan_TopLayout
-																		.createSequentialGroup()
-																		.addComponent(
-																				dateComboBox,
-																				javax.swing.GroupLayout.PREFERRED_SIZE,
-																				javax.swing.GroupLayout.DEFAULT_SIZE,
-																				javax.swing.GroupLayout.PREFERRED_SIZE)
-																		.addPreferredGap(
-																				javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-																		.addComponent(
-																				btn_Search,
-																				javax.swing.GroupLayout.PREFERRED_SIZE,
-																				152,
-																				javax.swing.GroupLayout.PREFERRED_SIZE)))
-										.addContainerGap(137, Short.MAX_VALUE)));
-		pan_TopLayout
-				.setVerticalGroup(pan_TopLayout
-						.createParallelGroup(
-								javax.swing.GroupLayout.Alignment.LEADING)
-						.addGroup(
-								pan_TopLayout
-										.createSequentialGroup()
-										.addContainerGap()
-										.addGroup(
-												pan_TopLayout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.BASELINE)
-														.addComponent(lab_Name)
-														.addComponent(
-																txt_Name,
-																javax.swing.GroupLayout.PREFERRED_SIZE,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																javax.swing.GroupLayout.PREFERRED_SIZE)
-														.addComponent(lab_poli)
-														.addComponent(
-																txt_Poli,
-																javax.swing.GroupLayout.PREFERRED_SIZE,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																javax.swing.GroupLayout.PREFERRED_SIZE)
-														.addComponent(
-																lab_SystemTime))
-										.addPreferredGap(
-												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-										.addGroup(
-												pan_TopLayout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.BASELINE)
-														.addComponent(lab_Wait)
-														.addComponent(
-																lab_Finish)
-														.addComponent(
-																lab_FinishCount)
-														.addComponent(
-																lab_WaitCount))
-										.addPreferredGap(
-												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-										.addGroup(
-												pan_TopLayout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.TRAILING)
-														.addComponent(lab_Date)
-														.addComponent(
-																dateComboBox,
-																javax.swing.GroupLayout.PREFERRED_SIZE,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																javax.swing.GroupLayout.PREFERRED_SIZE)
-														.addComponent(
-																btn_Search))
-										.addGap(12, 12, 12)));
 
 		btn_Close.setText(ResourceBundle
 				.getBundle("lang.language").getString("CLOSE")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -694,6 +520,91 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 														javax.swing.GroupLayout.DEFAULT_SIZE,
 														Short.MAX_VALUE))
 								.addContainerGap()));
+		pan_Top.setLayout(new GridLayout(3, 10, 10, 5));
+		pan_Top.add(lab_Name);
+		pan_Top.add(txt_Name);
+		lab_poli = new javax.swing.JLabel();
+		lab_poli.setHorizontalAlignment(SwingConstants.LEFT);
+
+		lab_poli.setText("Department");
+		pan_Top.add(lab_poli);
+		txt_Poli = new javax.swing.JTextField();
+		txt_Poli.setHorizontalAlignment(SwingConstants.LEFT);
+
+		txt_Poli.setEditable(false);
+		pan_Top.add(txt_Poli);
+		lbl_InpNo = new JLabel(ResourceBundle
+				.getBundle("lang.language").getString("INPATIENT_NO")); //$NON-NLS-1$ //$NON-NLS-2$
+		lbl_InpNo.setHorizontalAlignment(SwingConstants.LEFT);
+		lbl_InpNo.setVisible(false);
+		//lbl_InpNo.setLocation(pt);
+		pan_Top.add(lbl_InpNo);
+		lbl_InpNoVal = new JLabel("----"); //$NON-NLS-1$ //$NON-NLS-2$
+		lbl_InpNoVal.setVisible(false);
+		pan_Top.add(lbl_InpNoVal);
+		lab_SystemTime = new javax.swing.JLabel();
+
+		lab_SystemTime.setFont(new java.awt.Font("UnDotum", 0, 18));
+		lab_SystemTime.setText("-----");
+		pan_Top.add(lab_SystemTime);
+		lab_Wait = new javax.swing.JLabel();
+		lab_Wait.setHorizontalAlignment(SwingConstants.LEFT);
+
+		lab_Wait.setText("Await");
+
+		pan_Top.add(lab_Wait);
+		lab_WaitCount = new javax.swing.JLabel();
+		lab_WaitCount.setHorizontalAlignment(SwingConstants.LEFT);
+
+		lab_WaitCount.setText("-----");
+		pan_Top.add(lab_WaitCount);
+		lab_Finish = new javax.swing.JLabel();
+		lab_Finish.setHorizontalAlignment(SwingConstants.LEFT);
+
+		lab_Finish.setText("Finish");
+		pan_Top.add(lab_Finish);
+		lab_FinishCount = new javax.swing.JLabel();
+		lab_FinishCount.setHorizontalAlignment(SwingConstants.LEFT);
+
+		lab_FinishCount.setText("-----");
+		pan_Top.add(lab_FinishCount);
+
+		label_6 = new JLabel("");
+		pan_Top.add(label_6);
+
+		label = new JLabel("");
+		pan_Top.add(label);
+
+		label_1 = new JLabel("");
+		pan_Top.add(label_1);
+		lab_Date = new javax.swing.JLabel();
+		lab_Date.setHorizontalAlignment(SwingConstants.LEFT);
+
+		lab_Date.setText("Date:");
+		pan_Top.add(lab_Date);
+		dateComboBox = new cc.johnwu.date.DateComboBox();
+		pan_Top.add(dateComboBox);
+		btn_Search = new javax.swing.JButton();
+
+		btn_Search.setText("Search");
+		btn_Search.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				btn_SearchActionPerformed(evt);
+			}
+		});
+		pan_Top.add(btn_Search);
+
+		label_2 = new JLabel("");
+		pan_Top.add(label_2);
+
+		label_3 = new JLabel("");
+		pan_Top.add(label_3);
+
+		label_4 = new JLabel("");
+		pan_Top.add(label_4);
+
+		label_5 = new JLabel("");
+		pan_Top.add(label_5);
 
 		pack();
 		initDataBindings();
@@ -711,15 +622,11 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 			m_RegGuid = (String) tab_WorkList.getValueAt(
 					tab_WorkList.getSelectedRow(), 11);
 
-			boolean finishState = false;
 			if (tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 2) != null
 					&& tab_WorkList
 							.getValueAt(tab_WorkList.getSelectedRow(), 2)
 							.toString().equals("F")) {
-				finishState = true;
 			}
-
-			int getSelectRow = tab_WorkList.getSelectedRow();
 
 			Frm_DiagnosisDiagnostic frm_DiagnosisDiagnostic = new Frm_DiagnosisDiagnostic(
 					this, m_Pno, (String) tab_WorkList.getValueAt(
@@ -923,6 +830,16 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 	public JButton btn_Diagnostic;
 	public JButton btn_CheckOut;
 	public JButton btn_Reg;
+
+	public JLabel lbl_InpNoVal;
+	private JLabel lbl_InpNo;
+	private JLabel label;
+	private JLabel label_1;
+	private JLabel label_2;
+	private JLabel label_3;
+	private JLabel label_4;
+	private JLabel label_5;
+	private JLabel label_6;
 
 	protected void initDataBindings() {
 		BeanProperty<JButton, Boolean> jButtonBeanProperty = BeanProperty
