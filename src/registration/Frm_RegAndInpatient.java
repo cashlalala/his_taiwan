@@ -1701,9 +1701,9 @@ public class Frm_RegAndInpatient extends JFrame implements
 			selectedType = "Checkin";
 		}
 		try {
-			sql="SELECT bed_record.guid FROM bed_record WHERE bed_record.p_no="
+			sql="SELECT bed_record.guid FROM bed_record WHERE bed_record.p_no='"
 					+ selectedPatientGUID 
-					+ " AND bed_record.status='N'";
+					+ "' AND bed_record.status='N'";
 			rs = DBC.executeQuery(sql);
 			if(rs.next()){
 				JOptionPane.showMessageDialog(new Frame(),paragraph.getString("ERRORALREADYINPATIENT"));
