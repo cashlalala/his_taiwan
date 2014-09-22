@@ -118,7 +118,7 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 		}
 		if (tab_WorkList.getRowCount() != 0) {
 			btn_Enter.setEnabled(true);
-
+			btn_RePrint.setEnabled(true);
 			if (SysName.equals("dia")) {
 				tab_WorkList.addRowSelectionInterval(LastSelectRow,
 						LastSelectRow);
@@ -324,16 +324,14 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 
 		txt_Name.setEditable(false);
 
-		btn_Close.setText(ResourceBundle
-				.getBundle("lang.language").getString("CLOSE")); //$NON-NLS-1$ //$NON-NLS-2$
+		btn_Close.setText(this.paragraph.getString("CLOSE")); //$NON-NLS-1$ //$NON-NLS-2$
 		btn_Close.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				btn_CloseActionPerformed(evt);
 			}
 		});
 
-		btn_Enter.setText(ResourceBundle
-				.getBundle("lang.language").getString("ENTER")); //$NON-NLS-1$ //$NON-NLS-2$
+		btn_Enter.setText(this.paragraph.getString("ENTER")); //$NON-NLS-1$ //$NON-NLS-2$
 		btn_Enter.setEnabled(false);
 		btn_Enter.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -341,17 +339,16 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 			}
 		});
 
-		btn_RePrint.setText(ResourceBundle
-				.getBundle("lang.language").getString("PRINT")); //$NON-NLS-1$ //$NON-NLS-2$
-		btn_RePrint.setEnabled(false);
+		btn_RePrint.setText(this.paragraph.getString("PRINT")); //$NON-NLS-1$ //$NON-NLS-2$
+		btn_RePrint.setEnabled(true);
 		btn_RePrint.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				btn_RePrintActionPerformed(evt);
 			}
 		});
 
-		btn_Diagnostic = new JButton(ResourceBundle
-				.getBundle("lang.language").getString("MEDICAL_HISTORYT")); //$NON-NLS-1$ //$NON-NLS-2$
+		btn_Diagnostic = new JButton(
+				this.paragraph.getString("MEDICAL_HISTORYT")); //$NON-NLS-1$ //$NON-NLS-2$
 		btn_Diagnostic.addActionListener(new java.awt.event.ActionListener() {
 
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -361,8 +358,7 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 		});
 		btn_Diagnostic.setVisible(false);
 
-		btn_Reg = new JButton(ResourceBundle
-				.getBundle("lang.language").getString("REGISTRATION")); //$NON-NLS-1$ //$NON-NLS-2$
+		btn_Reg = new JButton(this.paragraph.getString("REGISTRATION")); //$NON-NLS-1$ //$NON-NLS-2$
 		btn_Reg.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -370,8 +366,7 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 			}
 		});
 
-		btn_CheckOut = new JButton(ResourceBundle
-				.getBundle("lang.language").getString("CHECKOUT")); //$NON-NLS-1$ //$NON-NLS-2$
+		btn_CheckOut = new JButton(this.paragraph.getString("CHECKOUT")); //$NON-NLS-1$ //$NON-NLS-2$
 		btn_CheckOut.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				onCheckOut(e);
@@ -522,8 +517,7 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 
 		txt_Poli.setEditable(false);
 		pan_Top.add(txt_Poli);
-		lbl_InpNo = new JLabel(ResourceBundle
-				.getBundle("lang.language").getString("INPATIENT_NO")); //$NON-NLS-1$ //$NON-NLS-2$
+		lbl_InpNo = new JLabel(this.paragraph.getString("INPATIENT_NO")); //$NON-NLS-1$ //$NON-NLS-2$
 		lbl_InpNo.setHorizontalAlignment(SwingConstants.LEFT);
 		lbl_InpNo.setVisible(false);
 		// lbl_InpNo.setLocation(pt);
@@ -555,8 +549,7 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 		lab_Date = new javax.swing.JLabel();
 		lab_Date.setHorizontalAlignment(SwingConstants.LEFT);
 
-		lab_Date.setText(ResourceBundle
-				.getBundle("lang.language").getString("CHECK_IN_DATE")); //$NON-NLS-1$ //$NON-NLS-2$
+		lab_Date.setText(this.paragraph.getString("CHECK_IN_DATE")); //$NON-NLS-1$ //$NON-NLS-2$
 		pan_Top.add(lab_Date);
 		dateComboBox = new cc.johnwu.date.DateComboBox();
 		pan_Top.add(dateComboBox);
@@ -679,15 +672,16 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 	private void tab_WorkListKeyPressed(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_tab_WorkListKeyPressed
 		if (this.tab_WorkList.getRowCount() > 0) {
 			this.btn_Enter.setEnabled(true);
-			if (this.m_SysName.equals("dia")
-					&& this.tab_WorkList.getValueAt(
-							this.tab_WorkList.getSelectedRow(), 3) != null) {
-				this.btn_Enter.setText(paragraph.getLanguage(line, "EDIT"));
-				this.btn_RePrint.setEnabled(true);
-			} else if (this.m_SysName.equals("dia")) {
-				this.btn_Enter.setText(paragraph.getLanguage(message, "ENTER"));
-				this.btn_RePrint.setEnabled(false);
+			this.btn_RePrint.setEnabled(true);
+			if (this.tab_WorkList.getValueAt(
+					this.tab_WorkList.getSelectedRow(), 3) != null) {
+				btn_Enter.setText(paragraph.getLanguage(line, "EDIT"));
+			} else {
+				btn_Enter.setText(paragraph.getLanguage(message, "ENTER"));
 			}
+		} else {
+			this.btn_Enter.setEnabled(false);
+			this.btn_RePrint.setEnabled(false);
 		}
 	}// GEN-LAST:event_tab_WorkListKeyPressed
 
@@ -737,7 +731,7 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 
 	private void btn_RePrintActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_RePrintActionPerformed
 		String regGuid = (String) tab_WorkList.getValueAt(
-				tab_WorkList.getSelectedRow(), 11);
+				tab_WorkList.getSelectedRow(), 13);
 		System.out.println(String.format("Selected Patient [%s]", regGuid));
 		Frm_DiagnosisPrintChooser chooser = new Frm_DiagnosisPrintChooser(
 				regGuid);
