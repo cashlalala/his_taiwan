@@ -14,7 +14,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.ResourceBundle;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -41,9 +40,7 @@ import casemgmt.Frm_Case;
 import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
 import diagnosis.DiagnosisInterface;
-import diagnosis.Frm_DiagnosisDiagnostic;
 import diagnosis.Frm_DiagnosisInfo;
-import diagnosis.Frm_DiagnosisPrintChooser;
 import errormessage.StoredErrorMessage;
 
 public class Frm_WorkList extends javax.swing.JFrame implements
@@ -591,34 +588,14 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 	private String dummy = "";
 
 	private void onDiagnosticClicked(java.awt.event.ActionEvent evt) {
-		if (m_SysName.equals("dia")) {
-			dummy = "dia_hist";
 
-			m_Pno = (String) tab_WorkList.getValueAt(
-					tab_WorkList.getSelectedRow(), 4);
+		dummy = "inp_hist";
+		String pname = (String) tab_WorkList.getValueAt(
+				tab_WorkList.getSelectedRow(), 3);
+		m_Pno = (String) tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(),
+				0);
+		new Frm_InpatientHistory(this, m_Pno, pname).setVisible(true);
 
-			m_RegGuid = (String) tab_WorkList.getValueAt(
-					tab_WorkList.getSelectedRow(), 11);
-
-			if (tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 2) != null
-					&& tab_WorkList
-							.getValueAt(tab_WorkList.getSelectedRow(), 2)
-							.toString().equals("F")) {
-			}
-
-			Frm_DiagnosisDiagnostic frm_DiagnosisDiagnostic = new Frm_DiagnosisDiagnostic(
-					this, m_Pno, (String) tab_WorkList.getValueAt(
-							tab_WorkList.getSelectedRow(), 1), m_RegGuid);
-			frm_DiagnosisDiagnostic.setEntry("clinic_worklist_hist");
-			frm_DiagnosisDiagnostic.setVisible(true);
-		} else {
-			dummy = "inp_hist";
-			String pname = (String) tab_WorkList.getValueAt(
-					tab_WorkList.getSelectedRow(), 3);
-			m_Pno = (String) tab_WorkList.getValueAt(
-					tab_WorkList.getSelectedRow(), 0);
-			new Frm_InpatientHistory(this, m_Pno, pname).setVisible(true);
-		}
 		m_RefrashWorkList.stopRunning();
 		m_RefrashWorkList.interrupt(); // 終止重複讀取掛號表單
 		m_Clock.interrupt();
@@ -733,7 +710,7 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 		String regGuid = (String) tab_WorkList.getValueAt(
 				tab_WorkList.getSelectedRow(), 13);
 		System.out.println(String.format("Selected Patient [%s]", regGuid));
-		Frm_DiagnosisPrintChooser chooser = new Frm_DiagnosisPrintChooser(
+		Frm_InpatientPrintChooser chooser = new Frm_InpatientPrintChooser(
 				regGuid);
 		chooser.setLocationRelativeTo(this);
 		chooser.setVisible(true);

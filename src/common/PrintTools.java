@@ -27,6 +27,13 @@ import cc.johnwu.sql.DBC;
  * @author Steven
  */
 public class PrintTools {
+
+	private String entry;
+
+	public void setEntry(String entry) {
+		this.entry = entry;
+	}
+
 	private int m_Type;
 	private ResultSet m_Rs; // 基本資料
 	private ResultSet m_RsData; // 迴圈列印資料
@@ -130,6 +137,7 @@ public class PrintTools {
 		} catch (SQLException ex) {
 			Logger.getLogger(PrintTools.class.getName()).log(Level.SEVERE,
 					null, ex);
+			ex.printStackTrace();
 		}
 
 		PrinterJob pj = PrinterJob.getPrinterJob();
@@ -168,24 +176,45 @@ public class PrintTools {
 		m_RegGuid = guid;
 		m_Type = i;
 		// 病患資料
-		String sqlPatient = "SELECT  patients_info.p_no, "
-				+ "registration_info.pharmacy_no, registration_info.modify_count,concat(patients_info.firstname,'  ',patients_info.lastname) AS name, "
-				+ "patients_info.gender, patients_info.birth , shift_table.shift_date AS date, policlinic.name AS dept, poli_room.name AS clinic, "
+		String sqlPatient = this.entry.equals("inp") ? "SELECT patients_info.p_no, "
+				+ "reg.pharmacy_no, reg.modify_count, "
+				+ "concat(patients_info.firstname,'  ',patients_info.lastname) AS name, "
+				+ "patients_info.gender, patients_info.birth ,  bed_record.checkinTime AS date, "
+				+ "policlinic.name AS dept, "
+				+ "bed_code.description AS clinic, "
 				+ "concat(staff_info.firstname,'  ',staff_info.lastname) AS doctor, "
 				+ "(YEAR(CURDATE())-YEAR(patients_info.birth))-(RIGHT(CURDATE(),5)< RIGHT(patients_info.birth,5)) AS age, "
-				+ "CASE shift_table.shift  "
-				+ "WHEN '1' THEN 'Morning'  "
-				+ "WHEN '2' THEN 'Afternoon'  "
-				+ "WHEN '3' THEN 'Night'  "
-				+ "ELSE 'All Night' "
-				+ "END shift "
-				+ "FROM registration_info, patients_info, shift_table,poli_room,policlinic, staff_info WHERE registration_info.guid = '"
-				+ m_RegGuid + "'  "
-				+ "AND registration_info.p_no = patients_info.p_no "
-				+ "AND registration_info.shift_guid = shift_table.guid "
-				+ "AND shift_table.room_guid = poli_room.guid "
-				+ "AND poli_room.poli_guid = policlinic.guid "
-				+ "AND shift_table.s_id = staff_info.s_id";
+				+ "'Inpatient' AS shift "
+				+ "FROM registration_info reg, patients_info, policlinic, staff_info, bed_record, bed_code "
+				+ "WHERE reg.guid = '"
+				+ m_RegGuid
+				+ "' "
+				+ "AND reg.p_no = patients_info.p_no "
+				+ "AND reg.shift_guid is null "
+				+ "AND bed_record.guid = reg.bed_guid "
+				+ "AND bed_record.bed_guid =  bed_code.guid "
+				+ "AND bed_code.poli_guid = policlinic.guid "
+				+ "AND bed_record.mainDr_no = staff_info.s_no"
+				: "SELECT  patients_info.p_no, "
+						+ "registration_info.pharmacy_no, registration_info.modify_count,concat(patients_info.firstname,'  ',patients_info.lastname) AS name, "
+						+ "patients_info.gender, patients_info.birth , shift_table.shift_date AS date, policlinic.name AS dept, poli_room.name AS clinic, "
+						+ "concat(staff_info.firstname,'  ',staff_info.lastname) AS doctor, "
+						+ "(YEAR(CURDATE())-YEAR(patients_info.birth))-(RIGHT(CURDATE(),5)< RIGHT(patients_info.birth,5)) AS age, "
+						+ "CASE shift_table.shift  "
+						+ "WHEN '1' THEN 'Morning'  "
+						+ "WHEN '2' THEN 'Afternoon'  "
+						+ "WHEN '3' THEN 'Night'  "
+						+ "ELSE 'All Night' "
+						+ "END shift "
+						+ "FROM registration_info, patients_info, shift_table,poli_room,policlinic, staff_info WHERE registration_info.guid = '"
+						+ m_RegGuid
+						+ "'  "
+						+ "AND registration_info.p_no = patients_info.p_no "
+						+ "AND registration_info.shift_guid = shift_table.guid "
+						+ "AND shift_table.room_guid = poli_room.guid "
+						+ "AND poli_room.poli_guid = policlinic.guid "
+						+ "AND shift_table.s_id = staff_info.s_id";
+
 		try {
 			m_Rs = DBC.executeQuery(sqlPatient);
 			m_Rs.next();
@@ -889,7 +918,10 @@ public class PrintTools {
 							+ "WHEN 'L' THEN 'Laboratory' END 'sys' "
 							+ "FROM cashier, patients_info "
 							+ "WHERE cashier.p_no = patients_info.p_no AND reg_guid = '"
-							+ m_RegGuid + "' AND type = '" + m_CashierType + "'";
+							+ m_RegGuid
+							+ "' AND type = '"
+							+ m_CashierType
+							+ "'";
 					System.out.println(sql);
 					rs = DBC.executeQuery(sql);
 					rs.next();
@@ -909,8 +941,7 @@ public class PrintTools {
 								+ "medicine_stock.price AS 'Cost' "
 								+ "FROM medicines, medicine_stock, registration_info "
 								+ "WHERE registration_info.guid = '"
-								+ m_RegGuid
-								+ "' "
+								+ m_RegGuid + "' "
 								+ "AND medicines.code = medicine_stock.m_code";
 					} else if (sys.equals("Laboratory")) {
 						sql = "SELECT concat(prescription.code,'  ',prescription_code.name) AS Item, "
@@ -1159,21 +1190,23 @@ public class PrintTools {
 				}
 
 				g2.drawString("Patient No.:", x, y += space);
+				g2.drawString("CheckIn Date:", x, y += space);
 				g2.drawString("Name:", x, y += space);
 				g2.drawString("Gender:", x, y += space);
 				g2.drawString("Birth:", x, y += space);
 				g2.drawString("Age:", x, y += space);
 				x = 820;
 				y = 180;
-				g2.drawString("Date:", x, y += space);
-				g2.drawString("Shift:", x, y += space);
+
+				g2.drawString("Type:", x, y += space * 2);
 				g2.drawString("Dept.:", x, y += space);
-				g2.drawString("Clinic:", x, y += space);
+				g2.drawString("Bed:", x, y += space);
 				g2.drawString("Doctor:", x, y += space);
 				g2.setFont(new Font("Serif", Font.BOLD, 32));
 				x = 320;
 				y = 180;
 				g2.drawString(m_Rs.getString("p_no"), x + 10, y += space);
+				g2.drawString(m_Rs.getString("date"), x + 25, y += space);
 				g2.drawString(m_Rs.getString("name"), x - 65, y += space);
 				g2.drawString(m_Rs.getString("gender"), x - 45, y += space);
 				if (m_Rs.getString("birth") == null) {
@@ -1186,14 +1219,17 @@ public class PrintTools {
 				} else {
 					g2.drawString(m_Rs.getString("age"), x - 90, y += space);
 				}
+				int maxY = y;
 
 				x = 960;
 				y = 180;
-				g2.drawString(m_Rs.getString("date"), x - 30, y += space);
-				g2.drawString(m_Rs.getString("shift"), x - 25, y += space);
+				g2.drawString(m_Rs.getString("shift"), x - 25, y += space * 2);
 				g2.drawString(m_Rs.getString("dept"), x - 20, y += space);
 				g2.drawString(m_Rs.getString("clinic"), x - 10, y += space);
 				g2.drawString(m_Rs.getString("doctor"), x, y += space);
+				if (maxY > y) {
+					y = maxY;
+				}
 				g2.drawString(
 						"========================================"
 								+ "==============================================================",
