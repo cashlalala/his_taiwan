@@ -1,42 +1,41 @@
 package radiology;
 
-import cc.johnwu.date.DateMethod;
-import cc.johnwu.login.UserInfo;
-import cc.johnwu.sql.DBC;
-import cc.johnwu.sql.HISModel;
-
-import java.awt.Color;
-import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.print.PageFormat;
-import java.awt.print.Paper;
-import java.awt.print.Printable;
-import java.awt.print.PrinterException;
-import java.awt.print.PrinterJob;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.UUID;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
+import multilingual.Language;
 import worklist.Frm_WorkList;
+import cc.johnwu.date.DateMethod;
+import cc.johnwu.sql.DBC;
+import cc.johnwu.sql.HISModel;
 import common.Constant;
 import common.PrintTools;
 import common.TabTools;
 import diagnosis.Summary;
-import multilingual.Language;
 
 /**
  *
@@ -48,6 +47,8 @@ public class Frm_Radiology extends javax.swing.JFrame {
     private boolean m_FinishState;      //
     private int m_WorkListRowNo;        // Frm_DiagnosisWorkList's stop rowNo
     private String m_TmpGuid;   // 暫存Gued
+    private Vector<String> filePath;
+    private int filePathIndex;
     
     
      /*多國語言變數*/
@@ -120,15 +121,19 @@ public class Frm_Radiology extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
+        jPanel1Left = new javax.swing.JPanel();
+        jPanel1Right = new javax.swing.JPanel();
         lab_NameOfTest = new javax.swing.JLabel();
         txt_TestName = new javax.swing.JTextField();
         lab_ResultsCollectionDate1 = new javax.swing.JLabel();
         pan_Summary = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         txt_Result = new javax.swing.JTextArea();
+        lab_RadioImg = new javax.swing.JLabel();
         radiobtn_Normal = new javax.swing.JRadioButton();
         radiobtn_Unnormal = new javax.swing.JRadioButton();
         btn_add = new javax.swing.JButton();
+        btn_loadImg = new javax.swing.JButton();
         txt_SpecimenTest = new javax.swing.JTextField();
         txt_SpecimenResult = new javax.swing.JTextField();
         lab_ResultsCollectionDate2 = new javax.swing.JLabel();
@@ -161,6 +166,8 @@ public class Frm_Radiology extends javax.swing.JFrame {
         mn_Fiele = new javax.swing.JMenu();
         mnit_XRayRecord = new javax.swing.JMenuItem();
         mnit_Close = new javax.swing.JMenuItem();
+        
+        filePath = new Vector<String>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Radiology(X-RAY)");
@@ -221,6 +228,60 @@ public class Frm_Radiology extends javax.swing.JFrame {
                 btn_addActionPerformed(evt);
             }
         });
+        
+        btn_loadImg.setText("Load Image");
+        btn_loadImg.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_LoadImageActionPerformed(evt);
+            }
+        });
+        
+        lab_RadioImg.addMouseListener(new java.awt.event.MouseListener() {
+
+        	@Override
+			public void mouseClicked(MouseEvent e) {
+				// TODO Auto-generated method stub
+        		int fileNum = filePath.size();
+        		if(fileNum <= 0) return;
+        		if (e.getButton() == MouseEvent.BUTTON1) {	// left button
+        			int next = (filePathIndex + 1) % fileNum;
+        			//System.out.println("next = " + next);
+        			filePathIndex = next;
+        			lab_RadioImg.setIcon(scaledIcon(filePath.get(filePathIndex), 190));
+                }
+                if (e.getButton() == MouseEvent.BUTTON3) {	// right button
+                	int next = (filePathIndex + fileNum - 1) % fileNum;
+                	//System.out.println("next = " + next);
+        			filePathIndex = next;
+        			lab_RadioImg.setIcon(scaledIcon(filePath.get(filePathIndex), 190));
+                }
+				
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+        });
 
         txt_SpecimenTest.setEditable(false);
 
@@ -241,7 +302,105 @@ public class Frm_Radiology extends javax.swing.JFrame {
         });
 
         lab_DateOfTest1.setText("Date of Test :");
-
+        
+        javax.swing.GroupLayout jPanel1LeftLayout = new javax.swing.GroupLayout(jPanel1Left);
+        jPanel1Left.setLayout(jPanel1LeftLayout);
+        jPanel1LeftLayout.setHorizontalGroup(
+        		jPanel1LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1LeftLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lab_NameOfTest, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(lab_ResultsCollectionDate2, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(lab_DateOfTest1, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(lab_ResultsCollectionDate1, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1LeftLayout.createSequentialGroup()
+                        .addGroup(jPanel1LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1LeftLayout.createSequentialGroup()
+                                .addComponent(ckbox_Test)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(txt_SpecimenTest, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1LeftLayout.createSequentialGroup()
+                                .addComponent(ckbox_Result)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(txt_SpecimenResult, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addContainerGap())
+                    .addGroup(jPanel1LeftLayout.createSequentialGroup()
+                        .addGroup(jPanel1LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1LeftLayout.createSequentialGroup()
+                                .addComponent(radiobtn_Normal)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(radiobtn_Unnormal)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 456, Short.MAX_VALUE)
+                                .addComponent(btn_add, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
+                                .addComponent(btn_loadImg, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            )
+                            .addComponent(txt_TestName, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(pan_Summary, javax.swing.GroupLayout.Alignment.LEADING))
+                        .addContainerGap())))
+        );
+        jPanel1LeftLayout.setVerticalGroup(
+        		jPanel1LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1LeftLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lab_NameOfTest)
+                    .addComponent(txt_TestName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(ckbox_Test)
+                    .addComponent(lab_DateOfTest1)
+                    .addComponent(txt_SpecimenTest, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(10, 10, 10)
+                .addGroup(jPanel1LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lab_ResultsCollectionDate2)
+                    .addComponent(ckbox_Result)
+                    .addComponent(txt_SpecimenResult, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lab_ResultsCollectionDate1)
+                    .addComponent(pan_Summary, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel1LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1LeftLayout.createSequentialGroup()
+                        .addGap(12, 12, 12)
+                        .addGroup(jPanel1LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(radiobtn_Normal)
+                            .addComponent(radiobtn_Unnormal)
+                            .addComponent(btn_add)
+                            .addComponent(btn_loadImg)
+                            ))
+                    )
+                .addContainerGap(14, Short.MAX_VALUE))
+        );
+        
+        javax.swing.GroupLayout jPanel1RightLayout = new javax.swing.GroupLayout(jPanel1Right);
+        jPanel1Right.setLayout(jPanel1RightLayout);
+        jPanel1RightLayout.setHorizontalGroup(
+        		jPanel1RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1RightLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                		//.addComponent(btn_loadImg, javax.swing.GroupLayout.Alignment.TRAILING)
+                		.addComponent(lab_RadioImg, javax.swing.GroupLayout.Alignment.TRAILING)
+                ).addContainerGap())
+        );
+        jPanel1RightLayout.setVerticalGroup(
+        		jPanel1RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1RightLayout.createSequentialGroup()
+                .addContainerGap()
+                //.addGroup(jPanel1RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                //    .addComponent(btn_loadImg)
+                //)
+                //.addGap(8, 8, 8)
+                .addGroup(jPanel1RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lab_RadioImg)
+                )
+                .addContainerGap(14, Short.MAX_VALUE))
+        );
+        
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -249,65 +408,19 @@ public class Frm_Radiology extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lab_NameOfTest, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(lab_ResultsCollectionDate2, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(lab_DateOfTest1, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(lab_ResultsCollectionDate1, javax.swing.GroupLayout.Alignment.TRAILING))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(ckbox_Test)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(txt_SpecimenTest, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(ckbox_Result)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(txt_SpecimenResult, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addContainerGap(475, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                                .addComponent(radiobtn_Normal)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(radiobtn_Unnormal)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 456, Short.MAX_VALUE)
-                                .addComponent(btn_add, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(txt_TestName, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 674, Short.MAX_VALUE)
-                            .addComponent(pan_Summary, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addContainerGap())))
+                    .addComponent(jPanel1Left, javax.swing.GroupLayout.Alignment.TRAILING)
+                ).addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel1Right, javax.swing.GroupLayout.Alignment.TRAILING, 100, 200, 200)
+                ).addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lab_NameOfTest)
-                    .addComponent(txt_TestName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(ckbox_Test)
-                    .addComponent(lab_DateOfTest1)
-                    .addComponent(txt_SpecimenTest, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(10, 10, 10)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lab_ResultsCollectionDate2)
-                    .addComponent(ckbox_Result)
-                    .addComponent(txt_SpecimenResult, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lab_ResultsCollectionDate1)
-                    .addComponent(pan_Summary, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(8, 8, 8)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(radiobtn_Normal)
-                            .addComponent(radiobtn_Unnormal)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btn_add)))
+                    .addComponent(jPanel1Left)
+                    .addComponent(jPanel1Right)
+                )
                 .addContainerGap(14, Short.MAX_VALUE))
         );
 
@@ -723,6 +836,11 @@ public class Frm_Radiology extends javax.swing.JFrame {
             ckbox_Test.setSelected(false);
             ckbox_Result.setSelected(false);
             btn_add.setEnabled(false);
+            
+            lab_RadioImg.setIcon(null);
+            filePath.clear();
+            filePathIndex = 0;
+            
     }
 
     private void setSavePre() {
@@ -750,8 +868,25 @@ public class Frm_Radiology extends javax.swing.JFrame {
             }
 
             sql += "WHERE guid = '" + m_TmpGuid + "'";
-            System.out.println(sql);
+            //System.out.println(sql);
             DBC.executeUpdate(sql);
+            
+            sql = "UPDATE image_meta SET status = 'D' WHERE item_guid = '" + m_TmpGuid + "'";
+        	DBC.executeUpdate(sql);
+        	
+            for(int i = 0; i < filePath.size(); i++) {
+				sql = "INSERT INTO image_meta(guid, p_no, item_guid, file_path, type) VALUES(?, ? ,?, ?, ?)";
+				Connection conn = DBC.getConnectionExternel();
+				PreparedStatement prestate =  conn.prepareStatement(sql); //先建立一個 SQL 語句並回傳一個 PreparedStatement 物件
+				prestate.setString(1, UUID.randomUUID().toString()); 
+				prestate.setString(2, m_Pno); 
+				prestate.setString(3, m_TmpGuid); 
+				prestate.setString(4, filePath.get(i)); 
+				prestate.setString(5, Constant.X_RAY_CODE); 
+				prestate.executeUpdate();  //真正執行
+				DBC.closeConnectionExternel(conn);
+            }
+            
             initValue();
             setTab_Prescription();
             JOptionPane.showMessageDialog(null,"Saved successfully.");
@@ -802,7 +937,27 @@ public class Frm_Radiology extends javax.swing.JFrame {
              m_TmpGuid = tab_Prescription.getValueAt(tab_Prescription.getSelectedRow(), 1).toString();
 
              this.tab_Prescription.setToolTipText(TabTools.getTooltipStr((String)this.tab_Prescription.getValueAt(this.tab_Prescription.getSelectedRow(),4), 30));
-              }
+             
+             // load image if existed.
+             String pre_guid = (String) tab_Prescription.getValueAt(tab_Prescription.getSelectedRow(), 1);
+             String sql = "SELECT file_path FROM image_meta WHERE status = 'N' AND item_guid = '" + pre_guid + "'";
+             try {
+                 ResultSet rs = DBC.executeQuery(sql);
+                 filePath.clear();
+                 int counter = 0;
+                 while (rs.next()) {
+                	 filePath.add(counter, rs.getString("file_path"));
+                	 counter++;
+                 }
+                 if(filePath.size() > 0) {
+	                 lab_RadioImg.setIcon(scaledIcon(filePath.get(0), 190));
+	                 filePathIndex = 0;
+                 }
+             } catch (SQLException ex) {
+                 Logger.getLogger(Frm_Radiology.class.getName()).log(Level.SEVERE, null, ex);
+             }
+             
+             }
     }//GEN-LAST:event_tab_PrescriptionMouseClicked
 
     private void tab_PrescriptionKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tab_PrescriptionKeyReleased
@@ -847,6 +1002,41 @@ public class Frm_Radiology extends javax.swing.JFrame {
     private void btn_addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addActionPerformed
         setSavePre();
     }//GEN-LAST:event_btn_addActionPerformed
+    
+    private ImageIcon scaledIcon(String absolutePath, int height) {
+    	String path = "./img/nofile.png";
+    	if(absolutePath != null) {
+    		File file = new File(absolutePath);
+        	if(file.exists()) path = absolutePath;
+    	}
+        
+    	ImageIcon image = new ImageIcon(path);
+        Image img = image.getImage();
+        int scaledY = height;// (scaledX * img.getHeight(null))/img.getWidth(null);
+        int scaledX = (scaledY * img.getWidth(null))/img.getHeight(null);
+        BufferedImage bi = new BufferedImage(scaledX, scaledY, BufferedImage.TYPE_INT_ARGB);
+        Graphics g = bi.createGraphics();
+        g.drawImage(img, 0, 0, scaledX, scaledY, null);
+        ImageIcon newIcon = new ImageIcon(bi);
+        return newIcon;
+    } 
+    
+    private void btn_LoadImageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addActionPerformed
+    	jFileChooser1 = new javax.swing.JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("JPG, GIF and PNG Images", "jpg", "jpeg", "gif", "png");
+        jFileChooser1.setFileFilter(filter);
+        jFileChooser1.setMultiSelectionEnabled(true);
+		int returnVal = jFileChooser1.showOpenDialog(null);
+		if(returnVal == JFileChooser.APPROVE_OPTION) {
+			//txt_HosIcon.setText(jFileChooser1.getSelectedFile().getAbsolutePath());
+			filePath.clear();
+			for(File file : jFileChooser1.getSelectedFiles()) {
+				filePath.add(file.getAbsolutePath());
+			}
+			lab_RadioImg.setIcon(scaledIcon(filePath.get(0), 190));
+			filePathIndex = 0;
+		}
+    }//GEN-LAST:event_btn_addActionPerformed
 
     private void ckbox_TestMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ckbox_TestMouseClicked
         if (ckbox_Test.isSelected()) txt_SpecimenTest.setText(new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime()));
@@ -862,9 +1052,12 @@ public class Frm_Radiology extends javax.swing.JFrame {
     private javax.swing.JButton btn_Close;
     private javax.swing.JButton btn_Finish;
     private javax.swing.JButton btn_add;
+    private javax.swing.JButton btn_loadImg;
     private javax.swing.JCheckBox ckbox_Result;
     private javax.swing.JCheckBox ckbox_Test;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel1Left;
+    private javax.swing.JPanel jPanel1Right;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lab_DateOfTest1;
@@ -896,11 +1089,15 @@ public class Frm_Radiology extends javax.swing.JFrame {
     private javax.swing.JTextField txt_No;
     private javax.swing.JTextField txt_Ps;
     private javax.swing.JTextArea txt_Result;
+    private javax.swing.JLabel lab_RadioImg;
     private javax.swing.JTextField txt_Sex;
     private javax.swing.JTextField txt_SpecimenResult;
     private javax.swing.JTextField txt_SpecimenTest;
     private javax.swing.JTextField txt_TestName;
     private javax.swing.JTextField txt_Weight;
+    
+    private javax.swing.JFileChooser jFileChooser1;
+    
     // End of variables declaration//GEN-END:variables
 //    class MyPrintable implements Printable {
 //
