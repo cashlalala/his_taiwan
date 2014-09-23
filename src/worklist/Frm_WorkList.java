@@ -335,16 +335,14 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 
 		txt_Name.setEditable(false);
 
-		btn_Close.setText(ResourceBundle
-				.getBundle("lang.language").getString("CLOSE")); //$NON-NLS-1$ //$NON-NLS-2$
+		btn_Close.setText(this.paragraph.getString("CLOSE")); //$NON-NLS-1$ //$NON-NLS-2$
 		btn_Close.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				btn_CloseActionPerformed(evt);
 			}
 		});
 
-		btn_Enter.setText(ResourceBundle
-				.getBundle("lang.language").getString("ENTER")); //$NON-NLS-1$ //$NON-NLS-2$
+		btn_Enter.setText(this.paragraph.getString("ENTER")); //$NON-NLS-1$ //$NON-NLS-2$
 		btn_Enter.setEnabled(false);
 		btn_Enter.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -352,8 +350,7 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 			}
 		});
 
-		btn_RePrint.setText(ResourceBundle
-				.getBundle("lang.language").getString("PRINT")); //$NON-NLS-1$ //$NON-NLS-2$
+		btn_RePrint.setText(this.paragraph.getString("PRINT")); //$NON-NLS-1$ //$NON-NLS-2$
 		btn_RePrint.setEnabled(false);
 		btn_RePrint.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -361,8 +358,7 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 			}
 		});
 
-		btn_Diagnostic = new JButton(ResourceBundle
-				.getBundle("lang.language").getString("MEDICAL_HISTORYT")); //$NON-NLS-1$ //$NON-NLS-2$
+		btn_Diagnostic = new JButton(this.paragraph.getString("MEDICAL_HISTORYT")); //$NON-NLS-1$ //$NON-NLS-2$
 		btn_Diagnostic.addActionListener(new java.awt.event.ActionListener() {
 
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -372,8 +368,7 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 		});
 		btn_Diagnostic.setVisible(false);
 
-		btn_Reg = new JButton(ResourceBundle
-				.getBundle("lang.language").getString("REGISTRATION")); //$NON-NLS-1$ //$NON-NLS-2$
+		btn_Reg = new JButton(this.paragraph.getString("REGISTRATION")); //$NON-NLS-1$ //$NON-NLS-2$
 		btn_Reg.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -381,8 +376,7 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 			}
 		});
 
-		btn_CheckOut = new JButton(ResourceBundle
-				.getBundle("lang.language").getString("CHECKOUT")); //$NON-NLS-1$ //$NON-NLS-2$
+		btn_CheckOut = new JButton(this.paragraph.getString("CHECKOUT")); //$NON-NLS-1$ //$NON-NLS-2$
 		btn_CheckOut.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				onCheckOut(e);
@@ -533,8 +527,7 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 
 		txt_Poli.setEditable(false);
 		pan_Top.add(txt_Poli);
-		lbl_InpNo = new JLabel(ResourceBundle
-				.getBundle("lang.language").getString("INPATIENT_NO")); //$NON-NLS-1$ //$NON-NLS-2$
+		lbl_InpNo = new JLabel(this.paragraph.getString("INPATIENT_NO")); //$NON-NLS-1$ //$NON-NLS-2$
 		lbl_InpNo.setHorizontalAlignment(SwingConstants.LEFT);
 		lbl_InpNo.setVisible(false);
 		//lbl_InpNo.setLocation(pt);
