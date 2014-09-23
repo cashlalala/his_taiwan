@@ -2,6 +2,7 @@ package common;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
@@ -40,6 +41,32 @@ public class PrintTools {
 	private String m_RegGuid; // 迴圈列印資料
 	private String m_CashierType; // 收據類別
 	private final String X_RAY_CODE = Constant.X_RAY_CODE; // 處置X光代碼
+
+	public int drawString(Graphics g, String s, int x, int y, int width) {
+		FontMetrics fm = g.getFontMetrics();
+
+		int lineHeight = fm.getHeight();
+
+		int curX = x;
+		int curY = y;
+
+		String[] words = s.split(" ");
+
+		for (String word : words) {
+			int wordWidth = fm.stringWidth(word + " ");
+
+			// If text exceeds the width, then move to next line.
+			if (curX + wordWidth >= x + width) {
+				curY += lineHeight;
+				curX = x;
+			}
+
+			g.drawString(word, curX, curY);
+			curX += wordWidth;
+		}
+		
+		return curY;
+	}
 
 	// 收據
 	public void DoPrint(int i, String regGuid, String cashierType) {
@@ -565,11 +592,11 @@ public class PrintTools {
 					g2.setFont(new Font("Serif", Font.BOLD, 32)); // 資料
 					y += 40;
 					while (m_RsData.next()) {
-						g2.drawString(
-								++rowNo + ". " + m_RsData.getString("code")
-										+ " " + m_RsData.getString("name"),
-								x + 75, y);
+						String item = ++rowNo + ". "
+								+ m_RsData.getString("code") + " "
+								+ m_RsData.getString("name");
 						g2.drawString(m_RsData.getString("type"), x + 1105, y);
+						y = drawString(g2, item, x + 75, y, 1000);
 						y += space;
 					}
 					break;
@@ -813,9 +840,11 @@ public class PrintTools {
 						y += 40;
 						rowNo = 0;
 						while (rs.next()) {
-							g2.drawString(++rowNo + ". " + rs.getString("code")
-									+ "  " + rs.getString("name"), x + 85, y);
+							String item = ++rowNo + ". "
+									+ rs.getString("code") + " "
+									+ rs.getString("name");
 							g2.drawString(rs.getString("type"), x + 1105, y);
+							y = drawString(g2, item, x + 75, y, 1000);
 							y += space;
 						}
 					}
