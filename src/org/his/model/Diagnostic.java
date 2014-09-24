@@ -10,18 +10,23 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="diagnostic")
+@NamedQuery(name="Diagnostic.findAll", query="SELECT d FROM Diagnostic d")
 public class Diagnostic implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String guid;
 
 	private String ICDVersion;
 
 	private int priority;
 
+	private String ps;
+
 	private byte state;
+
+	@Lob
+	private String summary;
 
 	//bi-directional many-to-one association to DiagnosisCode
 	@ManyToOne
@@ -60,12 +65,28 @@ public class Diagnostic implements Serializable {
 		this.priority = priority;
 	}
 
+	public String getPs() {
+		return this.ps;
+	}
+
+	public void setPs(String ps) {
+		this.ps = ps;
+	}
+
 	public byte getState() {
 		return this.state;
 	}
 
 	public void setState(byte state) {
 		this.state = state;
+	}
+
+	public String getSummary() {
+		return this.summary;
+	}
+
+	public void setSummary(String summary) {
+		this.summary = summary;
 	}
 
 	public DiagnosisCode getDiagnosisCode() {

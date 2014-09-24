@@ -1479,9 +1479,9 @@ public void ShowGpsFrom() {
         	"NULL,"+ 
         	"100,"+                                        //reg_cost 
         	"100,"+                                        //dia_cost
-        	"'F',"+                                        //registration_payment 
-        	"'F',"+                                        //diagnosis_payment 
-        	"'F',"+                                        //pharmacy_payment 
+        	"NULL,"+                                       //registration_payment 
+        	"'Z',"+                                        //diagnosis_payment 
+        	"'Z',"+                                        //pharmacy_payment 
         	"'Z',"+                                        //lab_payment
         	"'Z',"+                                        //radiology_payment
         	"'Z',"+                                        //bed_payment
@@ -1525,7 +1525,7 @@ public void ShowGpsFrom() {
             sql = "INSERT INTO gis(guid, gis, reg_guid, address) " +
                   "VALUES(uuid(),'" + m_Gis + "','" + m_Guid + "','" + m_Country+ "' ) ";
             DBC.executeUpdate(sql);
-             //*****儲存目前位置*****//
+            //*****儲存目前位置*****//
             //****掛號成功訊息******//
 
 

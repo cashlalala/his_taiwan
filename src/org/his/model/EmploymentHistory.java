@@ -11,11 +11,11 @@ import java.util.Date;
  */
 @Entity
 @Table(name="employment_history")
+@NamedQuery(name="EmploymentHistory.findAll", query="SELECT e FROM EmploymentHistory e")
 public class EmploymentHistory implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private int no;
 
 	@Temporal(TemporalType.DATE)

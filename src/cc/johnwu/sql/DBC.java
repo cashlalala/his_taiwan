@@ -63,6 +63,27 @@ public class DBC {
             JOptionPane.showMessageDialog(new Frame(), ex);
         }
     }
+    
+    public static Connection getConnectionExternel() {
+    	Connection conn = null;
+    	try {
+    		conn = DriverManager.getConnection(s_ServerURL,s_ServerName,s_ServerPasswd);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	return conn;
+    }
+    
+    public static void closeConnectionExternel(Connection conn) {
+    	if(conn != null)
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    }
 
     protected static boolean getConnection(){
         try {
@@ -73,6 +94,7 @@ public class DBC {
             s_ServerURL = "jdbc:mysql://"+s_LocalRS.getString("host").trim()+
                           ":"+s_LocalRS.getString("port").trim()+
                           "/"+s_LocalRS.getString("database").trim();
+            s_ServerURL += "?characterEncoding=utf8";
             s_ServerName = HISPassword.deCode(s_LocalRS.getString("user").trim()).trim();
             s_ServerPasswd = HISPassword.deCode(s_LocalRS.getString("passwd").trim()).trim();
             
@@ -214,7 +236,7 @@ public class DBC {
     public synchronized static ResultSet localExecuteQuery(String sql) throws SQLException {
         Connection conn = DriverManager.getConnection(LOCALURL,LOCALNAME,LOCALPASSWD);
         Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
-        System.out.println(sql);
+        System.out.println("[LOCAL]: " + sql);
         return stmt.executeQuery(sql);
     }
 
@@ -225,7 +247,7 @@ public class DBC {
         Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
         count = stmt.executeUpdate(sql);
         closeConnection(stmt);
-        System.out.println(sql);
+        System.out.println("[LOCAL]: " + sql);
         return count;
     }
 

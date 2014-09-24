@@ -11,11 +11,11 @@ import java.util.Date;
  */
 @Entity
 @Table(name="changes_log")
+@NamedQuery(name="ChangesLog.findAll", query="SELECT c FROM ChangesLog c")
 public class ChangesLog implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	@Column(name="chg_guid")
 	private String chgGuid;
 

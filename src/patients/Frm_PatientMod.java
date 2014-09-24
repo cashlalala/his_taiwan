@@ -3095,7 +3095,7 @@ public class Frm_PatientMod extends javax.swing.JFrame implements
 	private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jMenuItem2ActionPerformed
 		new diagnosis.Frm_DiagnosisDiagnostic(this, this.txt_No.getText(),
 				this.txt_FirstName.getText() + " "
-						+ this.txt_LastName.getText()).setVisible(true);
+						+ this.txt_LastName.getText(), "").setVisible(true);
 		this.setEnabled(false);
 
 	}// GEN-LAST:event_jMenuItem2ActionPerformed
@@ -3251,6 +3251,11 @@ public class Frm_PatientMod extends javax.swing.JFrame implements
 	}
 
 	public void getAllergy() {
+	}
+
+	@Override
+	public String from() {
+		return this.getClass().getName();
 	}
 
 }

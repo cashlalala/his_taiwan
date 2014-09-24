@@ -11,11 +11,11 @@ import java.util.Date;
  */
 @Entity
 @Table(name="cashier")
+@NamedQuery(name="Cashier.findAll", query="SELECT c FROM Cashier c")
 public class Cashier implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String no;
 
 	@Column(name="amount_receivable")
