@@ -24,7 +24,7 @@ import cc.johnwu.sql.DBC;
 import common.TabTools;
 import errormessage.StoredErrorMessage;
 
-public class Frm_Pharmacy extends JFrame {
+public class Frm_Prescription extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 
@@ -33,7 +33,7 @@ public class Frm_Pharmacy extends JFrame {
 	/* 輸出錯誤資訊變數 */
 	StoredErrorMessage ErrorMessage = new StoredErrorMessage();
 
-	public Frm_Pharmacy() {
+	public Frm_Prescription() {
 		initComponents();
 		initLanguage();
 		initLanguage();
@@ -92,9 +92,9 @@ public class Frm_Pharmacy extends JFrame {
 
 		span_List = new javax.swing.JScrollPane();
 		tab_List = new javax.swing.JTable();
-		String s[]={"changed", "code", "ATC_code", "name", "description", "unit_dosage", 
-				"unit_cost", "unit", "unit_price", "effective", "sort", "selfDrug", 
-				"default_freq", "default_way"};
+		String s[]={"changed", "code", "ICDVersion", "loinc", "name", "shortname", 
+				"type", "equipment_ID", "data_type", "limit", "unit", "effective", 
+				"guideline", "cost", "default_price"};
 		tableModel.setColumnIdentifiers(s);
 		tab_List.setSelectionModel(new ForcedListSelectionModel());
 		tab_List.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
@@ -250,30 +250,31 @@ public class Frm_Pharmacy extends JFrame {
 	
    	private void reloadList(DefaultTableModel dtm) {
    		dtm.setRowCount(0);
-   		String sql = "SELECT * FROM medicines";
+   		String sql = "SELECT * FROM prescription_code";
    		try{
             ResultSet rs = DBC.executeQuery(sql);
-            String[] rowData = new String[14];
+            String[] rowData = new String[15];
             while(rs.next()){
             	rowData[0] = "N";
             	rowData[1] = rs.getString("code");
-            	rowData[2] = rs.getString("ATC_code");
-            	rowData[3] = rs.getString("item");
-            	rowData[4] = rs.getString("injection");
-            	rowData[5] = rs.getString("unit_dosage");
-            	rowData[6] = rs.getString("unit_cost");
-            	rowData[7] = rs.getString("unit");
-            	rowData[8] = rs.getString("unit_price");
-            	rowData[9] = rs.getString("effective");
-            	rowData[10] = rs.getString("sort");
-            	rowData[11] = rs.getString("selfDrug");
-            	rowData[12] = rs.getString("default_freq");
-            	rowData[13] = rs.getString("default_way");
+            	rowData[2] = rs.getString("ICDVersion");
+            	rowData[3] = rs.getString("loinc");
+            	rowData[4] = rs.getString("name");
+            	rowData[5] = rs.getString("shortname");
+            	rowData[6] = rs.getString("type");
+            	rowData[7] = rs.getString("equipment_ID");
+            	rowData[8] = rs.getString("data_type");
+            	rowData[9] = rs.getString("limit");
+            	rowData[10] = rs.getString("unit");
+            	rowData[11] = rs.getString("effective");
+            	rowData[12] = rs.getString("guideline");
+            	rowData[13] = rs.getString("cost");
+            	rowData[14] = rs.getString("default_price");
             	dtm.addRow(rowData);
             }
          }
          catch (SQLException ex){
-             Logger.getLogger(Frm_Pharmacy.class.getName()).log(Level.SEVERE, null, ex);
+             Logger.getLogger(Frm_Prescription.class.getName()).log(Level.SEVERE, null, ex);
          }
         // setup status combobox
    		//setUpDivisionColumn(tab_List, tab_List.getColumnModel().getColumn(4));
@@ -314,7 +315,7 @@ public class Frm_Pharmacy extends JFrame {
 
 	private void btn_AddActionPerformed(java.awt.event.ActionEvent evt) {
 		DefaultTableModel model = (DefaultTableModel) tab_List.getModel();
-		model.addRow(new Object[]{"A", "", "", "", "", "", "", "", "", "", "", "", "", ""});
+		model.addRow(new Object[]{"A", "", "", "", "", "", "", "", "", "", "", "", "", "", ""});
     	JOptionPane.showMessageDialog(null, paragraph.getString("ADDCOMPLETE"));
 	}
 	
@@ -322,10 +323,10 @@ public class Frm_Pharmacy extends JFrame {
 		
 		String code = (String) tab_List.getValueAt(tab_List.getSelectedRow(), 1);
 		try {
-    	  	String sql = "DELETE FROM `medicines` WHERE code ='" + code + "'";
+    	  	String sql = "DELETE FROM `prescription_code` WHERE code ='" + code + "'";
             DBC.executeUpdate(sql);
 	    } catch (SQLException ex) {
-	        Logger.getLogger(Frm_Pharmacy.class.getName()).log(Level.SEVERE, null, ex);
+	        Logger.getLogger(Frm_Prescription.class.getName()).log(Level.SEVERE, null, ex);
 	        JOptionPane.showMessageDialog(null, paragraph.getString("ERROR"));
 	        return;
 	    }
@@ -338,32 +339,37 @@ public class Frm_Pharmacy extends JFrame {
     	for ( int i = 0 ;i < dtm.getRowCount(); i++){
     		String changed = (String) dtm.getValueAt(i, 0);
     		if(changed.compareTo("Y") == 0 || changed.compareTo("A") == 0) {
-            	
+ 
+    	   		String s[]={"changed", "code", "ICDVersion", "loinc", "name", 
+    	   				"shortname", "type", "equipment_ID", "data_type", "limit", 
+    	   				"unit", "effective", "guideline", "cost", "default_price"};
+    	   		
     			String code = (String) dtm.getValueAt(i, 1);
-    			String ATC_code = (String) dtm.getValueAt(i, 2);
-    			String item = (String) dtm.getValueAt(i, 3);
-    			String injection = (String) dtm.getValueAt(i, 4);
-    			String unit_dosage = (String) dtm.getValueAt(i, 5);// == null ? 0 : Float.parseFloat((String) dtm.getValueAt(i, 5));
-    			String unit_cost = (String) dtm.getValueAt(i, 6);// == null ? 0 : Float.parseFloat((String) dtm.getValueAt(i, 6));
-    			String unit = (String) dtm.getValueAt(i, 7);
-    			String unit_price = (String) dtm.getValueAt(i, 8);// == null ? 0 : Float.parseFloat((String) dtm.getValueAt(i, 8));
-    			String effective = (String) dtm.getValueAt(i, 9);// == null ? 0 : Integer.parseInt((String) dtm.getValueAt(i, 9));
-    			String sort = (String) dtm.getValueAt(i, 10);// == null ? 0 : Integer.parseInt((String) dtm.getValueAt(i, 10));
-    			String selfDrug = (String) dtm.getValueAt(i, 11);
-    			String default_freq = (String) dtm.getValueAt(i, 12);
-    			String default_way = (String) dtm.getValueAt(i, 13);
+    			String ICDVersion = (String) dtm.getValueAt(i, 2);
+    			String loinc = (String) dtm.getValueAt(i, 3);
+    			String name = (String) dtm.getValueAt(i, 4);
+    			String shortname = (String) dtm.getValueAt(i, 5);// == null ? 0 : Float.parseFloat((String) dtm.getValueAt(i, 5));
+    			String type = (String) dtm.getValueAt(i, 6);// == null ? 0 : Float.parseFloat((String) dtm.getValueAt(i, 6));
+    			String equipment_ID = (String) dtm.getValueAt(i, 7);
+    			String data_type = (String) dtm.getValueAt(i, 8);// == null ? 0 : Float.parseFloat((String) dtm.getValueAt(i, 8));
+    			String limit = (String) dtm.getValueAt(i, 9);// == null ? 0 : Integer.parseInt((String) dtm.getValueAt(i, 9));
+    			String unit = (String) dtm.getValueAt(i, 10);// == null ? 0 : Integer.parseInt((String) dtm.getValueAt(i, 10));
+    			String effective = (String) dtm.getValueAt(i, 11);
+    			String guideline = (String) dtm.getValueAt(i, 12);
+    			String cost = (String) dtm.getValueAt(i, 13);
+    			String default_price = (String) dtm.getValueAt(i, 14);
     			
     			try {
-    				String sql = "UPDATE medicines SET ATC_code = ?, item = ?, "
-	    					+ " injection = ?, unit_dosage = ?, unit_cost = ?, unit = ?, "
-	    					+ " unit_price = ?, effective = ?, sort = ?, selfDrug = ?, "
-	    					+ " default_freq = ?, default_way = ? "
+    				String sql = "UPDATE prescription_code SET ICDVersion = ?, loinc = ?, "
+	    					+ " name = ?, shortname = ?, type = ?, equipment_ID = ?, "
+	    					+ " data_type = ?, limit = ?, unit = ?, effective = ?, "
+	    					+ " guideline = ?, cost = ?, default_price = ? "
 	    					+ " WHERE code = ? ";
     				if(changed.compareTo("A") == 0)
-		    			sql = "INSERT INTO medicines (`ATC_code`, `item`, `injection`, `unit_dosage`, " 
-		    				+ " `unit_cost`, `unit`, `unit_price`, `effective`, `sort`, "
-		    				+ " `selfDrug`, `default_freq`, `default_way`, `code`) VALUES "
-		    				+ "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		    			sql = "INSERT INTO prescription_code (`ICDVersion`, `loinc`, `name`, `shortname`, " 
+		    				+ " `type`, `equipment_ID`, `data_type`, `limit`, `unit`, "
+		    				+ " `effective`, `guideline`, `cost`, `default_price`, `code`) VALUES "
+		    				+ "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     				
     				/*System.out.println();
     				System.out.println(sql);
@@ -385,23 +391,24 @@ public class Frm_Pharmacy extends JFrame {
     				
 					Connection conn = DBC.getConnectionExternel();
 					PreparedStatement prestate = conn.prepareStatement(sql); //先建立一個 SQL 語句並回傳一個 PreparedStatement 物件
-					if(ATC_code != null && !ATC_code.isEmpty()) prestate.setString(1, ATC_code); else prestate.setNull(1, java.sql.Types.CHAR);
-					if(item != null && !item.isEmpty()) prestate.setString(2, item); else prestate.setNull(2, java.sql.Types.VARCHAR);
-					if(injection != null && !injection.isEmpty()) prestate.setString(3, injection); else prestate.setNull(3, java.sql.Types.VARCHAR);
-					if(unit_dosage != null && !unit_dosage.isEmpty()) prestate.setFloat(4, Float.parseFloat(unit_dosage)); else prestate.setNull(4, java.sql.Types.FLOAT);
-					if(unit_cost != null && !unit_cost.isEmpty()) prestate.setFloat(5, Float.parseFloat(unit_cost)); else prestate.setNull(5, java.sql.Types.FLOAT);
-					if(unit != null && !unit.isEmpty()) prestate.setString(6, unit); else prestate.setNull(6, java.sql.Types.CHAR);
-					if(unit_price != null && !unit_price.isEmpty()) prestate.setFloat(7, Float.parseFloat(unit_price)); else prestate.setNull(7, java.sql.Types.FLOAT);
-					if(effective != null && !effective.isEmpty()) prestate.setInt(8, Integer.parseInt(effective)); else prestate.setNull(8, java.sql.Types.BIT);
-					if(sort != null && !sort.isEmpty()) prestate.setInt(9, Integer.parseInt(sort)); else prestate.setNull(9, java.sql.Types.INTEGER);
-					if(selfDrug != null && !selfDrug.isEmpty()) prestate.setString(10, selfDrug); else prestate.setNull(10, java.sql.Types.CHAR);
-					if(default_freq != null && !default_freq.isEmpty()) prestate.setString(11, default_freq); else prestate.setNull(11, java.sql.Types.VARCHAR);
-					if(default_way != null && !default_way.isEmpty()) prestate.setString(12, default_way); else prestate.setNull(12, java.sql.Types.VARCHAR);
-					prestate.setString(13, code);
+					if(ICDVersion != null && !ICDVersion.isEmpty()) prestate.setString(1, ICDVersion); else prestate.setNull(1, java.sql.Types.VARCHAR);
+					if(loinc != null && !loinc.isEmpty()) prestate.setString(2, loinc); else prestate.setNull(2, java.sql.Types.VARCHAR);
+					if(name != null && !name.isEmpty()) prestate.setString(3, name); else prestate.setNull(3, java.sql.Types.VARCHAR);
+					if(shortname != null && !shortname.isEmpty()) prestate.setString(4, shortname); else prestate.setNull(4, java.sql.Types.VARCHAR);
+					if(type != null && !type.isEmpty()) prestate.setString(5, type); else prestate.setNull(5, java.sql.Types.VARCHAR);
+					if(equipment_ID != null && !equipment_ID.isEmpty()) prestate.setString(6, equipment_ID); else prestate.setNull(6, java.sql.Types.VARCHAR);
+					if(data_type != null && !data_type.isEmpty()) prestate.setString(7, data_type); else prestate.setNull(7, java.sql.Types.CHAR);
+					if(limit != null && !limit.isEmpty()) prestate.setString(8, limit); else prestate.setNull(8, java.sql.Types.BLOB);
+					if(unit != null && !unit.isEmpty()) prestate.setString(9, unit); else prestate.setNull(9, java.sql.Types.CHAR);
+					if(effective != null && !effective.isEmpty()) prestate.setInt(10, Integer.parseInt(effective)); else prestate.setNull(10, java.sql.Types.BIT);
+					if(guideline != null && !guideline.isEmpty()) prestate.setString(11, guideline); else prestate.setNull(11, java.sql.Types.VARCHAR);
+					if(cost != null && !cost.isEmpty()) prestate.setFloat(12, Float.parseFloat(cost)); else prestate.setNull(12, java.sql.Types.FLOAT);
+					if(default_price != null && !default_price.isEmpty()) prestate.setFloat(13, Float.parseFloat(default_price)); else prestate.setNull(13, java.sql.Types.FLOAT);
+					prestate.setString(14, code);
 					prestate.executeUpdate();  //真正執行
 					DBC.closeConnectionExternel(conn);
     		    } catch (SQLException ex) {
-    		        Logger.getLogger(Frm_Pharmacy.class.getName()).log(Level.SEVERE, null, ex);
+    		        Logger.getLogger(Frm_Prescription.class.getName()).log(Level.SEVERE, null, ex);
     		        JOptionPane.showMessageDialog(null, paragraph.getString("ERROR"));
     		        return;
     		    }

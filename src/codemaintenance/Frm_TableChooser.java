@@ -48,12 +48,12 @@ public class Frm_TableChooser extends JDialog {
 	}
 	
 	private void btnPrescriptionActionPerformed(java.awt.event.ActionEvent evt) {
-		//new codemaintenance.Frm_Material().setVisible(true);
+		new codemaintenance.Frm_Prescription().setVisible(true);
 		this.dispose();
 	}
 	
 	private void btnDiagnosisActionPerformed(java.awt.event.ActionEvent evt) {
-		//new codemaintenance.Frm_Material().setVisible(true);
+		new codemaintenance.Frm_Diagnosis().setVisible(true);
 		this.dispose();
 	}
 	
@@ -67,7 +67,7 @@ public class Frm_TableChooser extends JDialog {
 		setModal(true);
 		setResizable(false);
 		setTitle("Choose Code Table");
-		setBounds(100, 100, 193, 275);
+		setBounds(100, 100, 225, 220);
 
 		JButton btnMaterial = new JButton(paragraph.getString("MATERIAL"));
 		JButton btnMedicine = new JButton(paragraph.getString("MEDICINE"));
@@ -109,22 +109,22 @@ public class Frm_TableChooser extends JDialog {
 														.addComponent(
 																btnDiagnosis,
 																GroupLayout.PREFERRED_SIZE,
-																110,
+																150,
 																GroupLayout.PREFERRED_SIZE)
 														.addComponent(
 																btnPrescription,
 																GroupLayout.PREFERRED_SIZE,
-																110,
+																150,
 																GroupLayout.PREFERRED_SIZE)
 														.addComponent(
 																btnMedicine,
 																GroupLayout.PREFERRED_SIZE,
-																110,
+																150,
 																GroupLayout.PREFERRED_SIZE)
 														.addComponent(
 																btnMaterial,
 																GroupLayout.PREFERRED_SIZE,
-																110,
+																150,
 																GroupLayout.PREFERRED_SIZE)
 														)
 										.addContainerGap(40, Short.MAX_VALUE)));
