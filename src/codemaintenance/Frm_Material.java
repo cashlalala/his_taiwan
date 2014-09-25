@@ -203,9 +203,9 @@ public class Frm_Material extends JFrame {
 		//this.txt_Poli.setText(UserInfo.getUserPoliclinic());
 		
 		setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-		setTitle("Bed Management");
+		setTitle("Material Code Maintenance");
 
-		span_BedList = new javax.swing.JScrollPane();
+		span_List = new javax.swing.JScrollPane();
 		tab_List = new javax.swing.JTable();
 		String s[]={"changed", "guid", "name", "description", "unit", "unit_cost", "unit_price", "effective"};
 		tableModel.setColumnIdentifiers(s);
@@ -223,7 +223,7 @@ public class Frm_Material extends JFrame {
 				tab_BedListKeyPressed(evt);
 			}
 		});
-		span_BedList.setViewportView(tab_List);
+		span_List.setViewportView(tab_List);
 		tab_List.setModel(tableModel);
 
 		//getDivisionData();
@@ -247,7 +247,7 @@ public class Frm_Material extends JFrame {
 										.createSequentialGroup()
 										.addContainerGap()
 										.addComponent(
-												span_BedList,
+												span_List,
 												javax.swing.GroupLayout.DEFAULT_SIZE,
 												601, Short.MAX_VALUE)
 										.addContainerGap()));
@@ -256,7 +256,7 @@ public class Frm_Material extends JFrame {
 				pan_CenterLayout
 						.createSequentialGroup()
 						.addContainerGap()
-						.addComponent(span_BedList,
+						.addComponent(span_List,
 								javax.swing.GroupLayout.DEFAULT_SIZE, 434,
 								Short.MAX_VALUE).addContainerGap()));
 
@@ -640,7 +640,7 @@ public class Frm_Material extends JFrame {
 	private javax.swing.JPanel pan_Center;
 	private javax.swing.JPanel pan_Right;
 	//private javax.swing.JPanel pan_Top;
-	private javax.swing.JScrollPane span_BedList;
+	private javax.swing.JScrollPane span_List;
 	private javax.swing.JTable tab_List;
 	//private javax.swing.JTextField txt_Name;
 	//private javax.swing.JTextField txt_Poli;
