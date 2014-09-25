@@ -1,40 +1,31 @@
-package CodeMaintenance;
+package codemaintenance;
 
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.GroupLayout;
-import javax.swing.JOptionPane;
 import javax.swing.GroupLayout.Alignment;
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
-import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListSelectionModel;
-import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
 
-import system.Frm_Setting;
 import main.Frm_Main;
 import multilingual.Language;
-import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
 import common.TabTools;
 import errormessage.StoredErrorMessage;
 
-public class Frm_BedList extends JFrame {
-	private class DivisionClass {
+public class Frm_Material extends JFrame {
+	/*private class DivisionClass {
 		public String guid;
 		public String name;
 		public DivisionClass(String _guid, String _name) {
@@ -45,7 +36,7 @@ public class Frm_BedList extends JFrame {
         {  
             return name;  
         } 
-	}
+	}*/
 	
 /*    class DivisionComboRenderer extends BasicComboBoxRenderer
     {
@@ -75,7 +66,7 @@ public class Frm_BedList extends JFrame {
 //	private long REFRASHTIME = 1000; // 自度刷新跨號資訊時間
 //	private RefreshBedList m_RefreshBedList;
 //	private Thread m_Clock;
-	private Vector<DivisionClass> DivisionData;
+	//private Vector<DivisionClass> DivisionData;
 	
 	/* 多國語言變數 */
 	private Language paragraph = Language.getInstance();
@@ -83,7 +74,7 @@ public class Frm_BedList extends JFrame {
 	StoredErrorMessage ErrorMessage = new StoredErrorMessage();
 
 	// LastSelectRow 最後選擇行號　　SysName　系統名
-	public Frm_BedList(int LastSelectRow) {
+	public Frm_Material() {
 		initComponents();
 		//initWorkList();
 		initLanguage();
@@ -111,12 +102,12 @@ public class Frm_BedList extends JFrame {
 	    }
 
 	}
-    private DefaultTableModel bedTableModel = new DefaultTableModel(){
+    private DefaultTableModel tableModel = new DefaultTableModel(){
     	public boolean isCellEditable(int rowIndex, int columnIndex){
-    		if (columnIndex == 3 || columnIndex == 4 || columnIndex == 5) {
-                return true;
-            } else {
+    		if (columnIndex == 0 || columnIndex == 1) {
                 return false;
+            } else {
+                return true;
             }
     	}
    	};
@@ -163,7 +154,7 @@ public class Frm_BedList extends JFrame {
 
 	}
 
-	public void getDivisionData() {
+	/*public void getDivisionData() {
 		//DivisionData
 		String sql = "SELECT * FROM policlinic WHERE status = 'N'";
    		try{
@@ -174,66 +165,68 @@ public class Frm_BedList extends JFrame {
             }
          }
          catch (SQLException ex){
-             Logger.getLogger(Frm_BedList.class.getName()).log(Level.SEVERE, null, ex);
+             Logger.getLogger(Frm_Material.class.getName()).log(Level.SEVERE, null, ex);
          }
-	}
+	}*/
 	@SuppressWarnings("deprecation")
 	private void initLanguage() {
-		this.lab_poli.setText(paragraph.getString("POLI"));
+		//this.lab_poli.setText(paragraph.getString("POLI"));
 		this.btn_Close.setText(paragraph.getString("CLOSE"));
 		this.btn_Save.setText(paragraph.getString("SAVE"));
 		this.btn_Add.setText(paragraph.getString("ADD"));
+		this.btn_Delete.setText(paragraph.getString("DELETE"));
 	}
 	
 	public void init() {
-		reloadBedList(bedTableModel);
+		reloadList(tableModel);
 	}
 
 	private void initComponents() {
 
-		DivisionData = new Vector<DivisionClass>();
+		//DivisionData = new Vector<DivisionClass>();
 		
 		pan_Center = new javax.swing.JPanel();
-		pan_Top = new javax.swing.JPanel();
-		lab_Name = new javax.swing.JLabel();
-		lab_poli = new javax.swing.JLabel();
-		txt_Name = new javax.swing.JTextField();
-		txt_Poli = new javax.swing.JTextField();
+		//pan_Top = new javax.swing.JPanel();
+		//lab_Name = new javax.swing.JLabel();
+		//lab_poli = new javax.swing.JLabel();
+		//txt_Name = new javax.swing.JTextField();
+		//txt_Poli = new javax.swing.JTextField();
 		//lab_SystemTime = new javax.swing.JLabel();
 		pan_Right = new javax.swing.JPanel();
 		btn_Close = new javax.swing.JButton();
 		btn_Save = new javax.swing.JButton();
 		btn_Add = new javax.swing.JButton();
+		btn_Delete = new javax.swing.JButton();
 
-		this.lab_Name.setText("Staff");
-		this.txt_Name.setText(UserInfo.getUserName());
-		this.txt_Poli.setText(UserInfo.getUserPoliclinic());
+		//this.lab_Name.setText("Staff");
+		//this.txt_Name.setText(UserInfo.getUserName());
+		//this.txt_Poli.setText(UserInfo.getUserPoliclinic());
 		
 		setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-		setTitle("Bed Management");
+		setTitle("Material Code Maintenance");
 
-		span_BedList = new javax.swing.JScrollPane();
-		tab_BedList = new javax.swing.JTable();
-		String s[]={"changed", "guid", "division_guid", "description", "Division", "Status"};
-		bedTableModel.setColumnIdentifiers(s);
-		tab_BedList.setSelectionModel(new ForcedListSelectionModel());
-		tab_BedList.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
-		tab_BedList.setRowHeight(25);
+		span_List = new javax.swing.JScrollPane();
+		tab_List = new javax.swing.JTable();
+		String s[]={"changed", "guid", "name", "description", "unit", "unit_cost", "unit_price", "effective"};
+		tableModel.setColumnIdentifiers(s);
+		tab_List.setSelectionModel(new ForcedListSelectionModel());
+		tab_List.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+		tab_List.setRowHeight(25);
 		//tab_BedList.getTableHeader().setReorderingAllowed(false);
-		tab_BedList.addMouseListener(new java.awt.event.MouseAdapter() {
+		tab_List.addMouseListener(new java.awt.event.MouseAdapter() {
 			public void mouseClicked(java.awt.event.MouseEvent evt) {
 				tab_BedListMouseClicked(evt);
 			}
 		});
-		tab_BedList.addKeyListener(new java.awt.event.KeyAdapter() {
+		tab_List.addKeyListener(new java.awt.event.KeyAdapter() {
 			public void keyPressed(java.awt.event.KeyEvent evt) {
 				tab_BedListKeyPressed(evt);
 			}
 		});
-		span_BedList.setViewportView(tab_BedList);
-		tab_BedList.setModel(bedTableModel);
+		span_List.setViewportView(tab_List);
+		tab_List.setModel(tableModel);
 
-		getDivisionData();
+		//getDivisionData();
 		
 		addWindowListener(new WindowAdapter() { // 畫面關閉原視窗enable
 			@Override
@@ -254,7 +247,7 @@ public class Frm_BedList extends JFrame {
 										.createSequentialGroup()
 										.addContainerGap()
 										.addComponent(
-												span_BedList,
+												span_List,
 												javax.swing.GroupLayout.DEFAULT_SIZE,
 												601, Short.MAX_VALUE)
 										.addContainerGap()));
@@ -263,21 +256,21 @@ public class Frm_BedList extends JFrame {
 				pan_CenterLayout
 						.createSequentialGroup()
 						.addContainerGap()
-						.addComponent(span_BedList,
+						.addComponent(span_List,
 								javax.swing.GroupLayout.DEFAULT_SIZE, 434,
 								Short.MAX_VALUE).addContainerGap()));
 
-		lab_Name.setText("Doctor");
+		//lab_Name.setText("Doctor");
 
-		lab_poli.setText("Department");
+		//lab_poli.setText("Department");
 
-		txt_Name.setEditable(false);
+		//txt_Name.setEditable(false);
 
-		txt_Poli.setEditable(false);
+		//txt_Poli.setEditable(false);
 
 		//lab_SystemTime.setFont(new java.awt.Font("UnDotum", 0, 18));
 		//lab_SystemTime.setText("-----");
-
+/*
 		javax.swing.GroupLayout pan_TopLayout = new javax.swing.GroupLayout(pan_Top);
 		pan_Top.setLayout(pan_TopLayout);
 		pan_TopLayout
@@ -344,7 +337,7 @@ public class Frm_BedList extends JFrame {
 					.addGap(12, 12, 12)
 				)
 			);
-
+*/
 		//btn_Close.setText("Close");
 		btn_Close.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -363,14 +356,12 @@ public class Frm_BedList extends JFrame {
 				btn_AddActionPerformed(evt);
 			}
 		});
-
-		//btn_Enter.setText("Enter");
-		//btn_Enter.setEnabled(false);
-		/*btn_Enter.addActionListener(new java.awt.event.ActionListener() {
+		
+		btn_Delete.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				btn_EnterActionPerformed(evt);
+				btn_DeleteActionPerformed(evt);
 			}
-		});*/
+		});
 
 		javax.swing.GroupLayout pan_RightLayout = new javax.swing.GroupLayout(
 				pan_Right);
@@ -381,6 +372,7 @@ public class Frm_BedList extends JFrame {
 					.addGroup(pan_RightLayout.createParallelGroup(Alignment.LEADING)
 						.addComponent(btn_Add, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
 						.addComponent(btn_Save, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
+						.addComponent(btn_Delete, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
 						.addComponent(btn_Close, GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE))
 					.addContainerGap())
 		);
@@ -391,6 +383,8 @@ public class Frm_BedList extends JFrame {
 					.addComponent(btn_Add)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btn_Save)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btn_Delete)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btn_Close)
 					.addContainerGap(335, Short.MAX_VALUE))
@@ -458,7 +452,7 @@ public class Frm_BedList extends JFrame {
 		pack();
 	}// </editor-fold>//GEN-END:initComponents
 
-	private void setCloumnWidth(javax.swing.JTable tab) {
+	/*private void setCloumnWidth(javax.swing.JTable tab) {
 		// 設定column寬度
 		TableColumn columnDesc = tab.getColumnModel().getColumn(3);
 		TableColumn columnPoli = tab.getColumnModel().getColumn(4);
@@ -467,17 +461,9 @@ public class Frm_BedList extends JFrame {
 		columnPoli.setPreferredWidth(200);
 		columnStatus.setPreferredWidth(100);
 		tab.setRowHeight(30);
-	}
-	
-	protected String getSQLString() {
-		String sql = "SELECT 'N' as 'changed', A.guid, B.guid as 'division_guid', A.description, B.name as 'Division', A.status as 'Status' "
-				+ " FROM bed_code A "
-				+ " LEFT JOIN policlinic B ON A.poli_guid = B.guid "
-				+ " order by A.status desc, A.description asc ";
-		return sql;
-	}
+	}*/
    	
-	public void setUpDivisionColumn(javax.swing.JTable table, TableColumn sportColumn) {
+	/*public void setUpDivisionColumn(javax.swing.JTable table, TableColumn sportColumn) {
 		//Set up the editor for the sport cells.
 		javax.swing.JComboBox comboBox = new javax.swing.JComboBox(DivisionData);
 		//comboBox.setRenderer( new DivisionComboRenderer() );
@@ -488,9 +474,9 @@ public class Frm_BedList extends JFrame {
 				JComboBox comboBox = (JComboBox)e.getSource();
 		        DivisionClass division = (DivisionClass)comboBox.getSelectedItem();
 		        if(division != null) {
-			        tab_BedList.setValueAt(division.name, tab_BedList.getSelectedRow(), tab_BedList.getSelectedColumn());
-			        tab_BedList.setValueAt(division.guid, tab_BedList.getSelectedRow(), 2);
-			        tab_BedList.setValueAt("Y", tab_BedList.getSelectedRow(), 0);
+			        tab_List.setValueAt(division.name, tab_List.getSelectedRow(), tab_List.getSelectedColumn());
+			        tab_List.setValueAt(division.guid, tab_List.getSelectedRow(), 2);
+			        tab_List.setValueAt("Y", tab_List.getSelectedRow(), 0);
 		        }
 			}
 			
@@ -507,41 +493,42 @@ public class Frm_BedList extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				//System.out.println(tab_BedList.getSelectedRow());
-				if(tab_BedList.getSelectedRow() != -1)
-					tab_BedList.setValueAt("Y", tab_BedList.getSelectedRow(), 0);
+				if(tab_List.getSelectedRow() != -1)
+					tab_List.setValueAt("Y", tab_List.getSelectedRow(), 0);
 			}
 			
 		});
 		sportColumn.setCellEditor(new DefaultCellEditor(comboBox));
-	}
+	}*/
 	
-   	private void reloadBedList(DefaultTableModel dtm) {
+   	private void reloadList(DefaultTableModel dtm) {
    		dtm.setRowCount(0);
-   		String sql = getSQLString();
+   		String sql = "SELECT * FROM material_code";
    		try{
             ResultSet rs = DBC.executeQuery(sql);
-            String[] rowData = new String[6];
+            String[] rowData = new String[8];
             while(rs.next()){
-            	rowData[0] = rs.getString("changed");
+            	rowData[0] = "N";
             	rowData[1] = rs.getString("guid");
-            	rowData[2] = rs.getString("division_guid");
+            	rowData[2] = rs.getString("name");
             	rowData[3] = rs.getString("description");
-            	rowData[4] = rs.getString("Division");
-            	rowData[5] = (rs.getString("Status").compareTo("N") == 0 ? "Normal" : "Disabled");
+            	rowData[4] = rs.getString("unit");
+            	rowData[5] = rs.getString("unit_cost");
+            	rowData[6] = rs.getString("unit_price");
+            	rowData[7] = rs.getString("effective");
             	dtm.addRow(rowData);
             }
          }
          catch (SQLException ex){
-             Logger.getLogger(Frm_BedList.class.getName()).log(Level.SEVERE, null, ex);
+             Logger.getLogger(Frm_Material.class.getName()).log(Level.SEVERE, null, ex);
          }
         // setup status combobox
-   		setUpDivisionColumn(tab_BedList, tab_BedList.getColumnModel().getColumn(4));
-        setUpStatusColumn(tab_BedList, tab_BedList.getColumnModel().getColumn(5));
-        setCloumnWidth(tab_BedList);
+   		//setUpDivisionColumn(tab_List, tab_List.getColumnModel().getColumn(4));
+        //setUpStatusColumn(tab_List, tab_List.getColumnModel().getColumn(5));
+        //setCloumnWidth(tab_List);
         
-        TabTools.setHideColumn(tab_BedList, 0);
-        TabTools.setHideColumn(tab_BedList, 1);
-        TabTools.setHideColumn(tab_BedList, 2);
+        TabTools.setHideColumn(tab_List, 0);
+        TabTools.setHideColumn(tab_List, 1);
    	}
    	
 	private void mnit_CloseActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnit_CloseActionPerformed
@@ -551,7 +538,7 @@ public class Frm_BedList extends JFrame {
 
 	private void tab_BedListMouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_tab_BedListMouseClicked
 		//if (evt.getClickCount() == 2 ) {
-			tab_BedList.setValueAt("Y", tab_BedList.getSelectedRow(), 0);
+		tab_List.setValueAt("Y", tab_List.getSelectedRow(), 0);
 		//	System.out.println("22");
 		//}
 	}// GEN-LAST:event_tab_BedListMouseClicked
@@ -562,48 +549,76 @@ public class Frm_BedList extends JFrame {
 		//	this.btn_Save.setEnabled(true);
 		//}
 		//System.out.println("11");
-		tab_BedList.setValueAt("Y", tab_BedList.getSelectedRow(), 0);
+		tab_List.setValueAt("Y", tab_List.getSelectedRow(), 0);
 	}// GEN-LAST:event_tab_BedListKeyPressed
 
 	private void btn_AddActionPerformed(java.awt.event.ActionEvent evt) {
 		try {
-    	  	String sql = "INSERT INTO `bed_code` (`guid`, `description`, `status`) VALUES (uuid(), '', 'N')";
+    	  	String sql = "INSERT INTO `material_code` (`guid`, `effective`) VALUES (uuid(), 0)";
             DBC.executeUpdate(sql);
 	    } catch (SQLException ex) {
-	        Logger.getLogger(Frm_BedList.class.getName()).log(Level.SEVERE, null, ex);
+	        Logger.getLogger(Frm_Material.class.getName()).log(Level.SEVERE, null, ex);
 	        JOptionPane.showMessageDialog(null, paragraph.getString("ERROR"));
+	        return;
 	    }
-    	reloadBedList(bedTableModel);
+    	reloadList(tableModel);
     	JOptionPane.showMessageDialog(null, paragraph.getString("ADDCOMPLETE"));
 	}
 	
+	private void btn_DeleteActionPerformed(java.awt.event.ActionEvent evt) {
+		
+		String guid = (String) tab_List.getValueAt(tab_List.getSelectedRow(), 1);
+		try {
+    	  	String sql = "DELETE FROM `material_code` WHERE guid ='" + guid + "'";
+            DBC.executeUpdate(sql);
+	    } catch (SQLException ex) {
+	        Logger.getLogger(Frm_Material.class.getName()).log(Level.SEVERE, null, ex);
+	        JOptionPane.showMessageDialog(null, paragraph.getString("ERROR"));
+	        return;
+	    }
+    	reloadList(tableModel);
+    	JOptionPane.showMessageDialog(null, paragraph.getString("DELETECOMPLETE"));
+	}
+	
 	private void btn_SaveActionPerformed(java.awt.event.ActionEvent evt) {
-		DefaultTableModel dtm =(DefaultTableModel) tab_BedList.getModel();
+		DefaultTableModel dtm =(DefaultTableModel) tab_List.getModel();
     	for ( int i = 0 ;i < dtm.getRowCount(); i++){
     		String changed = (String) dtm.getValueAt(i, 0);
     		if(changed.compareTo("Y") == 0) {
     			String guid = (String) dtm.getValueAt(i, 1);
-    			String division_guid = (String) dtm.getValueAt(i, 2);
+    			String name = (String) dtm.getValueAt(i, 2);
     			String description = (String) dtm.getValueAt(i, 3);
-    			String status = (String) dtm.getValueAt(i, 5);
-    			
-    			if(status.compareTo("Normal") == 0) status = "N";
-      	      		else status = "D";
+    			String unit = (String) dtm.getValueAt(i, 4);
+    			float unit_cost = dtm.getValueAt(i, 5) == null ? 0 : Float.parseFloat((String) dtm.getValueAt(i, 5));
+    			float unit_price = dtm.getValueAt(i, 6) == null ? 0 : Float.parseFloat((String) dtm.getValueAt(i, 6));
+    			String effectiveStr = (String) dtm.getValueAt(i, 7);
+    			int effective = 1;
+    			if(effectiveStr.compareTo("1") != 0) effective = 0;
     			
     			try {
-    	    	  	String sql = "UPDATE bed_code SET " +
-        	            	"description = '"+description+"', " +
-        	            	"poli_guid = '"+division_guid+"', " +
-        	            	"status = '"+status+"' WHERE guid = '" + guid + "'";
-    	            DBC.executeUpdate(sql);
+	    			String sql = "UPDATE material_code SET name = ?, description = ?, "
+	    					+ " unit = ?, unit_cost = ?, unit_price = ?, effective = ? "
+	    					+ " WHERE guid = ? ";
+					Connection conn = DBC.getConnectionExternel();
+					PreparedStatement prestate = conn.prepareStatement(sql); //先建立一個 SQL 語句並回傳一個 PreparedStatement 物件
+					if(name != null) prestate.setString(1, name); else prestate.setNull(1, java.sql.Types.VARCHAR);
+					if(description != null) prestate.setString(2, description); else prestate.setNull(2, java.sql.Types.BLOB);
+					if(unit != null) prestate.setString(3, unit); else prestate.setNull(3, java.sql.Types.VARCHAR);
+					if(unit_cost != 0) prestate.setFloat(4, unit_cost); else prestate.setNull(4, java.sql.Types.FLOAT);
+					if(unit_price != 0) prestate.setFloat(5, unit_price); else prestate.setNull(5, java.sql.Types.FLOAT);
+					prestate.setInt(6, effective);
+					prestate.setString(7, guid); 
+					prestate.executeUpdate();  //真正執行
+					DBC.closeConnectionExternel(conn);
     		    } catch (SQLException ex) {
-    		        Logger.getLogger(Frm_BedList.class.getName()).log(Level.SEVERE, null, ex);
+    		        Logger.getLogger(Frm_Material.class.getName()).log(Level.SEVERE, null, ex);
     		        JOptionPane.showMessageDialog(null, paragraph.getString("ERROR"));
+    		        return;
     		    }
     		}
     	}
 
-    	reloadBedList(bedTableModel);
+    	reloadList(tableModel);
     	JOptionPane.showMessageDialog(null, paragraph.getString("SAVECOMPLETE"));
 	}
 	
@@ -616,16 +631,17 @@ public class Frm_BedList extends JFrame {
 	//private javax.swing.JButton btn_Enter;
 	private javax.swing.JButton btn_Save;
 	private javax.swing.JButton btn_Add;
+	private javax.swing.JButton btn_Delete;
 	//private cc.johnwu.date.DateComboBox dateComboBox;
 	//private javax.swing.JLabel lab_Date;
-	private javax.swing.JLabel lab_Name;
+	//private javax.swing.JLabel lab_Name;
 	//private javax.swing.JLabel lab_SystemTime;
-	private javax.swing.JLabel lab_poli;
+	//private javax.swing.JLabel lab_poli;
 	private javax.swing.JPanel pan_Center;
 	private javax.swing.JPanel pan_Right;
-	private javax.swing.JPanel pan_Top;
-	private javax.swing.JScrollPane span_BedList;
-	private javax.swing.JTable tab_BedList;
-	private javax.swing.JTextField txt_Name;
-	private javax.swing.JTextField txt_Poli;
+	//private javax.swing.JPanel pan_Top;
+	private javax.swing.JScrollPane span_List;
+	private javax.swing.JTable tab_List;
+	//private javax.swing.JTextField txt_Name;
+	//private javax.swing.JTextField txt_Poli;
 }
