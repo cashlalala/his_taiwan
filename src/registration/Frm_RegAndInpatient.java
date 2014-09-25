@@ -12,8 +12,6 @@ import java.awt.image.BufferedImage;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.UUID;
 
@@ -45,6 +43,7 @@ import cc.johnwu.date.DateMethod;
 import cc.johnwu.finger.FingerPrintScanner;
 import cc.johnwu.finger.FingerPrintViewerInterface;
 import cc.johnwu.sql.DBC;
+
 import common.PrintTools;
 
 public class Frm_RegAndInpatient extends JFrame implements
@@ -150,17 +149,16 @@ public class Frm_RegAndInpatient extends JFrame implements
 		this.parentFrame = null;
 		// Init GUI
 		this.setExtendedState(Frm_Registration.MAXIMIZED_BOTH);
-        this.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent windowevent)
-            {
-                if(isEnabled()){
-                    FingerPrintScanner.stop();
-                    new Frm_Main().setVisible(true);
-                    dispose();
-                }
-            }
-        });
+		this.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent windowevent) {
+				if (isEnabled()) {
+					FingerPrintScanner.stop();
+					new Frm_Main().setVisible(true);
+					dispose();
+				}
+			}
+		});
 		setBounds(100, 100, 670, 705);
 
 		pan_WholeFrame = new JPanel();
@@ -344,6 +342,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 		pan_PatientInfo.add(pan_Code, gbc_pan_Code);
 
 		btn_AddPatient = new JButton(paragraph.getString("NEWPATIENT"));
+		btn_AddPatient.setMnemonic(java.awt.event.KeyEvent.VK_N);
 		btn_AddPatient.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				btn_AddPatientactionPerformed(evt);
@@ -877,6 +876,11 @@ public class Frm_RegAndInpatient extends JFrame implements
 			tab_PatientList.setModel(new DefaultTableModel(
 					new String[][] { { "No Information." } },
 					new String[] { "Message" }) {
+				/**
+						 * 
+						 */
+						private static final long serialVersionUID = 5657385170938938827L;
+
 				@Override
 				public boolean isCellEditable(int row, int column) {
 					// all cells false
@@ -1105,6 +1109,11 @@ public class Frm_RegAndInpatient extends JFrame implements
 				tab_ClinicList.setModel(new DefaultTableModel(
 						new String[][] { { "No Information." } },
 						new String[] { "Message" }) {
+					/**
+							 * 
+							 */
+							private static final long serialVersionUID = -2187364991003967906L;
+
 					@Override
 					public boolean isCellEditable(int row, int column) {
 						// all cells false
@@ -1127,6 +1136,11 @@ public class Frm_RegAndInpatient extends JFrame implements
 				}
 				tab_ClinicList.setModel(new DefaultTableModel(clinicMatrix,
 						clinicHeader) {
+					/**
+							 * 
+							 */
+							private static final long serialVersionUID = 5796864181214611950L;
+
 					@Override
 					public boolean isCellEditable(int row, int column) {
 						// all cells false
@@ -1332,6 +1346,11 @@ public class Frm_RegAndInpatient extends JFrame implements
 			tab_PatientList.setModel(new DefaultTableModel(
 					new String[][] { { "You need to give more keywords." } },
 					new String[] { "Message" }) {
+				/**
+						 * 
+						 */
+						private static final long serialVersionUID = -8196430493734834613L;
+
 				@Override
 				public boolean isCellEditable(int row, int column) {
 					// all cells false
@@ -1351,9 +1370,12 @@ public class Frm_RegAndInpatient extends JFrame implements
 		try {
 
 			this.cbb_InpatientType.removeAllItems();
-			this.cbb_InpatientType.addItem(paragraph.getString("ONDESKINPATIENT"));
-			this.cbb_InpatientType.addItem(paragraph.getString("MAKERESERVATION"));
-			this.cbb_InpatientType.addItem(paragraph.getString("RESERVEDCHECKIN"));
+			this.cbb_InpatientType.addItem(paragraph
+					.getString("ONDESKINPATIENT"));
+			this.cbb_InpatientType.addItem(paragraph
+					.getString("MAKERESERVATION"));
+			this.cbb_InpatientType.addItem(paragraph
+					.getString("RESERVEDCHECKIN"));
 			this.cbb_InpatientType.setSelectedIndex(0);
 
 			this.cbb_InpatientDivision.removeAllItems();
@@ -1453,6 +1475,11 @@ public class Frm_RegAndInpatient extends JFrame implements
 					tab_BedList.setModel(new DefaultTableModel(
 							new String[][] { { "No Information." } },
 							new String[] { "Message" }) {
+						/**
+								 * 
+								 */
+								private static final long serialVersionUID = 7065751750381425512L;
+
 						@Override
 						public boolean isCellEditable(int row, int column) {
 							// all cells false
@@ -1475,6 +1502,11 @@ public class Frm_RegAndInpatient extends JFrame implements
 					}
 					tab_BedList.setModel(new DefaultTableModel(bedMatrix,
 							bedHeader) {
+						/**
+								 * 
+								 */
+								private static final long serialVersionUID = -4588820734236675321L;
+
 						@Override
 						public boolean isCellEditable(int row, int column) {
 							// all cells false
@@ -1511,6 +1543,11 @@ public class Frm_RegAndInpatient extends JFrame implements
 					tab_BedList.setModel(new DefaultTableModel(
 							new String[][] { { "No Information." } },
 							new String[] { "Message" }) {
+						/**
+								 * 
+								 */
+								private static final long serialVersionUID = -2817170893774324590L;
+
 						@Override
 						public boolean isCellEditable(int row, int column) {
 							// all cells false
@@ -1533,6 +1570,11 @@ public class Frm_RegAndInpatient extends JFrame implements
 					}
 					tab_BedList.setModel(new DefaultTableModel(bedMatrix,
 							bedHeader) {
+						/**
+								 * 
+								 */
+								private static final long serialVersionUID = -6133434111591529583L;
+
 						@Override
 						public boolean isCellEditable(int row, int column) {
 							// all cells false
@@ -1659,6 +1701,16 @@ public class Frm_RegAndInpatient extends JFrame implements
 			selectedType = "Checkin";
 		}
 		try {
+			sql="SELECT bed_record.guid FROM bed_record WHERE bed_record.p_no='"
+					+ selectedPatientGUID 
+					+ "' AND bed_record.status='N'";
+			rs = DBC.executeQuery(sql);
+			if(rs.next()){
+				JOptionPane.showMessageDialog(new Frame(),paragraph.getString("ERRORALREADYINPATIENT"));
+				return;
+			}
+			
+			
 			if (selectedType == "N" || selectedType == "R") {
 				// get doctor No
 				sql = "SELECT staff_info.s_no FROM staff_info WHERE "
@@ -1674,8 +1726,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 						+ selectedBedGUID + "', " + "NULL, " + " '"
 						+ selectedType + "', ";
 				if (selectedType == "N") {
-					sql = sql + "NULL," + " '" + pan_CheckInDate.getValue()
-							+ " 00:00:00" + "', NULL, ";
+					sql = sql + "NULL, now(), NULL, ";
 				} else if (selectedType == "R") {
 					sql = sql + " '" + pan_CheckInDate.getValue() + " 00:00:00"
 							+ "', NULL, NULL, ";

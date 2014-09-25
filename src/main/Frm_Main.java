@@ -3,6 +3,7 @@ package main;
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.SQLException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -60,6 +61,7 @@ public class Frm_Main extends javax.swing.JFrame {
 		this.setLocationRelativeTo(this);
 
 		btn_MedicineStock.setVisible(true);
+		btn_MaterialStock.setVisible(true);
 		btn_BedManagement.setVisible(true);
 		btn_DepartmentManagement.setVisible(true);
 		btn_PositionManagement.setVisible(true);
@@ -126,6 +128,7 @@ public class Frm_Main extends javax.swing.JFrame {
 
 		this.btn_Inpatient.setText("InPatient");
 		this.btn_MedicineStock.setText(paragraph.getString("PHARMACYSTOCK"));
+		this.btn_MaterialStock.setText(paragraph.getString("MATERIALSTOCK"));
 		this.btn_BedManagement.setText(paragraph.getString("BEDMANAGEMENT"));
 		this.btn_Pharmacy.setText(paragraph.getString("PHARMACY"));
 		this.btn_PositionManagement.setText(paragraph
@@ -146,8 +149,10 @@ public class Frm_Main extends javax.swing.JFrame {
 
 		this.pan_Doctor.setBorder(javax.swing.BorderFactory
 				.createTitledBorder(paragraph.getString("DOCTOR")));
-		this.pan_PersonalManagement.setBorder(javax.swing.BorderFactory
-				.createTitledBorder(paragraph.getString("PERSONNELMANAGEMENT")));
+		this.pan_PersonalManagement
+				.setBorder(javax.swing.BorderFactory
+						.createTitledBorder(paragraph
+								.getString("PERSONNELMANAGEMENT")));
 		this.pan_Pharmacy.setBorder(javax.swing.BorderFactory
 				.createTitledBorder(paragraph.getString("PHARMACY")));
 		this.pan_SystemManagement.setBorder(javax.swing.BorderFactory
@@ -162,10 +167,12 @@ public class Frm_Main extends javax.swing.JFrame {
 				.createTitledBorder(paragraph.getString("MEDICAL_HISTORYT")));
 
 		this.setTitle(paragraph.getString("MAIN"));
-		
-		this.pan_StockManagement.setBorder(javax.swing.BorderFactory.createTitledBorder(paragraph.getString("STOCKMANAGEMENT")));
-		this.pan_BedManagement.setBorder(javax.swing.BorderFactory.createTitledBorder(paragraph.getString("BEDMANAGEMENT")));
-		
+
+		this.pan_StockManagement.setBorder(javax.swing.BorderFactory
+				.createTitledBorder(paragraph.getString("STOCKMANAGEMENT")));
+		this.pan_BedManagement.setBorder(javax.swing.BorderFactory
+				.createTitledBorder(paragraph.getString("BEDMANAGEMENT")));
+
 	}
 
 	public void initPermission() {
@@ -184,6 +191,7 @@ public class Frm_Main extends javax.swing.JFrame {
 				.getSelectPow("Position Management"));
 		btn_Pharmacy.setEnabled(UserInfo.getSelectPow("Pharmacy"));
 		btn_MedicineStock.setEnabled(UserInfo.getSelectPow("Medicine Stock"));
+		btn_MaterialStock.setEnabled(UserInfo.getSelectPow("Material Stock"));
 		btn_Premission.setEnabled(UserInfo.getSelectPow("Permission"));
 		btn_Laboratory.setEnabled(UserInfo.getSelectPow("Laboratory"));
 		btn_Radiology.setEnabled(UserInfo.getSelectPow("Radiology"));
@@ -192,19 +200,18 @@ public class Frm_Main extends javax.swing.JFrame {
 		btn_Sms.setEnabled(UserInfo.getSelectPow("Mobile Health"));
 		btn_Case.setEnabled(UserInfo.getSelectPow("Case Management"));
 		btn_Cashier.setEnabled(UserInfo.getSelectPow("Cashier"));
-		//btn_MedicineStock.setEnabled(UserInfo.getSelectPow("Stock"));
 		btn_BedManagement.setEnabled(UserInfo.getSelectPow("Bed Management"));
 		btn_Inpatient.setEnabled(UserInfo.getSelectPow("InPatient"));
-		
-		//btn_Inpatient.setEnabled(true);
-		
-		//btn_Anamnesis.setEnabled(false);
-		//btn_AnamnesisReturn.setEnabled(false);
+
+		// btn_Inpatient.setEnabled(true);
+
+		// btn_Anamnesis.setEnabled(false);
+		// btn_AnamnesisReturn.setEnabled(false);
 		btn_Statistic.setEnabled(false);
-		//btn_Sms.setEnabled(false);
-		//btn_Case.setEnabled(false);
-		//btn_BedManagement.setEnabled(false);
-		//btn_Cashier.setEnabled(false);
+		// btn_Sms.setEnabled(false);
+		// btn_Case.setEnabled(false);
+		// btn_BedManagement.setEnabled(false);
+		// btn_Cashier.setEnabled(false);
 	}
 
 	// <editor-fold defaultstate="collapsed"
@@ -235,6 +242,7 @@ public class Frm_Main extends javax.swing.JFrame {
 		btn_PositionManagement = new javax.swing.JButton();
 		btn_DepartmentManagement = new javax.swing.JButton();
 		btn_MedicineStock = new javax.swing.JButton();
+		btn_MaterialStock = new javax.swing.JButton();
 		btn_BedManagement = new javax.swing.JButton();
 		btn_Inpatient = new javax.swing.JButton();
 		pan_Case = new javax.swing.JPanel();
@@ -449,7 +457,7 @@ public class Frm_Main extends javax.swing.JFrame {
 				btn_DiagnosisActionPerformed(evt);
 			}
 		});
-		
+
 		btn_Inpatient.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				btn_AdmissionActionPerformed(evt);
@@ -528,7 +536,7 @@ public class Frm_Main extends javax.swing.JFrame {
 												javax.swing.GroupLayout.PREFERRED_SIZE,
 												60,
 												javax.swing.GroupLayout.PREFERRED_SIZE)
-										.addContainerGap() ));
+										.addContainerGap()));
 
 		pan_Pharmacy.setBackground(new java.awt.Color(240, 246, 255));
 		pan_Pharmacy.setBorder(javax.swing.BorderFactory
@@ -573,61 +581,132 @@ public class Frm_Main extends javax.swing.JFrame {
 								.addContainerGap()));
 
 		pan_BedManagement.setBackground(new java.awt.Color(240, 246, 255));
-        
-        javax.swing.GroupLayout pan_BedManagementLayout = new javax.swing.GroupLayout(pan_BedManagement);
-        pan_BedManagement.setLayout(pan_BedManagementLayout);
-        pan_BedManagementLayout.setHorizontalGroup(
-        		pan_BedManagementLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pan_BedManagementLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(pan_BedManagementLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(btn_BedManagement, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
-                        //.addComponent(btn_System, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
-                        //.addComponent(btn_Statistic, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        )
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        pan_BedManagementLayout.setVerticalGroup(
-        		pan_BedManagementLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pan_BedManagementLayout.createSequentialGroup()
-            	.addContainerGap()
-                .addComponent(btn_BedManagement, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                //.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                //.addComponent(btn_System, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                //.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                //.addComponent(btn_Statistic, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                )
-        );
-		
+
+		javax.swing.GroupLayout pan_BedManagementLayout = new javax.swing.GroupLayout(
+				pan_BedManagement);
+		pan_BedManagement.setLayout(pan_BedManagementLayout);
+		pan_BedManagementLayout
+				.setHorizontalGroup(pan_BedManagementLayout
+						.createParallelGroup(
+								javax.swing.GroupLayout.Alignment.LEADING)
+						.addGroup(
+								pan_BedManagementLayout
+										.createSequentialGroup()
+										.addContainerGap()
+										.addGroup(
+												pan_BedManagementLayout
+														.createParallelGroup(
+																javax.swing.GroupLayout.Alignment.LEADING)
+														.addComponent(
+																btn_BedManagement,
+																javax.swing.GroupLayout.Alignment.LEADING,
+																javax.swing.GroupLayout.DEFAULT_SIZE,
+																200,
+																Short.MAX_VALUE)
+										// .addComponent(btn_System,
+										// javax.swing.GroupLayout.Alignment.LEADING,
+										// javax.swing.GroupLayout.DEFAULT_SIZE,
+										// 200, Short.MAX_VALUE)
+										// .addComponent(btn_Statistic,
+										// javax.swing.GroupLayout.Alignment.LEADING,
+										// javax.swing.GroupLayout.PREFERRED_SIZE,
+										// 200,
+										// javax.swing.GroupLayout.PREFERRED_SIZE)
+										)
+										.addContainerGap(
+												javax.swing.GroupLayout.DEFAULT_SIZE,
+												Short.MAX_VALUE)));
+		pan_BedManagementLayout.setVerticalGroup(pan_BedManagementLayout
+				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				.addGroup(
+						javax.swing.GroupLayout.Alignment.TRAILING,
+						pan_BedManagementLayout
+								.createSequentialGroup()
+								.addContainerGap()
+								.addComponent(btn_BedManagement,
+										javax.swing.GroupLayout.PREFERRED_SIZE,
+										60,
+										javax.swing.GroupLayout.PREFERRED_SIZE)
+								// .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+								// .addComponent(btn_System,
+								// javax.swing.GroupLayout.PREFERRED_SIZE, 60,
+								// javax.swing.GroupLayout.PREFERRED_SIZE)
+								// .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+								// .addComponent(btn_Statistic,
+								// javax.swing.GroupLayout.PREFERRED_SIZE, 60,
+								// javax.swing.GroupLayout.PREFERRED_SIZE)
+								.addContainerGap(
+										javax.swing.GroupLayout.DEFAULT_SIZE,
+										Short.MAX_VALUE)));
+
 		pan_StockManagement.setBackground(new java.awt.Color(240, 246, 255));
-        
-        javax.swing.GroupLayout pan_StockManagementLayout = new javax.swing.GroupLayout(pan_StockManagement);
-        pan_StockManagement.setLayout(pan_StockManagementLayout);
-        pan_StockManagementLayout.setHorizontalGroup(
-        		pan_StockManagementLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pan_StockManagementLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(pan_StockManagementLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(btn_MedicineStock, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
-                        //.addComponent(btn_System, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
-                        //.addComponent(btn_Statistic, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        )
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        pan_StockManagementLayout.setVerticalGroup(
-        	pan_StockManagementLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pan_StockManagementLayout.createSequentialGroup()
-            	.addContainerGap()
-                .addComponent(btn_MedicineStock, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                //.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                //.addComponent(btn_System, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                //.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                //.addComponent(btn_Statistic, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                )
-        );
-		
+
+		javax.swing.GroupLayout pan_StockManagementLayout = new javax.swing.GroupLayout(
+				pan_StockManagement);
+		pan_StockManagement.setLayout(pan_StockManagementLayout);
+		pan_StockManagementLayout
+				.setHorizontalGroup(pan_StockManagementLayout
+						.createParallelGroup(
+								javax.swing.GroupLayout.Alignment.LEADING)
+						.addGroup(
+								pan_StockManagementLayout
+										.createSequentialGroup()
+										.addContainerGap()
+										.addGroup(
+												pan_StockManagementLayout
+														.createParallelGroup(
+																javax.swing.GroupLayout.Alignment.LEADING)
+														.addComponent(
+																btn_MedicineStock,
+																javax.swing.GroupLayout.Alignment.LEADING,
+																javax.swing.GroupLayout.DEFAULT_SIZE,
+																200,
+																Short.MAX_VALUE)
+														.addComponent(
+																btn_MaterialStock,
+																javax.swing.GroupLayout.Alignment.LEADING,
+																javax.swing.GroupLayout.DEFAULT_SIZE,
+																200,
+																Short.MAX_VALUE)
+										// .addComponent(btn_Statistic,
+										// javax.swing.GroupLayout.Alignment.LEADING,
+										// javax.swing.GroupLayout.PREFERRED_SIZE,
+										// 200,
+										// javax.swing.GroupLayout.PREFERRED_SIZE)
+										)
+										.addContainerGap(
+												javax.swing.GroupLayout.DEFAULT_SIZE,
+												Short.MAX_VALUE)));
+		pan_StockManagementLayout
+				.setVerticalGroup(pan_StockManagementLayout
+						.createParallelGroup(
+								javax.swing.GroupLayout.Alignment.LEADING)
+						.addGroup(
+								javax.swing.GroupLayout.Alignment.TRAILING,
+								pan_StockManagementLayout
+										.createSequentialGroup()
+										.addContainerGap()
+										.addComponent(
+												btn_MedicineStock,
+												javax.swing.GroupLayout.PREFERRED_SIZE,
+												60,
+												javax.swing.GroupLayout.PREFERRED_SIZE)
+										.addPreferredGap(
+												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+										.addComponent(
+												btn_MaterialStock,
+												javax.swing.GroupLayout.PREFERRED_SIZE,
+												60,
+												javax.swing.GroupLayout.PREFERRED_SIZE)
+										// .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+										// .addComponent(btn_Statistic,
+										// javax.swing.GroupLayout.PREFERRED_SIZE,
+										// 60,
+										// javax.swing.GroupLayout.PREFERRED_SIZE)
+										.addContainerGap(
+												javax.swing.GroupLayout.DEFAULT_SIZE,
+												Short.MAX_VALUE)));
+
 		pan_SystemManagement.setBackground(new java.awt.Color(240, 246, 255));
 
 		btn_Premission.setText(paragraph.getString("PERMISSION"));
@@ -738,9 +817,11 @@ public class Frm_Main extends javax.swing.JFrame {
 												javax.swing.GroupLayout.PREFERRED_SIZE,
 												60,
 												javax.swing.GroupLayout.PREFERRED_SIZE)
-										.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+										.addContainerGap(
+												javax.swing.GroupLayout.DEFAULT_SIZE,
+												Short.MAX_VALUE)
 
-												));
+						));
 
 		pan_Investgations.setBackground(new java.awt.Color(240, 246, 255));
 		pan_Investgations.setBorder(javax.swing.BorderFactory
@@ -838,7 +919,13 @@ public class Frm_Main extends javax.swing.JFrame {
 						btn_MedicineStockActionPerformed(evt);
 					}
 				});
-		
+		btn_MaterialStock
+				.addActionListener(new java.awt.event.ActionListener() {
+					public void actionPerformed(java.awt.event.ActionEvent evt) {
+						btn_MaterialStockActionPerformed(evt);
+					}
+				});
+
 		btn_BedManagement
 				.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1005,35 +1092,37 @@ public class Frm_Main extends javax.swing.JFrame {
 														pan_PersonalManagement,
 														javax.swing.GroupLayout.PREFERRED_SIZE,
 														230,
+														javax.swing.GroupLayout.PREFERRED_SIZE))
+								.addPreferredGap(
+										javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+								.addGroup(
+										layout.createParallelGroup(
+												javax.swing.GroupLayout.Alignment.LEADING)
+												.addComponent(
+														pan_StockManagement,
+														javax.swing.GroupLayout.PREFERRED_SIZE,
+														javax.swing.GroupLayout.DEFAULT_SIZE,
 														javax.swing.GroupLayout.PREFERRED_SIZE)
-												)
-												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-												.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-														.addComponent(
-																pan_StockManagement, 
-																javax.swing.GroupLayout.PREFERRED_SIZE, 
-																javax.swing.GroupLayout.DEFAULT_SIZE, 
-																javax.swing.GroupLayout.PREFERRED_SIZE)
-														.addComponent(
-																pan_BedManagement,
-																javax.swing.GroupLayout.PREFERRED_SIZE,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addComponent(
+														pan_BedManagement,
+														javax.swing.GroupLayout.PREFERRED_SIZE,
+														javax.swing.GroupLayout.DEFAULT_SIZE,
+														javax.swing.GroupLayout.PREFERRED_SIZE)
 
-												//.addGroup(
-												//		layout.createSequentialGroup()
-												//				.addGap(10, 10, 10)
-																// .addComponent(btn_MedicineStock,
-																// javax.swing.GroupLayout.PREFERRED_SIZE,
-																// 36,
-																// javax.swing.GroupLayout.PREFERRED_SIZE)
-												//				.addPreferredGap(
-												//						javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-												// .addComponent(btn_PositionManagement,
-												// javax.swing.GroupLayout.PREFERRED_SIZE,
-												// 45,
-												// javax.swing.GroupLayout.PREFERRED_SIZE)
-												).addGap(61, 61, 61)));
+								// .addGroup(
+								// layout.createSequentialGroup()
+								// .addGap(10, 10, 10)
+								// .addComponent(btn_MedicineStock,
+								// javax.swing.GroupLayout.PREFERRED_SIZE,
+								// 36,
+								// javax.swing.GroupLayout.PREFERRED_SIZE)
+								// .addPreferredGap(
+								// javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+								// .addComponent(btn_PositionManagement,
+								// javax.swing.GroupLayout.PREFERRED_SIZE,
+								// 45,
+								// javax.swing.GroupLayout.PREFERRED_SIZE)
+								).addGap(61, 61, 61)));
 		layout.setVerticalGroup(layout
 				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 				.addGroup(
@@ -1121,17 +1210,24 @@ public class Frm_Main extends javax.swing.JFrame {
 																		javax.swing.GroupLayout.PREFERRED_SIZE,
 																		javax.swing.GroupLayout.DEFAULT_SIZE,
 																		javax.swing.GroupLayout.PREFERRED_SIZE)
-																.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
-																.addGroup(layout.createSequentialGroup()
-																		.addComponent(pan_StockManagement, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-																		.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-																		.addComponent(
-																				pan_BedManagement,
-																				javax.swing.GroupLayout.PREFERRED_SIZE,
-																				javax.swing.GroupLayout.DEFAULT_SIZE,
-																				javax.swing.GroupLayout.PREFERRED_SIZE)
-																		.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-														))
+																.addPreferredGap(
+																		javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+												.addGroup(
+														layout.createSequentialGroup()
+																.addComponent(
+																		pan_StockManagement,
+																		javax.swing.GroupLayout.PREFERRED_SIZE,
+																		javax.swing.GroupLayout.DEFAULT_SIZE,
+																		javax.swing.GroupLayout.PREFERRED_SIZE)
+																.addPreferredGap(
+																		javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+																.addComponent(
+																		pan_BedManagement,
+																		javax.swing.GroupLayout.PREFERRED_SIZE,
+																		javax.swing.GroupLayout.DEFAULT_SIZE,
+																		javax.swing.GroupLayout.PREFERRED_SIZE)
+																.addPreferredGap(
+																		javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
 								.addContainerGap()));
 
 		pack();
@@ -1140,7 +1236,7 @@ public class Frm_Main extends javax.swing.JFrame {
 	private void btn_RegisterActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_RegisterActionPerformed
 		// 開啟掛號視窗
 		new registration.Frm_RegAndInpatient().setVisible(true);
-		//new registration.Frm_Registration().setVisible(true);
+		// new registration.Frm_Registration().setVisible(true);
 		// 關閉此視窗
 		this.dispose();
 	}// GEN-LAST:event_btn_RegisterActionPerformed
@@ -1218,11 +1314,15 @@ public class Frm_Main extends javax.swing.JFrame {
 
 	private void btn_AdmissionActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_DiagnosisActionPerformed
 		// 開啟看診 視窗
-		new worklist.Frm_WorkList(0, "inp").setVisible(true);
+		try {
+			new admission.Frm_WorkList(0, "inp").setVisible(true);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		// 關閉此視窗
 		this.dispose();
 	}// GEN-LAST:event_btn_DiagnosisActionPerformed
-	
+
 	private void btn_PharmacyActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_PharmacyActionPerformed
 		new pharmacy.Frm_Pharmacy().setVisible(true);
 		// 關閉此視窗
@@ -1263,6 +1363,11 @@ public class Frm_Main extends javax.swing.JFrame {
 		this.dispose();
 	}// GEN-LAST:event_btn_PositionManagementActionPerformed
 
+	private void btn_MaterialStockActionPerformed(java.awt.event.ActionEvent evt) {
+		new materialstock.Frm_MaterialStockInfo().setVisible(true);
+		this.dispose();
+	}
+
 	private void btn_MedicineStockActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_MedicineStockActionPerformed
 		new medicinestock.Frm_MidicineStockInfo().setVisible(true);
 		this.dispose();
@@ -1293,7 +1398,7 @@ public class Frm_Main extends javax.swing.JFrame {
 		new bedMgmt.Frm_BedList(0).setVisible(true);
 		this.dispose();
 	}
-	
+
 	private void btn_LaboratoryActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_LaboratoryActionPerformed
 		new worklist.Frm_WorkList(0, "lab").setVisible(true);
 		this.dispose();
@@ -1358,6 +1463,7 @@ public class Frm_Main extends javax.swing.JFrame {
 	private javax.swing.JButton btn_Diagnosis;
 	private javax.swing.JButton btn_Laboratory;
 	private javax.swing.JButton btn_MedicineStock;
+	private javax.swing.JButton btn_MaterialStock;
 	private javax.swing.JButton btn_BedManagement;
 	private javax.swing.JButton btn_Inpatient;
 	private javax.swing.JButton btn_Patients;

@@ -1,4 +1,4 @@
-package worklist;
+package admission;
 
 import java.awt.Frame;
 import java.awt.GridLayout;
@@ -8,17 +8,19 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
@@ -34,17 +36,11 @@ import org.jdesktop.beansbinding.Bindings;
 
 import radiology.Frm_Radiology;
 import registration.Frm_RegAndInpatient;
-import admission.Frm_InpatientHistory;
-import admission.InpatientInterface;
-import admission.SysName2Invisible;
-import admission.SysName2Visible;
 import casemgmt.Frm_Case;
 import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
 import diagnosis.DiagnosisInterface;
-import diagnosis.Frm_DiagnosisDiagnostic;
 import diagnosis.Frm_DiagnosisInfo;
-import diagnosis.Frm_DiagnosisPrintChooser;
 import errormessage.StoredErrorMessage;
 
 public class Frm_WorkList extends javax.swing.JFrame implements
@@ -56,10 +52,8 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 	private static final long serialVersionUID = 1L;
 	private long REFRASHTIME = 1000; // 自度刷新跨號資訊時間
 	private RefrashWorkList m_RefrashWorkList;
-	private RefrashWorkList m_RefrashWorkList2;
 	private Thread m_Clock;
 	private String m_SysName; // 系統名稱
-	private boolean m_IsStop = false;
 	private String m_RegGuid;
 	private String m_Pno;
 	/* 多國語言變數 */
@@ -70,10 +64,45 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 	/* 輸出錯誤資訊變數 */
 	StoredErrorMessage ErrorMessage = new StoredErrorMessage();
 
+	private InpComboModel deptModel;
+	private InpComboModel docModel;
+
 	// LastSelectRow 最後選擇行號　　SysName　系統名
-	public Frm_WorkList(int LastSelectRow, String SysName) {
+	public Frm_WorkList(int LastSelectRow, String SysName) throws SQLException {
 		m_SysName = SysName;
 		initComponents();
+
+		ResultSet rsDept = null;
+		ResultSet rsDoc = null;
+		try {
+			Map<String, String> doctorList = new HashMap<String, String>();
+
+			Map<String, String> deptList = new HashMap<String, String>();
+
+			rsDept = DBC.executeQuery("SELECT guid, name FROM policlinic");
+			while (rsDept.next()) {
+				deptList.put(rsDept.getString("guid"), rsDept.getString("name"));
+			}
+
+			deptModel = new InpComboModel(deptList);
+
+			rsDoc = DBC
+					.executeQuery("SELECT s_no, concat(firstname,' ', lastname) as 'name' FROM staff_info where grp_name = 'Doctor'");
+			while (rsDoc.next()) {
+				doctorList
+						.put(rsDoc.getString("s_no"), rsDoc.getString("name"));
+			}
+
+			docModel = new InpComboModel(doctorList);
+
+			comb_Dept.setModel(deptModel);
+			comb_Doctor.setModel(docModel);
+
+		} finally {
+			DBC.closeConnection(rsDept);
+			DBC.closeConnection(rsDoc);
+		}
+
 		// ---------迦納-------------------------
 		// dateComboBox.setVisible(false);
 		// btn_Search.setVisible(false);
@@ -86,7 +115,7 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 		}
 		if (tab_WorkList.getRowCount() != 0) {
 			btn_Enter.setEnabled(true);
-
+			btn_RePrint.setEnabled(true);
 			if (SysName.equals("dia")) {
 				tab_WorkList.addRowSelectionInterval(LastSelectRow,
 						LastSelectRow);
@@ -102,35 +131,11 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 	// 初始化
 	public void initWorkList() {
 		// 依系統不同初始化
-		if (m_SysName.equals("dia")) {
-			dateComboBox.setVisible(false);
-			btn_Search.setVisible(false);
-			lab_Date.setVisible(false);
-			this.setTitle("Diagnosis WorkList");
-		} else if (m_SysName.equals("lab")) {
-			this.setTitle("Laboratory WorkList");
-			btn_RePrint.setVisible(false);
-			lab_Name.setText("Staff");
-			lab_Finish.setVisible(false);
-			lab_FinishCount.setVisible(false);
-		} else if (m_SysName.equals("xray")) {
-			this.setTitle("Radiology(X-RAY) WorkList");
-			btn_RePrint.setVisible(false);
-			lab_Name.setText("Staff");
-			lab_Finish.setVisible(false);
-			lab_FinishCount.setVisible(false);
-		} else if (m_SysName.equals("case")) {
-			this.setTitle("Case Management WorkList");
-			btn_RePrint.setVisible(false);
-			lab_Name.setText("Staff");
-			lab_Finish.setVisible(false);
-			lab_FinishCount.setVisible(false);
-			btn_RePrint.setVisible(false);
-		} else if (m_SysName.equals("inp")) {
+		if (m_SysName.equals("inp")) {
 			this.setTitle("住院病患列表");
-			dateComboBox.setVisible(false);
-			btn_Search.setVisible(false);
-			lab_Date.setVisible(false);
+			dateComboBox.setVisible(true);
+			btn_Search.setVisible(true);
+			lab_Date.setVisible(true);
 			lbl_InpNo.setVisible(true);
 			lbl_InpNoVal.setVisible(true);
 			this.repaint();
@@ -140,7 +145,6 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 		this.setExtendedState(Frm_WorkList.MAXIMIZED_BOTH); // 最大化
 		this.setLocationRelativeTo(this);
 		this.tab_WorkList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); // table不可按住多選
-		table_FinishList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); // table不可按住多選
 		addWindowListener(new WindowAdapter() { // 畫面關閉原視窗enable
 			@Override
 			public void windowClosing(WindowEvent windowevent) {
@@ -148,15 +152,9 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 			}
 		});
 		this.m_RefrashWorkList = new RefrashWorkList(this.tab_WorkList,
-				REFRASHTIME, m_SysName, "W");
+				REFRASHTIME, m_SysName);
 		m_RefrashWorkList.setParentFrame(this);
 		this.m_RefrashWorkList.start();
-
-		m_RefrashWorkList2 = new RefrashWorkList(this.table_FinishList,
-				REFRASHTIME, m_SysName, "F");
-		m_RefrashWorkList2.setParentFrame(this);
-		this.m_RefrashWorkList2.start();
-
 		this.m_Clock = new Thread() { // Clock
 			@Override
 			@SuppressWarnings("static-access")
@@ -166,7 +164,6 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 						lab_SystemTime.setText(new SimpleDateFormat(
 								"MM/dd/yyyy HH:mm:ss").format(Calendar
 								.getInstance().getTime()));
-						showVisitsCount();
 						this.sleep(500);
 					}
 				} catch (InterruptedException e) {
@@ -189,10 +186,7 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 	@SuppressWarnings("deprecation")
 	private void initLanguage() {
 		this.btn_RePrint.setText(paragraph.getLanguage(line, "PRINT"));
-		// this.lab_Name.setText(paragraph.getLanguage(line, "NAME"));
-		this.lab_Wait.setText(paragraph.getLanguage(line, "WAIT"));
 		this.lab_poli.setText(paragraph.getLanguage(line, "POLI"));
-		this.lab_Finish.setText(paragraph.getLanguage(line, "FINISH"));
 		this.btn_Enter.setText(paragraph.getLanguage(message, "ENTER"));
 		this.btn_Close.setText(paragraph.getLanguage(message, "CLOSE"));
 		mn_Fiele.setText(paragraph.getLanguage(message, "FILE"));
@@ -201,60 +195,42 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 		// this.setTitle(paragraph.getLanguage(line, "TITLEWORKLIST"));
 	}
 
-	// 計算待診 已診人數
-	private void showVisitsCount() {
-		// int finishCount = 0;
-		// if (this.tab_WorkList.getRowCount() > 0)
-		// for (int i = 0; i < this.tab_WorkList.getRowCount(); i++) {
-		// if (this.tab_WorkList.getValueAt(i, 2) != null
-		// && this.tab_WorkList.getValueAt(i, 2).toString()
-		// .equals("F"))
-		// finishCount++;
-		// }
-		this.lab_WaitCount.setText("" + tab_WorkList.getRowCount());
-		this.lab_FinishCount.setText("" + table_FinishList.getRowCount());
-	}
-
 	// 進入看診
 	public void setEnter(boolean finishState) {
-		getSelectedTable();
 		m_RefrashWorkList.interrupt(); // 終止重複讀取掛號表單
-		m_RefrashWorkList2.interrupt();
 		m_Clock.interrupt();
-		m_Pno = (String) this.tab_WorkListInterface.getValueAt(
-				tab_WorkListInterface.getSelectedRow(), 4);
-		m_RegGuid = (String) this.tab_WorkListInterface.getValueAt(
-				tab_WorkListInterface.getSelectedRow(), 11);
-		int getSelectRow = this.tab_WorkListInterface.getSelectedRow();
+		m_Pno = (String) this.tab_WorkList.getValueAt(
+				tab_WorkList.getSelectedRow(), 4);
+		m_RegGuid = (String) this.tab_WorkList.getValueAt(
+				tab_WorkList.getSelectedRow(), 11);
+		int getSelectRow = this.tab_WorkList.getSelectedRow();
 
 		if (m_SysName.equals("dia")) {
 			boolean getFirst = false; // 是否為初診(用於彈出過敏設定)
-			if (tab_WorkListInterface.getValueAt(
-					tab_WorkListInterface.getSelectedRow(), 1) != null
-					&& tab_WorkListInterface
-							.getValueAt(tab_WorkListInterface.getSelectedRow(),
-									1).toString().equals("*")) {
+			if (tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 1) != null
+					&& tab_WorkList
+							.getValueAt(tab_WorkList.getSelectedRow(), 1)
+							.toString().equals("*")) {
 				getFirst = true;
 			}
 			this.dummy = "dia_hist";
 			new Frm_DiagnosisInfo(null, m_Pno, m_RegGuid, getSelectRow,
 					finishState, getFirst).setVisible(true);
 		} else if (m_SysName.equals("lab")) {
-			m_Pno = (String) this.tab_WorkListInterface.getValueAt(
-					tab_WorkListInterface.getSelectedRow(), 5);
+			m_Pno = (String) this.tab_WorkList.getValueAt(
+					tab_WorkList.getSelectedRow(), 5);
 			new Frm_Laboratory(m_Pno, m_RegGuid, getSelectRow, finishState)
 					.setVisible(true);
 		} else if (m_SysName.equals("xray")) {
-			m_Pno = (String) this.tab_WorkListInterface.getValueAt(
-					tab_WorkListInterface.getSelectedRow(), 5);
+			m_Pno = (String) this.tab_WorkList.getValueAt(
+					tab_WorkList.getSelectedRow(), 5);
 			new Frm_Radiology(m_Pno, m_RegGuid, getSelectRow, finishState)
 					.setVisible(true);
 		} else if (m_SysName.equals("case")) {
-			if (tab_WorkListInterface.getValueAt(
-					tab_WorkListInterface.getSelectedRow(), 3) != null
+			if (tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 3) != null
 					&& tab_WorkList
-							.getValueAt(tab_WorkListInterface.getSelectedRow(),
-									3).toString().equals("F")) {
+							.getValueAt(tab_WorkList.getSelectedRow(), 3)
+							.toString().equals("F")) {
 				new Frm_Case(m_Pno, m_RegGuid, true, "").setVisible(true);
 			} else {
 				new Frm_Case(m_Pno, m_RegGuid, false, "").setVisible(true);
@@ -262,10 +238,10 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 
 		} else if (m_SysName.equals("inp")) {
 			this.dummy = "inp_hist";
-			m_RegGuid = (String) tab_WorkListInterface.getValueAt(
-					tab_WorkListInterface.getSelectedRow(), 13);
-			m_Pno = (String) tab_WorkListInterface.getValueAt(
-					tab_WorkListInterface.getSelectedRow(), 0);
+			m_RegGuid = (String) tab_WorkList.getValueAt(
+					tab_WorkList.getSelectedRow(), 13);
+			m_Pno = (String) tab_WorkList.getValueAt(
+					tab_WorkList.getSelectedRow(), 0);
 			new Frm_DiagnosisInfo(this, m_Pno, m_RegGuid, getSelectRow, true,
 					false).setVisible(true);
 		}
@@ -275,6 +251,7 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 	// <editor-fold defaultstate="collapsed"
 	// desc="Generated Code">//GEN-BEGIN:initComponents
 	private void initComponents() {
+
 		pan_Center = new javax.swing.JPanel();
 		span_WaitDiagnosis = new javax.swing.JScrollPane();
 		tab_WorkList = new javax.swing.JTable();
@@ -315,67 +292,30 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 
 		span_WaitDiagnosis.setViewportView(tab_WorkList);
 
-		JScrollPane span_Finish = new JScrollPane();
-
 		javax.swing.GroupLayout pan_CenterLayout = new javax.swing.GroupLayout(
 				pan_Center);
+		pan_Center.setLayout(pan_CenterLayout);
 		pan_CenterLayout
 				.setHorizontalGroup(pan_CenterLayout
-						.createParallelGroup(Alignment.TRAILING)
+						.createParallelGroup(
+								javax.swing.GroupLayout.Alignment.LEADING)
 						.addGroup(
 								pan_CenterLayout
 										.createSequentialGroup()
 										.addContainerGap()
-										.addGroup(
-												pan_CenterLayout
-														.createParallelGroup(
-																Alignment.TRAILING)
-														.addComponent(
-																span_Finish,
-																Alignment.LEADING,
-																GroupLayout.DEFAULT_SIZE,
-																1614,
-																Short.MAX_VALUE)
-														.addComponent(
-																span_WaitDiagnosis,
-																Alignment.LEADING,
-																GroupLayout.DEFAULT_SIZE,
-																1614,
-																Short.MAX_VALUE))
+										.addComponent(
+												span_WaitDiagnosis,
+												javax.swing.GroupLayout.DEFAULT_SIZE,
+												601, Short.MAX_VALUE)
 										.addContainerGap()));
 		pan_CenterLayout.setVerticalGroup(pan_CenterLayout.createParallelGroup(
-				Alignment.LEADING).addGroup(
+				javax.swing.GroupLayout.Alignment.LEADING).addGroup(
 				pan_CenterLayout
 						.createSequentialGroup()
 						.addContainerGap()
 						.addComponent(span_WaitDiagnosis,
-								GroupLayout.DEFAULT_SIZE, 430, Short.MAX_VALUE)
-						.addPreferredGap(ComponentPlacement.RELATED)
-						.addComponent(span_Finish, GroupLayout.DEFAULT_SIZE,
-								448, Short.MAX_VALUE).addContainerGap()));
-
-		table_FinishList = new JTable();
-		span_Finish.setViewportView(table_FinishList);
-
-		table_FinishList.setModel(new javax.swing.table.DefaultTableModel(
-				new Object[][] { {}, {}, {} }, new String[] {
-
-				}));
-		table_FinishList.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
-		table_FinishList.setRowHeight(25);
-		table_FinishList.getTableHeader().setReorderingAllowed(false);
-		table_FinishList.addMouseListener(new java.awt.event.MouseAdapter() {
-			public void mouseClicked(java.awt.event.MouseEvent evt) {
-				tab_FinishListMouseClicked(evt);
-			}
-		});
-		table_FinishList.addKeyListener(new java.awt.event.KeyAdapter() {
-			public void keyPressed(java.awt.event.KeyEvent evt) {
-				tab_FinishListKeyPressed(evt);
-			}
-		});
-
-		pan_Center.setLayout(pan_CenterLayout);
+								javax.swing.GroupLayout.DEFAULT_SIZE, 434,
+								Short.MAX_VALUE).addContainerGap()));
 
 		lab_Name.setText("Doctor");
 
@@ -397,7 +337,7 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 		});
 
 		btn_RePrint.setText(this.paragraph.getString("PRINT")); //$NON-NLS-1$ //$NON-NLS-2$
-		btn_RePrint.setEnabled(false);
+		btn_RePrint.setEnabled(true);
 		btn_RePrint.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				btn_RePrintActionPerformed(evt);
@@ -587,40 +527,26 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 		lab_SystemTime.setFont(new java.awt.Font("UnDotum", 0, 18));
 		lab_SystemTime.setText("-----");
 		pan_Top.add(lab_SystemTime);
-		lab_Wait = new javax.swing.JLabel();
-		lab_Wait.setHorizontalAlignment(SwingConstants.LEFT);
 
-		lab_Wait.setText("Await");
+		label_7 = new JLabel();
+		label_7.setText("Department");
+		label_7.setHorizontalAlignment(SwingConstants.LEFT);
+		pan_Top.add(label_7);
 
-		pan_Top.add(lab_Wait);
-		lab_WaitCount = new javax.swing.JLabel();
-		lab_WaitCount.setHorizontalAlignment(SwingConstants.LEFT);
+		comb_Dept = new JComboBox();
+		pan_Top.add(comb_Dept);
 
-		lab_WaitCount.setText("-----");
-		pan_Top.add(lab_WaitCount);
-		lab_Finish = new javax.swing.JLabel();
-		lab_Finish.setHorizontalAlignment(SwingConstants.LEFT);
+		label_8 = new JLabel();
+		label_8.setText("Doctor");
+		label_8.setHorizontalAlignment(SwingConstants.LEFT);
+		pan_Top.add(label_8);
 
-		lab_Finish.setText("Finish");
-		pan_Top.add(lab_Finish);
-		lab_FinishCount = new javax.swing.JLabel();
-		lab_FinishCount.setHorizontalAlignment(SwingConstants.LEFT);
-
-		lab_FinishCount.setText("-----");
-		pan_Top.add(lab_FinishCount);
-
-		label_6 = new JLabel("");
-		pan_Top.add(label_6);
-
-		label = new JLabel("");
-		pan_Top.add(label);
-
-		label_1 = new JLabel("");
-		pan_Top.add(label_1);
+		comb_Doctor = new JComboBox();
+		pan_Top.add(comb_Doctor);
 		lab_Date = new javax.swing.JLabel();
 		lab_Date.setHorizontalAlignment(SwingConstants.LEFT);
 
-		lab_Date.setText("Date:");
+		lab_Date.setText(this.paragraph.getString("CHECK_IN_DATE")); //$NON-NLS-1$ //$NON-NLS-2$
 		pan_Top.add(lab_Date);
 		dateComboBox = new cc.johnwu.date.DateComboBox();
 		pan_Top.add(dateComboBox);
@@ -633,6 +559,15 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 			}
 		});
 		pan_Top.add(btn_Search);
+
+		label_6 = new JLabel("");
+		pan_Top.add(label_6);
+
+		label = new JLabel("");
+		pan_Top.add(label);
+
+		label_1 = new JLabel("");
+		pan_Top.add(label_1);
 
 		label_2 = new JLabel("");
 		pan_Top.add(label_2);
@@ -653,49 +588,23 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 	private String dummy = "";
 
 	private void onDiagnosticClicked(java.awt.event.ActionEvent evt) {
-		getSelectedTable();
-		if (m_SysName.equals("dia")) {
-			dummy = "dia_hist";
 
-			m_Pno = (String) tab_WorkListInterface.getValueAt(
-					tab_WorkListInterface.getSelectedRow(), 4);
+		dummy = "inp_hist";
+		String pname = (String) tab_WorkList.getValueAt(
+				tab_WorkList.getSelectedRow(), 3);
+		m_Pno = (String) tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(),
+				0);
+		new Frm_InpatientHistory(this, m_Pno, pname).setVisible(true);
 
-			m_RegGuid = (String) tab_WorkListInterface.getValueAt(
-					tab_WorkListInterface.getSelectedRow(), 11);
-
-			if (tab_WorkListInterface.getValueAt(
-					tab_WorkListInterface.getSelectedRow(), 2) != null
-					&& tab_WorkListInterface
-							.getValueAt(tab_WorkListInterface.getSelectedRow(),
-									2).toString().equals("F")) {
-			}
-
-			Frm_DiagnosisDiagnostic frm_DiagnosisDiagnostic = new Frm_DiagnosisDiagnostic(
-					this, m_Pno, (String) tab_WorkListInterface.getValueAt(
-							tab_WorkListInterface.getSelectedRow(), 5),
-					m_RegGuid);
-			frm_DiagnosisDiagnostic.setEntry("clinic_worklist_hist");
-			frm_DiagnosisDiagnostic.setVisible(true);
-		} else {
-			dummy = "inp_hist";
-			String pname = (String) tab_WorkListInterface.getValueAt(
-					tab_WorkListInterface.getSelectedRow(), 3);
-			m_Pno = (String) tab_WorkListInterface.getValueAt(
-					tab_WorkListInterface.getSelectedRow(), 0);
-			new Frm_InpatientHistory(this, m_Pno, pname).setVisible(true);
-		}
 		m_RefrashWorkList.stopRunning();
 		m_RefrashWorkList.interrupt(); // 終止重複讀取掛號表單
-		m_RefrashWorkList2.stopRunning();
-		m_RefrashWorkList2.interrupt();
 		m_Clock.interrupt();
 		this.dispose();
 	}
 
 	private void onCheckOut(ActionEvent e) {
-		getSelectedTable();
-		String bedRecGuid = (String) tab_WorkListInterface.getValueAt(
-				tab_WorkListInterface.getSelectedRow(), 12);
+		String bedRecGuid = (String) tab_WorkList.getValueAt(
+				tab_WorkList.getSelectedRow(), 12);
 		String sql = String
 				.format("update bed_record set status = 'L', checkoutTime = now() where bed_record.guid = '%s'",
 						bedRecGuid);
@@ -707,11 +616,9 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 	}
 
 	private void onRegistrationClicked(MouseEvent e) {
-		getSelectedTable();
-		m_Pno = (String) ((m_SysName.equals("inp")) ? tab_WorkListInterface
-				.getValueAt(tab_WorkList.getSelectedRow(), 0)
-				: tab_WorkListInterface.getValueAt(
-						tab_WorkList.getSelectedRow(), 4));
+		m_Pno = (String) ((m_SysName.equals("inp")) ? tab_WorkList.getValueAt(
+				tab_WorkList.getSelectedRow(), 0) : tab_WorkList.getValueAt(
+				tab_WorkList.getSelectedRow(), 4));
 		new Frm_RegAndInpatient(this, m_Pno).setVisible(true);
 		this.setVisible(false);
 	}
@@ -740,61 +647,30 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 
 	@SuppressWarnings("deprecation")
 	private void tab_WorkListKeyPressed(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_tab_WorkListKeyPressed
-		table_FinishList.clearSelection();
 		if (this.tab_WorkList.getRowCount() > 0) {
 			this.btn_Enter.setEnabled(true);
-			if (this.m_SysName.equals("dia")
-					&& this.tab_WorkList.getValueAt(
-							this.tab_WorkList.getSelectedRow(), 3) != null) {
-				this.btn_Enter.setText(paragraph.getLanguage(line, "EDIT"));
-				this.btn_RePrint.setEnabled(true);
-			} else if (this.m_SysName.equals("dia")) {
-				this.btn_Enter.setText(paragraph.getLanguage(message, "ENTER"));
-				this.btn_RePrint.setEnabled(false);
+			this.btn_RePrint.setEnabled(true);
+			if (this.tab_WorkList.getValueAt(
+					this.tab_WorkList.getSelectedRow(), 3) != null) {
+				btn_Enter.setText(paragraph.getLanguage(line, "EDIT"));
+			} else {
+				btn_Enter.setText(paragraph.getLanguage(message, "ENTER"));
 			}
+		} else {
+			this.btn_Enter.setEnabled(false);
+			this.btn_RePrint.setEnabled(false);
 		}
 	}// GEN-LAST:event_tab_WorkListKeyPressed
-
-	private void tab_FinishListMouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_tab_WorkListMouseClicked
-		if (evt.getClickCount() == 2) {
-			btn_EnterActionPerformed(null);
-		}
-		tab_FinishListKeyPressed(null);
-	}// GEN-LAST:event_tab_WorkListMouseClicked
-
-	@SuppressWarnings("deprecation")
-	private void tab_FinishListKeyPressed(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_tab_WorkListKeyPressed
-		tab_WorkList.clearSelection();
-		if (this.table_FinishList.getRowCount() > 0) {
-			this.btn_Enter.setEnabled(true);
-			if (this.m_SysName.equals("dia")
-					&& this.table_FinishList.getValueAt(
-							this.table_FinishList.getSelectedRow(), 3) != null) {
-				this.btn_Enter.setText(paragraph.getLanguage(line, "EDIT"));
-				this.btn_RePrint.setEnabled(true);
-			} else if (this.m_SysName.equals("dia")) {
-				this.btn_Enter.setText(paragraph.getLanguage(message, "ENTER"));
-				this.btn_RePrint.setEnabled(false);
-			}
-		}
-	}// GEN-LAST:event_tab_WorkListKeyPressed
-
-	private void getSelectedTable() {
-		tab_WorkListInterface = (tab_WorkList.getSelectedRow() == -1) ? (table_FinishList
-				.getSelectedRow() == -1) ? tab_WorkList : table_FinishList
-				: tab_WorkList;
-	}
 
 	@SuppressWarnings("deprecation")
 	private void btn_EnterActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_EnterActionPerformed
-		getSelectedTable();
+
 		boolean finishState = false;
 		if (!m_SysName.equals("inp")) {
-			if (tab_WorkListInterface.getValueAt(
-					tab_WorkListInterface.getSelectedRow(), 2) != null
-					&& tab_WorkListInterface.getValueAt(
-							tab_WorkListInterface.getSelectedRow(), 2).equals(
-							"F")) {
+			if (tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 2) != null
+					&& tab_WorkList
+							.getValueAt(tab_WorkList.getSelectedRow(), 2)
+							.equals("F")) {
 
 				Object[] options = { paragraph.getLanguage(message, "YES"),
 						paragraph.getLanguage(message, "NO") };
@@ -808,23 +684,18 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 				if (dialog == 0) {
 					finishState = true;
 					m_RefrashWorkList.interrupt(); // 終止重複讀取掛號表單
-					m_RefrashWorkList2.interrupt(); // 終止重複讀取掛號表單
 					setEnter(finishState);
 				}
-			} else if ((tab_WorkListInterface.getValueAt(
-					tab_WorkListInterface.getSelectedRow(), 2) == null)
-					|| (tab_WorkListInterface.getValueAt(
-							tab_WorkListInterface.getSelectedRow(), 2))
-							.toString().compareTo("") == 0) {
+			} else if ((tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(),
+					2) == null)
+					|| (tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(),
+							2)).toString().compareTo("") == 0) {
 				m_RefrashWorkList.interrupt(); // 終止重複讀取掛號表單
-				m_RefrashWorkList2.interrupt(); // 終止重複讀取掛號表單
 				setEnter(finishState);
 			}
 		} else {
-			if (tab_WorkListInterface.getValueAt(
-					tab_WorkListInterface.getSelectedRow(), 0) != null) {
+			if (tab_WorkList.getValueAt(tab_WorkList.getSelectedRow(), 0) != null) {
 				m_RefrashWorkList.interrupt(); // 終止重複讀取掛號表單
-				m_RefrashWorkList2.interrupt(); // 終止重複讀取掛號表單
 				setEnter(finishState);
 			}
 		}
@@ -836,61 +707,29 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 	}// GEN-LAST:event_btn_CloseActionPerformed
 
 	private void btn_RePrintActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_RePrintActionPerformed
-		getSelectedTable();
-		String regGuid = (String) tab_WorkListInterface.getValueAt(
-				tab_WorkListInterface.getSelectedRow(), 11);
+		String regGuid = (String) tab_WorkList.getValueAt(
+				tab_WorkList.getSelectedRow(), 13);
 		System.out.println(String.format("Selected Patient [%s]", regGuid));
-		Frm_DiagnosisPrintChooser chooser = new Frm_DiagnosisPrintChooser(
+		Frm_InpatientPrintChooser chooser = new Frm_InpatientPrintChooser(
 				regGuid);
 		chooser.setLocationRelativeTo(this);
 		chooser.setVisible(true);
 	}// GEN-LAST:event_btn_RePrintActionPerformed
 
 	private void btn_SearchActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_SearchActionPerformed
-		if (m_IsStop) {
-			m_IsStop = false;
-			dateComboBox.setEnabled(true);
-			btn_Search.setText("Search");
-			dateComboBox.setValue(new SimpleDateFormat("yyyy-MM-dd")
-					.format(Calendar.getInstance().getTime()));
-			this.m_RefrashWorkList = new RefrashWorkList(this.tab_WorkList,
-					REFRASHTIME, m_SysName, "W");
-			this.m_RefrashWorkList.start();
-			this.m_RefrashWorkList2 = new RefrashWorkList(
-					this.table_FinishList, REFRASHTIME, m_SysName, "F");
-			this.m_RefrashWorkList2.start();
-			this.m_Clock = new Thread() { // Clock
-				@Override
-				@SuppressWarnings("static-access")
-				public void run() {
-					try {
-						while (true) {
-							lab_SystemTime.setText(new SimpleDateFormat(
-									"yyyy/MM/dd HH:mm:ss").format(Calendar
-									.getInstance().getTime()));
-							showVisitsCount();
-							this.sleep(500);
-						}
-					} catch (InterruptedException e) {
-						ErrorMessage.setData(
-								"Diagnosis",
-								"Frm_DiagnosisWorkList",
-								"initWorkList() - run()",
-								e.toString().substring(
-										e.toString().lastIndexOf(".") + 1,
-										e.toString().length()));
-					}
-				}
-			};
-		} else {
-			m_IsStop = true;
-			dateComboBox.setEnabled(false);
-			btn_Search.setText("Cancels Search");
-			m_RefrashWorkList.interrupt(); // 終止重複讀取掛號表單
-			m_RefrashWorkList.getSelectDate(dateComboBox.getValue());
-			m_RefrashWorkList2.interrupt(); // 終止重複讀取掛號表單
-			m_RefrashWorkList2.getSelectDate(dateComboBox.getValue());
-		}
+		btn_Search.setEnabled(false);
+		m_RefrashWorkList.interrupt(); // 終止重複讀取掛號表單
+		m_RefrashWorkList.stopRunning();
+		this.m_RefrashWorkList = new RefrashWorkList(this.tab_WorkList,
+				REFRASHTIME, m_SysName);
+		this.m_RefrashWorkList.setParentFrame(this);
+		m_RefrashWorkList.setCondition((deptModel.selectedItem == null) ? ""
+				: deptModel.selectedItem, (docModel.selectedItem == null) ? ""
+				: docModel.selectedItem, dateComboBox.getValue());
+
+		this.m_RefrashWorkList.start();
+
+		btn_Search.setEnabled(true);
 	}// GEN-LAST:event_btn_SearchActionPerformed
 
 	// Variables declaration - do not modify//GEN-BEGIN:variables
@@ -900,12 +739,8 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 	private javax.swing.JButton btn_Search;
 	private cc.johnwu.date.DateComboBox dateComboBox;
 	private javax.swing.JLabel lab_Date;
-	private javax.swing.JLabel lab_Finish;
-	private javax.swing.JLabel lab_FinishCount;
 	private javax.swing.JLabel lab_Name;
 	private javax.swing.JLabel lab_SystemTime;
-	private javax.swing.JLabel lab_Wait;
-	private javax.swing.JLabel lab_WaitCount;
 	private javax.swing.JLabel lab_poli;
 	private javax.swing.JMenu mn_Fiele;
 	private javax.swing.JMenuBar mnb;
@@ -916,7 +751,6 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 	private javax.swing.JPanel pan_Top;
 	private javax.swing.JScrollPane span_WaitDiagnosis;
 	private javax.swing.JTable tab_WorkList;
-	private javax.swing.JTable tab_WorkListInterface;
 	private javax.swing.JTextField txt_Name;
 	private javax.swing.JTextField txt_Poli;
 	public JButton btn_Diagnostic;
@@ -932,7 +766,28 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 	private JLabel label_4;
 	private JLabel label_5;
 	private JLabel label_6;
-	private JTable table_FinishList;
+	private JComboBox comb_Dept;
+	private JLabel label_7;
+	private JLabel label_8;
+	private JComboBox comb_Doctor;
+
+	@Override
+	public void reSetEnable() {
+		try {
+			new admission.Frm_WorkList(0, m_SysName).setVisible(true);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void getAllergy() {
+	}
+
+	@Override
+	public String from() {
+		return this.getClass().getName() + dummy;
+	}
 
 	protected void initDataBindings() {
 		BeanProperty<JButton, Boolean> jButtonBeanProperty = BeanProperty
@@ -948,45 +803,5 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 						jButtonBeanProperty, "bindBtnRegVis2Sys");
 		autoBinding_1.setConverter(new SysName2Visible());
 		autoBinding_1.bind();
-		//
-		BeanProperty<JLabel, Boolean> jLabelBeanProperty = BeanProperty
-				.create("visible");
-		AutoBinding<String, String, JLabel, Boolean> autoBinding_2 = Bindings
-				.createAutoBinding(UpdateStrategy.READ, m_SysName, lab_Wait,
-						jLabelBeanProperty);
-		autoBinding_2.setConverter(new SysName2Invisible());
-		autoBinding_2.bind();
-		//
-		AutoBinding<String, String, JLabel, Boolean> autoBinding_3 = Bindings
-				.createAutoBinding(UpdateStrategy.READ, m_SysName,
-						lab_WaitCount, jLabelBeanProperty);
-		autoBinding_3.setConverter(new SysName2Invisible());
-		autoBinding_3.bind();
-		//
-		AutoBinding<String, String, JLabel, Boolean> autoBinding_4 = Bindings
-				.createAutoBinding(UpdateStrategy.READ, m_SysName, lab_Finish,
-						jLabelBeanProperty);
-		autoBinding_4.setConverter(new SysName2Invisible());
-		autoBinding_4.bind();
-		//
-		AutoBinding<String, String, JLabel, Boolean> autoBinding_5 = Bindings
-				.createAutoBinding(UpdateStrategy.READ, m_SysName,
-						lab_FinishCount, jLabelBeanProperty);
-		autoBinding_5.setConverter(new SysName2Invisible());
-		autoBinding_5.bind();
-	}
-
-	@Override
-	public void reSetEnable() {
-		new Frm_WorkList(0, m_SysName).setVisible(true);
-	}
-
-	@Override
-	public void getAllergy() {
-	}
-
-	@Override
-	public String from() {
-		return this.getClass().getName() + dummy;
 	}
 }

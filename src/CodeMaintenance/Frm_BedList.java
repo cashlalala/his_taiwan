@@ -1,4 +1,4 @@
-package bedMgmt;
+package CodeMaintenance;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -71,15 +71,11 @@ public class Frm_BedList extends JFrame {
         }
     }
 */	
-	private int bedNumToAdd;
 	private static final long serialVersionUID = 1L;
 //	private long REFRASHTIME = 1000; // 自度刷新跨號資訊時間
 //	private RefreshBedList m_RefreshBedList;
 //	private Thread m_Clock;
 	private Vector<DivisionClass> DivisionData;
-	int currenDivEmpty = 0;
-	int currentDivOccupied = 0;
-	int currentDivTotal = 0;
 	
 	/* 多國語言變數 */
 	private Language paragraph = Language.getInstance();
@@ -117,7 +113,7 @@ public class Frm_BedList extends JFrame {
 	}
     private DefaultTableModel bedTableModel = new DefaultTableModel(){
     	public boolean isCellEditable(int rowIndex, int columnIndex){
-    		if (columnIndex == 3 || columnIndex == 4) {
+    		if (columnIndex == 3 || columnIndex == 4 || columnIndex == 5) {
                 return true;
             } else {
                 return false;
@@ -187,10 +183,6 @@ public class Frm_BedList extends JFrame {
 		this.btn_Close.setText(paragraph.getString("CLOSE"));
 		this.btn_Save.setText(paragraph.getString("SAVE"));
 		this.btn_Add.setText(paragraph.getString("ADD"));
-		this.btn_Add10.setText(paragraph.getString("ADD") + " 10");
-		this.lab_emptyBedNum.setText(paragraph.getString("EMPTY") + " :");
-		this.lab_occupiedBedNum.setText(paragraph.getString("OCCUPIED") + " :");
-		this.lab_totalBedNum.setText(paragraph.getString("TOTAL") + " :");
 	}
 	
 	public void init() {
@@ -200,15 +192,11 @@ public class Frm_BedList extends JFrame {
 	private void initComponents() {
 
 		DivisionData = new Vector<DivisionClass>();
-		//cob_Division = new javax.swing.JComboBox();
-				
+		
 		pan_Center = new javax.swing.JPanel();
 		pan_Top = new javax.swing.JPanel();
 		lab_Name = new javax.swing.JLabel();
 		lab_poli = new javax.swing.JLabel();
-		lab_emptyBedNum = new javax.swing.JLabel();
-		lab_occupiedBedNum = new javax.swing.JLabel();
-		lab_totalBedNum = new javax.swing.JLabel();
 		txt_Name = new javax.swing.JTextField();
 		txt_Poli = new javax.swing.JTextField();
 		//lab_SystemTime = new javax.swing.JLabel();
@@ -216,21 +204,6 @@ public class Frm_BedList extends JFrame {
 		btn_Close = new javax.swing.JButton();
 		btn_Save = new javax.swing.JButton();
 		btn_Add = new javax.swing.JButton();
-		btn_Add10 = new javax.swing.JButton();
-		
-		getDivisionData();
-		cob_Division = new javax.swing.JComboBox(DivisionData);
-		cob_Division.addActionListener( new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JComboBox comboBox = (JComboBox)e.getSource();
-		        DivisionClass division = (DivisionClass)comboBox.getSelectedItem();
-		        if(division != null) {
-		        	reloadBedList(bedTableModel);
-		        }
-			}
-			
-		} );
 
 		this.lab_Name.setText("Staff");
 		this.txt_Name.setText(UserInfo.getUserName());
@@ -241,7 +214,7 @@ public class Frm_BedList extends JFrame {
 
 		span_BedList = new javax.swing.JScrollPane();
 		tab_BedList = new javax.swing.JTable();
-		String s[]={"changed", "guid", "division_guid", "description", "Status", "Bed_status"};
+		String s[]={"changed", "guid", "division_guid", "description", "Division", "Status"};
 		bedTableModel.setColumnIdentifiers(s);
 		tab_BedList.setSelectionModel(new ForcedListSelectionModel());
 		tab_BedList.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
@@ -260,6 +233,8 @@ public class Frm_BedList extends JFrame {
 		span_BedList.setViewportView(tab_BedList);
 		tab_BedList.setModel(bedTableModel);
 
+		getDivisionData();
+		
 		addWindowListener(new WindowAdapter() { // 畫面關閉原視窗enable
 			@Override
 			public void windowClosing(WindowEvent windowevent) {
@@ -385,14 +360,6 @@ public class Frm_BedList extends JFrame {
 		
 		btn_Add.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				bedNumToAdd = 1;
-				btn_AddActionPerformed(evt);
-			}
-		});
-		
-		btn_Add10.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				bedNumToAdd = 10;
 				btn_AddActionPerformed(evt);
 			}
 		});
@@ -412,36 +379,20 @@ public class Frm_BedList extends JFrame {
 				.addGroup(pan_RightLayout.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(pan_RightLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(cob_Division, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
 						.addComponent(btn_Add, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
-						.addComponent(btn_Add10, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
 						.addComponent(btn_Save, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
-						.addComponent(btn_Close, GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
-						.addComponent(lab_emptyBedNum, GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
-						.addComponent(lab_occupiedBedNum, GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
-						.addComponent(lab_totalBedNum, GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE))
+						.addComponent(btn_Close, GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE))
 					.addContainerGap())
 		);
 		pan_RightLayout.setVerticalGroup(
 			pan_RightLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(pan_RightLayout.createSequentialGroup()
 					.addContainerGap()
-					.addComponent(cob_Division)
-					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btn_Add)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btn_Add10)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btn_Save)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btn_Close)
-					.addGap(20,20,20)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(lab_emptyBedNum)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(lab_occupiedBedNum)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(lab_totalBedNum)
 					.addContainerGap(335, Short.MAX_VALUE))
 		);
 		pan_Right.setLayout(pan_RightLayout);
@@ -510,22 +461,18 @@ public class Frm_BedList extends JFrame {
 	private void setCloumnWidth(javax.swing.JTable tab) {
 		// 設定column寬度
 		TableColumn columnDesc = tab.getColumnModel().getColumn(3);
-		//TableColumn columnPoli = tab.getColumnModel().getColumn(4);
-		TableColumn columnStatus = tab.getColumnModel().getColumn(4);
-		TableColumn columnBedStatus = tab.getColumnModel().getColumn(5);
-		columnDesc.setPreferredWidth(400);
-		//columnPoli.setPreferredWidth(200);
+		TableColumn columnPoli = tab.getColumnModel().getColumn(4);
+		TableColumn columnStatus = tab.getColumnModel().getColumn(5);
+		columnDesc.setPreferredWidth(300);
+		columnPoli.setPreferredWidth(200);
 		columnStatus.setPreferredWidth(100);
-		columnBedStatus.setPreferredWidth(100);
 		tab.setRowHeight(30);
 	}
 	
-	protected String getSQLString(String Div_guid) {
-		String sql = "SELECT 'N' as 'changed', A.guid, B.guid as 'division_guid', A.description, B.name as 'Division', A.status as 'Status', C.status as 'bed_status' "
+	protected String getSQLString() {
+		String sql = "SELECT 'N' as 'changed', A.guid, B.guid as 'division_guid', A.description, B.name as 'Division', A.status as 'Status' "
 				+ " FROM bed_code A "
 				+ " LEFT JOIN policlinic B ON A.poli_guid = B.guid "
-				+ " LEFT JOIN bed_record C ON A.guid = C.bed_guid AND C.status = 'N' "
-				+ " WHERE B.guid = '" + Div_guid + "'"
 				+ " order by A.status desc, A.description asc ";
 		return sql;
 	}
@@ -569,45 +516,18 @@ public class Frm_BedList extends JFrame {
 	}
 	
    	private void reloadBedList(DefaultTableModel dtm) {
-   		String Div_guid = ((DivisionClass)cob_Division.getSelectedItem()).guid;
-   		currenDivEmpty = 0;
-   		currentDivOccupied = 0;
-   		currentDivTotal = 0;
-   		Boolean isDisabled = true;
-   		
    		dtm.setRowCount(0);
-   		String sql = getSQLString(Div_guid);
+   		String sql = getSQLString();
    		try{
             ResultSet rs = DBC.executeQuery(sql);
             String[] rowData = new String[6];
             while(rs.next()){
-            	isDisabled = false;
             	rowData[0] = rs.getString("changed");
             	rowData[1] = rs.getString("guid");
             	rowData[2] = rs.getString("division_guid");
             	rowData[3] = rs.getString("description");
-            	//rowData[4] = rs.getString("Division");
-            	if(rs.getString("Status").compareTo("N") == 0) {
-            		rowData[4] = "Normal";
-            		isDisabled = false;
-            	} else {
-            		rowData[4] = "Disabled";
-            		isDisabled = true;
-            	}
-            	rs.getString("bed_status");
-            	if(!isDisabled) {
-            		currentDivTotal++;
-	            	if(rs.wasNull()) {
-	            		currenDivEmpty++;
-	            		rowData[5] = paragraph.getString("EMPTY");
-	            	}
-	            	else {
-	            		currentDivOccupied++;
-	            		rowData[5] = paragraph.getString("OCCUPIED");
-	            	}
-            	} else {
-            		rowData[5] = "";
-            	}
+            	rowData[4] = rs.getString("Division");
+            	rowData[5] = (rs.getString("Status").compareTo("N") == 0 ? "Normal" : "Disabled");
             	dtm.addRow(rowData);
             }
          }
@@ -615,17 +535,13 @@ public class Frm_BedList extends JFrame {
              Logger.getLogger(Frm_BedList.class.getName()).log(Level.SEVERE, null, ex);
          }
         // setup status combobox
-   		//setUpDivisionColumn(tab_BedList, tab_BedList.getColumnModel().getColumn(4));
-        setUpStatusColumn(tab_BedList, tab_BedList.getColumnModel().getColumn(4));
+   		setUpDivisionColumn(tab_BedList, tab_BedList.getColumnModel().getColumn(4));
+        setUpStatusColumn(tab_BedList, tab_BedList.getColumnModel().getColumn(5));
         setCloumnWidth(tab_BedList);
         
         TabTools.setHideColumn(tab_BedList, 0);
         TabTools.setHideColumn(tab_BedList, 1);
         TabTools.setHideColumn(tab_BedList, 2);
-        
-        this.lab_emptyBedNum.setText(paragraph.getString("EMPTY") + " : " + currenDivEmpty);
-		this.lab_occupiedBedNum.setText(paragraph.getString("OCCUPIED") + " : " + currentDivOccupied);
-		this.lab_totalBedNum.setText(paragraph.getString("TOTAL") + " : " + currentDivTotal);
    	}
    	
 	private void mnit_CloseActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnit_CloseActionPerformed
@@ -650,14 +566,9 @@ public class Frm_BedList extends JFrame {
 	}// GEN-LAST:event_tab_BedListKeyPressed
 
 	private void btn_AddActionPerformed(java.awt.event.ActionEvent evt) {
-		DivisionClass div = (DivisionClass)cob_Division.getSelectedItem();
-		
 		try {
-			for(int i = 0; i < bedNumToAdd; i++) {
-	    	  	String sql = "INSERT INTO `bed_code` (`guid`, `description`, `poli_guid`, `status`) VALUES (uuid(), '" 
-	    	  			+ div.name + "_Bed" + (currentDivTotal+i+1) + "', '" + div.guid + "', 'N')";
-	            DBC.executeUpdate(sql);
-			}
+    	  	String sql = "INSERT INTO `bed_code` (`guid`, `description`, `status`) VALUES (uuid(), '', 'N')";
+            DBC.executeUpdate(sql);
 	    } catch (SQLException ex) {
 	        Logger.getLogger(Frm_BedList.class.getName()).log(Level.SEVERE, null, ex);
 	        JOptionPane.showMessageDialog(null, paragraph.getString("ERROR"));
@@ -674,7 +585,7 @@ public class Frm_BedList extends JFrame {
     			String guid = (String) dtm.getValueAt(i, 1);
     			String division_guid = (String) dtm.getValueAt(i, 2);
     			String description = (String) dtm.getValueAt(i, 3);
-    			String status = (String) dtm.getValueAt(i, 4);
+    			String status = (String) dtm.getValueAt(i, 5);
     			
     			if(status.compareTo("Normal") == 0) status = "N";
       	      		else status = "D";
@@ -705,14 +616,10 @@ public class Frm_BedList extends JFrame {
 	//private javax.swing.JButton btn_Enter;
 	private javax.swing.JButton btn_Save;
 	private javax.swing.JButton btn_Add;
-	private javax.swing.JButton btn_Add10;
 	//private cc.johnwu.date.DateComboBox dateComboBox;
 	//private javax.swing.JLabel lab_Date;
 	private javax.swing.JLabel lab_Name;
 	//private javax.swing.JLabel lab_SystemTime;
-	private javax.swing.JLabel lab_emptyBedNum;
-	private javax.swing.JLabel lab_occupiedBedNum;
-	private javax.swing.JLabel lab_totalBedNum;
 	private javax.swing.JLabel lab_poli;
 	private javax.swing.JPanel pan_Center;
 	private javax.swing.JPanel pan_Right;
@@ -721,6 +628,4 @@ public class Frm_BedList extends JFrame {
 	private javax.swing.JTable tab_BedList;
 	private javax.swing.JTextField txt_Name;
 	private javax.swing.JTextField txt_Poli;
-	
-	private javax.swing.JComboBox cob_Division;
 }
