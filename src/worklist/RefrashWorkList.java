@@ -59,7 +59,7 @@ public class RefrashWorkList extends Thread {
 
 	public int curItemCnt;
 
-	protected String getLABSQLString(String date) {
+	protected String getLABSQLString(String date, String finished) {
 		String sql = "SELECT "
 				+ " NEWTABLE.visits_no AS 'NO.',"
 				+ " NEWTABLE.visits_no AS 'Register',"
@@ -95,6 +95,12 @@ public class RefrashWorkList extends Thread {
 				+ " AND prescription.reg_guid = A.guid"
 				+ " AND prescription_code.type <> '" + Constant.X_RAY_CODE
 				+ "' ";
+		if(finished.equalsIgnoreCase("F")) {
+			sql += " AND prescription.finish = 'F' ";
+		} else {
+			sql += " AND prescription.finish is null ";
+		}
+			
 		// + " AND (SELECT"
 		// + " COUNT(prescription.code)"
 		// + " FROM"
@@ -123,7 +129,7 @@ public class RefrashWorkList extends Thread {
 	}
 
 	@SuppressWarnings("deprecation")
-	protected String getXRAYSQLString(String date) {
+	protected String getXRAYSQLString(String date, String finished) {
 		String sql = "SELECT distinct A.visits_no AS '"
 				+ paragraph.getLanguage(line, "COL_NO")
 				+ "', "
@@ -159,8 +165,13 @@ public class RefrashWorkList extends Thread {
 				+ "AND shift_table.s_id = staff_info.s_id "
 				+ "AND A.p_no = patients_info.p_no "
 				+ "AND prescription.code = prescription_code.code "
-				+ "AND prescription.reg_guid = A.guid "
-				+ "AND prescription_code.type = '"
+				+ "AND prescription.reg_guid = A.guid ";
+			if(finished.equalsIgnoreCase("F")) {
+				sql += " AND prescription.finish = 'F' ";
+			} else {
+				sql += " AND prescription.finish is null ";
+			}
+			sql += "AND prescription_code.type = '"
 				+ Constant.X_RAY_CODE
 				+ "' "
 				// + "AND (SELECT COUNT(code) "
@@ -297,11 +308,11 @@ public class RefrashWorkList extends Thread {
 		} else if (SysName.equals("lab")) {
 			Date today = new Date();
 			SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd");
-			sql = getLABSQLString(sdFormat.format(today));
+			sql = getLABSQLString(sdFormat.format(today), finished);
 		} else if (SysName.equals("xray")) {
 			Date today = new Date();
 			SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd");
-			sql = getXRAYSQLString(sdFormat.format(today));
+			sql = getXRAYSQLString(sdFormat.format(today), finished);
 		} else if (SysName.equals("case")) {
 			sql = "SELECT A.visits_no AS '"
 					+ paragraph.getLanguage(line, "COL_NO")
@@ -570,11 +581,11 @@ public class RefrashWorkList extends Thread {
 
 	// 取得選定日期資料
 	@SuppressWarnings("deprecation")
-	public void getSelectDate(String date) {
+	public void getSelectDate(String date, String finished) {
 		if (m_SysName.equals("lab")) {
-			sql = getLABSQLString(date);
+			sql = getLABSQLString(date, finished);
 		} else if (m_SysName.equals("xray")) {
-			sql = getXRAYSQLString(date);
+			sql = getXRAYSQLString(date, finished);
 		} else if (m_SysName.equals("case")) {
 			sql = "SELECT A.visits_no AS '"
 					+ paragraph.getLanguage(line, "COL_NO")

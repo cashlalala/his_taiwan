@@ -887,9 +887,9 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 			dateComboBox.setEnabled(false);
 			btn_Search.setText("Cancels Search");
 			m_RefrashWorkList.interrupt(); // 終止重複讀取掛號表單
-			m_RefrashWorkList.getSelectDate(dateComboBox.getValue());
+			m_RefrashWorkList.getSelectDate(dateComboBox.getValue(), "W");
 			m_RefrashWorkList2.interrupt(); // 終止重複讀取掛號表單
-			m_RefrashWorkList2.getSelectDate(dateComboBox.getValue());
+			m_RefrashWorkList2.getSelectDate(dateComboBox.getValue(), "F");
 		}
 	}// GEN-LAST:event_btn_SearchActionPerformed
 
