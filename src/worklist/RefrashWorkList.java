@@ -181,63 +181,119 @@ public class RefrashWorkList extends Thread {
 	}
 
 	@SuppressWarnings("deprecation")
-	protected RefrashWorkList(javax.swing.JTable tab, long time, String SysName) {
+	protected RefrashWorkList(javax.swing.JTable tab, long time,
+			String SysName, String finished) {
 		m_SysName = SysName;
 		curItemCnt = 0;
 
 		if (SysName.equals("dia")) {
-			sql = "SELECT A.visits_no AS '"
-					+ paragraph.getLanguage(line, "COL_NO")
-					+ "', "
-					+ "(SELECT CASE COUNT(registration_info.guid) "
-					+ "WHEN 0 THEN '*' "
-					+ "END  "
-					+ "FROM outpatient_services, registration_info "
-					+ "WHERE registration_info.guid = outpatient_services.reg_guid AND p_no = A.p_no ) AS '"
-					+ paragraph.getLanguage(line, "COL_FIRST")
-					+ "', "
-					+ "CASE A.finish WHEN 'F' THEN 'F' WHEN 'O' THEN 'Skip' END 'Status', "
-					+ "A.reg_time AS '"
-					+ paragraph.getLanguage(line, "COL_REGTIME")
-					+ "', A.p_no AS '"
-					+ paragraph.getLanguage(line, "COL_PATIENTNO")
-					+ "', "
-					+ "concat(patients_info.firstname,'  ',patients_info.lastname) AS '"
-					+ paragraph.getLanguage(line, "COL_NAME")
-					+ "', "
-					+ "patients_info.birth AS '"
-					+ paragraph.getLanguage(line, "COL_BIRTH")
-					+ "', "
-					+ "TIMESTAMPDIFF(year,patients_info.birth, now()) AS '"
-					+ paragraph.getLanguage(line, "COL_AGE")
-					+ "', "
-					+ "patients_info.gender AS '"
-					+ paragraph.getLanguage(line, "COL_GENDER")
-					+ "', "
-					+ "concat(patients_info.bloodtype,patients_info.rh_type) AS '"
-					+ paragraph.getLanguage(line, "COL_BLOOD")
-					+ "', "
-					+ "patients_info.ps AS '"
-					+ paragraph.getLanguage(line, "COL_PS")
-					+ "', "
-					+ "A.guid "
-					+ "FROM registration_info AS A, patients_info, shift_table,staff_info, poli_room, policlinic  "
-					+ "WHERE A.shift_guid = shift_table.guid "
-					+ "AND shift_table.s_id = '"
-					+ UserInfo.getUserID()
-					+ "' "
-					+ "AND shift_table.shift_date = '"
-					+ DateMethod.getTodayYMD()
-					+ "' "
-					+ "AND shift_table.shift = '"
-					+ DateMethod.getNowShiftNum()
-					+ "' "
-					+ "AND shift_table.room_guid = poli_room.guid "
-					+ "AND poli_room.poli_guid = policlinic.guid "
-					+ "AND shift_table.s_id = staff_info.s_id "
-					+ "AND (A.finish = 'F' OR A.finish IS NULL OR A.finish = 'O' OR A.finish = 'W') "
-					+ "AND A.p_no = patients_info.p_no "
-					+ "ORDER BY A.finish DESC, A.visits_no";
+			if (finished.equalsIgnoreCase("W")) {
+				sql = "SELECT A.visits_no AS '"
+						+ paragraph.getLanguage(line, "COL_NO")
+						+ "', "
+						+ "(SELECT CASE COUNT(registration_info.guid) "
+						+ "WHEN 0 THEN '*' "
+						+ "END  "
+						+ "FROM outpatient_services, registration_info "
+						+ "WHERE registration_info.guid = outpatient_services.reg_guid AND p_no = A.p_no ) AS '"
+						+ paragraph.getLanguage(line, "COL_FIRST")
+						+ "', "
+						+ "CASE A.finish WHEN 'F' THEN 'F' WHEN 'O' THEN 'Skip' END 'Status', "
+						+ "A.reg_time AS '"
+						+ paragraph.getLanguage(line, "COL_REGTIME")
+						+ "', A.p_no AS '"
+						+ paragraph.getLanguage(line, "COL_PATIENTNO")
+						+ "', "
+						+ "concat(patients_info.firstname,'  ',patients_info.lastname) AS '"
+						+ paragraph.getLanguage(line, "COL_NAME")
+						+ "', "
+						+ "patients_info.birth AS '"
+						+ paragraph.getLanguage(line, "COL_BIRTH")
+						+ "', "
+						+ "TIMESTAMPDIFF(year,patients_info.birth, now()) AS '"
+						+ paragraph.getLanguage(line, "COL_AGE")
+						+ "', "
+						+ "patients_info.gender AS '"
+						+ paragraph.getLanguage(line, "COL_GENDER")
+						+ "', "
+						+ "concat(patients_info.bloodtype,patients_info.rh_type) AS '"
+						+ paragraph.getLanguage(line, "COL_BLOOD")
+						+ "', "
+						+ "patients_info.ps AS '"
+						+ paragraph.getLanguage(line, "COL_PS")
+						+ "', "
+						+ "A.guid "
+						+ "FROM registration_info AS A, patients_info, shift_table,staff_info, poli_room, policlinic  "
+						+ "WHERE A.shift_guid = shift_table.guid "
+						+ "AND shift_table.s_id = '"
+						+ UserInfo.getUserID()
+						+ "' "
+						+ "AND shift_table.shift_date = '"
+						+ DateMethod.getTodayYMD()
+						+ "' "
+						+ "AND shift_table.shift = '"
+						+ DateMethod.getNowShiftNum()
+						+ "' "
+						+ "AND shift_table.room_guid = poli_room.guid "
+						+ "AND poli_room.poli_guid = policlinic.guid "
+						+ "AND shift_table.s_id = staff_info.s_id "
+						+ "AND (A.finish = 'W') "
+						+ "AND A.p_no = patients_info.p_no "
+						+ "ORDER BY A.finish DESC, A.visits_no";
+			} else if (finished.equalsIgnoreCase("F")) {
+				sql = "SELECT A.visits_no AS '"
+						+ paragraph.getLanguage(line, "COL_NO")
+						+ "', "
+						+ "(SELECT CASE COUNT(registration_info.guid) "
+						+ "WHEN 0 THEN '*' "
+						+ "END  "
+						+ "FROM outpatient_services, registration_info "
+						+ "WHERE registration_info.guid = outpatient_services.reg_guid AND p_no = A.p_no ) AS '"
+						+ paragraph.getLanguage(line, "COL_FIRST")
+						+ "', "
+						+ "CASE A.finish WHEN 'F' THEN 'F' WHEN 'O' THEN 'Skip' END 'Status', "
+						+ "A.reg_time AS '"
+						+ paragraph.getLanguage(line, "COL_REGTIME")
+						+ "', A.p_no AS '"
+						+ paragraph.getLanguage(line, "COL_PATIENTNO")
+						+ "', "
+						+ "concat(patients_info.firstname,'  ',patients_info.lastname) AS '"
+						+ paragraph.getLanguage(line, "COL_NAME")
+						+ "', "
+						+ "patients_info.birth AS '"
+						+ paragraph.getLanguage(line, "COL_BIRTH")
+						+ "', "
+						+ "TIMESTAMPDIFF(year,patients_info.birth, now()) AS '"
+						+ paragraph.getLanguage(line, "COL_AGE")
+						+ "', "
+						+ "patients_info.gender AS '"
+						+ paragraph.getLanguage(line, "COL_GENDER")
+						+ "', "
+						+ "concat(patients_info.bloodtype,patients_info.rh_type) AS '"
+						+ paragraph.getLanguage(line, "COL_BLOOD")
+						+ "', "
+						+ "patients_info.ps AS '"
+						+ paragraph.getLanguage(line, "COL_PS")
+						+ "', "
+						+ "A.guid "
+						+ "FROM registration_info AS A, patients_info, shift_table,staff_info, poli_room, policlinic  "
+						+ "WHERE A.shift_guid = shift_table.guid "
+						+ "AND shift_table.s_id = '"
+						+ UserInfo.getUserID()
+						+ "' "
+						+ "AND shift_table.shift_date = '"
+						+ DateMethod.getTodayYMD()
+						+ "' "
+						+ "AND shift_table.shift = '"
+						+ DateMethod.getNowShiftNum()
+						+ "' "
+						+ "AND shift_table.room_guid = poli_room.guid "
+						+ "AND poli_room.poli_guid = policlinic.guid "
+						+ "AND shift_table.s_id = staff_info.s_id "
+						+ "AND (A.finish = 'F' OR A.finish = 'O') "
+						+ "AND A.p_no = patients_info.p_no "
+						+ "ORDER BY A.finish DESC, A.visits_no";
+			}
 		} else if (SysName.equals("lab")) {
 			Date today = new Date();
 			SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd");
