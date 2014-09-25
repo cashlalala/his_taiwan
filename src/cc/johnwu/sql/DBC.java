@@ -1,6 +1,5 @@
 package cc.johnwu.sql;
 
-
 import java.awt.Frame;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -22,162 +21,170 @@ import org.his.util.CustomLogger;
 
 public class DBC {
 
-    public final static String LOCALURL;
-    public final static String LOCALNAME;
-    public final static String LOCALPASSWD;
+	public final static String LOCALURL;
+	public final static String LOCALNAME;
+	public final static String LOCALPASSWD;
 
-    public static String s_ServerURL;
-    public static String s_ServerName;
-    public static String s_ServerPasswd;
+	public static String s_ServerURL;
+	public static String s_ServerName;
+	public static String s_ServerPasswd;
 
-    private static Connection s_LocalConn;
-    private static Statement s_LocalStmt;
-    private static ResultSet s_LocalRS;
+	private static Connection s_LocalConn;
+	private static Statement s_LocalStmt;
+	private static ResultSet s_LocalRS;
 
-    private static javax.swing.JFrame s_EnteredFrm;
-    
-    private static Logger logger = LogManager.getLogger(DBC.class.getName());
+	private static javax.swing.JFrame s_EnteredFrm;
 
+	private static Logger logger = LogManager.getLogger(DBC.class.getName());
 
-    static {    
-//            File file = new File("");
-//            LOCALURL = "jdbc:hsqldb:file:"+file.getCanonicalPath()+"/db/localDB;shutdown=true";
-            LOCALURL = "jdbc:hsqldb:file:./db/localDB;shutdown=true";
-            LOCALNAME = "SA";
-            LOCALPASSWD = "";
-    }
+	static {
+		// File file = new File("");
+		// LOCALURL =
+		// "jdbc:hsqldb:file:"+file.getCanonicalPath()+"/db/localDB;shutdown=true";
+		LOCALURL = "jdbc:hsqldb:file:./db/localDB;shutdown=true";
+		LOCALNAME = "SA";
+		LOCALPASSWD = "";
+	}
 
-    public DBC(){
-        initLocalDB();
-    }
+	public DBC() {
+		initLocalDB();
+	}
 
-    public DBC(javax.swing.JFrame frm){
-        s_EnteredFrm = frm;
-        initLocalDB();
-    }
-    
-    private void initLocalDB(){
-        if(!isClosed()) return;
-        try {
-            Class.forName("org.hsqldb.jdbcDriver");
-            Class.forName("com.mysql.jdbc.Driver");            
-            if(!getConnection()){
-                new Frm_SettingMySQL().setVisible(true);
-            }
-        } catch (ClassNotFoundException ex) {
-            JOptionPane.showMessageDialog(new Frame(), ex);
-        }
-    }
-    
-    public static Connection getConnectionExternel() {
-    	Connection conn = null;
-    	try {
-    		conn = DriverManager.getConnection(s_ServerURL,s_ServerName,s_ServerPasswd);
+	public DBC(javax.swing.JFrame frm) {
+		s_EnteredFrm = frm;
+		initLocalDB();
+	}
+
+	private void initLocalDB() {
+		if (!isClosed())
+			return;
+		try {
+			Class.forName("org.hsqldb.jdbcDriver");
+			Class.forName("com.mysql.jdbc.Driver");
+			if (!getConnection()) {
+				new Frm_SettingMySQL().setVisible(true);
+			}
+		} catch (ClassNotFoundException ex) {
+			JOptionPane.showMessageDialog(new Frame(), ex);
+		}
+	}
+
+	public static Connection getConnectionExternel() {
+		Connection conn = null;
+		try {
+			conn = DriverManager.getConnection(s_ServerURL, s_ServerName,
+					s_ServerPasswd);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-    	return conn;
-    }
-    
-    public static void closeConnectionExternel(Connection conn) {
-    	if(conn != null)
+		return conn;
+	}
+
+	public static void closeConnectionExternel(Connection conn) {
+		if (conn != null)
 			try {
 				conn.close();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-    }
+	}
 
-    protected static boolean getConnection(){
-        try {
-            s_LocalConn = DriverManager.getConnection(LOCALURL,LOCALNAME,LOCALPASSWD);
-            s_LocalStmt = s_LocalConn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            s_LocalRS = s_LocalStmt.executeQuery("SELECT * FROM conn_info");
-            s_LocalRS.next();
-            s_ServerURL = "jdbc:mysql://"+s_LocalRS.getString("host").trim()+
-                          ":"+s_LocalRS.getString("port").trim()+
-                          "/"+s_LocalRS.getString("database").trim();
-            s_ServerURL += "?characterEncoding=utf8";
-            s_ServerName = HISPassword.deCode(s_LocalRS.getString("user").trim()).trim();
-            s_ServerPasswd = HISPassword.deCode(s_LocalRS.getString("passwd").trim()).trim();
-            
-            JPAUtil.setPassword(s_ServerPasswd);
-            JPAUtil.setUser(s_ServerName);
-            JPAUtil.setUrl(s_ServerURL);
-            
-            Connection conn = DriverManager.getConnection(s_ServerURL,s_ServerName,s_ServerPasswd);
-            conn.close();
-            
-            JPAUtil.getEntityManager().createNativeQuery("select now()").getSingleResult();
-        	
-            try {
-            	SettingDao settingDao = new SettingDao();
-            	Setting setting = settingDao.QuerySettingById(1);
-                Language.getInstance().setLocale(setting.getLanguage());
-            } catch (Exception ex) {
-            	ex.printStackTrace();
-            }
-            
-            if(s_EnteredFrm!=null){
-            	((cc.johnwu.login.Frm_Login)s_EnteredFrm).initLanguage();
-                s_EnteredFrm.setVisible(true);
-                s_EnteredFrm = null;
-            }
-            
-            return true;
-        } catch (SQLException ex) {
-            try {
-                s_LocalStmt.execute("CREATE TABLE conn_info ("
-                                    +"host char(40) PRIMARY KEY, "
-                                    +"port char(5), "
-                                    +"database char(40), "
-                                    +"user char(32), "
-                                    +"passwd char(32)"
-                                    +")");
-            } catch (SQLException ex1) {}
-            Object[] options = {"Yes","No"};
-            int response = JOptionPane.showOptionDialog(
-                                new Frame(),
-                                "Can not connect database!\nDo you want to reset?",
-                                "Error Message",
-                                JOptionPane.YES_OPTION,
-                                JOptionPane.QUESTION_MESSAGE,
-                                null,
-                                options,
-                                options[0]
-                            );
-            if(response==0)
-                return false;
-            else if(response==1)
-                System.exit(0);
-        }
-        return false;
-    }
-    
-    public static boolean isClosed(){
-        Connection conn = null;
-        try{
-            conn = DriverManager.getConnection(s_ServerURL,s_ServerName,s_ServerPasswd);
-            conn.close();
-            return false;
-        } catch (SQLException ex) {
-        } finally {
-            try{ if(conn!=null)conn.close(); } catch (SQLException ex){}
-        }
-        return true;
-    }
+	protected static boolean getConnection() {
+		try {
+			s_LocalConn = DriverManager.getConnection(LOCALURL, LOCALNAME,
+					LOCALPASSWD);
+			s_LocalStmt = s_LocalConn
+					.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+							ResultSet.CONCUR_READ_ONLY);
+			s_LocalRS = s_LocalStmt.executeQuery("SELECT * FROM conn_info");
+			s_LocalRS.next();
+			s_ServerURL = "jdbc:mysql://" + s_LocalRS.getString("host").trim()
+					+ ":" + s_LocalRS.getString("port").trim() + "/"
+					+ s_LocalRS.getString("database").trim();
+			s_ServerURL += "?characterEncoding=utf8";
+			s_ServerName = HISPassword.deCode(
+					s_LocalRS.getString("user").trim()).trim();
+			s_ServerPasswd = HISPassword.deCode(
+					s_LocalRS.getString("passwd").trim()).trim();
 
-    public static void closeConnection(ResultSet rs) throws SQLException {
-        if(rs==null) return ;
-        Statement stmt = rs.getStatement();
-        rs.close();
-        closeConnection(stmt);
-    }
+			JPAUtil.setPassword(s_ServerPasswd);
+			JPAUtil.setUser(s_ServerName);
+			JPAUtil.setUrl(s_ServerURL);
 
-    public static void closeConnection(Statement stmt) throws SQLException {
-        if(stmt==null) return;
+			Connection conn = DriverManager.getConnection(s_ServerURL,
+					s_ServerName, s_ServerPasswd);
+			conn.close();
+
+			JPAUtil.getEntityManager().createNativeQuery("select now()")
+					.getSingleResult();
+
+			try {
+				SettingDao settingDao = new SettingDao();
+				Setting setting = settingDao.QuerySettingById(1);
+				Language.getInstance().setLocale(setting.getLanguage());
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+
+			if (s_EnteredFrm != null) {
+				((cc.johnwu.login.Frm_Login) s_EnteredFrm).initLanguage();
+				s_EnteredFrm.setVisible(true);
+				s_EnteredFrm = null;
+			}
+
+			return true;
+		} catch (SQLException ex) {
+			try {
+				s_LocalStmt.execute("CREATE TABLE conn_info ("
+						+ "host char(40) PRIMARY KEY, " + "port char(5), "
+						+ "database char(40), " + "user char(32), "
+						+ "passwd char(32)" + ")");
+			} catch (SQLException ex1) {
+			}
+			Object[] options = { "Yes", "No" };
+			int response = JOptionPane.showOptionDialog(new Frame(),
+					"Can not connect database!\nDo you want to reset?",
+					"Error Message", JOptionPane.YES_OPTION,
+					JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+			if (response == 0)
+				return false;
+			else if (response == 1)
+				System.exit(0);
+		}
+		return false;
+	}
+
+	public static boolean isClosed() {
+		Connection conn = null;
+		try {
+			conn = DriverManager.getConnection(s_ServerURL, s_ServerName,
+					s_ServerPasswd);
+			conn.close();
+			return false;
+		} catch (SQLException ex) {
+		} finally {
+			try {
+				if (conn != null)
+					conn.close();
+			} catch (SQLException ex) {
+			}
+		}
+		return true;
+	}
+
+	public static void closeConnection(ResultSet rs) throws SQLException {
+		if (rs == null)
+			return;
+		Statement stmt = rs.getStatement();
+		rs.close();
+		closeConnection(stmt);
+	}
+
+	public static void closeConnection(Statement stmt) throws SQLException {
+		if (stmt == null)
+			return;
 		Connection conn = stmt.getConnection();
 		if (stmt != null)
 			stmt.close();
