@@ -35,28 +35,21 @@ public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
 	/* 輸出錯誤資訊變數 */
 	StoredErrorMessage ErrorMessage = new StoredErrorMessage();
 
-	public Frm_DiagnosisDiagnostic(Frm_DiagnosisInfo diagnosisInfo, String pno,
-			String pname) {
-		this.m_Pname = pname;
-		this.m_Pno = pno;
-		this.m_DiagnosisInfo = diagnosisInfo;
-		this.m_Frame = null;
-		initComponents();
-		initFrame();
-		initPoli();
-		initLanguage();
-	}
+	private String oriRegGuid;
 
 	public Frm_DiagnosisDiagnostic(DiagnosisInterface frame, String pno,
-			String pname) {
+			String pname, String oriRegGuid) {
 		this.m_Pname = pname;
 		this.m_Pno = pno;
 		this.m_Frame = frame;
+		this.oriRegGuid = oriRegGuid;
 		initComponents();
 		initFrame();
 		initPoli();
 		initLanguage();
-		this.btn_Insert.setVisible(false);
+		if (this.oriRegGuid == null || this.oriRegGuid.isEmpty()) {
+			this.btn_Insert.setVisible(false);
+		}
 	}
 
 	// 初始化
@@ -82,11 +75,11 @@ public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
 		((DefaultTableModel) tab_Prescription.getModel()).setRowCount(0);
 		((DefaultTableModel) tab_Medicine.getModel()).setRowCount(0);
 	}
-	
-	private boolean isFromDiagInfo;
-	
-	public void setIsFromDiagInfo(boolean isFromDiagInfo){
-		this.isFromDiagInfo = isFromDiagInfo;
+
+	private String entry;
+
+	public void setEntry(String entry) {
+		this.entry = entry;
 	}
 
 	// cob 加入 poli
@@ -260,7 +253,7 @@ public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
 					+ tab_Record.getValueAt(tab_Record.getSelectedRow(), 5)
 					+ "' "
 					+ "AND diagnostic.reg_guid = registration_info.guid "
-					+ "AND diagnosis_code.icd_code = diagnostic.dia_code";
+					+ "AND diagnosis_code.dia_code = diagnostic.dia_code";
 
 			rsDiagnosis = DBC.executeQuery(sqlDiagnosis);
 			if (rsDiagnosis.next()) {
@@ -453,7 +446,7 @@ public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
 						/**
 								 * 
 								 */
-								private static final long serialVersionUID = 8018976528701814935L;
+						private static final long serialVersionUID = 8018976528701814935L;
 
 						@Override
 						// 設定欄位可否編輯
@@ -470,7 +463,7 @@ public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
 					/**
 							 * 
 							 */
-							private static final long serialVersionUID = 7671361675848330232L;
+					private static final long serialVersionUID = 7671361675848330232L;
 
 					@Override
 					// 設定欄位可否編輯
@@ -559,7 +552,6 @@ public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
 		this.setAlwaysOnTop(true);
 	}
 
-	
 	// <editor-fold defaultstate="collapsed"
 	// desc="Generated Code">//GEN-BEGIN:initComponents
 	private void initComponents() {
@@ -604,7 +596,7 @@ public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
 			/**
 					 * 
 					 */
-					private static final long serialVersionUID = 1513713184594101009L;
+			private static final long serialVersionUID = 1513713184594101009L;
 			boolean[] canEdit = new boolean[] { false, false, false, false,
 					false, false, false, false };
 
@@ -633,7 +625,7 @@ public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
 			/**
 							 * 
 							 */
-							private static final long serialVersionUID = -4409373919019254517L;
+			private static final long serialVersionUID = -4409373919019254517L;
 			boolean[] canEdit = new boolean[] { false, false, false, false,
 					false };
 
@@ -667,7 +659,7 @@ public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
 			/**
 							 * 
 							 */
-							private static final long serialVersionUID = 4850207119924028297L;
+			private static final long serialVersionUID = 4850207119924028297L;
 			boolean[] canEdit = new boolean[] { false, false, false };
 
 			public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -689,7 +681,7 @@ public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
 			/**
 							 * 
 							 */
-							private static final long serialVersionUID = 8484744495481923745L;
+			private static final long serialVersionUID = 8484744495481923745L;
 			boolean[] canEdit = new boolean[] { false, false, false };
 
 			public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -1020,11 +1012,7 @@ public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
 	}// </editor-fold>//GEN-END:initComponents
 
 	private void btn_CloseActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_CloseActionPerformed
-		if (m_Frame != null) {
-			m_Frame.reSetEnable();
-		} else {
-			m_DiagnosisInfo.reSetEnable();
-		}
+		m_Frame.reSetEnable();
 		this.dispose();
 	}// GEN-LAST:event_btn_CloseActionPerformed
 
@@ -1033,8 +1021,8 @@ public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
 				&& this.tab_Record.getValueAt(this.tab_Record.getSelectedRow(),
 						1) != null && this.tab_Record.getSelectedRow() != -1) {
 			// 判斷讀取的資料是否為目前診別 方可進行帶入資料
-			if (tab_Record.getValueAt(tab_Record.getSelectedRow(), 3).equals(
-					UserInfo.getUserPoliclinic())) {
+			if (((String) tab_Record.getValueAt(tab_Record.getSelectedRow(), 3))
+					.trim().equals(UserInfo.getUserPoliclinic())) {
 				btn_Insert.setEnabled(true);
 			} else {
 				btn_Insert.setEnabled(false);
@@ -1068,11 +1056,14 @@ public class Frm_DiagnosisDiagnostic extends javax.swing.JFrame {
 	}// GEN-LAST:event_tab_RecordKeyReleased
 
 	private void btn_InsertActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_InsertActionPerformed
-		m_DiagnosisInfo.getCasehistory(txta_Summary.getText(),
+		Frm_DiagnosisInfo frm = (m_Frame instanceof Frm_DiagnosisInfo) ? (Frm_DiagnosisInfo) m_Frame
+				: new Frm_DiagnosisInfo(m_Frame, m_Pno, oriRegGuid, 0, false,
+						false);
+		frm.getCasehistory(txt_Ps.getText(), txta_Summary.getText(),
 				(String) tab_Record.getValueAt(tab_Record.getSelectedRow(), 5));
-		if (!isFromDiagInfo)
-			m_DiagnosisInfo.setVisible(true);
-		btn_CloseActionPerformed(null);
+		frm.setEnabled(true);
+		frm.setVisible(true);
+		this.dispose();
 	}// GEN-LAST:event_btn_InsertActionPerformed
 
 	private void txta_SummaryMouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_txta_SummaryMouseClicked

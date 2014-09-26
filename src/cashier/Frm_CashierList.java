@@ -296,8 +296,10 @@ public class Frm_CashierList extends javax.swing.JFrame {
 }//GEN-LAST:event_mnit_EnterActionPerformed
 
     private void mnit_CloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnit_CloseActionPerformed
-        m_RefrashCashier.interrupt();  // 終止重複讀取掛號表單
-        m_Clock.interrupt();
+    	if(m_RefrashCashier != null) {
+    		m_RefrashCashier.interrupt();  // 終止重複讀取掛號表單
+            m_Clock.interrupt();
+    	}
         new Frm_Main().setVisible(true);
         this.dispose();
 }//GEN-LAST:event_mnit_CloseActionPerformed

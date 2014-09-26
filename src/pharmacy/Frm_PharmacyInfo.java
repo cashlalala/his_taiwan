@@ -5,16 +5,19 @@ import cc.johnwu.sql.DBC;
 import cc.johnwu.sql.HISModel;
 
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
 import errormessage.StoredErrorMessage;
 import multilingual.Language;
 
+import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -27,9 +30,10 @@ public class Frm_PharmacyInfo extends javax.swing.JFrame {
 			m_Guid, m_Ps;
 	private Frm_Pharmacy Frm_p = null;
 	private Frm_PharmacyInquire Frm_pi = null;
-	/* 多國語言變數 */
+	private String[] medicine_guid = null;
+
 	private Language paragraph = Language.getInstance();
-	/* 輸出錯誤資訊變數 */
+
 	StoredErrorMessage ErrorMessage = new StoredErrorMessage();
 
 	public Frm_PharmacyInfo(Frm_PharmacyInquire frm, String dep, String doctor,
@@ -45,7 +49,8 @@ public class Frm_PharmacyInfo extends javax.swing.JFrame {
 				Frm_pi.setEnabled(true);
 			}
 		});
-		System.out.print(dep+doctor+no+name+birth+gender+blood+ps+guid);
+		System.out.print(dep + doctor + no + name + birth + gender + blood + ps
+				+ guid);
 		this.m_Dep = dep;
 		this.m_Docter = doctor;
 		this.m_No = no;
@@ -105,88 +110,82 @@ public class Frm_PharmacyInfo extends javax.swing.JFrame {
 
 	// 藥品
 	public void setTab_Medicines() {
-
 		ResultSet rsMedicines = null;
 		try {
-			String sqlMedicines = "SELECT medicines.code AS 'Code', medicines.item AS 'Item', medicine_stock.dosage AS 'Dosage', medicines.unit AS '"
-					+ paragraph.getString("UNIT")
-					+ "', medicine_stock.usage AS '"
-					+ paragraph.getString("USAGE")
-					+ "', "
-					+ "medicine_stock.way AS 'Frequency', medicine_stock.repeat_number AS 'Duration', medicine_stock.quantity AS 'Quantity', "
-					+ "medicine_stock.urgent AS '"
-					+ paragraph.getString("URGENT")
-					+ "', medicine_stock.powder AS '"
-					+ paragraph.getString("POWDER")
-					+ "', medicine_stock.ps AS '"
-					+ paragraph.getString("PS")
-					+ "' "
-					+ "FROM medicines, medicine_stock, outpatient_services, registration_info "
-					+ "WHERE registration_info.guid = '"
-					+ m_Guid
-					+ "' "
-					+ "AND medicine_stock.reg_guid = registration_info.guid "
-					+ "AND medicines.code = medicine_stock.m_code";
+			String sqlMedicines = "SELECT medicine_stock.reg_guid, "
+					+ "medicines.code, medicines.item, "
+					+ "medicine_stock.dosage, medicines.unit, "
+					+ "medicine_stock.usage, medicine_stock.way, "
+					+ "medicine_stock.repeat_number, medicine_stock.quantity, "
+					+ "medicine_stock.urgent, medicine_stock.powder, "
+					+ "medicine_stock.ps, medicines.unit_price "
+					+ "FROM medicines, medicine_stock "
+					+ "WHERE medicine_stock.reg_guid = '" + m_Guid + "' "
+					+ "AND medicines.code = medicine_stock.m_code "
+					+ "AND medicine_stock.get_medicine_time IS NULL ";
 			System.out.println(sqlMedicines);
 			rsMedicines = DBC.executeQuery(sqlMedicines);
+			rsMedicines.last();
+			String[] medicineHeader = { "",
+					paragraph.getString("COL_MEDICINE_CODE"),
+					paragraph.getString("COL_MEDICINE_NAME"),
+					paragraph.getString("COL_MEDICINE_DOSAGE"),
+					paragraph.getString("COL_MEDICINE_UNIT"),
+					paragraph.getString("COL_MEDICINE_USAGE"),
+					paragraph.getString("COL_MEDICINE_WAY"),
+					paragraph.getString("COL_MEDICINE_REPEAT"),
+					paragraph.getString("COL_MEDICINE_QUANTITY"),
+					paragraph.getString("COL_MEDICINE_URGENT"),
+					paragraph.getString("COL_MEDICINE_POWDER"),
+					paragraph.getString("COL_MEDICINE_PS"),
+					paragraph.getString("COL_MEDICINE_UNIT_PRICE"),
+					paragraph.getString("COL_MEDICINE_TOTAL_PRICE") };
+			if (rsMedicines.getRow() != 0) {
+				ResultSetMetaData rsMetaData = rsMedicines.getMetaData();
+				Integer rowCount = rsMedicines.getRow();
+				Object[][] Matrix = new Object[rowCount][rsMetaData
+						.getColumnCount() + 2];
+				int i;
+				int j;
+				rsMedicines.beforeFirst();
+				this.medicine_guid = new String[rowCount];
+				for (i = 0; i < rowCount; i++) {
+					rsMedicines.next();
+					Matrix[i][0] = false;
+					this.medicine_guid[i] = rsMedicines.getString(1);
+					for (j = 2; j < rsMetaData.getColumnCount() + 1; j++) {
+						Matrix[i][j-1] = rsMedicines.getString(j);
+					}
+					Matrix[i][13] = Integer.parseInt((String) Matrix[i][8])
+							* Integer.parseInt((String) Matrix[i][12]);
+				}
+				this.tab_Medicines.setModel(new DefaultTableModel(Matrix,
+						medicineHeader) {
+					@Override
+					public Class<?> getColumnClass(int columnIndex) {
+						if (columnIndex == 0) {
+							return Boolean.class;
+						} else {
+							return String.class;
+						}
+					}
 
-			if (rsMedicines.next()) {
-				this.tab_Medicines.setModel(HISModel
-						.getModel(rsMedicines, true));
+					@Override
+					public boolean isCellEditable(int row, int column) {
+						if (column == 0) {
+							return true;
+						} else {
+							return false;
+						}
+					}
+				});
 			} else {
-				((DefaultTableModel) tab_Medicines.getModel()).setRowCount(0);
+				this.tab_Medicines
+						.setModel(new DefaultTableModel(new Object[][] { {
+								null, null, null, null, null, null, null, null,
+								null, null, null, null, null, null } },
+								medicineHeader));
 			}
-
-			txt_Dep.setText(m_Dep);
-			txt_Doctor.setText(m_Docter);
-			txt_No.setText(m_No);
-			txt_Name.setText(m_Name);
-			txt_Sex.setText(m_Gender);
-			txt_Bloodtype.setText(m_Blood);
-			txt_Age.setText(m_Birth);
-			txt_Ps.setText(m_Ps);
-
-			TableColumn columnNo = this.tab_Medicines.getColumnModel()
-					.getColumn(0);
-			TableColumn columnIcdCode = this.tab_Medicines.getColumnModel()
-					.getColumn(1);
-			TableColumn columnName = this.tab_Medicines.getColumnModel()
-					.getColumn(2);
-			TableColumn columnSubUsage = this.tab_Medicines.getColumnModel()
-					.getColumn(3);
-			TableColumn columnUnit = this.tab_Medicines.getColumnModel()
-					.getColumn(4);
-			TableColumn columnWay = this.tab_Medicines.getColumnModel()
-					.getColumn(5);
-			TableColumn columnRoute = this.tab_Medicines.getColumnModel()
-					.getColumn(6);
-			TableColumn columnDay = this.tab_Medicines.getColumnModel()
-					.getColumn(7);
-			TableColumn columnQuantity = this.tab_Medicines.getColumnModel()
-					.getColumn(8);
-			TableColumn columnUrgent = this.tab_Medicines.getColumnModel()
-					.getColumn(9);
-			TableColumn columnPowder = this.tab_Medicines.getColumnModel()
-					.getColumn(10);
-			TableColumn columnPs = this.tab_Medicines.getColumnModel()
-					.getColumn(11);
-
-			columnNo.setMaxWidth(30);
-			columnIcdCode.setPreferredWidth(300);
-			columnName.setPreferredWidth(301);
-			columnSubUsage.setPreferredWidth(55);
-			columnUnit.setPreferredWidth(45);
-			columnWay.setPreferredWidth(45);
-			columnRoute.setPreferredWidth(45);
-			columnDay.setPreferredWidth(50);
-			columnQuantity.setPreferredWidth(70);
-			columnUrgent.setPreferredWidth(40);
-			columnPowder.setPreferredWidth(40);
-			columnPs.setPreferredWidth(150);
-			tab_Medicines.setRowHeight(30);
-			// setHideColumn(tab_Medicines, 2);
-			common.TabTools.setHideColumn(tab_Medicines, 4);
-
 		} catch (SQLException e) {
 			ErrorMessage.setData(
 					"Pharmacy",
@@ -213,8 +212,6 @@ public class Frm_PharmacyInfo extends javax.swing.JFrame {
 	}
 
 	@SuppressWarnings("unchecked")
-	// <editor-fold defaultstate="collapsed"
-	// desc="Generated Code">//GEN-BEGIN:initComponents
 	private void initComponents() {
 
 		span_How = new javax.swing.JScrollPane();
@@ -237,22 +234,32 @@ public class Frm_PharmacyInfo extends javax.swing.JFrame {
 		txt_Dep = new javax.swing.JTextField();
 		txt_Doctor = new javax.swing.JTextField();
 		btn_Close = new javax.swing.JButton();
-		jButton1 = new javax.swing.JButton();
-
+		btn_Education = new javax.swing.JButton();
+		btn_Save = new javax.swing.JButton();
 		setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 		setTitle("Medicine Information");
 		setAlwaysOnTop(true);
 
 		tab_Medicines.setAutoCreateRowSorter(true);
-		tab_Medicines.setModel(new javax.swing.table.DefaultTableModel(
-				new Object[][] {
-						{ null, null, null, null, null, null, null, null },
-						{ null, null, null, null, null, null, null, null },
-						{ null, null, null, null, null, null, null, null } },
-				new String[] { "", "藥品代碼", "藥品名稱", "服法", "次劑量", "次數/天", "日數",
-						"總劑量" }) {
-			boolean[] canEdit = new boolean[] { false, false, false, false,
-					false, false, false, false };
+		tab_Medicines.setModel(new DefaultTableModel(new Object[][] { { false,
+				null, null, null, null, null, null, null, null, null, null,
+				null, null, null } }, new String[] { "",
+				paragraph.getString("COL_MEDICINE_CODE"),
+				paragraph.getString("COL_MEDICINE_NAME"),
+				paragraph.getString("COL_MEDICINE_DOSAGE"),
+				paragraph.getString("COL_MEDICINE_UNIT"),
+				paragraph.getString("COL_MEDICINE_USAGE"),
+				paragraph.getString("COL_MEDICINE_WAY"),
+				paragraph.getString("COL_MEDICINE_REPEAT"),
+				paragraph.getString("COL_MEDICINE_QUANTITY"),
+				paragraph.getString("COL_MEDICINE_URGENT"),
+				paragraph.getString("COL_MEDICINE_POWDER"),
+				paragraph.getString("COL_MEDICINE_PS"),
+				paragraph.getString("COL_MEDICINE_UNIT_PRICE"),
+				paragraph.getString("COL_MEDICINE_TOTAL_PRICE") }) {
+			boolean[] canEdit = new boolean[] { true, false, false, false,
+					false, false, false, false, false, false, false, false,
+					false, false };
 
 			public boolean isCellEditable(int rowIndex, int columnIndex) {
 				return canEdit[columnIndex];
@@ -544,17 +551,25 @@ public class Frm_PharmacyInfo extends javax.swing.JFrame {
 				new java.awt.Component[] { txt_Age, txt_Bloodtype, txt_Dep,
 						txt_Doctor, txt_Name, txt_No, txt_Ps, txt_Sex });
 
-		btn_Close.setText("Close");
+		btn_Close.setText(paragraph.getString("CLOSE"));
 		btn_Close.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				btn_CloseActionPerformed(evt);
 			}
 		});
 
-		jButton1.setText("Medicine Education");
-		jButton1.addActionListener(new java.awt.event.ActionListener() {
+		btn_Education.setText(paragraph.getString("MEDICINEEDUCATION"));
+		btn_Education.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				jButton1ActionPerformed(evt);
+				btn_EducationActionPerformed(evt);
+			}
+		});
+
+		btn_Save.setText(paragraph.getString("SAVE"));
+		btn_Save.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				System.out.print("**************************************\n");
+				btn_SaveActionPerformed(evt);
 			}
 		});
 
@@ -583,7 +598,11 @@ public class Frm_PharmacyInfo extends javax.swing.JFrame {
 														javax.swing.GroupLayout.Alignment.TRAILING,
 														layout.createSequentialGroup()
 																.addComponent(
-																		jButton1)
+																		btn_Save)
+																.addPreferredGap(
+																		javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+																.addComponent(
+																		btn_Education)
 																.addPreferredGap(
 																		javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 																.addComponent(
@@ -611,31 +630,50 @@ public class Frm_PharmacyInfo extends javax.swing.JFrame {
 								.addGroup(
 										layout.createParallelGroup(
 												javax.swing.GroupLayout.Alignment.BASELINE)
+												.addComponent(btn_Save)
 												.addComponent(btn_Close)
-												.addComponent(jButton1))
+												.addComponent(btn_Education))
 								.addGap(22, 22, 22)));
 
 		pack();
 	}// </editor-fold>//GEN-END:initComponents
 
-	private void btn_CloseActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_CloseActionPerformed
+	private void btn_CloseActionPerformed(java.awt.event.ActionEvent evt) {
 		if (Frm_p == null) {
 			Frm_pi.reSetEnable();
 		} else {
 			Frm_p.setEnabled(true);
 		}
 		this.dispose();
-	}// GEN-LAST:event_btn_CloseActionPerformed
+	}
 
-	private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton1ActionPerformed
+	private void btn_EducationActionPerformed(java.awt.event.ActionEvent evt) {
 		this.setAlwaysOnTop(false);
 		new Frm_Case(txt_Dep.getText(), m_Guid, true, "medicine")
 				.setVisible(true);
-	}// GEN-LAST:event_jButton1ActionPerformed
+	}
+
+	private void btn_SaveActionPerformed(java.awt.event.ActionEvent evt) {
+		int i;
+		Integer amountReceivable = 0;
+		for (i = 0; i < this.tab_Medicines.getRowCount(); i++) {
+			if ((Boolean) this.tab_Medicines.getValueAt(i, 0) == true) {
+				String sql = "UPDATE medicine_stock SET medicine_stock.get_medicine_time=now() WHERE medicine_stock.guid='"
+						+ this.medicine_guid[i] + "'";
+				amountReceivable = amountReceivable
+						+ (Integer) this.tab_Medicines.getValueAt(i, 13);
+			}
+		}
+		System.out.print(amountReceivable+"\n");
+		String message=paragraph.getString("AMOUNTRECEIVABLE") + String.valueOf(amountReceivable);
+		JOptionPane.showMessageDialog(null,"aaaa");
+		return;
+	}
 
 	// Variables declaration - do not modify//GEN-BEGIN:variables
 	private javax.swing.JButton btn_Close;
-	private javax.swing.JButton jButton1;
+	private javax.swing.JButton btn_Education;
+	private javax.swing.JButton btn_Save;
 	private javax.swing.JLabel lab_Department;
 	private javax.swing.JLabel lab_Doctor;
 	private javax.swing.JLabel lab_TitleAge;

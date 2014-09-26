@@ -11,11 +11,11 @@ import java.util.Date;
  */
 @Entity
 @Table(name="package_set")
+@NamedQuery(name="PackageSet.findAll", query="SELECT p FROM PackageSet p")
 public class PackageSet implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String guid;
 
 	@Column(name="cell_phone")

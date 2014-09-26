@@ -10,11 +10,11 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="permission_info")
+@NamedQuery(name="PermissionInfo.findAll", query="SELECT p FROM PermissionInfo p")
 public class PermissionInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String guid;
 
 	@Column(name="grp_name")

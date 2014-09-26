@@ -11,11 +11,11 @@ import java.util.List;
  */
 @Entity
 @Table(name="health_teach_item")
+@NamedQuery(name="HealthTeachItem.findAll", query="SELECT h FROM HealthTeachItem h")
 public class HealthTeachItem implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String code;
 
 	private String item;

@@ -11,17 +11,19 @@ import java.util.List;
  */
 @Entity
 @Table(name="policlinic")
+@NamedQuery(name="Policlinic.findAll", query="SELECT p FROM Policlinic p")
 public class Policlinic implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String guid;
 
 	private String name;
 
 	@Column(name="room_num")
 	private int roomNum;
+
+	private String status;
 
 	private String type;
 
@@ -70,6 +72,14 @@ public class Policlinic implements Serializable {
 
 	public void setRoomNum(int roomNum) {
 		this.roomNum = roomNum;
+	}
+
+	public String getStatus() {
+		return this.status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 	public String getType() {
