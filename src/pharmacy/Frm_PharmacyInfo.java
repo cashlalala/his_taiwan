@@ -88,7 +88,7 @@ public class Frm_PharmacyInfo extends javax.swing.JFrame {
 	public void setTab_Medicines() {
 		ResultSet rsMedicines = null;
 		try {
-			String sqlMedicines = "SELECT medicine_stock.reg_guid, "
+			String sqlMedicines = "SELECT medicine_stock.guid, "
 					+ "medicines.code, medicines.item, "
 					+ "medicine_stock.dosage, medicines.unit, "
 					+ "medicine_stock.usage, medicine_stock.way, "
@@ -547,8 +547,7 @@ public class Frm_PharmacyInfo extends javax.swing.JFrame {
 																								txt_Birth,
 																								javax.swing.GroupLayout.PREFERRED_SIZE,
 																								javax.swing.GroupLayout.DEFAULT_SIZE,
-																								javax.swing.GroupLayout.PREFERRED_SIZE)
-																						)))
+																								javax.swing.GroupLayout.PREFERRED_SIZE))))
 										.addContainerGap(13, Short.MAX_VALUE)));
 
 		pan_TopLayout.linkSize(javax.swing.SwingConstants.VERTICAL,
@@ -638,19 +637,28 @@ public class Frm_PharmacyInfo extends javax.swing.JFrame {
 	private void btn_SaveActionPerformed(java.awt.event.ActionEvent evt) {
 		int i;
 		Integer amountReceivable = 0;
-		for (i = 0; i < this.tab_Medicines.getRowCount(); i++) {
-			if ((Boolean) this.tab_Medicines.getValueAt(i, 0) == true) {
-				String sql = "UPDATE medicine_stock SET medicine_stock.get_medicine_time=now() WHERE medicine_stock.guid='"
-						+ this.medicine_guid[i] + "'";
-				amountReceivable = amountReceivable
-						+ (Integer) this.tab_Medicines.getValueAt(i, 13);
-			}
+		String sql = "";
+		try {
+			for (i = 0; i < this.tab_Medicines.getRowCount(); i++) {
+				if ((Boolean) this.tab_Medicines.getValueAt(i, 0) == true) {
+					sql = "UPDATE medicine_stock SET medicine_stock.get_medicine_time=now() "
+							+ "WHERE medicine_stock.guid='"
+							+ this.medicine_guid[i] + "' ";
+					System.out.print(sql+"\n");
+					DBC.executeUpdate(sql);
+					amountReceivable = amountReceivable
+							+ (Integer) this.tab_Medicines.getValueAt(i, 13);
+				}
+			}			
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
-		System.out.print(amountReceivable + "\n");
-		String message = paragraph.getString("AMOUNTRECEIVABLE")
+		this.setAlwaysOnTop(false);
+		String message = paragraph.getString("AMOUNTRECEIVABLE") + " is "
 				+ String.valueOf(amountReceivable);
-		JOptionPane.showMessageDialog(null, "aaaa");
-		return;
+		JOptionPane.showMessageDialog(null, message);
+		new pharmacy.Frm_Pharmacy().setVisible(true);
+		this.dispose();
 	}
 
 	// Variables declaration - do not modify//GEN-BEGIN:variables
