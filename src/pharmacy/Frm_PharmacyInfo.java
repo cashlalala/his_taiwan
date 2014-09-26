@@ -26,7 +26,7 @@ import java.awt.event.WindowEvent;
  * @author bee
  */
 public class Frm_PharmacyInfo extends javax.swing.JFrame {
-	private String m_Dep, m_Docter, m_No, m_Name, m_Birth, m_Gender, m_Blood,
+	private String m_Dep, m_Doctor, m_No, m_Name, m_Birth, m_Gender, m_Blood,
 			m_Guid, m_Ps;
 	private Frm_Pharmacy Frm_p = null;
 	private Frm_PharmacyInquire Frm_pi = null;
@@ -39,8 +39,16 @@ public class Frm_PharmacyInfo extends javax.swing.JFrame {
 	public Frm_PharmacyInfo(Frm_PharmacyInquire frm, String dep, String doctor,
 			String no, String name, String birth, String gender, String blood,
 			String ps, String guid) {
+		this.m_Dep = dep;
+		this.m_Doctor = doctor;
+		this.m_No = no;
+		this.m_Name = name;
+		this.m_Birth = birth;
+		this.m_Gender = gender;
+		this.m_Blood = blood;
+		this.m_Ps = ps;
+		this.m_Guid = guid;
 		initComponents();
-		initLanguage();
 		this.setLocationRelativeTo(this);
 		Frm_pi = frm;
 		addWindowListener(new WindowAdapter() { // 畫面關閉原視窗enable
@@ -49,10 +57,15 @@ public class Frm_PharmacyInfo extends javax.swing.JFrame {
 				Frm_pi.setEnabled(true);
 			}
 		});
-		System.out.print(dep + doctor + no + name + birth + gender + blood + ps
-				+ guid);
+
+		setTab_Medicines();
+	}
+
+	public Frm_PharmacyInfo(Frm_Pharmacy frm, String dep, String doctor,
+			String no, String name, String birth, String gender, String blood,
+			String ps, String guid) {
 		this.m_Dep = dep;
-		this.m_Docter = doctor;
+		this.m_Doctor = doctor;
 		this.m_No = no;
 		this.m_Name = name;
 		this.m_Birth = birth;
@@ -60,14 +73,7 @@ public class Frm_PharmacyInfo extends javax.swing.JFrame {
 		this.m_Blood = blood;
 		this.m_Ps = ps;
 		this.m_Guid = guid;
-		setTab_Medicines();
-	}
-
-	public Frm_PharmacyInfo(Frm_Pharmacy frm, String dep, String doctor,
-			String no, String name, String birth, String gender, String blood,
-			String ps, String guid) {
 		initComponents();
-		initLanguage();
 		this.setLocationRelativeTo(this);
 		Frm_p = frm;
 		addWindowListener(new WindowAdapter() { // 畫面關閉原視窗enable
@@ -76,39 +82,9 @@ public class Frm_PharmacyInfo extends javax.swing.JFrame {
 				Frm_p.setEnabled(true);
 			}
 		});
-		this.m_Dep = dep;
-		this.m_Docter = doctor;
-		this.m_No = no;
-		this.m_Name = name;
-		this.m_Birth = birth;
-		this.m_Gender = gender;
-		this.m_Blood = blood;
-		this.m_Ps = ps;
-		this.m_Guid = guid;
 		setTab_Medicines();
 	}
 
-	public void initFram() {
-
-	}
-
-	private void initLanguage() {
-		this.lab_TitleNo.setText(m_No);
-		this.lab_TitleNo.setText(paragraph.getString("TITLENO"));
-		this.lab_TitleName.setText(paragraph.getString("TITLENAME"));
-		this.lab_TitleSex.setText(paragraph.getString("TITLESEX"));
-		this.lab_TitleBloodtype.setText(paragraph.getString("TITLEBLOODTYPE"));
-		// this.lab_TitleAge.setText(paragraph.getLanguage(line, "TITLEAGE"));
-		this.lab_Doctor.setText(paragraph.getString("DOCTOR"));
-		// this.lab_Department.setText(paragraph.getLanguage(line,
-		// "DEPARTMENT"));
-		this.lab_TitlePs.setText(paragraph.getString("TITLEPS"));
-		this.btn_Close.setText(paragraph.getString("CLOSE"));
-		this.setTitle(paragraph.getString("TITLEMEDICINEINFORMATION"));
-
-	}
-
-	// 藥品
 	public void setTab_Medicines() {
 		ResultSet rsMedicines = null;
 		try {
@@ -154,7 +130,7 @@ public class Frm_PharmacyInfo extends javax.swing.JFrame {
 					Matrix[i][0] = false;
 					this.medicine_guid[i] = rsMedicines.getString(1);
 					for (j = 2; j < rsMetaData.getColumnCount() + 1; j++) {
-						Matrix[i][j-1] = rsMedicines.getString(j);
+						Matrix[i][j - 1] = rsMedicines.getString(j);
 					}
 					Matrix[i][13] = Integer.parseInt((String) Matrix[i][8])
 							* Integer.parseInt((String) Matrix[i][12]);
@@ -213,32 +189,92 @@ public class Frm_PharmacyInfo extends javax.swing.JFrame {
 
 	@SuppressWarnings("unchecked")
 	private void initComponents() {
-
 		span_How = new javax.swing.JScrollPane();
 		tab_Medicines = new javax.swing.JTable();
 		pan_Top = new javax.swing.JPanel();
 		lab_TitleNo = new javax.swing.JLabel();
 		lab_TitleName = new javax.swing.JLabel();
-		lab_TitlePs = new javax.swing.JLabel();
-		lab_TitleSex = new javax.swing.JLabel();
-		lab_TitleAge = new javax.swing.JLabel();
+		lab_TitleGender = new javax.swing.JLabel();
 		lab_TitleBloodtype = new javax.swing.JLabel();
+		lab_TitleBirth = new javax.swing.JLabel();
+		lab_TitleDoctor = new javax.swing.JLabel();
+		lab_TitleDepartment = new javax.swing.JLabel();
+		lab_TitlePs = new javax.swing.JLabel();
+		lab_TitleAmountReceivable = new javax.swing.JLabel();
 		txt_No = new javax.swing.JTextField();
-		txt_Age = new javax.swing.JTextField();
-		txt_Bloodtype = new javax.swing.JTextField();
 		txt_Name = new javax.swing.JTextField();
-		txt_Sex = new javax.swing.JTextField();
-		txt_Ps = new javax.swing.JTextField();
-		lab_Doctor = new javax.swing.JLabel();
-		lab_Department = new javax.swing.JLabel();
-		txt_Dep = new javax.swing.JTextField();
+		txt_Gender = new javax.swing.JTextField();
+		txt_Bloodtype = new javax.swing.JTextField();
+		txt_Birth = new javax.swing.JTextField();
 		txt_Doctor = new javax.swing.JTextField();
+		txt_Dep = new javax.swing.JTextField();
+		txt_Ps = new javax.swing.JTextField();
+		txt_TitleAmountReceivable = new javax.swing.JTextField();
 		btn_Close = new javax.swing.JButton();
 		btn_Education = new javax.swing.JButton();
 		btn_Save = new javax.swing.JButton();
 		setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-		setTitle("Medicine Information");
+		setTitle(paragraph.getString("TITLEMEDICINEINFORMATION"));
 		setAlwaysOnTop(true);
+
+		lab_TitleNo.setText(paragraph.getString("TITLENO"));
+		lab_TitleName.setText(paragraph.getString("TITLENAME"));
+		lab_TitleGender.setText(paragraph.getString("TITLESEX"));
+		lab_TitleBloodtype.setText(paragraph.getString("TITLEBLOODTYPE"));
+		lab_TitleBirth.setText(paragraph.getString("TITLEBIRTHDAY"));
+		lab_TitleDoctor.setText(paragraph.getString("DOCTOR"));
+		lab_TitleDepartment.setText(paragraph.getString("DEPARMENT"));
+		lab_TitlePs.setText(paragraph.getString("TITLEPS"));
+		lab_TitleAmountReceivable.setText(paragraph
+				.getString("AMOUNTRECEIVABLE"));
+
+		txt_No.setEditable(false);
+		txt_No.setText(m_No);
+
+		txt_Name.setEditable(false);
+		txt_Name.setText(m_Name);
+
+		txt_Gender.setEditable(false);
+		txt_Gender.setText(m_Gender);
+
+		txt_Bloodtype.setEditable(false);
+		txt_Bloodtype.setText(m_Blood);
+
+		txt_Birth.setEditable(false);
+		txt_Birth.setText(m_Birth);
+
+		txt_Doctor.setEditable(false);
+		txt_Doctor.setText(m_Doctor);
+
+		txt_Dep.setEditable(false);
+		txt_Dep.setText(m_Dep);
+
+		txt_Ps.setEditable(false);
+		txt_Ps.setText(m_Ps);
+
+		txt_TitleAmountReceivable.setEditable(false);
+		txt_TitleAmountReceivable.setText(String.valueOf(0));
+
+		btn_Close.setText(paragraph.getString("CLOSE"));
+		btn_Close.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				btn_CloseActionPerformed(evt);
+			}
+		});
+
+		btn_Education.setText(paragraph.getString("MEDICINEEDUCATION"));
+		btn_Education.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				btn_EducationActionPerformed(evt);
+			}
+		});
+
+		btn_Save.setText(paragraph.getString("SAVE"));
+		btn_Save.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				btn_SaveActionPerformed(evt);
+			}
+		});
 
 		tab_Medicines.setAutoCreateRowSorter(true);
 		tab_Medicines.setModel(new DefaultTableModel(new Object[][] { { false,
@@ -267,41 +303,8 @@ public class Frm_PharmacyInfo extends javax.swing.JFrame {
 		});
 		tab_Medicines.setRowHeight(25);
 		span_How.setViewportView(tab_Medicines);
-
 		pan_Top.setBackground(new java.awt.Color(228, 228, 228));
 		pan_Top.setFont(new java.awt.Font("Bitstream Vera Sans", 1, 18));
-
-		lab_TitleNo.setText("ID");
-
-		lab_TitleName.setText("Name");
-
-		lab_TitlePs.setText("PS");
-
-		lab_TitleSex.setText("Gender");
-
-		lab_TitleAge.setText("Birthday");
-
-		lab_TitleBloodtype.setText("Blood Type");
-
-		txt_No.setEditable(false);
-
-		txt_Age.setEditable(false);
-
-		txt_Bloodtype.setEditable(false);
-
-		txt_Name.setEditable(false);
-
-		txt_Sex.setEditable(false);
-
-		txt_Ps.setEditable(false);
-
-		lab_Doctor.setText("Doctor");
-
-		lab_Department.setText("Depart/Clinic");
-
-		txt_Dep.setEditable(false);
-
-		txt_Doctor.setEditable(false);
 
 		javax.swing.GroupLayout pan_TopLayout = new javax.swing.GroupLayout(
 				pan_Top);
@@ -324,12 +327,7 @@ public class Frm_PharmacyInfo extends javax.swing.JFrame {
 																				javax.swing.GroupLayout.Alignment.LEADING,
 																				false)
 																		.addComponent(
-																				lab_TitleBloodtype,
-																				javax.swing.GroupLayout.DEFAULT_SIZE,
-																				66,
-																				Short.MAX_VALUE)
-																		.addComponent(
-																				lab_TitleSex,
+																				lab_TitleNo,
 																				javax.swing.GroupLayout.DEFAULT_SIZE,
 																				javax.swing.GroupLayout.DEFAULT_SIZE,
 																				Short.MAX_VALUE)
@@ -339,15 +337,20 @@ public class Frm_PharmacyInfo extends javax.swing.JFrame {
 																				javax.swing.GroupLayout.DEFAULT_SIZE,
 																				Short.MAX_VALUE)
 																		.addComponent(
-																				lab_TitleNo,
+																				lab_TitleGender,
 																				javax.swing.GroupLayout.DEFAULT_SIZE,
 																				javax.swing.GroupLayout.DEFAULT_SIZE,
-																				Short.MAX_VALUE))
-														.addComponent(
-																lab_TitleAge,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																66,
-																Short.MAX_VALUE))
+																				Short.MAX_VALUE)
+																		.addComponent(
+																				lab_TitleBloodtype,
+																				javax.swing.GroupLayout.DEFAULT_SIZE,
+																				javax.swing.GroupLayout.DEFAULT_SIZE,
+																				Short.MAX_VALUE)
+																		.addComponent(
+																				lab_TitleBirth,
+																				javax.swing.GroupLayout.DEFAULT_SIZE,
+																				javax.swing.GroupLayout.DEFAULT_SIZE,
+																				Short.MAX_VALUE)))
 										.addPreferredGap(
 												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 										.addGroup(
@@ -365,17 +368,17 @@ public class Frm_PharmacyInfo extends javax.swing.JFrame {
 																245,
 																Short.MAX_VALUE)
 														.addComponent(
-																txt_Dep,
+																txt_Gender,
 																javax.swing.GroupLayout.DEFAULT_SIZE,
 																245,
 																Short.MAX_VALUE)
 														.addComponent(
-																txt_Doctor,
+																txt_Bloodtype,
 																javax.swing.GroupLayout.DEFAULT_SIZE,
 																245,
 																Short.MAX_VALUE)
 														.addComponent(
-																txt_Ps,
+																txt_Birth,
 																javax.swing.GroupLayout.DEFAULT_SIZE,
 																245,
 																Short.MAX_VALUE))
@@ -390,20 +393,20 @@ public class Frm_PharmacyInfo extends javax.swing.JFrame {
 																				javax.swing.GroupLayout.Alignment.TRAILING,
 																				false)
 																		.addComponent(
-																				lab_Doctor,
+																				lab_TitleDoctor,
 																				javax.swing.GroupLayout.DEFAULT_SIZE,
 																				javax.swing.GroupLayout.DEFAULT_SIZE,
 																				Short.MAX_VALUE)
 																		.addComponent(
-																				lab_Department,
+																				lab_TitleDepartment,
 																				javax.swing.GroupLayout.DEFAULT_SIZE,
 																				javax.swing.GroupLayout.DEFAULT_SIZE,
-																				Short.MAX_VALUE))
-														.addComponent(
-																lab_TitlePs,
-																javax.swing.GroupLayout.PREFERRED_SIZE,
-																43,
-																javax.swing.GroupLayout.PREFERRED_SIZE))
+																				Short.MAX_VALUE)
+																		.addComponent(
+																				lab_TitlePs,
+																				javax.swing.GroupLayout.PREFERRED_SIZE,
+																				javax.swing.GroupLayout.PREFERRED_SIZE,
+																				javax.swing.GroupLayout.PREFERRED_SIZE)))
 										.addPreferredGap(
 												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 										.addGroup(
@@ -411,17 +414,17 @@ public class Frm_PharmacyInfo extends javax.swing.JFrame {
 														.createParallelGroup(
 																javax.swing.GroupLayout.Alignment.LEADING)
 														.addComponent(
-																txt_Age,
+																txt_Doctor,
 																javax.swing.GroupLayout.DEFAULT_SIZE,
 																245,
 																Short.MAX_VALUE)
 														.addComponent(
-																txt_Bloodtype,
+																txt_Dep,
 																javax.swing.GroupLayout.DEFAULT_SIZE,
 																245,
 																Short.MAX_VALUE)
 														.addComponent(
-																txt_Sex,
+																txt_Ps,
 																javax.swing.GroupLayout.DEFAULT_SIZE,
 																245,
 																Short.MAX_VALUE))
@@ -446,9 +449,9 @@ public class Frm_PharmacyInfo extends javax.swing.JFrame {
 																						.createParallelGroup(
 																								javax.swing.GroupLayout.Alignment.BASELINE)
 																						.addComponent(
-																								lab_Doctor)
+																								lab_TitleDoctor)
 																						.addComponent(
-																								txt_Bloodtype,
+																								txt_Doctor,
 																								javax.swing.GroupLayout.PREFERRED_SIZE,
 																								javax.swing.GroupLayout.DEFAULT_SIZE,
 																								javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -460,9 +463,9 @@ public class Frm_PharmacyInfo extends javax.swing.JFrame {
 																						.createParallelGroup(
 																								javax.swing.GroupLayout.Alignment.BASELINE)
 																						.addComponent(
-																								lab_Department)
+																								lab_TitleDepartment)
 																						.addComponent(
-																								txt_Sex,
+																								txt_Dep,
 																								javax.swing.GroupLayout.PREFERRED_SIZE,
 																								javax.swing.GroupLayout.DEFAULT_SIZE,
 																								javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -475,7 +478,7 @@ public class Frm_PharmacyInfo extends javax.swing.JFrame {
 																						.addComponent(
 																								lab_TitlePs)
 																						.addComponent(
-																								txt_Age,
+																								txt_Ps,
 																								javax.swing.GroupLayout.PREFERRED_SIZE,
 																								javax.swing.GroupLayout.DEFAULT_SIZE,
 																								javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -489,7 +492,7 @@ public class Frm_PharmacyInfo extends javax.swing.JFrame {
 																						.addComponent(
 																								lab_TitleNo)
 																						.addComponent(
-																								txt_Dep,
+																								txt_No,
 																								javax.swing.GroupLayout.PREFERRED_SIZE,
 																								javax.swing.GroupLayout.DEFAULT_SIZE,
 																								javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -502,7 +505,7 @@ public class Frm_PharmacyInfo extends javax.swing.JFrame {
 																						.addComponent(
 																								lab_TitleName)
 																						.addComponent(
-																								txt_Doctor,
+																								txt_Name,
 																								javax.swing.GroupLayout.PREFERRED_SIZE,
 																								javax.swing.GroupLayout.DEFAULT_SIZE,
 																								javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -513,9 +516,9 @@ public class Frm_PharmacyInfo extends javax.swing.JFrame {
 																						.createParallelGroup(
 																								javax.swing.GroupLayout.Alignment.BASELINE)
 																						.addComponent(
-																								lab_TitleSex)
+																								lab_TitleGender)
 																						.addComponent(
-																								txt_Name,
+																								txt_Gender,
 																								javax.swing.GroupLayout.PREFERRED_SIZE,
 																								javax.swing.GroupLayout.DEFAULT_SIZE,
 																								javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -528,7 +531,7 @@ public class Frm_PharmacyInfo extends javax.swing.JFrame {
 																						.addComponent(
 																								lab_TitleBloodtype)
 																						.addComponent(
-																								txt_Ps,
+																								txt_Bloodtype,
 																								javax.swing.GroupLayout.PREFERRED_SIZE,
 																								javax.swing.GroupLayout.DEFAULT_SIZE,
 																								javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -539,39 +542,18 @@ public class Frm_PharmacyInfo extends javax.swing.JFrame {
 																						.createParallelGroup(
 																								javax.swing.GroupLayout.Alignment.BASELINE)
 																						.addComponent(
-																								txt_No,
+																								lab_TitleBirth)
+																						.addComponent(
+																								txt_Birth,
 																								javax.swing.GroupLayout.PREFERRED_SIZE,
 																								javax.swing.GroupLayout.DEFAULT_SIZE,
 																								javax.swing.GroupLayout.PREFERRED_SIZE)
-																						.addComponent(
-																								lab_TitleAge))))
+																						)))
 										.addContainerGap(13, Short.MAX_VALUE)));
 
 		pan_TopLayout.linkSize(javax.swing.SwingConstants.VERTICAL,
-				new java.awt.Component[] { txt_Age, txt_Bloodtype, txt_Dep,
-						txt_Doctor, txt_Name, txt_No, txt_Ps, txt_Sex });
-
-		btn_Close.setText(paragraph.getString("CLOSE"));
-		btn_Close.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				btn_CloseActionPerformed(evt);
-			}
-		});
-
-		btn_Education.setText(paragraph.getString("MEDICINEEDUCATION"));
-		btn_Education.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				btn_EducationActionPerformed(evt);
-			}
-		});
-
-		btn_Save.setText(paragraph.getString("SAVE"));
-		btn_Save.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				System.out.print("**************************************\n");
-				btn_SaveActionPerformed(evt);
-			}
-		});
+				new java.awt.Component[] { txt_Birth, txt_Bloodtype, txt_Dep,
+						txt_Doctor, txt_Name, txt_No, txt_Ps, txt_Gender });
 
 		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(
 				getContentPane());
@@ -664,9 +646,10 @@ public class Frm_PharmacyInfo extends javax.swing.JFrame {
 						+ (Integer) this.tab_Medicines.getValueAt(i, 13);
 			}
 		}
-		System.out.print(amountReceivable+"\n");
-		String message=paragraph.getString("AMOUNTRECEIVABLE") + String.valueOf(amountReceivable);
-		JOptionPane.showMessageDialog(null,"aaaa");
+		System.out.print(amountReceivable + "\n");
+		String message = paragraph.getString("AMOUNTRECEIVABLE")
+				+ String.valueOf(amountReceivable);
+		JOptionPane.showMessageDialog(null, "aaaa");
 		return;
 	}
 
@@ -674,25 +657,27 @@ public class Frm_PharmacyInfo extends javax.swing.JFrame {
 	private javax.swing.JButton btn_Close;
 	private javax.swing.JButton btn_Education;
 	private javax.swing.JButton btn_Save;
-	private javax.swing.JLabel lab_Department;
-	private javax.swing.JLabel lab_Doctor;
-	private javax.swing.JLabel lab_TitleAge;
+	private javax.swing.JLabel lab_TitleDepartment;
+	private javax.swing.JLabel lab_TitleDoctor;
+	private javax.swing.JLabel lab_TitleBirth;
 	private javax.swing.JLabel lab_TitleBloodtype;
 	private javax.swing.JLabel lab_TitleName;
 	private javax.swing.JLabel lab_TitleNo;
 	private javax.swing.JLabel lab_TitlePs;
-	private javax.swing.JLabel lab_TitleSex;
+	private javax.swing.JLabel lab_TitleGender;
+	private javax.swing.JLabel lab_TitleAmountReceivable;
 	private javax.swing.JPanel pan_Top;
 	private javax.swing.JScrollPane span_How;
 	private javax.swing.JTable tab_Medicines;
-	private javax.swing.JTextField txt_Age;
+	private javax.swing.JTextField txt_Birth;
 	private javax.swing.JTextField txt_Bloodtype;
 	private javax.swing.JTextField txt_Dep;
 	private javax.swing.JTextField txt_Doctor;
 	private javax.swing.JTextField txt_Name;
 	private javax.swing.JTextField txt_No;
 	private javax.swing.JTextField txt_Ps;
-	private javax.swing.JTextField txt_Sex;
+	private javax.swing.JTextField txt_Gender;
+	private javax.swing.JTextField txt_TitleAmountReceivable;
 	// End of variables declaration//GEN-END:variables
 
 }
