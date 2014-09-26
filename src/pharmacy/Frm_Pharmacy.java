@@ -456,36 +456,11 @@ public class Frm_Pharmacy extends javax.swing.JFrame {
 					tab_Pharmacy.getSelectedRow(), 8);
 			String getGuid = (String) this.tab_Pharmacy.getValueAt(
 					tab_Pharmacy.getSelectedRow(), 9);
-			System.out.print((String) this.tab_Pharmacy.getValueAt(
-					tab_Pharmacy.getSelectedRow(), 2)
-					+ " "
-					+ (String) this.tab_Pharmacy.getValueAt(
-							tab_Pharmacy.getSelectedRow(), 3)
-					+ " "
-					+ (String) this.tab_Pharmacy.getValueAt(
-							tab_Pharmacy.getSelectedRow(), 4)
-					+ " "
-					+ (String) this.tab_Pharmacy.getValueAt(
-							tab_Pharmacy.getSelectedRow(), 5)
-					+ " "
-					+ (String) this.tab_Pharmacy.getValueAt(
-							tab_Pharmacy.getSelectedRow(), 6)
-					+ " "
-					+ (String) this.tab_Pharmacy.getValueAt(
-							tab_Pharmacy.getSelectedRow(), 7)
-					+ " "
-					+ (String) this.tab_Pharmacy.getValueAt(
-							tab_Pharmacy.getSelectedRow(), 8)
-					+ " "
-					+ (String) this.tab_Pharmacy.getValueAt(
-							tab_Pharmacy.getSelectedRow(), 9)
-					+ " "
-					+ (String) this.tab_Pharmacy.getValueAt(
-							tab_Pharmacy.getSelectedRow(), 10) + "\n");
 			new Frm_PharmacyInfo(this, getDep, getDoctor, getNo, getName,
 					getBirth, getGender, getBlood, getps, getGuid)
 					.setVisible(true);
-			this.setEnabled(false);
+			m_RefreshWorkList.stopRunning();
+			this.dispose();
 		}
 	}
 
@@ -558,7 +533,7 @@ public class Frm_Pharmacy extends javax.swing.JFrame {
 					+ regGuid
 					+ "' "
 					+ "AND medicine_stock.reg_guid = registration_info.guid "
-					+ "AND medicines.code = medicine_stock.m_code";
+					+ "AND medicines.code = medicine_stock.m_code ";
 			String sqlPatient = "SELECT registration_info.touchtime, patients_info.p_no, registration_info.pharmacy_no, "
 					+ "registration_info.modify_count, concat(patients_info.firstname,'  ',patients_info.lastname) AS name, "
 					+ "patients_info.gender, patients_info.birth "
