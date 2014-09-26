@@ -1783,7 +1783,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 					+ // lab_payment
 					"'Z',"
 					+ // radiology_payment
-					"'Z'," // bed_payment
+					"NULL," // bed_payment
 					+ "0," // visit_no_end
 					+ "NULL,"
 					+
