@@ -21,7 +21,6 @@ import javax.swing.JDialog;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
 import common.PrintTools;
-
 import cc.johnwu.date.DateMethod;
 import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
@@ -37,7 +36,7 @@ public class Frm_DiagnosisPrintChooser extends JDialog {
 	private StoredErrorMessage ErrorMessage = new StoredErrorMessage();
 
 	private String regGuid;
-	
+
 	private PrintTools pt = new PrintTools();
 
 	class MyPrintable implements Printable {
@@ -191,7 +190,7 @@ public class Frm_DiagnosisPrintChooser extends JDialog {
 	 * Create the dialog.
 	 */
 	public Frm_DiagnosisPrintChooser() {
-
+		pt.setEntry("dia");
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
 		setModal(true);
@@ -206,7 +205,7 @@ public class Frm_DiagnosisPrintChooser extends JDialog {
 				pt.DoPrintWithDialog(6, regGuid);
 				pt.DoPrintWithDialog(4, regGuid);
 				pt.DoPrintWithDialog(8, regGuid);
-				
+
 			}
 		});
 
@@ -222,7 +221,7 @@ public class Frm_DiagnosisPrintChooser extends JDialog {
 			public void actionPerformed(ActionEvent e) {
 				pt.DoPrintWithDialog(6, regGuid);
 			}
-				
+
 		});
 
 		JButton btnXray = new JButton("X-Ray");
@@ -303,7 +302,7 @@ public class Frm_DiagnosisPrintChooser extends JDialog {
 
 	protected void initDataBindings() {
 	}
-	
+
 	private void onDiagnosisPrintClicked() {
 		PrinterJob pj = PrinterJob.getPrinterJob();
 		PageFormat pf = pj.defaultPage();

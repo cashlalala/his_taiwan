@@ -1472,9 +1472,10 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 				String icdVer = (m_ICDVersion != null) ? m_ICDVersion
 						.split("-")[1] : "10";
 
+				int diaCount = tab_Diagnosis.getRowCount(); 
 				// 存入icd code診斷碼
 				if (tab_Diagnosis.getValueAt(0, 2) != null) {
-					for (int i = 0; i < this.tab_Diagnosis.getRowCount(); i++) {
+					for (int i = 0; i < diaCount; i++) {
 						if (this.tab_Diagnosis.getValueAt(i, 2) != null) {
 
 							System.out.println(String.format("inserting %s...",
@@ -1501,7 +1502,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 				boolean xrayState = false; // 判斷是否有x光處置
 				// 存入處置
 
-				for (int i = 0; i < this.tab_Prescription.getRowCount(); i++) {
+				for (int i = 0; i < tab_Prescription.getRowCount(); i++) {
 					if (this.tab_Prescription.getValueAt(i, 1) != null
 							&& !this.tab_Prescription.getValueAt(i, 1)
 									.toString().trim().equals("")) {
@@ -1736,10 +1737,17 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 				}
 
 				// 變更領藥 touchtime
-				DBC.executeUpdate("UPDATE registration_info SET medicine_touchtime = RPAD((SELECT CASE WHEN MAX(B.medicine_touchtime) >= DATE_FORMAT(now(),'%Y%m%d%H%i%S') "
+				DBC.executeUpdate("UPDATE registration_info "
+						+ "SET "
+						+ ((diaCount != 0) ? "diagnosis_payment = NULL, " : "")
+						+ ((xrayState) ? "radiology_payment = NULL, " : "")
+						+ ((prescriptionState) ? "lab_payment = NULL, " : "")
+						+ ((medicineState != 0) ? "pharmacy_payment = NULL, " : "")
+						+ "medicine_touchtime = RPAD((SELECT CASE WHEN MAX(B.medicine_touchtime) >= DATE_FORMAT(now(),'%Y%m%d%H%i%S') "
 						+ "THEN concat(DATE_FORMAT(now(),'%Y%m%d%H%i%S'), COUNT(B.medicine_touchtime)) "
 						+ "ELSE DATE_FORMAT(now(),'%Y%m%d%H%i%S') "
-						+ "END medicine_touchtime FROM (SELECT medicine_touchtime FROM registration_info) AS B WHERE B.medicine_touchtime LIKE "
+						+ "END medicine_touchtime "
+						+ "FROM (SELECT medicine_touchtime FROM registration_info) AS B WHERE B.medicine_touchtime LIKE "
 						+ "concat(DATE_FORMAT(now(),'%Y%m%d%H%i%S'),'%')),20,'000000') "
 						+ "WHERE guid = '" + m_RegistrationGuid + "'");
 

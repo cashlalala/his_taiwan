@@ -7,10 +7,7 @@ import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.print.PageFormat;
-import java.awt.print.Paper;
 import java.awt.print.Printable;
-import java.awt.print.PrinterException;
-import java.awt.print.PrinterJob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -20,11 +17,12 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
-import common.PrintTools;
-
 import cc.johnwu.date.DateMethod;
 import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
+
+import common.PrintTools;
+
 import errormessage.StoredErrorMessage;
 
 public class Frm_InpatientPrintChooser extends JDialog {
@@ -37,7 +35,7 @@ public class Frm_InpatientPrintChooser extends JDialog {
 	private StoredErrorMessage ErrorMessage = new StoredErrorMessage();
 
 	private String regGuid;
-	
+
 	private PrintTools pt = new PrintTools();
 
 	class MyPrintable implements Printable {
@@ -191,7 +189,7 @@ public class Frm_InpatientPrintChooser extends JDialog {
 	 * Create the dialog.
 	 */
 	public Frm_InpatientPrintChooser() {
-
+		pt.setEntry("inp");
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
 		setModal(true);
@@ -206,7 +204,7 @@ public class Frm_InpatientPrintChooser extends JDialog {
 				pt.DoPrintWithDialog(6, regGuid);
 				pt.DoPrintWithDialog(4, regGuid);
 				pt.DoPrintWithDialog(8, regGuid);
-				
+
 			}
 		});
 
@@ -222,7 +220,7 @@ public class Frm_InpatientPrintChooser extends JDialog {
 			public void actionPerformed(ActionEvent e) {
 				pt.DoPrintWithDialog(6, regGuid);
 			}
-				
+
 		});
 
 		JButton btnXray = new JButton("X-Ray");
@@ -292,39 +290,12 @@ public class Frm_InpatientPrintChooser extends JDialog {
 		groupLayout.setAutoCreateContainerGaps(true);
 		groupLayout.setAutoCreateGaps(true);
 		getContentPane().setLayout(groupLayout);
-		initDataBindings();
 
 	}
 
 	public Frm_InpatientPrintChooser(String regGuid) {
 		this();
 		this.regGuid = regGuid;
-	}
-
-	protected void initDataBindings() {
-	}
-	
-	private void onDiagnosisPrintClicked() {
-		PrinterJob pj = PrinterJob.getPrinterJob();
-		PageFormat pf = pj.defaultPage();
-		Paper paper = new Paper();
-		pf.setPaper(paper);
-		pj.setPrintable(new MyPrintable(), pf);
-		// ***************************//
-		if (pj.printDialog()) {
-			try {
-				pj.print();
-			} catch (PrinterException e1) {
-				e1.printStackTrace();
-				ErrorMessage.setData(
-						"Diagnosis",
-						"Frm_DiagnosisPrintChooser",
-						"btn_RePrintActionPerformed()",
-						e1.toString().substring(
-								e1.toString().lastIndexOf(".") + 1,
-								e1.toString().length()));
-			}
-		}
 	}
 
 }

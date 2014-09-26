@@ -133,6 +133,10 @@ public class RefreshPharmacy extends Thread {
 		this.isRunning = false;
 	}
 
+	public void restartRunning(){
+		this.isRunning = true;
+	}
+	
 	@Override
 	public void run() {
 		try {

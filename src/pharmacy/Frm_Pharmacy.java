@@ -37,7 +37,8 @@ public class Frm_Pharmacy extends javax.swing.JFrame {
 	private Language paragraph = Language.getInstance();
 	/* 輸出錯誤資訊變數 */
 	StoredErrorMessage ErrorMessage = new StoredErrorMessage();
-	boolean m_clock_running=true;
+	boolean m_clock_running = true;
+
 	public Frm_Pharmacy() {
 		initComponents();
 		initWorkList();
@@ -57,7 +58,7 @@ public class Frm_Pharmacy extends javax.swing.JFrame {
 		this.setExtendedState(this.MAXIMIZED_BOTH); // 最大化
 		this.setLocationRelativeTo(this);
 		this.tab_Pharmacy.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); // tabble不可按住多選
-		this.m_clock_running=true;
+		this.m_clock_running = true;
 		addWindowListener(new WindowAdapter() { // 畫面關閉原視窗enable
 			@Override
 			public void windowClosing(WindowEvent windowevent) {
@@ -68,7 +69,7 @@ public class Frm_Pharmacy extends javax.swing.JFrame {
 		this.m_RefreshWorkList = new RefreshPharmacy(this.tab_Pharmacy,
 				RefreshTIME, this, this.check_Follow);
 		this.m_RefreshWorkList.start();
-		
+
 		this.m_Clock = new Thread() { // Clock
 			@Override
 			@SuppressWarnings("static-access")
@@ -437,25 +438,51 @@ public class Frm_Pharmacy extends javax.swing.JFrame {
 	private void btn_CheckActionPerformed(java.awt.event.ActionEvent evt) {
 		if (tab_Pharmacy.getSelectedRow() != -1
 				&& tab_Pharmacy.getValueAt(tab_Pharmacy.getSelectedRow(), 1) != null) {
-			String getDep = (String) this.tab_Pharmacy.getValueAt(
-					tab_Pharmacy.getSelectedRow(), 1);
-			String getDocter = (String) this.tab_Pharmacy.getValueAt(
-					tab_Pharmacy.getSelectedRow(), 2);
 			String getNo = (String) this.tab_Pharmacy.getValueAt(
-					tab_Pharmacy.getSelectedRow(), 3);
+					tab_Pharmacy.getSelectedRow(), 1);
 			String getName = (String) this.tab_Pharmacy.getValueAt(
-					tab_Pharmacy.getSelectedRow(), 4);
+					tab_Pharmacy.getSelectedRow(), 2);
 			String getBirth = (String) this.tab_Pharmacy.getValueAt(
-					tab_Pharmacy.getSelectedRow(), 5);
+					tab_Pharmacy.getSelectedRow(), 3);
 			String getGender = (String) this.tab_Pharmacy.getValueAt(
-					tab_Pharmacy.getSelectedRow(), 6);
-			String getBlood = (String) this.tab_Pharmacy.getValueAt(
-					tab_Pharmacy.getSelectedRow(), 7);
+					tab_Pharmacy.getSelectedRow(), 4);
 			String getps = (String) this.tab_Pharmacy.getValueAt(
+					tab_Pharmacy.getSelectedRow(), 5);
+			String getDep = (String) this.tab_Pharmacy.getValueAt(
+					tab_Pharmacy.getSelectedRow(), 6);
+			String getDoctor = (String) this.tab_Pharmacy.getValueAt(
+					tab_Pharmacy.getSelectedRow(), 7);
+			String getBlood = (String) this.tab_Pharmacy.getValueAt(
 					tab_Pharmacy.getSelectedRow(), 8);
 			String getGuid = (String) this.tab_Pharmacy.getValueAt(
 					tab_Pharmacy.getSelectedRow(), 9);
-			new Frm_PharmacyInfo(this, getDep, getDocter, getNo, getName,
+			System.out.print((String) this.tab_Pharmacy.getValueAt(
+					tab_Pharmacy.getSelectedRow(), 2)
+					+ " "
+					+ (String) this.tab_Pharmacy.getValueAt(
+							tab_Pharmacy.getSelectedRow(), 3)
+					+ " "
+					+ (String) this.tab_Pharmacy.getValueAt(
+							tab_Pharmacy.getSelectedRow(), 4)
+					+ " "
+					+ (String) this.tab_Pharmacy.getValueAt(
+							tab_Pharmacy.getSelectedRow(), 5)
+					+ " "
+					+ (String) this.tab_Pharmacy.getValueAt(
+							tab_Pharmacy.getSelectedRow(), 6)
+					+ " "
+					+ (String) this.tab_Pharmacy.getValueAt(
+							tab_Pharmacy.getSelectedRow(), 7)
+					+ " "
+					+ (String) this.tab_Pharmacy.getValueAt(
+							tab_Pharmacy.getSelectedRow(), 8)
+					+ " "
+					+ (String) this.tab_Pharmacy.getValueAt(
+							tab_Pharmacy.getSelectedRow(), 9)
+					+ " "
+					+ (String) this.tab_Pharmacy.getValueAt(
+							tab_Pharmacy.getSelectedRow(), 10) + "\n");
+			new Frm_PharmacyInfo(this, getDep, getDoctor, getNo, getName,
 					getBirth, getGender, getBlood, getps, getGuid)
 					.setVisible(true);
 			this.setEnabled(false);
@@ -465,7 +492,7 @@ public class Frm_Pharmacy extends javax.swing.JFrame {
 	private void btn_ReturnToMerchantActionPerformed(
 			java.awt.event.ActionEvent evt) {
 		m_RefreshWorkList.stopRunning();
-		m_clock_running=false;
+		m_clock_running = false;
 		new Frm_ReturnToMerchant(this).setVisible(true);
 		this.setEnabled(false);
 	}
