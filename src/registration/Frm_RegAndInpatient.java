@@ -879,7 +879,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 				/**
 						 * 
 						 */
-						private static final long serialVersionUID = 5657385170938938827L;
+				private static final long serialVersionUID = 5657385170938938827L;
 
 				@Override
 				public boolean isCellEditable(int row, int column) {
@@ -1112,7 +1112,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 					/**
 							 * 
 							 */
-							private static final long serialVersionUID = -2187364991003967906L;
+					private static final long serialVersionUID = -2187364991003967906L;
 
 					@Override
 					public boolean isCellEditable(int row, int column) {
@@ -1136,10 +1136,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 				}
 				tab_ClinicList.setModel(new DefaultTableModel(clinicMatrix,
 						clinicHeader) {
-					/**
-							 * 
-							 */
-							private static final long serialVersionUID = 5796864181214611950L;
+					private static final long serialVersionUID = 5796864181214611950L;
 
 					@Override
 					public boolean isCellEditable(int row, int column) {
@@ -1349,7 +1346,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 				/**
 						 * 
 						 */
-						private static final long serialVersionUID = -8196430493734834613L;
+				private static final long serialVersionUID = -8196430493734834613L;
 
 				@Override
 				public boolean isCellEditable(int row, int column) {
@@ -1478,7 +1475,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 						/**
 								 * 
 								 */
-								private static final long serialVersionUID = 7065751750381425512L;
+						private static final long serialVersionUID = 7065751750381425512L;
 
 						@Override
 						public boolean isCellEditable(int row, int column) {
@@ -1502,10 +1499,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 					}
 					tab_BedList.setModel(new DefaultTableModel(bedMatrix,
 							bedHeader) {
-						/**
-								 * 
-								 */
-								private static final long serialVersionUID = -4588820734236675321L;
+						private static final long serialVersionUID = -4588820734236675321L;
 
 						@Override
 						public boolean isCellEditable(int row, int column) {
@@ -1546,7 +1540,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 						/**
 								 * 
 								 */
-								private static final long serialVersionUID = -2817170893774324590L;
+						private static final long serialVersionUID = -2817170893774324590L;
 
 						@Override
 						public boolean isCellEditable(int row, int column) {
@@ -1573,7 +1567,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 						/**
 								 * 
 								 */
-								private static final long serialVersionUID = -6133434111591529583L;
+						private static final long serialVersionUID = -6133434111591529583L;
 
 						@Override
 						public boolean isCellEditable(int row, int column) {
@@ -1701,16 +1695,15 @@ public class Frm_RegAndInpatient extends JFrame implements
 			selectedType = "Checkin";
 		}
 		try {
-			sql="SELECT bed_record.guid FROM bed_record WHERE bed_record.p_no='"
-					+ selectedPatientGUID 
-					+ "' AND bed_record.status='N'";
+			sql = "SELECT bed_record.guid FROM bed_record WHERE bed_record.p_no='"
+					+ selectedPatientGUID + "' AND bed_record.status='N'";
 			rs = DBC.executeQuery(sql);
-			if(rs.next()){
-				JOptionPane.showMessageDialog(new Frame(),paragraph.getString("ERRORALREADYINPATIENT"));
+			if (rs.next()) {
+				JOptionPane.showMessageDialog(new Frame(),
+						paragraph.getString("ERRORALREADYINPATIENT"));
 				return;
 			}
-			
-			
+
 			if (selectedType == "N" || selectedType == "R") {
 				// get doctor No
 				sql = "SELECT staff_info.s_no FROM staff_info WHERE "
@@ -1790,7 +1783,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 					+ // lab_payment
 					"'Z',"
 					+ // radiology_payment
-					"'Z'," // bed_payment
+					"NULL," // bed_payment
 					+ "0," // visit_no_end
 					+ "NULL,"
 					+
