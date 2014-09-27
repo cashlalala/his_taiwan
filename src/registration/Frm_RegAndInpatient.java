@@ -4,6 +4,7 @@ import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -159,6 +160,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 				}
 			}
 		});
+
 		setBounds(100, 100, 670, 705);
 
 		pan_WholeFrame = new JPanel();
@@ -341,7 +343,6 @@ public class Frm_RegAndInpatient extends JFrame implements
 		gbc_Frm_FingerPrintViewer.gridx = 0;
 		gbc_Frm_FingerPrintViewer.gridy = 11;
 		pan_PatientInfo.add(Frm_FingerPrintViewer, gbc_Frm_FingerPrintViewer);
-
 
 		btn_AddPatient = new JButton(paragraph.getString("NEWPATIENT"));
 		btn_AddPatient.setMnemonic(java.awt.event.KeyEvent.VK_N);
@@ -867,6 +868,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 		// End of init GUI
 		initClinicInfo();
 		initInpatientInfo();
+		reLoad();
 	}
 
 	private void btn_PatientSearchactionPerformed(ActionEvent evt) {
@@ -878,9 +880,6 @@ public class Frm_RegAndInpatient extends JFrame implements
 			tab_PatientList.setModel(new DefaultTableModel(
 					new String[][] { { "No Information." } },
 					new String[] { "Message" }) {
-				/**
-						 * 
-						 */
 				private static final long serialVersionUID = 5657385170938938827L;
 
 				@Override
@@ -964,6 +963,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 				e.printStackTrace();
 			}
 		}
+
 	}
 
 	private void tab_PatientListMouseClicked(java.awt.event.MouseEvent evt) {
@@ -1402,6 +1402,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 				e.printStackTrace();
 			}
 		}
+		this.showImage(null, "");
 		// Init Bed
 		refreshInpatientInfo();
 	}
@@ -1815,6 +1816,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 	@Override
 	public void reLoad() {
 		this.setEnabled(true);
+		FingerPrintScanner.setParentFrame(this);
 	}
 
 	@Override
@@ -1834,8 +1836,29 @@ public class Frm_RegAndInpatient extends JFrame implements
 
 	@Override
 	public void onFingerDown() {
-		// TODO Auto-generated method stub
-
+		ResultSet rsCodes = null;
+		try {
+			String sql_FingerSelect = "SELECT id,template FROM fingertemplate ";
+			// this.tab_PatientList.setRowSelectionInterval(0, 0);
+			this.txt_PatientSearch.setText("");
+			rsCodes = DBC.executeQuery(sql_FingerSelect);
+			String PatientsNO = FingerPrintScanner.identify(rsCodes);
+			if (PatientsNO.equals("")) {
+				JOptionPane.showMessageDialog(new Frame(),
+						"No Fingerprint Match");
+			} else {
+				this.txt_PatientSearch.setText(PatientsNO);
+				btn_PatientSearchactionPerformed(null);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				DBC.closeConnection(rsCodes);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	@Override
