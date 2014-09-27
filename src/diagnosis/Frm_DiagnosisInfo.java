@@ -1558,9 +1558,9 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 								+ this.tab_Prescription.getValueAt(i, 3)
 										.toString().trim()
 								+ "' ,"
-								+ ""
-								+ this.tab_Prescription.getValueAt(i, 5)
-										.toString().trim() + ", 1)");
+								+ ((this.tab_Prescription.getValueAt(i, 5) == null) ? 0
+										: this.tab_Prescription
+												.getValueAt(i, 5)) + ", 1)");
 					}
 				}
 
@@ -1779,7 +1779,8 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 						+ "concat(DATE_FORMAT(now(),'%Y%m%d%H%i%S'),'%')),20,'000000') "
 						+ "WHERE guid = '" + m_RegistrationGuid + "'");
 
-				setPrint(medicineState, prescriptionState, xrayState);
+				if (!(parentFrm instanceof admission.Frm_WorkList))
+					setPrint(medicineState, prescriptionState, xrayState);
 				// 提示回診日 *************************************
 				String packageSetAll = "";
 				if (m_PackageSet != null) {
