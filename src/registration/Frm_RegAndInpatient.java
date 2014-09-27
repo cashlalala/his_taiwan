@@ -43,7 +43,6 @@ import cc.johnwu.date.DateMethod;
 import cc.johnwu.finger.FingerPrintScanner;
 import cc.johnwu.finger.FingerPrintViewerInterface;
 import cc.johnwu.sql.DBC;
-
 import common.PrintTools;
 
 public class Frm_RegAndInpatient extends JFrame implements
@@ -66,6 +65,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 	private JLabel lbl_BloodType;
 	private JLabel lbl_Height;
 	private JLabel lbl_Weight;
+	private cc.johnwu.finger.FingerPrintViewer Frm_FingerPrintViewer;
 	private JPanel pan_Code;
 	private JButton btn_AddPatient;
 	private JButton btn_EditPatient;
@@ -330,16 +330,18 @@ public class Frm_RegAndInpatient extends JFrame implements
 		gbc_lbl_Weight.gridy = 10;
 		pan_PatientInfo.add(lbl_Weight, gbc_lbl_Weight);
 
-		pan_Code = new JPanel();
-		GridBagConstraints gbc_pan_Code = new GridBagConstraints();
-		gbc_pan_Code.weighty = 0.4;
-		gbc_pan_Code.weightx = 0.7;
-		gbc_pan_Code.fill = GridBagConstraints.BOTH;
-		gbc_pan_Code.insets = new Insets(0, 0, 0, 5);
-		gbc_pan_Code.gridheight = 2;
-		gbc_pan_Code.gridx = 0;
-		gbc_pan_Code.gridy = 11;
-		pan_PatientInfo.add(pan_Code, gbc_pan_Code);
+		Frm_FingerPrintViewer = new cc.johnwu.finger.FingerPrintViewer();
+		Frm_FingerPrintViewer.setVisible(true);
+		GridBagConstraints gbc_Frm_FingerPrintViewer = new GridBagConstraints();
+		gbc_Frm_FingerPrintViewer.weighty = 0.4;
+		gbc_Frm_FingerPrintViewer.weightx = 0.7;
+		gbc_Frm_FingerPrintViewer.fill = GridBagConstraints.BOTH;
+		gbc_Frm_FingerPrintViewer.insets = new Insets(0, 0, 0, 5);
+		gbc_Frm_FingerPrintViewer.gridheight = 2;
+		gbc_Frm_FingerPrintViewer.gridx = 0;
+		gbc_Frm_FingerPrintViewer.gridy = 11;
+		pan_PatientInfo.add(Frm_FingerPrintViewer, gbc_Frm_FingerPrintViewer);
+
 
 		btn_AddPatient = new JButton(paragraph.getString("NEWPATIENT"));
 		btn_AddPatient.setMnemonic(java.awt.event.KeyEvent.VK_N);
@@ -1838,7 +1840,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 
 	@Override
 	public void showImage(BufferedImage bufferedimage, String msg) {
-		// TODO Auto-generated method stub
-
+		this.Frm_FingerPrintViewer.showImage(bufferedimage);
+		this.Frm_FingerPrintViewer.setTitle(msg);
 	}
 }
