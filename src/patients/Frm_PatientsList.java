@@ -851,6 +851,8 @@ public class Frm_PatientsList extends javax.swing.JFrame implements
 			JOptionPane.showMessageDialog(new Frame(),
 					paragraph.getString("DELETECOMPLETE"));
 			this.btn_Delete.setEnabled(false);
+			this.btn_Edit.setEnabled(false);
+			this.btn_Print.setEnabled(false);
 		}
 		showPatientsList();
 	}// GEN-LAST:event_btn_DeleteActionPerformed
