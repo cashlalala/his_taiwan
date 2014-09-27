@@ -170,10 +170,10 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
                             " order by payment_time desc ";
     
             } else if (m_Sysname.equals("reg")) {
-                String[] title = {"guid"," ", "Pateint No.","Name", "Dept.","Clinic","Cost" };   // table表頭
+                String[] title = {"guid"," ", "Registration Time","Name", "Dept.","Clinic","Cost" };   // table表頭
               
               sql = "SELECT registration_info.guid, " +
-                    "patients_info.p_no AS 'Pateint No.',"+
+                    "registration_info.reg_time AS 'Registration Time',"+
                     "CONCAT(patients_info.firstname, ' ' ,patients_info.lastname) AS 'Name', " +
                     "policlinic.name AS 'Dept.', " +
                     "poli_room.name AS 'Clinic', "+
@@ -183,7 +183,6 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
                     "AND shift_table.guid = registration_info.shift_guid "+
                     "AND policlinic.guid = poli_room.poli_guid "+
                     "AND poli_room.guid = shift_table.room_guid  "+
-
                     "AND registration_info.guid = '"+m_Guid+"' "+
                     //" AND registration_info.p_no = '" + m_Pno + "' " +
                     "AND registration_info.p_no = patients_info.p_no ORDER BY registration_info.reg_time ASC";
@@ -196,7 +195,7 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
                     while (rs.next()) {
                         dataArray[i][0] = rs.getString("guid");
                         dataArray[i][1] = i + 1;
-                        dataArray[i][2] = rs.getString("Pateint No.");
+                        dataArray[i][2] = rs.getString("Registration Time");
                         dataArray[i][3] = rs.getString("Name");
                         dataArray[i][4] = rs.getString("Dept.");
                         dataArray[i][5] = rs.getString("Clinic");
