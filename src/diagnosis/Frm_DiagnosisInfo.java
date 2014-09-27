@@ -33,6 +33,9 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
+import org.apache.logging.log4j.LogManager;
+import org.his.util.CustomLogger;
+
 import laboratory.Frm_LabDM;
 import laboratory.Frm_LabHistory;
 import multilingual.Language;
@@ -120,6 +123,9 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 	private static final String DELIMITER = Character.toString((char) 0);
 
 	private DiagnosisInterface parentFrm;
+
+	private static org.apache.logging.log4j.Logger logger = LogManager
+			.getLogger();
 
 	public Frm_DiagnosisInfo() {
 		parentFrm = null;
@@ -1072,6 +1078,10 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 					tab_Medicine.setValueAt(Double.valueOf(value[3].trim()),
 							tab_Medicine.getSelectedRow(), 4); // unit dosage
 
+					tab_Medicine.setValueAt(
+							(value.length < 5) ? "" : value[4].trim(),
+							tab_Medicine.getSelectedRow(), 7); // default way
+
 					tab_Medicine.setValueAt("N", tab_Medicine.getSelectedRow(),
 							10);
 					tab_Medicine.setValueAt("N", tab_Medicine.getSelectedRow(),
@@ -1170,15 +1180,23 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 						break;
 					} else {
 						str = "";
+						String field = "";
 						for (int i = 0; i < m_AutoColumn.length; i++) {
+							field = ((rs.getString(m_AutoColumn[i]) == null) ? " "
+									: rs.getString(m_AutoColumn[i])).trim();
+
+							CustomLogger.trace(logger,
+									"Column {} : [{}] - > [{}]",
+									m_AutoColumn[i],
+									rs.getString(m_AutoColumn[i]), field);
 							if (m_AutoTable.equals("medicines")
 									&& rs.getString(m_AutoColumn[2]).equals("")) {
-								str += (" "
-										+ rs.getString(m_AutoColumn[i]).trim() + DELIMITER);
+								str += (" " + field + DELIMITER);
 							} else {
-								str += (rs.getString(m_AutoColumn[i]).trim() + DELIMITER);
+								str += (field + DELIMITER);
 							}
 						}
+						CustomLogger.debug(logger, "Composed string [{}]", str);
 						list[index++] = str;
 					}
 				}
@@ -1472,7 +1490,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 				String icdVer = (m_ICDVersion != null) ? m_ICDVersion
 						.split("-")[1] : "10";
 
-				int diaCount = tab_Diagnosis.getRowCount(); 
+				int diaCount = tab_Diagnosis.getRowCount();
 				// 存入icd code診斷碼
 				if (tab_Diagnosis.getValueAt(0, 2) != null) {
 					for (int i = 0; i < diaCount; i++) {
@@ -1742,7 +1760,8 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 						+ ((diaCount != 0) ? "diagnosis_payment = NULL, " : "")
 						+ ((xrayState) ? "radiology_payment = NULL, " : "")
 						+ ((prescriptionState) ? "lab_payment = NULL, " : "")
-						+ ((medicineState != 0) ? "pharmacy_payment = NULL, " : "")
+						+ ((medicineState != 0) ? "pharmacy_payment = NULL, "
+								: "")
 						+ "medicine_touchtime = RPAD((SELECT CASE WHEN MAX(B.medicine_touchtime) >= DATE_FORMAT(now(),'%Y%m%d%H%i%S') "
 						+ "THEN concat(DATE_FORMAT(now(),'%Y%m%d%H%i%S'), COUNT(B.medicine_touchtime)) "
 						+ "ELSE DATE_FORMAT(now(),'%Y%m%d%H%i%S') "
@@ -3103,7 +3122,6 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
 				btn_ReservationActionPerformed(e);
 			}
 		});
@@ -3625,7 +3643,8 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 
 	private void tab_MedicineFocusGained(java.awt.event.FocusEvent evt) {// GEN-FIRST:event_tab_MedicineFocusGained
 		m_AutoTable = "medicines";
-		String[] medicineRsList = { "code", "item", "injection", "unit_dosage" }; // ,
+		String[] medicineRsList = { "code", "item", "injection", "unit_dosage",
+				"default_way" }; // ,
 		// "unit_dosage",
 		// "unit"
 		m_AutoColumn = medicineRsList;
@@ -3674,8 +3693,8 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 
 	private void mnit_CasehistoryActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnit_CasehistoryActionPerformed
 		this.setEnabled(false);
-		new Frm_DiagnosisDiagnostic(this, m_Pno, this.txt_Name.getText(), m_RegistrationGuid)
-				.setVisible(true);
+		new Frm_DiagnosisDiagnostic(this, m_Pno, this.txt_Name.getText(),
+				m_RegistrationGuid).setVisible(true);
 	}// GEN-LAST:event_mnit_CasehistoryActionPerformed
 
 	private void mnit_AllergyActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnit_AllergyActionPerformed
