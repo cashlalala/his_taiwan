@@ -6,6 +6,9 @@ import java.awt.Point;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.awt.print.PageFormat;
+import java.awt.print.Paper;
+import java.awt.print.PrinterJob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -2975,6 +2978,15 @@ public class Frm_PatientMod extends javax.swing.JFrame implements
 			// ***********************列印barcode
 			if (this.m_Status.equals("NEW")) {
 				PrintBarcode.printBarcode(txt_No.getText());
+
+				PrinterJob pj = PrinterJob.getPrinterJob();
+				PageFormat pf = pj.defaultPage();
+				Paper paper = new Paper();
+				paper.setSize(600, 800);
+				paper.setImageableArea(0, 0, 600, 800);
+				pf.setPaper(paper);
+				pj.setPrintable(new LabelSticker(patientInfo), pf);
+				pj.print();
 			}
 
 			// ************************
