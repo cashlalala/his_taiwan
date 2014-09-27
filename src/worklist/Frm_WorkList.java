@@ -81,8 +81,9 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 		// ----------------------------------
 		initWorkList();
 		initLanguage();
-		if (m_SysName.equals("dia") || m_SysName.equals("inp")) {
+		if (m_SysName.equals("dia")) {
 			btn_Diagnostic.setVisible(true);
+			btn_Diagnostic.setEnabled(false);
 		}
 		if (tab_WorkList.getRowCount() != 0) {
 			btn_Enter.setEnabled(true);
@@ -742,6 +743,7 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 	private void tab_WorkListKeyPressed(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_tab_WorkListKeyPressed
 		table_FinishList.clearSelection();
 		if (this.tab_WorkList.getRowCount() > 0) {
+			this.btn_Diagnostic.setEnabled(true);
 			this.btn_Enter.setEnabled(true);
 			if (this.m_SysName.equals("dia")
 					&& this.tab_WorkList.getValueAt(
@@ -767,6 +769,7 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 		tab_WorkList.clearSelection();
 		if (this.table_FinishList.getRowCount() > 0) {
 			this.btn_Enter.setEnabled(true);
+			this.btn_Diagnostic.setEnabled(true);
 			if (this.m_SysName.equals("dia")
 					&& this.table_FinishList.getValueAt(
 							this.table_FinishList.getSelectedRow(), 3) != null) {
