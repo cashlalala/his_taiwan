@@ -163,7 +163,7 @@ public class Frm_DiagnosisMedicine extends javax.swing.JFrame {
 		ResultSet rsTabMedicine = null;
 		try {
 			Object[] title = { "", "Medicine Code", "Item", "Information",
-					"Unit Dosage", "Unit", "Way" };
+					"Unit Dosage", "Unit", "Way", "Freq" };
 			String sql = String
 					.format("SELECT *, "
 							+ "case when (select count(1) from medicine_favorite where s_no = %s and medicine_favorite.m_code = medicines.code) = 0 "
@@ -184,7 +184,7 @@ public class Frm_DiagnosisMedicine extends javax.swing.JFrame {
 			}
 			rsTabMedicine = DBC.executeQuery(sql);
 			rsTabMedicine.last();
-			dataArray = new Object[rsTabMedicine.getRow()][7];
+			dataArray = new Object[rsTabMedicine.getRow()][8];
 			rsTabMedicine.beforeFirst();
 			int i = 0;
 			if (!state.equals("ENTER")) {
@@ -196,6 +196,7 @@ public class Frm_DiagnosisMedicine extends javax.swing.JFrame {
 							.getFloat("unit_dosage"));
 					dataArray[i][5] = rsTabMedicine.getString("unit");
 					dataArray[i][6] = rsTabMedicine.getString("default_way");
+					dataArray[i][7] = rsTabMedicine.getString("default_freq");
 					if (rsTabMedicine.getString("effective").equals("true")
 							|| rsTabMedicine.getBoolean("effective")) {
 						dataArray[i][0] = false;
@@ -225,6 +226,7 @@ public class Frm_DiagnosisMedicine extends javax.swing.JFrame {
 							.getFloat("unit_dosage"));
 					dataArray[i][5] = rsTabMedicine.getString("unit");
 					dataArray[i][6] = rsTabMedicine.getString("default_way");
+					dataArray[i][7] = rsTabMedicine.getString("default_freq");
 					if (rsTabMedicine.getString("effective").equals("true")
 							|| rsTabMedicine.getBoolean("effective")) {
 						dataArray[i][0] = false;
@@ -309,11 +311,17 @@ public class Frm_DiagnosisMedicine extends javax.swing.JFrame {
 		String defaultWay = (String) tab_Medicine.getValueAt(
 				tab_Medicine.getSelectedRow(), 6);
 
+		String defaultFreq = (String) tab_Medicine.getValueAt(
+				tab_Medicine.getSelectedRow(), 7);
+
 		if (unit == null)
 			unit = "";
 
 		if (defaultWay == null)
 			defaultWay = "";
+
+		if (defaultFreq == null)
+			defaultFreq = "";
 
 		if (tab_Medicine.getValueAt(this.tab_Medicine.getSelectedRow(), 0)
 				.equals(true)) {
@@ -321,8 +329,8 @@ public class Frm_DiagnosisMedicine extends javax.swing.JFrame {
 			if (!m_Allergy.equals("Allergy")) {
 				m_ChooseHashMap.put(code, code + DELIMITER + item + DELIMITER
 						+ injection + DELIMITER + unitDosage + DELIMITER + unit
-						+ DELIMITER + defaultWay + DELIMITER + "N" + DELIMITER
-						+ "N");
+						+ DELIMITER + defaultFreq + DELIMITER + defaultWay
+						+ DELIMITER + "N" + DELIMITER + "N");
 			} else {
 				m_ChooseHashMap.put(code, code + DELIMITER + item + DELIMITER
 						+ paragraph.getLanguage(line, "GENERAL"));
@@ -648,7 +656,7 @@ public class Frm_DiagnosisMedicine extends javax.swing.JFrame {
 	private void btn_EnterActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_EnterActionPerformed
 
 		if (!m_Allergy.equals("Allergy")) { // 用於看診藥品
-			int[] column = { 2, 1, 3, 4, 5, 7, 10, 11 };
+			int[] column = { 2, 1, 3, 4, 5, 6, 7, 10, 11 };
 			Collection collection = m_ChooseHashMap.values();
 			Iterator iterator = collection.iterator();
 			while (iterator.hasNext()) {

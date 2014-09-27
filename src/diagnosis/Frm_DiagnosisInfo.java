@@ -895,6 +895,12 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 
 	// 判斷代碼是否有重複
 	public boolean isCodeAtHashMap(Object code) {
+		if (m_AutoTable.equals("medicines")
+				&& m_SelectTableHashMap.get(code) != null) {
+			m_SelectTableHashMap.put(code.toString().trim(), code.toString()
+					.trim()); // 在放回
+			return true;
+		}
 		if (m_SelectTableHashMap.get(code) != null) { // 取出做判斷
 			m_SelectTableHashMap.put(code.toString().trim(), code.toString()
 					.trim()); // 在放回
@@ -1088,6 +1094,10 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 							(value.length < 5) ? "" : value[4].trim(),
 							tab_Medicine.getSelectedRow(), 7); // default way
 
+					tab_Medicine.setValueAt(
+							(value.length < 6) ? "" : value[5].trim(),
+							tab_Medicine.getSelectedRow(), 6); // default way
+
 					tab_Medicine.setValueAt("N", tab_Medicine.getSelectedRow(),
 							10);
 					tab_Medicine.setValueAt("N", tab_Medicine.getSelectedRow(),
@@ -1191,7 +1201,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 							field = ((rs.getString(m_AutoColumn[i]) == null) ? " "
 									: rs.getString(m_AutoColumn[i])).trim();
 
-							CustomLogger.trace(logger,
+							CustomLogger.debug(logger,
 									"Column {} : [{}] - > [{}]",
 									m_AutoColumn[i],
 									rs.getString(m_AutoColumn[i]), field);
@@ -3654,7 +3664,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 	private void tab_MedicineFocusGained(java.awt.event.FocusEvent evt) {// GEN-FIRST:event_tab_MedicineFocusGained
 		m_AutoTable = "medicines";
 		String[] medicineRsList = { "code", "item", "injection", "unit_dosage",
-				"default_way" }; // ,
+				"default_way", "default_freq" }; // ,
 		// "unit_dosage",
 		// "unit"
 		m_AutoColumn = medicineRsList;
