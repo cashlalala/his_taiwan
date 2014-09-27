@@ -9,11 +9,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import javax.persistence.EntityTransaction;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 import multilingual.Language;
 
+import org.his.JPAUtil;
 import org.his.bind.PatientsInfoJPATable;
 import org.his.dao.PatientsInfoDao;
 import org.his.model.PatientsInfo;
@@ -819,8 +821,12 @@ public class Frm_PatientsList extends javax.swing.JFrame implements
 				options, options[0]);
 
 		if (response == 0) {
+			EntityTransaction etx = JPAUtil.getTransaction();
+			if (!etx.isActive())
+				etx.begin();
 			pInfo.setExist((byte) 0);
 			patiensInfoDao.persist(patiensInfoDao.merge(pInfo));
+			etx.commit();
 			JOptionPane.showMessageDialog(new Frame(),
 					paragraph.getString("DELETECOMPLETE"));
 			this.btn_Delete.setEnabled(false);
