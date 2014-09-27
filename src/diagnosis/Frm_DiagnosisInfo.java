@@ -683,7 +683,8 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 		m_DiagnosisModel = (DefaultTableModel) getModelAndRowNo[0];
 		m_DiagnosisRowNo = Integer.parseInt(getModelAndRowNo[1].toString());
 		// -----tab_Prescription-------------------------------------------------
-		String[] prescriptionTitle = { " ", "Code", "Item", "Body Part", "Type" }; // table表頭
+		String[] prescriptionTitle = { " ", "Code", "Item", "Body Part",
+				"Type", "Cost" }; // table表頭
 		int[] prescriptionColumnEditable = { 1, 3 }; // 可編輯欄位
 		getModelAndRowNo = TabTools.setTableEditColumn(m_PrescriptionModel,
 				this.tab_Prescription, prescriptionTitle,
@@ -726,6 +727,8 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 				.getColumn(3);
 		TableColumn prescriptionColumnType = tab_Prescription.getColumnModel()
 				.getColumn(4);
+		TableColumn prescriptionColumnCost = tab_Prescription.getColumnModel()
+				.getColumn(5);
 
 		TableColumn medicineColumnNo = tab_Medicine.getColumnModel().getColumn(
 				0);
@@ -777,6 +780,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 		medicineColumnPs.setPreferredWidth(150);
 
 		common.TabTools.setHideColumn(tab_Prescription, 3); // 隱藏看診部位
+		common.TabTools.setHideColumn(tab_Prescription, 5); // 隱藏看診部位
 		common.TabTools.setHideColumn(tab_Medicine, 2);
 		common.TabTools.setHideColumn(tab_Medicine, 5); // Medicine hide
 		common.TabTools.setHideColumn(tab_Medicine, 13); // Medicine hide
@@ -1061,6 +1065,8 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 					tab_Prescription.getSelectedRow(), 2);
 			tab_Prescription.setValueAt(value[2],
 					tab_Prescription.getSelectedRow(), 4);
+			tab_Prescription.setValueAt(value[3],
+					tab_Prescription.getSelectedRow(), 5);
 			break;
 		case 3: // tab_Medicine
 			if (value.length != -1) {
@@ -1541,17 +1547,20 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 							this.tab_Prescription.setValueAt("", i, 3);
 						}
 
-						DBC.executeUpdate("INSERT prescription(guid, reg_guid, code , place, state) VALUES (uuid(), "
+						DBC.executeUpdate("INSERT prescription(guid, reg_guid, code , place, cost, state) VALUES (uuid(), "
 								+ "'"
 								+ m_RegistrationGuid
 								+ "', "
 								+ "'"
 								+ this.tab_Prescription.getValueAt(i, 1)
 										.toString().trim()
-								+ "', "
-								+ "'"
+								+ "', '"
 								+ this.tab_Prescription.getValueAt(i, 3)
-										.toString().trim() + "', 1)");
+										.toString().trim()
+								+ "' ,"
+								+ ((this.tab_Prescription.getValueAt(i, 5) == null) ? 0
+										: this.tab_Prescription
+												.getValueAt(i, 5)) + ", 1)");
 					}
 				}
 
@@ -1770,7 +1779,8 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 						+ "concat(DATE_FORMAT(now(),'%Y%m%d%H%i%S'),'%')),20,'000000') "
 						+ "WHERE guid = '" + m_RegistrationGuid + "'");
 
-				setPrint(medicineState, prescriptionState, xrayState);
+				if (!(parentFrm instanceof admission.Frm_WorkList))
+					setPrint(medicineState, prescriptionState, xrayState);
 				// 提示回診日 *************************************
 				String packageSetAll = "";
 				if (m_PackageSet != null) {
@@ -3940,7 +3950,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 
 	private void tab_PrescriptionFocusGained(java.awt.event.FocusEvent evt) {// GEN-FIRST:event_tab_PrescriptionFocusGained
 		m_AutoTable = "prescription_code";
-		String[] prescriptionRsList = { "code", "name", "type" };
+		String[] prescriptionRsList = { "code", "name", "type", "cost" };
 		m_AutoColumn = prescriptionRsList;
 		m_AutoColumnName = "code";
 		m_SelectTable = tab_Prescription;
