@@ -1040,8 +1040,8 @@ public class Frm_PatientMod extends javax.swing.JFrame implements
 		try {
 			ResultSet rs = DBC.executeQuery(sql);
 			rs.next();
-			this.check_Deal.setText(paragraph.getLanguage(line, "DEATHTIME")
-					+ "\n" + rs.getString("date_of_death").substring(0, 16));
+			this.check_Deal.setText(paragraph.getString("DEATHTIME") + "\n"
+					+ rs.getString("date_of_death").substring(0, 16));
 		} catch (SQLException e) {
 			ErrorMessage.setData(
 					"Patients",
@@ -1068,7 +1068,6 @@ public class Frm_PatientMod extends javax.swing.JFrame implements
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	// <editor-fold defaultstate="collapsed"
 	// desc="Generated Code">//GEN-BEGIN:initComponents
 	private void initComponents() {
@@ -2975,7 +2974,7 @@ public class Frm_PatientMod extends javax.swing.JFrame implements
 			etx.commit();
 			// ***********************列印barcode
 			if (this.m_Status.equals("NEW")) {
-				PrintBarcode.PrintBarcode(txt_No.getText());
+				PrintBarcode.printBarcode(txt_No.getText());
 			}
 
 			// ************************
