@@ -48,9 +48,6 @@ import common.PrintTools;
 
 public class Frm_RegAndInpatient extends JFrame implements
 		FingerPrintViewerInterface, DateInterface, PatientsInterface {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private JPanel pan_WholeFrame;
 	// GUI for left top patient info
