@@ -9,15 +9,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import javax.persistence.EntityTransaction;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 import multilingual.Language;
 
+import org.his.JPAUtil;
 import org.his.bind.PatientsInfoJPATable;
 import org.his.dao.PatientsInfoDao;
 import org.his.model.PatientsInfo;
 
+import barcode.PrintBarcode;
 import cc.johnwu.finger.FingerPrintScanner;
 import cc.johnwu.finger.FingerPrintViewerInterface;
 import cc.johnwu.sql.DBC;
@@ -75,6 +78,7 @@ public class Frm_PatientsList extends javax.swing.JFrame implements
 		this.btn_Edit.setText(paragraph.getLanguage(line, "EDIT"));
 		this.btn_Delete.setText(paragraph.getLanguage(line, "DELETE"));
 		this.btn_Close.setText(paragraph.getLanguage(message, "CLOSE"));
+		this.btn_Print.setText(paragraph.getString("PRINT"));
 		cob_Conditions.setModel(new javax.swing.DefaultComboBoxModel(
 				new String[] { paragraph.getLanguage(line, "ALL"),
 						paragraph.getLanguage(line, "NO"),
@@ -186,7 +190,6 @@ public class Frm_PatientsList extends javax.swing.JFrame implements
 		};
 	}
 
-	
 	// <editor-fold defaultstate="collapsed"
 	// desc="Generated Code">//GEN-BEGIN:initComponents
 	private void initComponents() {
@@ -218,6 +221,7 @@ public class Frm_PatientsList extends javax.swing.JFrame implements
 		btn_Next = new javax.swing.JButton();
 		pan_Right = new javax.swing.JPanel();
 		btn_Close = new javax.swing.JButton();
+		btn_Print = new javax.swing.JButton();
 		btn_Delete = new javax.swing.JButton();
 		btn_Add = new javax.swing.JButton();
 		btn_Edit = new javax.swing.JButton();
@@ -628,6 +632,13 @@ public class Frm_PatientsList extends javax.swing.JFrame implements
 			}
 		});
 
+		btn_Print.setText("Print");
+		btn_Print.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				btn_PrintActionPerformed(evt);
+			}
+		});
+
 		btn_Delete.setText("Delete");
 		btn_Delete.setEnabled(false);
 		btn_Delete.addActionListener(new java.awt.event.ActionListener() {
@@ -642,6 +653,8 @@ public class Frm_PatientsList extends javax.swing.JFrame implements
 				btn_AddActionPerformed(evt);
 			}
 		});
+
+		btn_Print.setEnabled(false);
 
 		btn_Edit.setText("Details");
 		btn_Edit.setEnabled(false);
@@ -697,6 +710,12 @@ public class Frm_PatientsList extends javax.swing.JFrame implements
 																100,
 																Short.MAX_VALUE)
 														.addComponent(
+																btn_Print,
+																javax.swing.GroupLayout.Alignment.TRAILING,
+																javax.swing.GroupLayout.DEFAULT_SIZE,
+																100,
+																Short.MAX_VALUE)
+														.addComponent(
 																btn_Close,
 																javax.swing.GroupLayout.Alignment.TRAILING,
 																javax.swing.GroupLayout.DEFAULT_SIZE,
@@ -728,6 +747,9 @@ public class Frm_PatientsList extends javax.swing.JFrame implements
 										.addPreferredGap(
 												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 										.addComponent(btn_Delete)
+										.addPreferredGap(
+												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+										.addComponent(btn_Print)
 										.addPreferredGap(
 												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 										.addComponent(btn_Close)
@@ -803,6 +825,7 @@ public class Frm_PatientsList extends javax.swing.JFrame implements
 			return;
 		btn_Delete.setEnabled(true);
 		btn_Edit.setEnabled(true);
+		btn_Print.setEnabled(true);
 	}// GEN-LAST:event_tab_ListMouseClicked
 
 	private void btn_DeleteActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_DeleteActionPerformed
@@ -819,8 +842,12 @@ public class Frm_PatientsList extends javax.swing.JFrame implements
 				options, options[0]);
 
 		if (response == 0) {
+			EntityTransaction etx = JPAUtil.getTransaction();
+			if (!etx.isActive())
+				etx.begin();
 			pInfo.setExist((byte) 0);
 			patiensInfoDao.persist(patiensInfoDao.merge(pInfo));
+			etx.commit();
 			JOptionPane.showMessageDialog(new Frame(),
 					paragraph.getString("DELETECOMPLETE"));
 			this.btn_Delete.setEnabled(false);
@@ -848,6 +875,11 @@ public class Frm_PatientsList extends javax.swing.JFrame implements
 	private void btn_PreviousActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_PreviousActionPerformed
 		cob_Page.setSelectedIndex(cob_Page.getSelectedIndex() - 1);
 	}// GEN-LAST:event_btn_PreviousActionPerformed
+
+	private void btn_PrintActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_CloseActionPerformed
+		PatientsInfo patientInfo = patientsInfo.get(tab_List.getSelectedRow());
+		PrintBarcode.printDiagnosisCover(patientInfo.getPNo());
+	}// GEN-LAST:event_btn_CloseActionPerformed
 
 	private void btn_CloseActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_CloseActionPerformed
 		new main.Frm_Main().setVisible(true);
@@ -930,6 +962,7 @@ public class Frm_PatientsList extends javax.swing.JFrame implements
 	private javax.swing.JDialog Dialog_FingerConditions;
 	private javax.swing.JButton btn_Add;
 	private javax.swing.JButton btn_Close;
+	private javax.swing.JButton btn_Print;
 	private javax.swing.JButton btn_Delete;
 	private javax.swing.JButton btn_Edit;
 	private javax.swing.JButton btn_Next;
