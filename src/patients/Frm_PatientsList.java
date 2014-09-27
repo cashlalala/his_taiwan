@@ -877,8 +877,8 @@ public class Frm_PatientsList extends javax.swing.JFrame implements
 	}// GEN-LAST:event_btn_PreviousActionPerformed
 
 	private void btn_PrintActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_CloseActionPerformed
-		PatientsInfo patientInfo = patientsInfo.get(tab_List.getSelectedRow());
-		PrintBarcode.printDiagnosisCover(patientInfo.getPNo());
+		new Frm_PatientPrintChooser(patientsInfo.get(tab_List.getSelectedRow()))
+				.setVisible(true);
 	}// GEN-LAST:event_btn_CloseActionPerformed
 
 	private void btn_CloseActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_CloseActionPerformed

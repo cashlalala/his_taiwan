@@ -60,6 +60,22 @@ public class PrintBarcode {
 		}
 	}
 
+	public static void printRegistrationCard(String barcode) {
+		m_Barcode = barcode;
+		PrinterJob pj = PrinterJob.getPrinterJob();
+		PageFormat pf = pj.defaultPage();
+		Paper paper = new Paper();
+		pf.setPaper(paper);
+
+		m_Status = 1;
+		pj.setPrintable(new MyPrintable(), pf);
+		try {
+			pj.print();
+		} catch (PrinterException e) {
+			e.printStackTrace();
+		}
+	}
+
 	private static class MyPrintable implements Printable {
 
 		public int print(Graphics g, PageFormat pf, int pageIndex) {
