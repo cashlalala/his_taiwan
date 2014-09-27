@@ -51,18 +51,18 @@ public class Frm_CashierHistory extends javax.swing.JFrame {
             Object[][] dataArray = null;
             double total = 0;
             String[] title = { " ","Payment Time" ,"Type", "Amount Receivable", "Paid Amount", "Arrears","Backin", "no","reg_guid"}; // table表頭
-            sql = "SELECT payment_time AS paytime, no, backin,  reg_guid, CASE typ " +
+            sql = "SELECT payment_time AS paytime, no, '' as backin,  reg_guid, CASE type " +
                     "WHEN 'R' THEN 'Registration' " +
                     "WHEN 'P' THEN 'Pharmacy' " +
                     "WHEN 'X' THEN 'Radiology(X-RAY)' " +
-                    "WHEN 'L' THEN 'Laboratory' END 'typ' , amount_receivable, paid_amount, cashier.arrears  " +
+                    "WHEN 'L' THEN 'Laboratory' END 'type' , amount_receivable, paid_amount, cashier.arrears  " +
                     "FROM cashier WHERE cashier.p_no = '"+m_Pno+"' ";
             
             if (cbox_Status.getSelectedIndex() == 1) {
-                sql +=  "AND cashier.arrears <> 0 AND (backin <> 'Y'  OR cashier.backin IS NULL) ORDER BY paytime DESC";
+                sql +=  "AND cashier.arrears <> 0 ORDER BY paytime DESC";
                 btn_Complete.setEnabled(true);
             } else {
-                sql +=  "AND (cashier.arrears = 0 OR backin = 'Y') ORDER BY paytime DESC";
+                sql +=  "AND cashier.arrears = 0 ORDER BY paytime DESC";
                 txt_AmountReceivable.setText("");
                 txt_Arrears.setText("");
 
@@ -80,7 +80,7 @@ public class Frm_CashierHistory extends javax.swing.JFrame {
 
                 dataArray[i][0] = i + 1;
                 dataArray[i][1] = rs.getString("paytime");
-                dataArray[i][2] = rs.getString("typ");
+                dataArray[i][2] = rs.getString("type");
                 dataArray[i][3] = rs.getString("amount_receivable");
                 dataArray[i][4] = rs.getString("paid_amount");
                 dataArray[i][5] = rs.getString("arrears");
