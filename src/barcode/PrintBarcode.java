@@ -4,16 +4,20 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.print.PageFormat;
 import java.awt.print.Paper;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
+import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.imageio.ImageIO;
 
 import cc.johnwu.sql.DBC;
 
@@ -22,6 +26,25 @@ public class PrintBarcode {
 	private static String m_Barcode;
 	private static int m_Status;
 	Paper paper;
+
+	public static void drawBarcodeToGraphic(Graphics g, int x, int y, String key) {
+		Barcode barcode = null;
+		barcode = Barcode.getInstance();
+		barcode.setData(key);
+		barcode.setWidth(2);
+		barcode.setHeight(150);
+		barcode.setInitx(x);
+		barcode.setInity(y);
+		barcode.setShowDesc(true);
+		barcode.setCharLeft(80);
+		barcode.setCharTop(40);
+		barcode.setShowStartAndEnd(true);		
+		try {
+			barcode.printBarcode(g);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	public static void printBarcode(String barcode) {
 		m_Barcode = barcode;
