@@ -95,7 +95,7 @@ public class Frm_CashierList extends javax.swing.JFrame {
         jLabel1.setText("System:");
 
         //cbox_System.setFont(new java.awt.Font("新細明體", 1, 14)); // NOI18N
-        cbox_System.setModel(new javax.swing.DefaultComboBoxModel(new String[] { " ", "Registration", "Laboratory", "Radiology(X-RAY)" }));
+        cbox_System.setModel(new javax.swing.DefaultComboBoxModel(new String[] { " ", "Registration", "Laboratory", "Radiology(X-RAY)", "Pharmacy" }));
         cbox_System.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 cbox_SystemItemStateChanged(evt);

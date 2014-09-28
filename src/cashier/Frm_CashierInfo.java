@@ -85,13 +85,15 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
                             "medicines.item AS 'Item', " +
                             "medicine_stock.quantity AS 'Quantity', " +
                             "medicine_stock.urgent AS 'Urgent', " +
-                            "medicine_stock.price AS 'Price' " +
-                            "FROM medicines, medicine_stock, outpatient_services, registration_info " +
+                            "IFNULL(medicine_stock.price,medicine_stock.quantity * medical_stock.default_unit_price) AS 'Price' " +
+                            //"medicine_stock.price AS 'Price' " +
+                            "FROM medicines, medicine_stock, registration_info, medical_stock " +
                             "WHERE registration_info.guid = '" + m_Guid + "' " +
-                            "AND medicine_stock.os_guid = outpatient_services.guid " +
-                            "AND outpatient_services.reg_guid = registration_info.guid " +
-                            "AND medicines.code = medicine_stock.m_code" +
+                            "AND medicine_stock.reg_guid = registration_info.guid " +
+                            "AND medicines.code = medicine_stock.m_code " +
+                            " AND medical_stock.type = 'P' AND medical_stock.item_guid = medicine_stock.m_code " +
                             " ORDER BY registration_info.reg_time ASC";
+                    System.out.println(sql);
                     rs = DBC.executeQuery(sql);
                     rs.last();
                     dataArray = new Object[rs.getRow()][8];
@@ -300,8 +302,19 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
         
         double total = 0;
         for (int i = 0; i < tab_Payment.getRowCount() ; i++) {
-            if (tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1) != null && common.Tools.isNumber(tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1).toString()))
-                total += Double.parseDouble(tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1).toString());
+        	/*if (m_Sysname.equals("pha")) {
+        		if (tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1) != null && common.Tools.isNumber(tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1).toString())) {
+        			String unit_price = tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1).toString();
+        			if (tab_Payment.getValueAt(i, 4) != null && common.Tools.isNumber(tab_Payment.getValueAt(i, 4).toString())) {
+            			String quantity = tab_Payment.getValueAt(i, 4).toString();
+            			total += Double.parseDouble(unit_price) * Double.parseDouble(quantity);
+            		}
+        		}
+        	}
+        	else {*/
+	            if (tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1) != null && common.Tools.isNumber(tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1).toString()))
+	                total += Double.parseDouble(tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1).toString());
+        	//}
         }
         txt_AmountReceivable.setText(String.valueOf(total));
         txt_PaidAmount.setText("");
@@ -710,14 +723,7 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
         
             String sql = "";
             if (m_Sysname.equals("pha")) {
-                for (int i = 0; i < tab_Payment.getRowCount() ; i++) {
-                    if (common.Tools.isNumber(tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1).toString())) {
-                            sql = "UPDATE medicine_stock SET price = " + tab_Payment.getValueAt(i, tab_Payment.getColumnCount() - 1) + " WHERE guid = '" + tab_Payment.getValueAt(i, 0) + "'";
-                            DBC.executeUpdate(sql);
-                    }
-                }
-            } else if (m_Sysname.equals("lab")) {
-                for (int i = 0; i < tab_Payment.getRowCount() ; i++) {
+            	for (int i = 0; i < tab_Payment.getRowCount() ; i++) {
                     if (common.Tools.isNumber(tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1).toString())) {
                     	costOfItem = Double.parseDouble(tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1).toString());
                         if(costOfItem.compareTo(0.0) == 0) continue;
@@ -742,12 +748,7 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
                     	//System.out.println(sql);
                     	DBC.executeUpdate(sql);
                     	
-                    	if(arrearOfItem.compareTo(0.0) == 0) {
-	                    	sql = "UPDATE prescription SET cost = 0 WHERE guid = '" + guid + "'";
-	                    } else {
-                    		sql = "UPDATE prescription SET cost = " + arrearOfItem 
-                    				+ " WHERE guid = '" + guid + "'";
-                    	}
+                   		sql = "UPDATE medicine_stock SET price = " + arrearOfItem + " WHERE guid = '" + guid + "'";
                     	//System.out.println(sql);
                     	DBC.executeUpdate(sql);
                     	
@@ -756,7 +757,7 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
                     }
                 }
                 if(totalCost.compareTo(paidMoney) == 0) {
-	            	sql = "UPDATE registration_info SET lab_payment = 'F'"
+	            	sql = "UPDATE registration_info SET pharmacy_payment = 'F'"
 	                		//+ ", reg_cost = 0.0 "
 	                    	+ ",touchtime = RPAD((SELECT CASE WHEN MAX(B.touchtime) >= DATE_FORMAT(now(),'%Y%m%d%H%i%S') " 
 	                        + "THEN concat(DATE_FORMAT(now(),'%Y%m%d%H%i%S'), COUNT(B.touchtime)) " 

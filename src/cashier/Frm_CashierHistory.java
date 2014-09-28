@@ -49,6 +49,7 @@ public class Frm_CashierHistory extends javax.swing.JFrame {
             String sql = null;
             String sqlLab = null;
             String sqlXray = null;
+            String sqlPhar = null;
             //Object[][] dataArray = null;
             Vector<Vector> rowData = new Vector<Vector>();
             double total = 0;
@@ -178,6 +179,39 @@ public class Frm_CashierHistory extends javax.swing.JFrame {
 	                	total += Float.parseFloat(rs.getString("Arrears"));
 	                }
 	                
+	                sqlPhar = "SELECT registration_info.guid as 'reg_guid', "
+	                		+ " medicine_stock.guid as 'guid', "
+	            			+ " '' as 'Payment Time', medicine_stock.m_code AS 'Code', "
+	            			+ " 'Pharmacy' as 'Type', "
+	            			+ " IFNULL(medicine_stock.price,medicine_stock.quantity * medical_stock.default_unit_price) as 'Amount Receivable', "
+	            			//+ " medicine_stock.price as 'Amount Receivable', "
+	            			+ " '0' as 'Paid Amount', "
+	            			+ " IFNULL(medicine_stock.price,medicine_stock.quantity * medical_stock.default_unit_price) as 'Arrears' "
+	            			//+ " medicine_stock.price as 'Arrears' "
+	            			+ " FROM  registration_info, medicine_stock, medical_stock "
+	            			+ " WHERE registration_info.guid = '" + reg_guid + "' "
+	            			+ " AND medicine_stock.reg_guid = registration_info.guid "
+	            			+ " AND (medicine_stock.price > 0 OR medicine_stock.price is null) "
+	            			+ " AND medical_stock.type = 'P' AND medical_stock.item_guid = medicine_stock.m_code "
+	            			+ " ORDER BY registration_info.reg_time ASC";
+	                System.out.print(sqlPhar);
+	                rs = DBC.executeQuery(sqlPhar);
+	                while (rs.next()) {
+	                	gCount++;
+	                	rowItem = new Vector<String>();
+	                	rowItem.addElement(rs.getString("reg_guid"));
+	                	rowItem.addElement(rs.getString("guid"));
+	                	rowItem.addElement(gCount.toString());
+	                	rowItem.addElement(rs.getString("Payment Time"));
+	                	rowItem.addElement(rs.getString("Code"));
+	                	rowItem.addElement(rs.getString("Type"));
+	                	rowItem.addElement(rs.getString("Amount Receivable"));
+	                	rowItem.addElement(rs.getString("Paid Amount"));
+	                	rowItem.addElement(rs.getString("Arrears"));
+	                	
+	                	rowData.addElement(rowItem);
+	                	total += Float.parseFloat(rs.getString("Arrears"));
+	                }
 	            }
             }
             
@@ -277,7 +311,7 @@ public class Frm_CashierHistory extends javax.swing.JFrame {
                 	DBC.executeUpdate(sql);
 	    			
                 	if (itemType.equals("Pharmacy")) {
-                		//sql = "UPDATE prescription SET cost = " + arrearOfItem + " WHERE guid = '" + guid + "'";
+                		sql = "UPDATE medicine_stock SET price = " + arrearOfItem + " WHERE guid = '" + guid + "'";
 	    	        } else if (itemType.equals("Laboratory")) {
 	    	        	sql = "UPDATE prescription SET cost = " + arrearOfItem + " WHERE guid = '" + guid + "'";
 	    	        } else if (itemType.equals("Registration")) {
@@ -301,6 +335,7 @@ public class Frm_CashierHistory extends javax.swing.JFrame {
     			Boolean labFullPaid = true;
     			Boolean regFullPaid = true;
     			Boolean xrayFullPaid = true;
+    			Boolean phrFullPaid = true;
 	    		for (int j = 0; j < tab_Payment.getRowCount() ; j++) {
 	    			String reg_guid = (String) tab_Payment.getValueAt(j, 0);
 	    			Float arrear = Float.parseFloat(tab_Payment.getValueAt(j, tab_Payment.getColumnCount()-1).toString());
@@ -309,6 +344,7 @@ public class Frm_CashierHistory extends javax.swing.JFrame {
 	    				//System.out.println("arrear = " + arrear);
 	    				//System.out.println("type = " + type);
 	    				if (type.equals("Pharmacy")) {
+	    					phrFullPaid = false;
 		    	        } else if (type.equals("Laboratory")) {
 		    	        	labFullPaid = false;
 		    	        } else if (type.equals("Registration")) {
@@ -323,6 +359,7 @@ public class Frm_CashierHistory extends javax.swing.JFrame {
                 		//+ ", reg_cost = 0.0 "
 	    				+ ", registration_payment = " + (regFullPaid == true ? "'F'" : "null")
 	    				+ ", radiology_payment = " + (xrayFullPaid == true ? "'F'" : "null")
+	    				+ ", pharmacy_payment = " + (phrFullPaid == true ? "'F'" : "null")
                     	+ ",touchtime = RPAD((SELECT CASE WHEN MAX(B.touchtime) >= DATE_FORMAT(now(),'%Y%m%d%H%i%S') " 
                         + "THEN concat(DATE_FORMAT(now(),'%Y%m%d%H%i%S'), COUNT(B.touchtime)) " 
                         + "ELSE DATE_FORMAT(now(),'%Y%m%d%H%i%S') " 
