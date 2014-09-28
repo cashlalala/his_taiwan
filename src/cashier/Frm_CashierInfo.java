@@ -286,7 +286,7 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
 			        return false;
 			    }
             };
-
+            System.out.println(sql);
         }  catch (SQLException ex) {
                 Logger.getLogger(Frm_CashierInfo.class.getName()).log(Level.SEVERE, null, ex);
          }
@@ -590,7 +590,7 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
                 jMenuItem3ActionPerformed(evt);
             }
         });
-        menu_File.add(jMenuItem3);
+        //menu_File.add(jMenuItem3);
 
         mnit_Back.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_ESCAPE, 0));
         mnit_Back.setText("Close");
@@ -673,39 +673,41 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
     		JOptionPane.showMessageDialog(null, "Save error");
     		return;
     	}
-    	Double paidMoney = Double.parseDouble(txt_PaidAmount.getText().trim());
-    	Double totalCost = Double.parseDouble(txt_AmountReceivable.getText().trim());
-    	Double remainingMoney = paidMoney;
-    	Double costOfItem = 0.0;
-    	Double arrearOfItem = 0.0;
     	
-    	String sqlStr = "";
-    	String paymentType = "";
-    	if (m_Sysname.equals("pha")) {
-            paymentType = "P";
-            sqlStr = "PH";
-            //sql = "UPDATE registration_info SET payment = '"+finish+"'";
-        } else if (m_Sysname.equals("lab")) {
-            paymentType = "L";
-            sqlStr = "LA";
-            //sql = "UPDATE registration_info SET lab_payment = '"+finish+"'";
-        } else if (m_Sysname.equals("reg")) {
-            paymentType = "R";
-            sqlStr = "RE";
-            //sql = "UPDATE registration_info SET registration_payment = '"+finish+"'";
-        }else if (m_Sysname.equals("xray")) {
-            sqlStr = "XR";
-            paymentType = "X";
-            //sql = "UPDATE registration_info SET radiology_payment = '"+finish+"'";
-        }
-    	
-        // 判斷資料不是數值先把格子清空
-        for (int i = 0; i < tab_Payment.getRowCount() ; i++) {
-                if (tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1) == null || !common.Tools.isNumber(tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1).toString()))
-                   tab_Payment.setValueAt("", i, tab_Payment.getColumnCount()-1);
-         }
+    	try {
+	    	Double paidMoney = Double.parseDouble(txt_PaidAmount.getText().trim());
+	    	Double totalCost = Double.parseDouble(txt_AmountReceivable.getText().trim());
+	    	Double remainingMoney = paidMoney;
+	    	Double costOfItem = 0.0;
+	    	Double arrearOfItem = 0.0;
+	    	
+	    	String sqlStr = "";
+	    	String paymentType = "";
+	    	if (m_Sysname.equals("pha")) {
+	            paymentType = "P";
+	            sqlStr = "PH";
+	            //sql = "UPDATE registration_info SET payment = '"+finish+"'";
+	        } else if (m_Sysname.equals("lab")) {
+	            paymentType = "L";
+	            sqlStr = "LA";
+	            //sql = "UPDATE registration_info SET lab_payment = '"+finish+"'";
+	        } else if (m_Sysname.equals("reg")) {
+	            paymentType = "R";
+	            sqlStr = "RE";
+	            //sql = "UPDATE registration_info SET registration_payment = '"+finish+"'";
+	        }else if (m_Sysname.equals("xray")) {
+	            sqlStr = "XR";
+	            paymentType = "X";
+	            //sql = "UPDATE registration_info SET radiology_payment = '"+finish+"'";
+	        }
+	    	
+	        // 判斷資料不是數值先把格子清空
+	        for (int i = 0; i < tab_Payment.getRowCount() ; i++) {
+	                if (tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1) == null || !common.Tools.isNumber(tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1).toString()))
+	                   tab_Payment.setValueAt("", i, tab_Payment.getColumnCount()-1);
+	         }
 
-        try {
+        
             String sql = "";
             if (m_Sysname.equals("pha")) {
                 for (int i = 0; i < tab_Payment.getRowCount() ; i++) {
@@ -718,7 +720,8 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
                 for (int i = 0; i < tab_Payment.getRowCount() ; i++) {
                     if (common.Tools.isNumber(tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1).toString())) {
                     	costOfItem = Double.parseDouble(tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1).toString());
-                        String guid = tab_Payment.getValueAt(i, 0).toString();
+                        if(costOfItem.compareTo(0.0) == 0) continue;
+                    	String guid = tab_Payment.getValueAt(i, 0).toString();
                     	if(remainingMoney >= costOfItem ) {
                         	remainingMoney -= costOfItem;
                         	arrearOfItem = 0.0;
@@ -766,7 +769,8 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
                 for (int i = 0; i < tab_Payment.getRowCount() ; i++) {
                     if (common.Tools.isNumber(tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1).toString())) {
                     	costOfItem = Double.parseDouble(tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1).toString());
-                        String guid = tab_Payment.getValueAt(i, 0).toString();
+                    	if(costOfItem.compareTo(0.0) == 0) continue;
+                    	String guid = tab_Payment.getValueAt(i, 0).toString();
                     	if(remainingMoney >= costOfItem ) {
                         	remainingMoney -= costOfItem;
                         	arrearOfItem = 0.0;
@@ -812,7 +816,8 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
                 for (int i = 0; i < tab_Payment.getRowCount() ; i++) {
                     if (common.Tools.isNumber(tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1).toString())) {
                     	costOfItem = Double.parseDouble(tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1).toString());
-                        String guid = tab_Payment.getValueAt(i, 0).toString();
+                    	if(costOfItem.compareTo(0.0) == 0) continue;
+                    	String guid = tab_Payment.getValueAt(i, 0).toString();
                     	if(remainingMoney >= costOfItem ) {
                         	remainingMoney -= costOfItem;
                         	arrearOfItem = 0.0;
@@ -859,7 +864,7 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
             }
             JOptionPane.showMessageDialog(null, "Saved successfully.");
 
-         } catch (SQLException ex) {
+         } catch (Exception ex) {
             Logger.getLogger(Frm_CashierInfo.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
