@@ -40,12 +40,15 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
         m_Pno = pno;
         this.setLocationRelativeTo(this);
         this.tab_Payment.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);     // tabble不可按住多選
+        
         addWindowListener(new WindowAdapter() {  // 畫面關閉原視窗enable
             @Override
             public void windowClosing(WindowEvent windowevent) {
                 m_Frm.setEnabled(true);
             }
         });
+        this.tab_Paid.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);     // tabble不可按住多選
+        
         String sql = "SELECT * FROM patients_info WHERE p_no = '"+m_Pno+"'";
         try {
             ResultSet rs = DBC.executeQuery(sql);
@@ -66,9 +69,14 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
 
     private void initTable() {
         DefaultTableModel tabModel = null;
+        DefaultTableModel paidTabModel = null;
         ResultSet rs = null;
+        ResultSet rsPaid = null;
         String sql =null;
+        String sqlPaid =null;
         Object[][] dataArray = null;
+        Object[][] paidDataArray = null;
+        String[] titlePaid = {" ", "Paid Money", "time", "Staff no"};
         try {
             if (m_Sysname.equals("pha")) {
 
@@ -77,12 +85,15 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
                             "medicines.item AS 'Item', " +
                             "medicine_stock.quantity AS 'Quantity', " +
                             "medicine_stock.urgent AS 'Urgent', " +
-                            "medicine_stock.price AS 'Price' " +
-                            "FROM medicines, medicine_stock, outpatient_services, registration_info " +
+                            "IFNULL(medicine_stock.price,medicine_stock.quantity * medical_stock.default_unit_price) AS 'Price' " +
+                            //"medicine_stock.price AS 'Price' " +
+                            "FROM medicines, medicine_stock, registration_info, medical_stock " +
                             "WHERE registration_info.guid = '" + m_Guid + "' " +
-                            "AND medicine_stock.os_guid = outpatient_services.guid " +
-                            "AND outpatient_services.reg_guid = registration_info.guid " +
-                            "AND medicines.code = medicine_stock.m_code";
+                            "AND medicine_stock.reg_guid = registration_info.guid " +
+                            "AND medicines.code = medicine_stock.m_code " +
+                            " AND medical_stock.type = 'P' AND medical_stock.item_guid = medicine_stock.m_code " +
+                            " ORDER BY registration_info.reg_time ASC";
+                    System.out.println(sql);
                     rs = DBC.executeQuery(sql);
                     rs.last();
                     dataArray = new Object[rs.getRow()][8];
@@ -110,6 +121,9 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
                         }
                     };
 
+                    sqlPaid = "SELECT * FROM cashier WHERE p_no = '" + m_Pno + "' " +
+                            "AND no like 'PH%' " +
+                            " order by payment_time desc ";
 
             } else if (m_Sysname.equals("lab")) {
                 String[] title = {"guid"," ", "Code","Name", "Urgent","Cost"};   // table表頭
@@ -126,7 +140,8 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
                             "AND staff_info.s_id = shift_table.s_id " +
                             "AND prescription.reg_guid = registration_info.guid " +
                             "AND prescription_code.code = prescription.code " +
-                            "AND prescription_code.type <> '"+Constant.X_RAY_CODE+"' ";
+                            "AND prescription_code.type <> '"+Constant.X_RAY_CODE+"' " +
+                            " ORDER BY registration_info.reg_time ASC";
                     rs = DBC.executeQuery(sql);
                     rs.last();
                     dataArray = new Object[rs.getRow()][6];
@@ -151,12 +166,16 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
                             }
                         }
                     };
+                    
+                    sqlPaid = "SELECT * FROM cashier WHERE p_no = '" + m_Pno + "' " +
+                            "AND no like 'LA%' " +
+                            " order by payment_time desc ";
     
             } else if (m_Sysname.equals("reg")) {
-                String[] title = {"guid"," ", "Pateint No.","Name", "Dept.","Clinic","Cost" };   // table表頭
+                String[] title = {"guid"," ", "Registration Time","Name", "Dept.","Clinic","Cost" };   // table表頭
               
               sql = "SELECT registration_info.guid, " +
-                    "patients_info.p_no AS 'Pateint No.',"+
+                    "registration_info.reg_time AS 'Registration Time',"+
                     "CONCAT(patients_info.firstname, ' ' ,patients_info.lastname) AS 'Name', " +
                     "policlinic.name AS 'Dept.', " +
                     "poli_room.name AS 'Clinic', "+
@@ -166,9 +185,9 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
                     "AND shift_table.guid = registration_info.shift_guid "+
                     "AND policlinic.guid = poli_room.poli_guid "+
                     "AND poli_room.guid = shift_table.room_guid  "+
-
                     "AND registration_info.guid = '"+m_Guid+"' "+
-                    "AND registration_info.p_no = patients_info.p_no ORDER BY registration_info.reg_time DESC";
+                    //" AND registration_info.p_no = '" + m_Pno + "' " +
+                    "AND registration_info.p_no = patients_info.p_no ORDER BY registration_info.reg_time ASC";
 
               rs = DBC.executeQuery(sql);
                     rs.last();
@@ -178,7 +197,7 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
                     while (rs.next()) {
                         dataArray[i][0] = rs.getString("guid");
                         dataArray[i][1] = i + 1;
-                        dataArray[i][2] = rs.getString("Pateint No.");
+                        dataArray[i][2] = rs.getString("Registration Time");
                         dataArray[i][3] = rs.getString("Name");
                         dataArray[i][4] = rs.getString("Dept.");
                         dataArray[i][5] = rs.getString("Clinic");
@@ -196,6 +215,11 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
                             }
                         }
                     };
+                    
+                    sqlPaid = "SELECT * FROM cashier WHERE p_no = '" + m_Pno + "' " +
+                            "AND no like 'RE%' " +
+                            " order by payment_time desc ";
+
             } else if (m_Sysname.equals("xray")) {
                 String[] title = {"guid"," ", "Code","Name", "Urgent","Cost"};   // table表頭
            
@@ -212,36 +236,59 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
                     "AND staff_info.s_id = shift_table.s_id " +
                     "AND prescription.reg_guid = registration_info.guid " +
                     "AND prescription_code.code = prescription.code " +
-                    "AND prescription_code.type = '"+Constant.X_RAY_CODE+"' ";
+                    "AND prescription_code.type = '"+Constant.X_RAY_CODE+"' " +
+                    " ORDER BY registration_info.reg_time ASC ";
 
               rs = DBC.executeQuery(sql);
-                    rs.last();
-                    dataArray = new Object[rs.getRow()][6];
-                    rs.beforeFirst();
-                    int i = 0;
-                    while (rs.next()) {
-                        dataArray[i][0] = rs.getString("guid");
-                        dataArray[i][1] = i + 1;
-                        dataArray[i][2] = rs.getString("Code");
-                        dataArray[i][3] = rs.getString("Name");
-                        dataArray[i][5] = rs.getString("Cost");
+				rs.last();
+				dataArray = new Object[rs.getRow()][6];
+				rs.beforeFirst();
+				int i = 0;
+				while (rs.next()) {
+				    dataArray[i][0] = rs.getString("guid");
+				    dataArray[i][1] = i + 1;
+				    dataArray[i][2] = rs.getString("Code");
+				    dataArray[i][3] = rs.getString("Name");
+				    dataArray[i][5] = rs.getString("Cost");
+				
+				    i++;
+				}
+				tabModel = new DefaultTableModel(dataArray, title) {
+				
+				    @Override
+				    public boolean isCellEditable(int rowIndex, int columnIndex) {
+				        if (columnIndex == 5) {
+				            return true;
+				        } else {
+				            return false;
+				        }
+				    }
+				};
+				sqlPaid = "SELECT * FROM cashier WHERE p_no = '" + m_Pno + "' " +
+				        "AND no like 'XR%' " +
+				        " order by payment_time desc ";
+	
+	        }
 
-                        i++;
-                    }
-                    tabModel = new DefaultTableModel(dataArray, title) {
-
-                        @Override
-                        public boolean isCellEditable(int rowIndex, int columnIndex) {
-                            if (columnIndex == 5) {
-                                return true;
-                            } else {
-                                return false;
-                            }
-                        }
-                    };
+            rsPaid = DBC.executeQuery(sqlPaid);
+            rsPaid.last();
+            paidDataArray = new Object[rsPaid.getRow()][4];
+            rsPaid.beforeFirst();
+            int i = 0;
+            while (rsPaid.next()) {
+            	paidDataArray[i][0] = i + 1;
+            	paidDataArray[i][1] = rsPaid.getString("paid_amount");
+            	paidDataArray[i][2] = rsPaid.getString("payment_time");
+            	paidDataArray[i][3] = rsPaid.getString("s_no");
+                i++;
             }
-
-
+            paidTabModel = new DefaultTableModel(paidDataArray, titlePaid) {
+            	@Override
+			    public boolean isCellEditable(int rowIndex, int columnIndex) {
+			        return false;
+			    }
+            };
+            System.out.println(sql);
         }  catch (SQLException ex) {
                 Logger.getLogger(Frm_CashierInfo.class.getName()).log(Level.SEVERE, null, ex);
          }
@@ -249,18 +296,33 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
         tab_Payment.setModel(tabModel);
         tab_Payment.setRowHeight(30);
         common.TabTools.setHideColumn(tab_Payment, 0);
+        
+        tab_Paid.setModel(paidTabModel);
+        tab_Paid.setRowHeight(30);
+        
         double total = 0;
         for (int i = 0; i < tab_Payment.getRowCount() ; i++) {
-            if (tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1) != null && common.Tools.isNumber(tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1).toString()))
-                total += Double.parseDouble(tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1).toString());
+        	/*if (m_Sysname.equals("pha")) {
+        		if (tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1) != null && common.Tools.isNumber(tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1).toString())) {
+        			String unit_price = tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1).toString();
+        			if (tab_Payment.getValueAt(i, 4) != null && common.Tools.isNumber(tab_Payment.getValueAt(i, 4).toString())) {
+            			String quantity = tab_Payment.getValueAt(i, 4).toString();
+            			total += Double.parseDouble(unit_price) * Double.parseDouble(quantity);
+            		}
+        		}
+        	}
+        	else {*/
+	            if (tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1) != null && common.Tools.isNumber(tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1).toString()))
+	                total += Double.parseDouble(tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1).toString());
+        	//}
         }
         txt_AmountReceivable.setText(String.valueOf(total));
+        txt_PaidAmount.setText("");
         txt_PaidAmountKeyReleased(null);
-
 
     }
 
-
+/*
     private void setFinish(String finish) {
         // 判斷資料不是數值先把格子清空
         boolean IsCanFinish = true;
@@ -322,7 +384,7 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
                         "NOW(), "+txt_AmountReceivable.getText()+", "+txt_PaidAmount.getText()+", " +
                         ""+txt_Arrears.getText()+", '"+UserInfo.getUserNO()+"' " +
                         "FROM cashier WHERE no LIKE '"+sqlStr+"%'  " ;
-                        System.out.println(sql);
+                        //System.out.println(sql);
                 DBC.executeUpdate(sql);
                 
 
@@ -337,7 +399,7 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
             this.dispose();
         }
     }
-
+*/
 
 
     @SuppressWarnings("unchecked")
@@ -353,10 +415,12 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
         txt_Gender = new javax.swing.JTextField();
         txt_No = new javax.swing.JTextField();
         txt_Name = new javax.swing.JTextField();
+        btn_Save = new javax.swing.JButton();
         btn_Close = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
+        jScrollPane2 = new javax.swing.JScrollPane();
         tab_Payment = new javax.swing.JTable();
+        tab_Paid = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
         txt_AmountReceivable = new javax.swing.JTextField();
         txt_PaidAmount = new javax.swing.JTextField();
@@ -436,17 +500,18 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
 
         pan_TopLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {txt_Gender, txt_Name, txt_No, txt_Ps});
 
-        btn_Close.setText("Save");
-        btn_Close.addActionListener(new java.awt.event.ActionListener() {
+        btn_Save.setText("Save");
+        btn_Save.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_CloseActionPerformed(evt);
+                btn_SaveActionPerformed(evt);
             }
         });
 
-        jButton1.setText("Complete the payment");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btn_Close.setText("Close");
+        btn_Close.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+            	mnit_BackActionPerformed(evt);
+            	//jButton1ActionPerformed(evt);
             }
         });
 
@@ -461,6 +526,17 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        tab_Paid.setModel(new javax.swing.table.DefaultTableModel(
+                new Object [][] {
+                        {null, null, null, null},
+                        {null, null, null, null},
+                        {null, null, null, null},
+                        {null, null, null, null}
+                    },
+                    new String [] {
+                        "Title 1", "Title 2", "Title 3", "Title 4"
+                    }
+                ));
         tab_Payment.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 tab_PaymentMouseClicked(evt);
@@ -477,6 +553,8 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
             }
         });
         jScrollPane1.setViewportView(tab_Payment);
+        
+        jScrollPane2.setViewportView(tab_Paid);
 
         jLabel1.setFont(new java.awt.Font("新細明體", 1, 18));
         jLabel1.setText("Amount Receivable:");
@@ -525,7 +603,7 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
                 jMenuItem3ActionPerformed(evt);
             }
         });
-        menu_File.add(jMenuItem3);
+        //menu_File.add(jMenuItem3);
 
         mnit_Back.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_ESCAPE, 0));
         mnit_Back.setText("Close");
@@ -549,6 +627,7 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(pan_Top, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 828, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 828, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(layout.createSequentialGroup()
@@ -563,10 +642,10 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
                                 .addComponent(txt_PaidAmount, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addComponent(btn_Close, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(btn_Save, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btn_Close, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                 .addComponent(jLabel5)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -579,7 +658,9 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(pan_Top, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 408, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
@@ -592,63 +673,206 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
                     .addComponent(txt_Arrears, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(15, 15, 15)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(btn_Close))
+                    .addComponent(btn_Close)
+                    .addComponent(btn_Save))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btn_CloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_CloseActionPerformed
+    private void savePayment() {
+    	if (txt_PaidAmount.getText().trim().equals("") || txt_AmountReceivable.getText().trim().equals("")) {
+    		JOptionPane.showMessageDialog(null, "Save error");
+    		return;
+    	}
+    	
+    	try {
+	    	Double paidMoney = Double.parseDouble(txt_PaidAmount.getText().trim());
+	    	Double totalCost = Double.parseDouble(txt_AmountReceivable.getText().trim());
+	    	Double remainingMoney = paidMoney;
+	    	Double costOfItem = 0.0;
+	    	Double arrearOfItem = 0.0;
+	    	
+	    	String sqlStr = "";
+	    	String paymentType = "";
+	    	if (m_Sysname.equals("pha")) {
+	            paymentType = "P";
+	            sqlStr = "PH";
+	            //sql = "UPDATE registration_info SET payment = '"+finish+"'";
+	        } else if (m_Sysname.equals("lab")) {
+	            paymentType = "L";
+	            sqlStr = "LA";
+	            //sql = "UPDATE registration_info SET lab_payment = '"+finish+"'";
+	        } else if (m_Sysname.equals("reg")) {
+	            paymentType = "R";
+	            sqlStr = "RE";
+	            //sql = "UPDATE registration_info SET registration_payment = '"+finish+"'";
+	        }else if (m_Sysname.equals("xray")) {
+	            sqlStr = "XR";
+	            paymentType = "X";
+	            //sql = "UPDATE registration_info SET radiology_payment = '"+finish+"'";
+	        }
+	    	
+	        // 判斷資料不是數值先把格子清空
+	        for (int i = 0; i < tab_Payment.getRowCount() ; i++) {
+	                if (tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1) == null || !common.Tools.isNumber(tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1).toString()))
+	                   tab_Payment.setValueAt("", i, tab_Payment.getColumnCount()-1);
+	         }
 
-        // 判斷資料不是數值先把格子清空
-        for (int i = 0; i < tab_Payment.getRowCount() ; i++) {
-                if (tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1) == null || !common.Tools.isNumber(tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1).toString()))
-                   tab_Payment.setValueAt("", i, tab_Payment.getColumnCount()-1);
-         }
-
-        try {
+        
             String sql = "";
             if (m_Sysname.equals("pha")) {
-                for (int i = 0; i < tab_Payment.getRowCount() ; i++) {
+            	for (int i = 0; i < tab_Payment.getRowCount() ; i++) {
                     if (common.Tools.isNumber(tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1).toString())) {
-                            sql = "UPDATE medicine_stock SET price = " + tab_Payment.getValueAt(i, tab_Payment.getColumnCount() - 1) + " WHERE guid = '" + tab_Payment.getValueAt(i, 0) + "'";
-                            DBC.executeUpdate(sql);
+                    	costOfItem = Double.parseDouble(tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1).toString());
+                        if(costOfItem.compareTo(0.0) == 0) continue;
+                    	String guid = tab_Payment.getValueAt(i, 0).toString();
+                    	if(remainingMoney >= costOfItem ) {
+                        	remainingMoney -= costOfItem;
+                        	arrearOfItem = 0.0;
+                        } else {
+                        	arrearOfItem = costOfItem - remainingMoney;
+                        	remainingMoney = 0.0;
+                        }
+                    	sql = "INSERT INTO cashier(no, reg_guid, p_no, type, payment_time, amount_receivable, paid_amount, arrears, s_no) " +
+                                "SELECT CASE  WHEN  MAX(`no`)  IS  NULL THEN '"+sqlStr+"00000001' ELSE "+
+                                " INSERT (MAX(`no`), "+
+                                "LENGTH(MAX(`no`)) - LENGTH(SUBSTRING(MAX(`no`),3)+1) + 1, "+
+                                "LENGTH(SUBSTRING(MAX(`no`),3)+1), "+
+                                "SUBSTRING(MAX(`no`),3)+1) END  "+
+                                ",'"+guid+"', '"+m_Pno+"', '"+paymentType+"', " +
+                                "NOW(), "+costOfItem+", "+(costOfItem - arrearOfItem)+", " +
+                                ""+arrearOfItem+", '"+UserInfo.getUserNO()+"' " +
+                                "FROM cashier WHERE no LIKE '"+sqlStr+"%'  " ;
+                    	//System.out.println(sql);
+                    	DBC.executeUpdate(sql);
+                    	
+                   		sql = "UPDATE medicine_stock SET price = " + arrearOfItem + " WHERE guid = '" + guid + "'";
+                    	//System.out.println(sql);
+                    	DBC.executeUpdate(sql);
+                    	
+                    	if(remainingMoney.compareTo(0.0) == 0) break;
+                    	//else System.out.println(remainingMoney);
                     }
                 }
-            } else if (m_Sysname.equals("lab")) {
-                for (int i = 0; i < tab_Payment.getRowCount() ; i++) {
-                    if (common.Tools.isNumber(tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1).toString())) {
-                            sql = "UPDATE prescription SET cost = " + tab_Payment.getValueAt(i, tab_Payment.getColumnCount() - 1) + " WHERE guid = '" + tab_Payment.getValueAt(i, 0) + "'";
-                            DBC.executeUpdate(sql);
-                    }
+                if(totalCost.compareTo(paidMoney) == 0) {
+	            	sql = "UPDATE registration_info SET pharmacy_payment = 'F'"
+	                		//+ ", reg_cost = 0.0 "
+	                    	+ ",touchtime = RPAD((SELECT CASE WHEN MAX(B.touchtime) >= DATE_FORMAT(now(),'%Y%m%d%H%i%S') " 
+	                        + "THEN concat(DATE_FORMAT(now(),'%Y%m%d%H%i%S'), COUNT(B.touchtime)) " 
+	                        + "ELSE DATE_FORMAT(now(),'%Y%m%d%H%i%S') " 
+	                        + "END touchtime FROM (SELECT touchtime FROM registration_info) AS B WHERE B.touchtime LIKE " 
+	                        + "concat(DATE_FORMAT(now(),'%Y%m%d%H%i%S'),'%')),20,'000000')   WHERE guid = '" + m_Guid + "'";
+	                DBC.executeUpdate(sql);
                 }
-
             } else if (m_Sysname.equals("reg")) {
                 for (int i = 0; i < tab_Payment.getRowCount() ; i++) {
                     if (common.Tools.isNumber(tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1).toString())) {
-                            sql = "UPDATE registration_info SET reg_cost = " + tab_Payment.getValueAt(i, tab_Payment.getColumnCount() - 1) + " WHERE guid = '" + tab_Payment.getValueAt(i, 0) + "'";
-                            DBC.executeUpdate(sql);
+                    	costOfItem = Double.parseDouble(tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1).toString());
+                    	if(costOfItem.compareTo(0.0) == 0) continue;
+                    	String guid = tab_Payment.getValueAt(i, 0).toString();
+                    	if(remainingMoney >= costOfItem ) {
+                        	remainingMoney -= costOfItem;
+                        	arrearOfItem = 0.0;
+                        } else {
+                        	arrearOfItem = costOfItem - remainingMoney;
+                        	remainingMoney = 0.0;
+                        }
+                    	sql = "INSERT INTO cashier(no, reg_guid, p_no, type, payment_time, amount_receivable, paid_amount, arrears, s_no) " +
+                                "SELECT CASE  WHEN  MAX(`no`)  IS  NULL THEN '"+sqlStr+"00000001' ELSE "+
+                                " INSERT (MAX(`no`), "+
+                                "LENGTH(MAX(`no`)) - LENGTH(SUBSTRING(MAX(`no`),3)+1) + 1, "+
+                                "LENGTH(SUBSTRING(MAX(`no`),3)+1), "+
+                                "SUBSTRING(MAX(`no`),3)+1) END  "+
+                                ",'"+guid+"', '"+m_Pno+"', '"+paymentType+"', " +
+                                "NOW(), "+costOfItem+", "+(costOfItem - arrearOfItem)+", " +
+                                ""+arrearOfItem+", '"+UserInfo.getUserNO()+"' " +
+                                "FROM cashier WHERE no LIKE '"+sqlStr+"%'  " ;
+                    	//System.out.println(sql);
+                    	DBC.executeUpdate(sql);
+                    	
+                    	if(arrearOfItem.compareTo(0.0) != 0) {
+                    		sql = "UPDATE registration_info SET reg_cost = " + arrearOfItem 
+                    				+ " WHERE guid = '" + guid + "'";
+                    	}
+                    	//System.out.println(sql);
+                    	DBC.executeUpdate(sql);
+                    	
+                    	if(remainingMoney.compareTo(0.0) == 0) break;
+                    	//else System.out.println(remainingMoney);
                     }
                 }
-
+	            if(totalCost.compareTo(paidMoney) == 0) {
+	            	sql = "UPDATE registration_info SET registration_payment = 'F'"
+                    		+ ", reg_cost = 0.0 "
+                        	+ ",touchtime = RPAD((SELECT CASE WHEN MAX(B.touchtime) >= DATE_FORMAT(now(),'%Y%m%d%H%i%S') " 
+                            + "THEN concat(DATE_FORMAT(now(),'%Y%m%d%H%i%S'), COUNT(B.touchtime)) " 
+                            + "ELSE DATE_FORMAT(now(),'%Y%m%d%H%i%S') " 
+                            + "END touchtime FROM (SELECT touchtime FROM registration_info) AS B WHERE B.touchtime LIKE " 
+                            + "concat(DATE_FORMAT(now(),'%Y%m%d%H%i%S'),'%')),20,'000000')   WHERE guid = '" + m_Guid + "'";
+	            	DBC.executeUpdate(sql);
+	            }
             }else if (m_Sysname.equals("xray")) {
                 for (int i = 0; i < tab_Payment.getRowCount() ; i++) {
                     if (common.Tools.isNumber(tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1).toString())) {
-                            sql = "UPDATE prescription SET cost = " + tab_Payment.getValueAt(i, tab_Payment.getColumnCount() - 1) + " WHERE guid = '" + tab_Payment.getValueAt(i, 0) + "'";
-                            DBC.executeUpdate(sql);
+                    	costOfItem = Double.parseDouble(tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1).toString());
+                    	if(costOfItem.compareTo(0.0) == 0) continue;
+                    	String guid = tab_Payment.getValueAt(i, 0).toString();
+                    	if(remainingMoney >= costOfItem ) {
+                        	remainingMoney -= costOfItem;
+                        	arrearOfItem = 0.0;
+                        } else {
+                        	arrearOfItem = costOfItem - remainingMoney;
+                        	remainingMoney = 0.0;
+                        }
+                    	sql = "INSERT INTO cashier(no, reg_guid, p_no, type, payment_time, amount_receivable, paid_amount, arrears, s_no) " +
+                                "SELECT CASE  WHEN  MAX(`no`)  IS  NULL THEN '"+sqlStr+"00000001' ELSE "+
+                                " INSERT (MAX(`no`), "+
+                                "LENGTH(MAX(`no`)) - LENGTH(SUBSTRING(MAX(`no`),3)+1) + 1, "+
+                                "LENGTH(SUBSTRING(MAX(`no`),3)+1), "+
+                                "SUBSTRING(MAX(`no`),3)+1) END  "+
+                                ",'"+guid+"', '"+m_Pno+"', '"+paymentType+"', " +
+                                "NOW(), "+costOfItem+", "+(costOfItem - arrearOfItem)+", " +
+                                ""+arrearOfItem+", '"+UserInfo.getUserNO()+"' " +
+                                "FROM cashier WHERE no LIKE '"+sqlStr+"%'  " ;
+                    	//System.out.println(sql);
+                    	DBC.executeUpdate(sql);
+                    	
+                    	if(arrearOfItem.compareTo(0.0) == 0) {
+	                    	sql = "UPDATE prescription SET cost = 0 WHERE guid = '" + guid + "'";
+	                    } else {
+                    		sql = "UPDATE prescription SET cost = " + arrearOfItem 
+                    				+ " WHERE guid = '" + guid + "'";
+                    	}
+                    	DBC.executeUpdate(sql);
+                    	
+                    	if(remainingMoney.compareTo(0.0) == 0) break;
+                    	//else System.out.println(remainingMoney);
                     }
                 }
-
+                if(totalCost.compareTo(paidMoney) == 0) {
+                	sql = "UPDATE registration_info SET radiology_payment = 'F'"
+                    		//+ ", reg_cost = 0.0 "
+                        	+ ",touchtime = RPAD((SELECT CASE WHEN MAX(B.touchtime) >= DATE_FORMAT(now(),'%Y%m%d%H%i%S') " 
+                            + "THEN concat(DATE_FORMAT(now(),'%Y%m%d%H%i%S'), COUNT(B.touchtime)) " 
+                            + "ELSE DATE_FORMAT(now(),'%Y%m%d%H%i%S') " 
+                            + "END touchtime FROM (SELECT touchtime FROM registration_info) AS B WHERE B.touchtime LIKE " 
+                            + "concat(DATE_FORMAT(now(),'%Y%m%d%H%i%S'),'%')),20,'000000')   WHERE guid = '" + m_Guid + "'";
+                	//System.out.println(sql);
+                	DBC.executeUpdate(sql);
+                }
             }
             JOptionPane.showMessageDialog(null, "Saved successfully.");
 
-         } catch (SQLException ex) {
+         } catch (Exception ex) {
             Logger.getLogger(Frm_CashierInfo.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-    }//GEN-LAST:event_btn_CloseActionPerformed
+    }
+    private void btn_SaveActionPerformed(java.awt.event.ActionEvent evt) {
+    	savePayment();
+    	initTable();
+    }
 
     private void tab_PaymentKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tab_PaymentKeyReleased
         double total = 0;
@@ -663,18 +887,20 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
 
     }//GEN-LAST:event_tab_PaymentKeyReleased
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        if (txt_Arrears.getText().equals("0.0")) setFinish("F");
-        else setFinish("A");
+    //private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        //if (txt_Arrears.getText().equals("0.0")) setFinish("F");
+        //else setFinish("A");
 
-    }//GEN-LAST:event_jButton1ActionPerformed
+    //}//GEN-LAST:event_jButton1ActionPerformed
 
     private void tab_PaymentMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tab_PaymentMouseClicked
         tab_PaymentKeyReleased(null);
     }//GEN-LAST:event_tab_PaymentMouseClicked
 
     private void mnit_BackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnit_BackActionPerformed
-        btn_CloseActionPerformed(null);
+    	//savePayment();
+    	m_Frm.setEnabled(true);
+        this.dispose();
 }//GEN-LAST:event_mnit_BackActionPerformed
 
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
@@ -706,8 +932,8 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
     }//GEN-LAST:event_txt_PaidAmountActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btn_Save;
     private javax.swing.JButton btn_Close;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -715,6 +941,7 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel lab_TitleName;
     private javax.swing.JLabel lab_TitleNo;
     private javax.swing.JLabel lab_TitlePs;
@@ -724,6 +951,7 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
     private javax.swing.JMenuItem mnit_Back;
     private javax.swing.JPanel pan_Top;
     private javax.swing.JTable tab_Payment;
+    private javax.swing.JTable tab_Paid;
     private javax.swing.JTextField txt_AmountReceivable;
     private javax.swing.JTextField txt_Arrears;
     private javax.swing.JTextField txt_Gender;

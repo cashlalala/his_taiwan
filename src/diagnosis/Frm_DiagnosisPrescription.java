@@ -110,7 +110,7 @@ public class Frm_DiagnosisPrescription extends javax.swing.JFrame {
 
 		try {
 			String sql = String
-					.format("SELECT code, name FROM prescription_code WHERE effective <> 0 and ICDVersion = '%s'",
+					.format("SELECT code, name, cost FROM prescription_code WHERE effective <> 0 and ICDVersion = '%s'",
 							m_ICDVersion);
 
 			rs = DBC.localExecuteQuery(sql);
@@ -121,7 +121,8 @@ public class Frm_DiagnosisPrescription extends javax.swing.JFrame {
 			icdCob[i++] = "";
 			while (rs.next()) {
 				icdCob[i++] = rs.getString("code").trim() + DELIMITER
-						+ rs.getString("name").trim();
+						+ rs.getString("name").trim() + DELIMITER
+						+ rs.getString("cost").trim();
 			}
 
 			m_Cobww = new CompleterComboBox(icdCob);
@@ -179,14 +180,14 @@ public class Frm_DiagnosisPrescription extends javax.swing.JFrame {
 		ResultSet rsTabTherapy = null;
 		try {
 			Object[] title = { "", paragraph.getLanguage(line, "CODE"),
-					paragraph.getLanguage(line, "TREATMENT"), "Type" };
+					paragraph.getLanguage(line, "TREATMENT"), "Type", "Cost" };
 			String sql = String
 					.format("SELECT * FROM prescription_code WHERE effective <> 0 and ICDVersion = '%s' AND %s",
 							m_ICDVersion, condition);
 
 			rsTabTherapy = DBC.localExecuteQuery(sql);
 			rsTabTherapy.last();
-			dataArray = new Object[rsTabTherapy.getRow()][4];
+			dataArray = new Object[rsTabTherapy.getRow()][5];
 			rsTabTherapy.beforeFirst();
 			int i = 0;
 			if (!state.equals("ENTER")) {
@@ -195,6 +196,7 @@ public class Frm_DiagnosisPrescription extends javax.swing.JFrame {
 					dataArray[i][1] = rsTabTherapy.getString("code");
 					dataArray[i][2] = rsTabTherapy.getString("name");
 					dataArray[i][3] = rsTabTherapy.getString("type");
+					dataArray[i][4] = rsTabTherapy.getString("cost");
 
 					if (rsTabTherapy.getString("effective").equals("false")
 							|| !rsTabTherapy.getBoolean("effective")) {
@@ -222,6 +224,7 @@ public class Frm_DiagnosisPrescription extends javax.swing.JFrame {
 													+ search.toLowerCase()
 													+ "</font>") + "</html>";
 					dataArray[i][3] = rsTabTherapy.getString("type");
+					dataArray[i][4] = rsTabTherapy.getString("cost");
 
 					if (m_ChooseHashMap.get(dataArray[i][0]) != null) {
 						dataArray[i][0] = true;
@@ -260,6 +263,7 @@ public class Frm_DiagnosisPrescription extends javax.swing.JFrame {
 			columnChoose.setCellRenderer(new TriStateCellRenderer());
 			columnChoose.setCellEditor(new TriStateCellEditor());
 			tab_Prescription.setRowHeight(30);
+			common.TabTools.setHideColumn(tab_Prescription, 4); // 隱藏看診部位
 		} catch (SQLException e) {
 			Logger.getLogger(Frm_DiagnosisPrescription.class.getName()).log(
 					Level.SEVERE, null, e);
@@ -297,10 +301,13 @@ public class Frm_DiagnosisPrescription extends javax.swing.JFrame {
 		String type = tab_Prescription
 				.getValueAt(tab_Prescription.getSelectedRow(), 3).toString()
 				.trim();
+		String cost = tab_Prescription
+				.getValueAt(tab_Prescription.getSelectedRow(), 4).toString()
+				.trim();
 		if (tab_Prescription.getValueAt(this.tab_Prescription.getSelectedRow(),
 				0).equals(true)) {
 			m_ChooseHashMap.put(code, code + DELIMITER + name + DELIMITER
-					+ type);
+					+ type + DELIMITER + cost);
 		} else if (tab_Prescription.getValueAt(
 				this.tab_Prescription.getSelectedRow(), 0).equals(false)) {
 			m_ChooseHashMap.remove(code);
@@ -646,7 +653,7 @@ public class Frm_DiagnosisPrescription extends javax.swing.JFrame {
 
 	@SuppressWarnings("rawtypes")
 	private void btn_EnterActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_EnterActionPerformed
-		int[] column = { 1, 2, 4 };
+		int[] column = { 1, 2, 4, 5 };
 		Collection collection = m_ChooseHashMap.values();
 		Iterator iterator = collection.iterator();
 		while (iterator.hasNext()) {

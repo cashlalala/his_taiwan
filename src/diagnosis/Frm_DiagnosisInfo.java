@@ -33,6 +33,9 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
+import org.apache.logging.log4j.LogManager;
+import org.his.util.CustomLogger;
+
 import laboratory.Frm_LabDM;
 import laboratory.Frm_LabHistory;
 import multilingual.Language;
@@ -79,10 +82,10 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 	private Map<Object, Object> m_AllergyHashMap = new LinkedHashMap<Object, Object>(); // 儲存病患過敏
 																						// key為藥品code
 																						// value為程度
-	private Map<Object, Object> m_UsageHashMap = new LinkedHashMap<Object, Object>(); // 儲存服法代碼
-																						// value為天數
-	private Map<Object, Object> m_WayHashMap = new LinkedHashMap<Object, Object>(); // 儲存途徑代碼
-																					// value還是途徑
+	private static Map<Object, Object> m_UsageHashMap = new LinkedHashMap<Object, Object>(); // 儲存服法代碼
+	// value為天數
+	private static Map<Object, Object> m_WayHashMap = new LinkedHashMap<Object, Object>(); // 儲存途徑代碼
+	// value還是途徑
 
 	// focus 的 table 成為目前系統的暫存變數
 	private JTable m_SelectTable = null;
@@ -120,6 +123,9 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 	private static final String DELIMITER = Character.toString((char) 0);
 
 	private DiagnosisInterface parentFrm;
+
+	private static org.apache.logging.log4j.Logger logger = LogManager
+			.getLogger();
 
 	public Frm_DiagnosisInfo() {
 		parentFrm = null;
@@ -346,319 +352,58 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 
 	// 藥品代碼儲存
 	public void initHashMap() {
-		// 服法代碼
-		// 存入代碼與天數
-		m_UsageHashMap.put("QW", 1);
-		m_UsageHashMap.put("BIW", 2);
-		m_UsageHashMap.put("TIW", 3);
-		m_UsageHashMap.put("STAT", 1);
-		m_UsageHashMap.put("ASORDER", 1);
-		m_UsageHashMap.put("QW1", 1);
-		m_UsageHashMap.put("QW2", 2);
-		m_UsageHashMap.put("QW3", 3);
-		m_UsageHashMap.put("QW4", 4);
-		m_UsageHashMap.put("QW5", 5);
-		m_UsageHashMap.put("QW6", 6);
-		m_UsageHashMap.put("QW7", 7);
-		m_UsageHashMap.put("Q1H", 1);
-		m_UsageHashMap.put("Q2H", 2);
-		m_UsageHashMap.put("Q3H", 3);
-		m_UsageHashMap.put("Q4H", 4);
-		m_UsageHashMap.put("Q5H", 5);
-		m_UsageHashMap.put("Q6H", 6);
-		m_UsageHashMap.put("Q7H", 7);
-		m_UsageHashMap.put("Q8H", 8);
-		m_UsageHashMap.put("Q9H", 9);
-		m_UsageHashMap.put("Q10H", 10);
-		m_UsageHashMap.put("Q11H", 11);
-		m_UsageHashMap.put("Q12H", 12);
-		m_UsageHashMap.put("Q13H", 13);
-		m_UsageHashMap.put("Q14H", 14);
-		m_UsageHashMap.put("Q15H", 15);
-		m_UsageHashMap.put("Q16H", 16);
-		m_UsageHashMap.put("Q17H", 17);
-		m_UsageHashMap.put("Q18H", 18);
-		m_UsageHashMap.put("Q19H", 19);
-		m_UsageHashMap.put("Q20H", 20);
-		m_UsageHashMap.put("Q21H", 21);
-		m_UsageHashMap.put("Q22H", 22);
-		m_UsageHashMap.put("Q23H", 23);
-		m_UsageHashMap.put("Q24H", 24);
-		m_UsageHashMap.put("Q1MN", 1);
-		m_UsageHashMap.put("Q2MN", 2);
-		m_UsageHashMap.put("Q3MN", 3);
-		m_UsageHashMap.put("Q4MN", 4);
-		m_UsageHashMap.put("Q5MN", 5);
-		m_UsageHashMap.put("Q6MN", 6);
-		m_UsageHashMap.put("Q7MN", 7);
-		m_UsageHashMap.put("Q8MN", 8);
-		m_UsageHashMap.put("Q9MN", 9);
-		m_UsageHashMap.put("Q10MN", 10);
-		m_UsageHashMap.put("Q11MN", 11);
-		m_UsageHashMap.put("Q12MN", 12);
-		m_UsageHashMap.put("Q13MN", 13);
-		m_UsageHashMap.put("Q14MN", 14);
-		m_UsageHashMap.put("Q15MN", 15);
-		m_UsageHashMap.put("Q16MN", 16);
-		m_UsageHashMap.put("Q17MN", 17);
-		m_UsageHashMap.put("Q18MN", 18);
-		m_UsageHashMap.put("Q19MN", 19);
-		m_UsageHashMap.put("Q20MN", 20);
-		m_UsageHashMap.put("Q21MN", 21);
-		m_UsageHashMap.put("Q22MN", 22);
-		m_UsageHashMap.put("Q23MN", 23);
-		m_UsageHashMap.put("Q24MN", 24);
-		m_UsageHashMap.put("Q25MN", 25);
-		m_UsageHashMap.put("Q26MN", 26);
-		m_UsageHashMap.put("Q27MN", 27);
-		m_UsageHashMap.put("Q28MN", 28);
-		m_UsageHashMap.put("Q29MN", 29);
-		m_UsageHashMap.put("Q30MN", 30);
-		m_UsageHashMap.put("Q31MN", 31);
-		m_UsageHashMap.put("Q32MN", 32);
-		m_UsageHashMap.put("Q33MN", 33);
-		m_UsageHashMap.put("Q34MN", 34);
-		m_UsageHashMap.put("Q35MN", 35);
-		m_UsageHashMap.put("Q36MN", 36);
-		m_UsageHashMap.put("Q37MN", 37);
-		m_UsageHashMap.put("Q38MN", 38);
-		m_UsageHashMap.put("Q39MN", 39);
-		m_UsageHashMap.put("Q40MN", 40);
-		m_UsageHashMap.put("Q41MN", 41);
-		m_UsageHashMap.put("Q42MN", 42);
-		m_UsageHashMap.put("Q43MN", 43);
-		m_UsageHashMap.put("Q44MN", 44);
-		m_UsageHashMap.put("Q45MN", 45);
-		m_UsageHashMap.put("Q46MN", 46);
-		m_UsageHashMap.put("Q47MN", 47);
-		m_UsageHashMap.put("Q48MN", 48);
-		m_UsageHashMap.put("Q49MN", 49);
-		m_UsageHashMap.put("Q50MN", 50);
-		m_UsageHashMap.put("Q51MN", 51);
-		m_UsageHashMap.put("Q52MN", 52);
-		m_UsageHashMap.put("Q53MN", 53);
-		m_UsageHashMap.put("Q54MN", 54);
-		m_UsageHashMap.put("Q55MN", 55);
-		m_UsageHashMap.put("Q56MN", 56);
-		m_UsageHashMap.put("Q57MN", 57);
-		m_UsageHashMap.put("Q58MN", 58);
-		m_UsageHashMap.put("Q59MN", 59);
-		m_UsageHashMap.put("Q60MN", 60);
-		m_UsageHashMap.put("QD", 1);
-		m_UsageHashMap.put("QDAM", 1);
-		m_UsageHashMap.put("QDPM", 1);
-		m_UsageHashMap.put("QDHS", 1);
-		m_UsageHashMap.put("QN", 1);
-		m_UsageHashMap.put("BID", 2);
-		m_UsageHashMap.put("QAM&HS", 2);
-		m_UsageHashMap.put("QPM&HS", 2);
-		m_UsageHashMap.put("QAM&PM", 2);
-		m_UsageHashMap.put("TID", 3);
-		m_UsageHashMap.put("BID&HS", 3);
-		m_UsageHashMap.put("QID", 4);
-		m_UsageHashMap.put("HS", 1);
-		m_UsageHashMap.put("TID&HS", 4);
-		m_UsageHashMap.put("1W1D", 1);
-		m_UsageHashMap.put("1W2D", 2);
-		m_UsageHashMap.put("1W3D", 3);
-		m_UsageHashMap.put("1W4D", 4);
-		m_UsageHashMap.put("1W5D", 5);
-		m_UsageHashMap.put("1W6D", 6);
-		m_UsageHashMap.put("1W7D", 7);
-		m_UsageHashMap.put("1W8D", 8);
-		m_UsageHashMap.put("1W9D", 9);
-		m_UsageHashMap.put("2W1D", 2);
-		m_UsageHashMap.put("2W2D", 4);
-		m_UsageHashMap.put("2W3D", 6);
-		m_UsageHashMap.put("2W4D", 8);
-		m_UsageHashMap.put("2W5D", 10);
-		m_UsageHashMap.put("2W6D", 12);
-		m_UsageHashMap.put("2W7D", 14);
-		m_UsageHashMap.put("2W8D", 16);
-		m_UsageHashMap.put("2W9D", 18);
-		m_UsageHashMap.put("3W1D", 3);
-		m_UsageHashMap.put("3W2D", 6);
-		m_UsageHashMap.put("3W3D", 9);
-		m_UsageHashMap.put("3W4D", 12);
-		m_UsageHashMap.put("3W5D", 15);
-		m_UsageHashMap.put("3W6D", 18);
-		m_UsageHashMap.put("3W7D", 21);
-		m_UsageHashMap.put("3W8D", 24);
-		m_UsageHashMap.put("3W9D", 27);
-		m_UsageHashMap.put("4W1D", 4);
-		m_UsageHashMap.put("4W2D", 8);
-		m_UsageHashMap.put("4W3D", 12);
-		m_UsageHashMap.put("4W4D", 16);
-		m_UsageHashMap.put("4W5D", 20);
-		m_UsageHashMap.put("4W6D", 24);
-		m_UsageHashMap.put("4W7D", 28);
-		m_UsageHashMap.put("4W8D", 32);
-		m_UsageHashMap.put("4W9D", 36);
-		m_UsageHashMap.put("5W1D", 5);
-		m_UsageHashMap.put("5W2D", 10);
-		m_UsageHashMap.put("5W3D", 15);
-		m_UsageHashMap.put("5W4D", 20);
-		m_UsageHashMap.put("5W5D", 25);
-		m_UsageHashMap.put("5W6D", 30);
-		m_UsageHashMap.put("5W7D", 35);
-		m_UsageHashMap.put("5W8D", 40);
-		m_UsageHashMap.put("5W9D", 45);
-		m_UsageHashMap.put("6W1D", 6);
-		m_UsageHashMap.put("6W2D", 12);
-		m_UsageHashMap.put("6W3D", 18);
-		m_UsageHashMap.put("6W4D", 24);
-		m_UsageHashMap.put("6W5D", 30);
-		m_UsageHashMap.put("6W6D", 36);
-		m_UsageHashMap.put("6W7D", 42);
-		m_UsageHashMap.put("6W8D", 48);
-		m_UsageHashMap.put("6W9D", 54);
-		m_UsageHashMap.put("7W1D", 7);
-		m_UsageHashMap.put("7W2D", 14);
-		m_UsageHashMap.put("7W3D", 21);
-		m_UsageHashMap.put("7W4D", 24);
-		m_UsageHashMap.put("7W5D", 35);
-		m_UsageHashMap.put("7W6D", 42);
-		m_UsageHashMap.put("7W7D", 49);
-		m_UsageHashMap.put("7W8D", 56);
-		m_UsageHashMap.put("7W9D", 63);
-		m_UsageHashMap.put("8W1D", 8);
-		m_UsageHashMap.put("8W2D", 16);
-		m_UsageHashMap.put("8W3D", 24);
-		m_UsageHashMap.put("8W4D", 32);
-		m_UsageHashMap.put("8W5D", 40);
-		m_UsageHashMap.put("8W6D", 48);
-		m_UsageHashMap.put("8W7D", 56);
-		m_UsageHashMap.put("8W8D", 64);
-		m_UsageHashMap.put("8W9D", 72);
-		m_UsageHashMap.put("9W1D", 9);
-		m_UsageHashMap.put("9W2D", 18);
-		m_UsageHashMap.put("9W3D", 27);
-		m_UsageHashMap.put("9W4D", 36);
-		m_UsageHashMap.put("9W5D", 45);
-		m_UsageHashMap.put("9W6D", 54);
-		m_UsageHashMap.put("9W7D", 63);
-		m_UsageHashMap.put("9W8D", 72);
-		m_UsageHashMap.put("9W9D", 81);
-		m_UsageHashMap.put("MCD1D1", 1);
-		m_UsageHashMap.put("MCD1D2", 1);
-		m_UsageHashMap.put("MCD1D3", 1);
-		m_UsageHashMap.put("MCD1D4", 1);
-		m_UsageHashMap.put("MCD1D5", 1);
-		m_UsageHashMap.put("MCD1D6", 1);
-		m_UsageHashMap.put("MCD1D7", 1);
-		m_UsageHashMap.put("MCD1D8", 1);
-		m_UsageHashMap.put("MCD1D9", 1);
-		m_UsageHashMap.put("MCD2D1", 1);
-		m_UsageHashMap.put("MCD2D2", 1);
-		m_UsageHashMap.put("MCD2D3", 1);
-		m_UsageHashMap.put("MCD2D4", 1);
-		m_UsageHashMap.put("MCD2D5", 1);
-		m_UsageHashMap.put("MCD2D6", 1);
-		m_UsageHashMap.put("MCD2D7", 1);
-		m_UsageHashMap.put("MCD2D8", 1);
-		m_UsageHashMap.put("MCD2D9", 1);
-		m_UsageHashMap.put("MCD3D1", 1);
-		m_UsageHashMap.put("MCD3D2", 1);
-		m_UsageHashMap.put("MCD3D3", 1);
-		m_UsageHashMap.put("MCD3D4", 1);
-		m_UsageHashMap.put("MCD3D5", 1);
-		m_UsageHashMap.put("MCD3D6", 1);
-		m_UsageHashMap.put("MCD3D7", 1);
-		m_UsageHashMap.put("MCD3D8", 1);
-		m_UsageHashMap.put("MCD3D9", 1);
-		m_UsageHashMap.put("MCD4D1", 1);
-		m_UsageHashMap.put("MCD4D2", 1);
-		m_UsageHashMap.put("MCD4D3", 1);
-		m_UsageHashMap.put("MCD4D4", 1);
-		m_UsageHashMap.put("MCD4D5", 1);
-		m_UsageHashMap.put("MCD4D6", 1);
-		m_UsageHashMap.put("MCD4D7", 1);
-		m_UsageHashMap.put("MCD4D8", 1);
-		m_UsageHashMap.put("MCD4D9", 1);
-		m_UsageHashMap.put("MCD5D1", 1);
-		m_UsageHashMap.put("MCD5D2", 1);
-		m_UsageHashMap.put("MCD5D3", 1);
-		m_UsageHashMap.put("MCD5D4", 1);
-		m_UsageHashMap.put("MCD5D5", 1);
-		m_UsageHashMap.put("MCD5D6", 1);
-		m_UsageHashMap.put("MCD5D7", 1);
-		m_UsageHashMap.put("MCD5D8", 1);
-		m_UsageHashMap.put("MCD5D9", 1);
-		m_UsageHashMap.put("MCD6D1", 1);
-		m_UsageHashMap.put("MCD6D2", 1);
-		m_UsageHashMap.put("MCD6D3", 1);
-		m_UsageHashMap.put("MCD6D4", 1);
-		m_UsageHashMap.put("MCD6D5", 1);
-		m_UsageHashMap.put("MCD6D6", 1);
-		m_UsageHashMap.put("MCD6D7", 1);
-		m_UsageHashMap.put("MCD6D8", 1);
-		m_UsageHashMap.put("MCD6D9", 1);
-		m_UsageHashMap.put("MCD7D1", 1);
-		m_UsageHashMap.put("MCD7D2", 1);
-		m_UsageHashMap.put("MCD7D3", 1);
-		m_UsageHashMap.put("MCD7D4", 1);
-		m_UsageHashMap.put("MCD7D5", 1);
-		m_UsageHashMap.put("MCD7D6", 1);
-		m_UsageHashMap.put("MCD7D7", 1);
-		m_UsageHashMap.put("MCD7D8", 1);
-		m_UsageHashMap.put("MCD7D9", 1);
-		m_UsageHashMap.put("MCD8D1", 1);
-		m_UsageHashMap.put("MCD8D2", 1);
-		m_UsageHashMap.put("MCD8D3", 1);
-		m_UsageHashMap.put("MCD8D4", 1);
-		m_UsageHashMap.put("MCD8D5", 1);
-		m_UsageHashMap.put("MCD8D6", 1);
-		m_UsageHashMap.put("MCD8D7", 1);
-		m_UsageHashMap.put("MCD8D8", 1);
-		m_UsageHashMap.put("MCD8D9", 1);
-		m_UsageHashMap.put("MCD9D1", 1);
-		m_UsageHashMap.put("MCD9D2", 1);
-		m_UsageHashMap.put("MCD9D3", 1);
-		m_UsageHashMap.put("MCD9D4", 1);
-		m_UsageHashMap.put("MCD9D5", 1);
-		m_UsageHashMap.put("MCD9D6", 1);
-		m_UsageHashMap.put("MCD9D7", 1);
-		m_UsageHashMap.put("MCD9D8", 1);
-		m_UsageHashMap.put("MCD9D9", 1);
-		// 途徑代碼 可存用法
-		m_WayHashMap.put("AD", "AD");
-		m_WayHashMap.put("AS", "AS");
-		m_WayHashMap.put("AU", "AU");
-		m_WayHashMap.put("ET", "ET");
-		m_WayHashMap.put("GAR", "GAR");
-		m_WayHashMap.put("IC", "IC");
-		m_WayHashMap.put("IA", "IA");
-		m_WayHashMap.put("IM", "IM");
-		m_WayHashMap.put("IV", "IV");
-		m_WayHashMap.put("IP", "IP");
-		m_WayHashMap.put("ICV", "ICV");
-		m_WayHashMap.put("IMP", "IMP");
-		m_WayHashMap.put("INHL", "INHL");
-		m_WayHashMap.put("IS", "IS");
-		m_WayHashMap.put("IT", "IT");
-		m_WayHashMap.put("IVA", "IVA");
-		m_WayHashMap.put("IVD", "IVD");
-		m_WayHashMap.put("IVP", "IVP");
-		m_WayHashMap.put("LA", "LA");
-		m_WayHashMap.put("LI", "LI");
-		m_WayHashMap.put("NA", "NA");
-		m_WayHashMap.put("OD", "OD");
-		m_WayHashMap.put("OS", "OS");
-		m_WayHashMap.put("OU", "OU");
-		m_WayHashMap.put("PO", "PO");
-		m_WayHashMap.put("SC", "SC");
-		m_WayHashMap.put("SCI", "SCI");
-		m_WayHashMap.put("SKIN", "SKIN");
-		m_WayHashMap.put("SL", "SL");
-		m_WayHashMap.put("SPI", "SPI");
-		m_WayHashMap.put("RECT", "RECT");
-		m_WayHashMap.put("TOPI", "TOPI");
-		m_WayHashMap.put("TPN", "TPN");
-		m_WayHashMap.put("VAG", "VAG");
-		m_WayHashMap.put("IRRI", "IRRI");
-		m_WayHashMap.put("EXT", "EXT");
-		m_WayHashMap.put("XX", "XX");
 
+		if (m_UsageHashMap.isEmpty()) {
+			new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+					ResultSet rsFreq = null;
+					String sql = "select code ,value from medicine_frequency";
+					try {
+						rsFreq = DBC.executeQuery(sql);
+						while (rsFreq.next()) {
+							m_UsageHashMap.put(rsFreq.getString("code"),
+									rsFreq.getString("value"));
+						}
+
+					} catch (SQLException e) {
+						try {
+							DBC.closeConnection(rsFreq);
+						} catch (SQLException e1) {
+							e1.printStackTrace();
+						}
+						e.printStackTrace();
+					}
+				}
+			}).start();
+		}
+
+		if (m_WayHashMap.isEmpty()) {
+			new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+					ResultSet rsWay = null;
+					String sql = "select a.code ,a.explain from medicine_way a";
+					try {
+						rsWay = DBC.executeQuery(sql);
+						while (rsWay.next()) {
+							m_WayHashMap.put(rsWay.getString("code"),
+									rsWay.getString("explain"));
+						}
+
+					} catch (SQLException e) {
+						try {
+							DBC.closeConnection(rsWay);
+						} catch (SQLException e1) {
+							e1.printStackTrace();
+						}
+						e.printStackTrace();
+					}
+				}
+			}).start();
+		}
 	}
 
 	// 建立 TABLE
@@ -677,7 +422,8 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 		m_DiagnosisModel = (DefaultTableModel) getModelAndRowNo[0];
 		m_DiagnosisRowNo = Integer.parseInt(getModelAndRowNo[1].toString());
 		// -----tab_Prescription-------------------------------------------------
-		String[] prescriptionTitle = { " ", "Code", "Item", "Body Part", "Type" }; // table表頭
+		String[] prescriptionTitle = { " ", "Code", "Item", "Body Part",
+				"Type", "Cost" }; // table表頭
 		int[] prescriptionColumnEditable = { 1, 3 }; // 可編輯欄位
 		getModelAndRowNo = TabTools.setTableEditColumn(m_PrescriptionModel,
 				this.tab_Prescription, prescriptionTitle,
@@ -720,6 +466,8 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 				.getColumn(3);
 		TableColumn prescriptionColumnType = tab_Prescription.getColumnModel()
 				.getColumn(4);
+		TableColumn prescriptionColumnCost = tab_Prescription.getColumnModel()
+				.getColumn(5);
 
 		TableColumn medicineColumnNo = tab_Medicine.getColumnModel().getColumn(
 				0);
@@ -771,6 +519,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 		medicineColumnPs.setPreferredWidth(150);
 
 		common.TabTools.setHideColumn(tab_Prescription, 3); // 隱藏看診部位
+		common.TabTools.setHideColumn(tab_Prescription, 5); // 隱藏看診部位
 		common.TabTools.setHideColumn(tab_Medicine, 2);
 		common.TabTools.setHideColumn(tab_Medicine, 5); // Medicine hide
 		common.TabTools.setHideColumn(tab_Medicine, 13); // Medicine hide
@@ -885,6 +634,12 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 
 	// 判斷代碼是否有重複
 	public boolean isCodeAtHashMap(Object code) {
+		if (m_AutoTable.equals("medicines")
+				&& m_SelectTableHashMap.get(code) != null) {
+			m_SelectTableHashMap.put(code.toString().trim(), code.toString()
+					.trim()); // 在放回
+			return true;
+		}
 		if (m_SelectTableHashMap.get(code) != null) { // 取出做判斷
 			m_SelectTableHashMap.put(code.toString().trim(), code.toString()
 					.trim()); // 在放回
@@ -1055,6 +810,8 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 					tab_Prescription.getSelectedRow(), 2);
 			tab_Prescription.setValueAt(value[2],
 					tab_Prescription.getSelectedRow(), 4);
+			tab_Prescription.setValueAt(value[3],
+					tab_Prescription.getSelectedRow(), 5);
 			break;
 		case 3: // tab_Medicine
 			if (value.length != -1) {
@@ -1071,6 +828,14 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 							tab_Medicine.getSelectedRow(), 3); // injection
 					tab_Medicine.setValueAt(Double.valueOf(value[3].trim()),
 							tab_Medicine.getSelectedRow(), 4); // unit dosage
+
+					tab_Medicine.setValueAt(
+							(value.length < 5) ? "" : value[4].trim(),
+							tab_Medicine.getSelectedRow(), 7); // default way
+
+					tab_Medicine.setValueAt(
+							(value.length < 6) ? "" : value[5].trim(),
+							tab_Medicine.getSelectedRow(), 6); // default way
 
 					tab_Medicine.setValueAt("N", tab_Medicine.getSelectedRow(),
 							10);
@@ -1170,15 +935,23 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 						break;
 					} else {
 						str = "";
+						String field = "";
 						for (int i = 0; i < m_AutoColumn.length; i++) {
+							field = ((rs.getString(m_AutoColumn[i]) == null) ? " "
+									: rs.getString(m_AutoColumn[i])).trim();
+
+							CustomLogger.debug(logger,
+									"Column {} : [{}] - > [{}]",
+									m_AutoColumn[i],
+									rs.getString(m_AutoColumn[i]), field);
 							if (m_AutoTable.equals("medicines")
 									&& rs.getString(m_AutoColumn[2]).equals("")) {
-								str += (" "
-										+ rs.getString(m_AutoColumn[i]).trim() + DELIMITER);
+								str += (" " + field + DELIMITER);
 							} else {
-								str += (rs.getString(m_AutoColumn[i]).trim() + DELIMITER);
+								str += (field + DELIMITER);
 							}
 						}
+						CustomLogger.debug(logger, "Composed string [{}]", str);
 						list[index++] = str;
 					}
 				}
@@ -1472,7 +1245,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 				String icdVer = (m_ICDVersion != null) ? m_ICDVersion
 						.split("-")[1] : "10";
 
-				int diaCount = tab_Diagnosis.getRowCount(); 
+				int diaCount = tab_Diagnosis.getRowCount();
 				// 存入icd code診斷碼
 				if (tab_Diagnosis.getValueAt(0, 2) != null) {
 					for (int i = 0; i < diaCount; i++) {
@@ -1523,17 +1296,20 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 							this.tab_Prescription.setValueAt("", i, 3);
 						}
 
-						DBC.executeUpdate("INSERT prescription(guid, reg_guid, code , place, state) VALUES (uuid(), "
+						DBC.executeUpdate("INSERT prescription(guid, reg_guid, code , place, cost, state) VALUES (uuid(), "
 								+ "'"
 								+ m_RegistrationGuid
 								+ "', "
 								+ "'"
 								+ this.tab_Prescription.getValueAt(i, 1)
 										.toString().trim()
-								+ "', "
-								+ "'"
+								+ "', '"
 								+ this.tab_Prescription.getValueAt(i, 3)
-										.toString().trim() + "', 1)");
+										.toString().trim()
+								+ "' ,"
+								+ ((this.tab_Prescription.getValueAt(i, 5) == null) ? 0
+										: this.tab_Prescription
+												.getValueAt(i, 5)) + ", 1)");
 					}
 				}
 
@@ -1742,7 +1518,8 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 						+ ((diaCount != 0) ? "diagnosis_payment = NULL, " : "")
 						+ ((xrayState) ? "radiology_payment = NULL, " : "")
 						+ ((prescriptionState) ? "lab_payment = NULL, " : "")
-						+ ((medicineState != 0) ? "pharmacy_payment = NULL, " : "")
+						+ ((medicineState != 0) ? "pharmacy_payment = NULL, "
+								: "")
 						+ "medicine_touchtime = RPAD((SELECT CASE WHEN MAX(B.medicine_touchtime) >= DATE_FORMAT(now(),'%Y%m%d%H%i%S') "
 						+ "THEN concat(DATE_FORMAT(now(),'%Y%m%d%H%i%S'), COUNT(B.medicine_touchtime)) "
 						+ "ELSE DATE_FORMAT(now(),'%Y%m%d%H%i%S') "
@@ -1751,7 +1528,8 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 						+ "concat(DATE_FORMAT(now(),'%Y%m%d%H%i%S'),'%')),20,'000000') "
 						+ "WHERE guid = '" + m_RegistrationGuid + "'");
 
-				setPrint(medicineState, prescriptionState, xrayState);
+				if (!(parentFrm instanceof admission.Frm_WorkList))
+					setPrint(medicineState, prescriptionState, xrayState);
 				// 提示回診日 *************************************
 				String packageSetAll = "";
 				if (m_PackageSet != null) {
@@ -3103,7 +2881,6 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
 				btn_ReservationActionPerformed(e);
 			}
 		});
@@ -3625,7 +3402,8 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 
 	private void tab_MedicineFocusGained(java.awt.event.FocusEvent evt) {// GEN-FIRST:event_tab_MedicineFocusGained
 		m_AutoTable = "medicines";
-		String[] medicineRsList = { "code", "item", "injection", "unit_dosage" }; // ,
+		String[] medicineRsList = { "code", "item", "injection", "unit_dosage",
+				"default_way", "default_freq" }; // ,
 		// "unit_dosage",
 		// "unit"
 		m_AutoColumn = medicineRsList;
@@ -3674,8 +3452,8 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 
 	private void mnit_CasehistoryActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnit_CasehistoryActionPerformed
 		this.setEnabled(false);
-		new Frm_DiagnosisDiagnostic(this, m_Pno, this.txt_Name.getText(), m_RegistrationGuid)
-				.setVisible(true);
+		new Frm_DiagnosisDiagnostic(this, m_Pno, this.txt_Name.getText(),
+				m_RegistrationGuid).setVisible(true);
 	}// GEN-LAST:event_mnit_CasehistoryActionPerformed
 
 	private void mnit_AllergyActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnit_AllergyActionPerformed
@@ -3921,7 +3699,7 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 
 	private void tab_PrescriptionFocusGained(java.awt.event.FocusEvent evt) {// GEN-FIRST:event_tab_PrescriptionFocusGained
 		m_AutoTable = "prescription_code";
-		String[] prescriptionRsList = { "code", "name", "type" };
+		String[] prescriptionRsList = { "code", "name", "type", "cost" };
 		m_AutoColumn = prescriptionRsList;
 		m_AutoColumnName = "code";
 		m_SelectTable = tab_Prescription;
