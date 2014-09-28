@@ -102,23 +102,16 @@ public class RefrashCashier extends Thread{
                             "AND registration_info.guid = A.guid)  > 0 "+
                         "ORDER BY A.reg_time DESC, A.visits_no ";
         } else if (SysName.equals("pha")) {
-            sql ="SELECT registration_info.guid ,registration_info.pharmacy_payment, " +
-                 "registration_info.p_no AS 'Patient No.', " +
-                 "concat(patients_info.firstname,'  ',patients_info.lastname) AS 'Name', "+
-                 "patients_info.gender AS 'Gender' "+
-             "FROM registration_info, patients_info, shift_table,staff_info ,poli_room, policlinic, outpatient_services ,medicine_stock "+
-             "WHERE registration_info.shift_guid = shift_table.guid "+
-                "AND shift_table.room_guid = poli_room.guid "+
-                "AND poli_room.poli_guid = policlinic.guid "+
-                "AND shift_table.s_id = staff_info.s_id "+
-                "AND registration_info.p_no = patients_info.p_no "+
-                "AND shift_table.shift_date = '"+DateMethod.getTodayYMD()+"' "+
-                //"AND shift_table.shift = '"+DateMethod.getNowShiftNum()+"' "+
-                "AND registration_info.finish = 'F' "+
-                "AND registration_info.guid = outpatient_services.reg_guid "+
-                "AND medicine_stock.os_guid = outpatient_services.guid "+
-                "ORDER BY registration_info.touchtime DESC ";
-          
+        	sql = "SELECT registration_info.guid, registration_info.pharmacy_payment, "
+        			+ " registration_info.p_no AS 'Patient No.', concat(patients_info.firstname, '  ', "
+        			+ " patients_info.lastname) AS 'Name', patients_info.gender AS 'Gender' "
+        			+ " FROM registration_info, patients_info, shift_table "
+        			+ " WHERE registration_info.shift_guid = shift_table.guid "
+        			+ " AND registration_info.p_no = patients_info.p_no "
+        			+ " AND shift_table.shift_date = '"+DateMethod.getTodayYMD()+"' "
+        			+ " AND registration_info.finish = 'F' "
+        			+ " AND registration_info.pharmacy_payment is null "
+        			+ " ORDER BY registration_info.touchtime DESC";
         }
         System.out.println(sql);
         this.m_Tab = tab;
