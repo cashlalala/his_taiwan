@@ -29,6 +29,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
 import javax.swing.table.DefaultTableModel;
 
 import main.Frm_Main;
@@ -67,7 +68,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 	private JLabel lbl_BloodType;
 	private JLabel lbl_Height;
 	private JLabel lbl_Weight;
-	private cc.johnwu.finger.FingerPrintViewer Frm_FingerPrintViewer;
+	// private cc.johnwu.finger.FingerPrintViewer Frm_FingerPrintViewer;
 	private JPanel pan_Code;
 	private JButton btn_AddPatient;
 	private JButton btn_EditPatient;
@@ -114,6 +115,15 @@ public class Frm_RegAndInpatient extends JFrame implements
 	private JButton btn_InpatientClose;
 	private JScrollPane scrollPane_Bed;
 	private JTable tab_BedList;
+	// GUI for History
+	private JPanel pan_tabHistory;
+	private JLabel lbl_HistoryDate;
+	private cc.johnwu.date.DateChooser pan_HistoryDate;
+	private JScrollPane scrollPane_History;
+	private JTable tab_HistoryList;
+	private JButton btn_HistoryReprint;
+	private JButton btn_HistoryCancel;
+	private JButton btn_HistoryClose;
 	// GUI define End
 
 	private Language paragraph = Language.getInstance();
@@ -132,6 +142,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 	private boolean selectedPatientWithBirthdayInfo = false;
 	private String selectedBedGUID = "";
 	private String selectedBedDevision = "";
+	private String selectedRegGUID = "";
 	private Integer m_Number = 0;
 
 	boolean dead = true;
@@ -334,8 +345,8 @@ public class Frm_RegAndInpatient extends JFrame implements
 		gbc_lbl_Weight.gridy = 10;
 		pan_PatientInfo.add(lbl_Weight, gbc_lbl_Weight);
 
-		Frm_FingerPrintViewer = new cc.johnwu.finger.FingerPrintViewer();
-		Frm_FingerPrintViewer.setVisible(true);
+		// Frm_FingerPrintViewer = new cc.johnwu.finger.FingerPrintViewer();
+		// Frm_FingerPrintViewer.setVisible(true);
 		GridBagConstraints gbc_Frm_FingerPrintViewer = new GridBagConstraints();
 		gbc_Frm_FingerPrintViewer.weighty = 0.4;
 		gbc_Frm_FingerPrintViewer.weightx = 0.7;
@@ -344,7 +355,8 @@ public class Frm_RegAndInpatient extends JFrame implements
 		gbc_Frm_FingerPrintViewer.gridheight = 2;
 		gbc_Frm_FingerPrintViewer.gridx = 0;
 		gbc_Frm_FingerPrintViewer.gridy = 11;
-		pan_PatientInfo.add(Frm_FingerPrintViewer, gbc_Frm_FingerPrintViewer);
+		// pan_PatientInfo.add(Frm_FingerPrintViewer,
+		// gbc_Frm_FingerPrintViewer);
 
 		btn_AddPatient = new JButton(paragraph.getString("NEWPATIENT"));
 		btn_AddPatient.setMnemonic(java.awt.event.KeyEvent.VK_N);
@@ -867,10 +879,139 @@ public class Frm_RegAndInpatient extends JFrame implements
 		});
 
 		scrollPane_Bed.setViewportView(tab_BedList);
+
+		pan_tabHistory = new JPanel();
+		pan_ClinicOrInpatient.addTab(paragraph.getString("TITLEHISTORYRECORD"),
+				pan_tabHistory);
+
+		pan_tabClinicInfo.setLayout(gbl_pan_tabClinicInfo);
+		GridBagLayout gbl_pan_tabHistory = new GridBagLayout();
+		gbl_pan_tabHistory.columnWidths = new int[] { 113, 109, 405, 0 };
+		gbl_pan_tabHistory.rowHeights = new int[] { 20, 29, 23, 228, 0 };
+		gbl_pan_tabHistory.columnWeights = new double[] { 0.0, 0.0, 0.0,
+				Double.MIN_VALUE };
+		gbl_pan_tabHistory.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0,
+				Double.MIN_VALUE };
+		pan_tabHistory.setLayout(gbl_pan_tabHistory);
+
+		lbl_HistoryDate = new JLabel(paragraph.getString("DATE"));
+		GridBagConstraints gbc_lbl_HistoryDate = new GridBagConstraints();
+		gbc_lbl_HistoryDate.weighty = 0.1;
+		gbc_lbl_HistoryDate.weightx = 0.3;
+		gbc_lbl_HistoryDate.anchor = GridBagConstraints.SOUTH;
+		gbc_lbl_HistoryDate.fill = GridBagConstraints.HORIZONTAL;
+		gbc_lbl_HistoryDate.insets = new Insets(0, 0, 5, 5);
+		gbc_lbl_HistoryDate.gridwidth = 2;
+		gbc_lbl_HistoryDate.gridx = 0;
+		gbc_lbl_HistoryDate.gridy = 0;
+		pan_tabHistory.add(lbl_HistoryDate, gbc_lbl_HistoryDate);
+
+		scrollPane_History = new JScrollPane();
+		GridBagConstraints gbc_scrollPane_History = new GridBagConstraints();
+		gbc_scrollPane_History.weightx = 0.7;
+		gbc_scrollPane_History.weighty = 1.0;
+		gbc_scrollPane_History.fill = GridBagConstraints.BOTH;
+		gbc_scrollPane_History.gridheight = 4;
+		gbc_scrollPane_History.gridx = 2;
+		gbc_scrollPane_History.gridy = 0;
+		pan_tabHistory.add(scrollPane_History, gbc_scrollPane_History);
+
+		tab_HistoryList = new JTable();
+		tab_HistoryList.addMouseListener(new java.awt.event.MouseAdapter() {
+			public void mouseClicked(java.awt.event.MouseEvent evt) {
+				tab_HistoryListMouseClicked();
+			}
+		});
+		tab_HistoryList.addKeyListener(new java.awt.event.KeyAdapter() {
+			public void keyPressed(java.awt.event.KeyEvent evt) {
+				tab_HistoryListMouseClicked();
+			}
+		});
+		scrollPane_History.setViewportView(tab_HistoryList);
+
+		pan_HistoryDate = new cc.johnwu.date.DateChooser();
+		pan_HistoryDate.setParentFrame(this);
+		GridBagConstraints gbc_pan_HistoryDate = new GridBagConstraints();
+		gbc_pan_HistoryDate.anchor = GridBagConstraints.NORTH;
+		gbc_pan_HistoryDate.fill = GridBagConstraints.HORIZONTAL;
+		gbc_pan_HistoryDate.insets = new Insets(0, 0, 5, 5);
+		gbc_pan_HistoryDate.gridwidth = 2;
+		gbc_pan_HistoryDate.weighty = 0.1;
+		gbc_pan_HistoryDate.weightx = 0.3;
+		gbc_pan_HistoryDate.gridx = 0;
+		gbc_pan_HistoryDate.gridy = 1;
+		pan_tabHistory.add(pan_HistoryDate, gbc_pan_HistoryDate);
+
+		btn_HistoryReprint = new JButton(paragraph.getString("REPRINT"));
+		btn_HistoryReprint.setEnabled(false);
+		GridBagConstraints gbc_btn_HistoryReprint = new GridBagConstraints();
+		gbc_btn_HistoryReprint.weighty = 0.1;
+		gbc_btn_HistoryReprint.weightx = 0.15;
+		gbc_btn_HistoryReprint.anchor = GridBagConstraints.NORTH;
+		gbc_btn_HistoryReprint.fill = GridBagConstraints.HORIZONTAL;
+		gbc_btn_HistoryReprint.insets = new Insets(0, 0, 5, 5);
+		gbc_btn_HistoryReprint.gridx = 0;
+		gbc_btn_HistoryReprint.gridy = 2;
+		pan_tabHistory.add(btn_HistoryReprint, gbc_btn_HistoryReprint);
+		btn_HistoryReprint.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				btn_HistoryReprintactionPerformed(evt);
+			}
+		});
+
+		btn_HistoryCancel = new JButton(paragraph.getString("CANCEL"));
+		btn_HistoryCancel.setEnabled(false);
+		GridBagConstraints gbc_btn_HistoryCancel = new GridBagConstraints();
+		gbc_btn_HistoryCancel.weighty = 0.1;
+		gbc_btn_HistoryCancel.weightx = 0.15;
+		gbc_btn_HistoryCancel.anchor = GridBagConstraints.NORTH;
+		gbc_btn_HistoryCancel.fill = GridBagConstraints.HORIZONTAL;
+		gbc_btn_HistoryCancel.insets = new Insets(0, 0, 5, 5);
+		gbc_btn_HistoryCancel.gridx = 1;
+		gbc_btn_HistoryCancel.gridy = 2;
+		pan_tabHistory.add(btn_HistoryCancel, gbc_btn_HistoryCancel);
+		btn_HistoryCancel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				btn_HistoryCancelactionPerformed(evt);
+			}
+		});
+
+		btn_HistoryClose = new JButton(paragraph.getString("CLOSE"));
+		GridBagConstraints gbc_btn_HistoryClose = new GridBagConstraints();
+		gbc_btn_HistoryClose.weighty = 0.1;
+		gbc_btn_HistoryClose.weightx = 0.3;
+		gbc_btn_HistoryClose.anchor = GridBagConstraints.NORTH;
+		gbc_btn_HistoryClose.fill = GridBagConstraints.HORIZONTAL;
+		gbc_btn_HistoryClose.insets = new Insets(0, 0, 0, 5);
+		gbc_btn_HistoryClose.gridwidth = 2;
+		gbc_btn_HistoryClose.gridx = 0;
+		gbc_btn_HistoryClose.gridy = 3;
+		pan_tabHistory.add(btn_HistoryClose, gbc_btn_HistoryClose);
+		btn_HistoryClose.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				btn_ClinicCloseactionPerformed(evt);
+			}
+		});
+
+		pan_ClinicOrInpatient
+				.addChangeListener(new javax.swing.event.ChangeListener() {
+					public void stateChanged(ChangeEvent arg0) {
+						initClinicInfo();
+						initInpatientInfo();
+						initHistory();
+					}
+				});
 		// End of init GUI
 		initClinicInfo();
 		initInpatientInfo();
+		initHistory();
 		reLoad();
+	}
+
+	private void initHistory() {
+		btn_HistoryReprint.setEnabled(false);
+		btn_HistoryCancel.setEnabled(false);
+		refreshHistory();
 	}
 
 	private void btn_PatientSearchactionPerformed(ActionEvent evt) {
@@ -980,6 +1121,18 @@ public class Frm_RegAndInpatient extends JFrame implements
 		}
 	}
 
+	private void tab_HistoryListMouseClicked() {
+		if (tab_HistoryList.getSelectedRow() < 0
+				|| tab_HistoryList.getColumnCount() == 1) {
+			return;
+		} else {
+			selectedRegGUID = (String) tab_HistoryList.getValueAt(
+					tab_HistoryList.getSelectedRow(), 0);
+			btn_HistoryReprint.setEnabled(true);
+			btn_HistoryCancel.setEnabled(true);
+		}
+	}
+
 	private void tab_ClinicListKeyPressed(java.awt.event.KeyEvent evt) {
 		tab_ClinicListMouseClicked(null);
 	}
@@ -1072,6 +1225,99 @@ public class Frm_RegAndInpatient extends JFrame implements
 		this.cbb_Shift.addItem(paragraph.getString("NIGHT"));
 		this.cbb_Shift.setSelectedIndex(DateMethod.getNowShiftNum());
 		refreshClinicInfo();
+	}
+
+	private void refreshHistory() {
+		String dateStart = "'" + pan_HistoryDate.getValue() + " 00:00:00'";
+		String dateEnd = "'" + pan_HistoryDate.getValue() + " 23:59:59'";
+		String sql = "SELECT "
+				+ "registration_info.guid, "
+				+ "concat(patients_info.firstname,'  ',patients_info.lastname) AS 'Name', "
+				+ "policlinic.name, "
+				+ "shift_table.shift, "
+				+ "policlinic.room_num, "
+				+ "concat(staff_info.firstname,'  ',staff_info.lastname) AS 'Doctor' "
+				+ "FROM "
+				+ "registration_info, patients_info, policlinic, shift_table, staff_info, poli_room "
+				+ "WHERE patients_info.p_no=registration_info.p_no "
+				+ "AND registration_info.shift_guid=shift_table.guid "
+				+ "AND shift_table.room_guid=poli_room.guid "
+				+ "AND poli_room.poli_guid=policlinic.guid "
+				+ "AND shift_table.s_id=staff_info.s_id "
+				+ "AND registration_info.type='O' "
+				+ "AND registration_info.finish='W' "
+				+ "AND registration_info.reg_time > " + dateStart + " "
+				+ "AND registration_info.reg_time < " + dateEnd;
+		ResultSet rs = null;
+		try {
+			System.out.print(sql + "\n");
+			rs = DBC.executeQuery(sql);
+			rs.last();
+			if (rs.getRow() == 0) {
+				tab_HistoryList.setModel(new DefaultTableModel(
+						new String[][] { { "No Information." } },
+						new String[] { "Message" }) {
+				});
+			} else {
+				ResultSetMetaData rsMetaData = rs.getMetaData();
+				Integer rowCount = rs.getRow();
+
+				String[] historyHeader = new String[] {
+						paragraph.getString("REGISTRATION"),
+						paragraph.getString("NAME"),
+						paragraph.getString("DEPARTMENT"),
+						paragraph.getString("SHIFT"),
+						paragraph.getString("ROOM"),
+						paragraph.getString("DOCTOR") };
+				String[][] HistoryMatrix = new String[rowCount][rsMetaData
+						.getColumnCount()];
+				int i;
+				int j;
+				rs.beforeFirst();
+				for (i = 0; i < rowCount; i++) {
+					rs.next();
+					String strShift;
+					for (j = 0; j < rsMetaData.getColumnCount(); j++) {
+						HistoryMatrix[i][j] = rs.getString(j + 1);
+					}
+					if (HistoryMatrix[i][3] == "1") {
+						HistoryMatrix[i][3] = "Morning";
+					} else if (HistoryMatrix[i][3] == "2") {
+						HistoryMatrix[i][3] = "Noon";
+					} else {
+						HistoryMatrix[i][3] = "Night";
+					}
+				}
+				tab_HistoryList.setModel(new DefaultTableModel(HistoryMatrix,
+						historyHeader) {
+				});
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				DBC.closeConnection(rs);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void btn_HistoryReprintactionPerformed(ActionEvent evt) {
+		printRegClinic(selectedRegGUID);
+	}
+
+	private void btn_HistoryCancelactionPerformed(ActionEvent evt) {
+		String sql = "UPDATE registration_info SET registration_info.finish='C' "
+				+ "WHERE registration_info.guid='" + selectedRegGUID + "'";
+		try{
+			DBC.executeUpdate(sql);
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			refreshHistory();
+		}
 	}
 
 	private void refreshClinicInfo() {
@@ -1811,7 +2057,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 	}
 
 	private void printRegClinic(String reg_guid) {
-		String sql="SELECT "
+		String sql = "SELECT "
 				+ "registration_info.p_no, "
 				+ "concat(patients_info.firstname,'  ',patients_info.lastname) AS 'Name', "
 				+ "patients_info.gender, "
@@ -1822,42 +2068,34 @@ public class Frm_RegAndInpatient extends JFrame implements
 				+ "concat(staff_info.firstname,'  ',staff_info.lastname) AS 'Doctor' "
 				+ "FROM "
 				+ "registration_info, patients_info, policlinic, shift_table, staff_info, poli_room "
-				+ "WHERE "
-				+ "registration_info.guid = '"+reg_guid+"' "
+				+ "WHERE " + "registration_info.guid = '" + reg_guid + "' "
 				+ "AND patients_info.p_no=registration_info.p_no "
 				+ "AND registration_info.shift_guid=shift_table.guid "
 				+ "AND shift_table.room_guid=poli_room.guid "
 				+ "AND poli_room.poli_guid=policlinic.guid "
 				+ "AND shift_table.s_id=staff_info.s_id";
 		System.out.print(sql);
-		ResultSet rs=null;
-		String[] regInfo=null;
-		try{
+		ResultSet rs = null;
+		String[] regInfo = null;
+		try {
 			rs = DBC.executeQuery(sql);
 			rs.next();
 			String strShift;
-			if(rs.getString("shift_table.shift")=="1"){
-				strShift="Morning";
+			if (rs.getString("shift_table.shift") == "1") {
+				strShift = "Morning";
+			} else if (rs.getString("shift_table.shift") == "2") {
+				strShift = "Noon";
+			} else {
+				strShift = "Night";
 			}
-			else if(rs.getString("shift_table.shift")=="2"){
-				strShift="Noon";
-			}
-			else{
-				strShift="Night";
-			}
-			regInfo = new String[]{
-					reg_guid,
+			regInfo = new String[] { reg_guid,
 					rs.getString("registration_info.p_no"),
-					rs.getString("Name"),
-					rs.getString("patients_info.gender"),
+					rs.getString("Name"), rs.getString("patients_info.gender"),
 					rs.getString("registration_info.reg_time"),
-					rs.getString("policlinic.name"),
-					strShift,
-					"Room "+rs.getString("policlinic.room_num"),
-					rs.getString("Doctor"),
-					Integer.toString(m_Number)
-					};
-		}catch(Exception e){
+					rs.getString("policlinic.name"), strShift,
+					"Room " + rs.getString("policlinic.room_num"),
+					rs.getString("Doctor"), Integer.toString(m_Number) };
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		PrinterJob pj = PrinterJob.getPrinterJob();
@@ -1875,36 +2113,30 @@ public class Frm_RegAndInpatient extends JFrame implements
 	}
 
 	private void printRegInpatient(String reg_guid) {
-		String sql="SELECT "
+		String sql = "SELECT "
 				+ "registration_info.p_no, "
 				+ "concat(patients_info.firstname,'  ',patients_info.lastname) AS 'Name', "
-				+ "patients_info.gender, "
-				+ "registration_info.reg_time "
-				+ "FROM "
-				+ "registration_info, patients_info "
-				+ "WHERE "
-				+ "registration_info.guid = '"+reg_guid+"' "
+				+ "patients_info.gender, " + "registration_info.reg_time "
+				+ "FROM " + "registration_info, patients_info " + "WHERE "
+				+ "registration_info.guid = '" + reg_guid + "' "
 				+ "AND patients_info.p_no=registration_info.p_no";
 
 		System.out.print(sql);
-		ResultSet rs=null;
-		String[] regInfo=null;
-		try{
+		ResultSet rs = null;
+		String[] regInfo = null;
+		try {
 			rs = DBC.executeQuery(sql);
 			rs.next();
-			regInfo = new String[]{
+			regInfo = new String[] {
 					reg_guid,
 					rs.getString("registration_info.p_no"),
 					rs.getString("Name"),
 					rs.getString("patients_info.gender"),
 					rs.getString("registration_info.reg_time"),
-					(String)tab_BedList.getValueAt(tab_BedList.getSelectedRow(), 2),
-					"----",
-					"----",
-					(String)cbb_InpatientDoctor.getSelectedItem(),
-					"----"
-					};
-		}catch(Exception e){
+					(String) tab_BedList.getValueAt(
+							tab_BedList.getSelectedRow(), 2), "----", "----",
+					(String) cbb_InpatientDoctor.getSelectedItem(), "----" };
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		PrinterJob pj = PrinterJob.getPrinterJob();
@@ -1919,9 +2151,8 @@ public class Frm_RegAndInpatient extends JFrame implements
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}	
-	
-	
+	}
+
 	@Override
 	public void reLoad() {
 		this.setEnabled(true);
@@ -1939,6 +2170,8 @@ public class Frm_RegAndInpatient extends JFrame implements
 			refreshClinicInfo();
 		} else if (pan_ClinicOrInpatient.getSelectedIndex() == 1) {
 			refreshInpatientInfo();
+		} else if (pan_ClinicOrInpatient.getSelectedIndex() == 2) {
+			refreshHistory();
 		}
 	}
 
@@ -1971,7 +2204,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 
 	@Override
 	public void showImage(BufferedImage bufferedimage, String msg) {
-		this.Frm_FingerPrintViewer.showImage(bufferedimage);
-		this.Frm_FingerPrintViewer.setTitle(msg);
+		// this.Frm_FingerPrintViewer.showImage(bufferedimage);
+		// this.Frm_FingerPrintViewer.setTitle(msg);
 	}
 }
