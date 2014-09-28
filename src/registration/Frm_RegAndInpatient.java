@@ -4,12 +4,14 @@ import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.awt.print.PageFormat;
+import java.awt.print.Paper;
+import java.awt.print.PrinterJob;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -36,7 +38,9 @@ import org.his.bind.PatientsInfoJPATable;
 import org.his.dao.PatientsInfoDao;
 import org.his.model.PatientsInfo;
 
+import barcode.PrintBarcode;
 import patients.Frm_PatientMod;
+import patients.LabelSticker;
 import patients.PatientsInterface;
 import system.Setting;
 import cc.johnwu.date.DateInterface;
@@ -128,6 +132,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 	private boolean selectedPatientWithBirthdayInfo = false;
 	private String selectedBedGUID = "";
 	private String selectedBedDevision = "";
+	private Integer m_Number = 0;
 
 	boolean dead = true;
 
@@ -1175,9 +1180,14 @@ public class Frm_RegAndInpatient extends JFrame implements
 				.getString("RESERVATION")) {
 			type = "R";
 		}
+		String newRegUUID = UUID.randomUUID().toString();
 		try {
-			sql = "INSERT INTO registration_info SELECT " + "uuid()," + // guid
-					"NULL," + // bed_guid
+			sql = "INSERT INTO registration_info SELECT " + "'"
+					+ newRegUUID
+					+ "',"
+					+ // guid
+					"NULL,"
+					+ // bed_guid
 					"'"
 					+ selectedPatientGUID
 					+ "'," // p_no
@@ -1254,7 +1264,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 					+ "AND finish='W' "
 					+ "AND touchtime LIKE concat(DATE_FORMAT(now(),'%Y%m%d%H%i'),'%') ";
 			ResultSet rs = DBC.executeQuery(sql);
-			Integer m_Number = 0;
+
 			String m_Guid = "";
 			if (rs.next()) {
 				m_Number = rs.getInt(1);
@@ -1262,18 +1272,11 @@ public class Frm_RegAndInpatient extends JFrame implements
 			}
 
 			String html = "<html><font size='6'>";
-			// ******************************************//
-			// *****儲存目前位置*****//
-			// m_Gis = this.lab_GPS.getText().trim();
-			// m_Country = (String) this.m_Cobww.getSelectedItem();
-			sql = "INSERT INTO gis(guid, gis, reg_guid, address) "
-					+ "VALUES(uuid(),'" + "TempGIS" + "','" + m_Guid + "','"
-					+ "TempCOUNTRY" + "' ) ";
-			DBC.executeUpdate(sql);
-			// *****儲存目前位置*****//
-			// ****掛號成功訊息******//
 
-			PrintTools pt = null;
+			sql = "INSERT INTO gis(guid, gis, reg_guid, address) "
+					+ "VALUES(uuid()," + "'TempGIS'," + "'" + newRegUUID + "',"
+					+ "'TempCOUNTRY'" + " ) ";
+			DBC.executeUpdate(sql);
 
 			sql = "SELECT p_no, firstname, lastname, gender, birth, '"
 					+ lbl_Age.getText().replace(
@@ -1305,9 +1308,6 @@ public class Frm_RegAndInpatient extends JFrame implements
 
 			rs = DBC.executeQuery(sql);
 			rs.next();
-			pt = new PrintTools();
-			// pt.DoPrint(1,rs);
-
 			JOptionPane.showMessageDialog(
 					null,
 					html
@@ -1319,7 +1319,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 									paragraph.getString("TITLELASTNAME"), "")
 							+ " \n" + html + this.lbl_Birthday.getText()
 							+ " \n" + html + this.lbl_Age.getText() + " \n"
-							+ html + this.lbl_Gender.getText() + " "
+							+ html + this.lbl_Gender.getText() + " \n"
 							+ "***************************************\n"
 							+ html + paragraph.getString("DATE")
 							+ this.pan_ClinicDate.getValue() + "\n" + html
@@ -1334,17 +1334,12 @@ public class Frm_RegAndInpatient extends JFrame implements
 							+ "***************************************",
 					paragraph.getString("REGISTRATIONSUCCESSFUL"),
 					JOptionPane.DEFAULT_OPTION);
-			// ******************************************//
-
 			DBC.closeConnection(rs);
 
 			reLoad();
 			tab_PatientList.setModel(new DefaultTableModel(
 					new String[][] { { "You need to give more keywords." } },
 					new String[] { "Message" }) {
-				/**
-						 * 
-						 */
 				private static final long serialVersionUID = -8196430493734834613L;
 
 				@Override
@@ -1356,7 +1351,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-
+		printRegClinic(newRegUUID);
 	}
 
 	private void initInpatientInfo() {
@@ -1683,9 +1678,11 @@ public class Frm_RegAndInpatient extends JFrame implements
 
 	private void btn_InpatientSaveactionPerformed(
 			java.awt.event.ActionEvent evt, String type) {
+		m_Number = 0;
 		ResultSet rs = null;
 		String sql = "";
 		String newBedRecordUUID = UUID.randomUUID().toString();
+		String newRegUUID = UUID.randomUUID().toString();
 		String selectedType = "";
 		if (cbb_InpatientType.getSelectedIndex() == 0) {
 			selectedType = "N";
@@ -1745,7 +1742,9 @@ public class Frm_RegAndInpatient extends JFrame implements
 						tab_BedList.getSelectedRow(), 0);
 			}
 			// Insert registration_info
-			sql = "INSERT INTO registration_info SELECT " + "uuid()," // guid
+			sql = "INSERT INTO registration_info SELECT " + "'"
+					+ newRegUUID
+					+ "'," // guid
 					+ "'"
 					+ newBedRecordUUID
 					+ "', " // bed_guid
@@ -1808,8 +1807,121 @@ public class Frm_RegAndInpatient extends JFrame implements
 				e.printStackTrace();
 			}
 		}
+		printRegInpatient(newRegUUID);
 	}
 
+	private void printRegClinic(String reg_guid) {
+		String sql="SELECT "
+				+ "registration_info.p_no, "
+				+ "concat(patients_info.firstname,'  ',patients_info.lastname) AS 'Name', "
+				+ "patients_info.gender, "
+				+ "registration_info.reg_time, "
+				+ "policlinic.name, "
+				+ "shift_table.shift, "
+				+ "policlinic.room_num, "
+				+ "concat(staff_info.firstname,'  ',staff_info.lastname) AS 'Doctor' "
+				+ "FROM "
+				+ "registration_info, patients_info, policlinic, shift_table, staff_info, poli_room "
+				+ "WHERE "
+				+ "registration_info.guid = '"+reg_guid+"' "
+				+ "AND patients_info.p_no=registration_info.p_no "
+				+ "AND registration_info.shift_guid=shift_table.guid "
+				+ "AND shift_table.room_guid=poli_room.guid "
+				+ "AND poli_room.poli_guid=policlinic.guid "
+				+ "AND shift_table.s_id=staff_info.s_id";
+		System.out.print(sql);
+		ResultSet rs=null;
+		String[] regInfo=null;
+		try{
+			rs = DBC.executeQuery(sql);
+			rs.next();
+			String strShift;
+			if(rs.getString("shift_table.shift")=="1"){
+				strShift="Morning";
+			}
+			else if(rs.getString("shift_table.shift")=="2"){
+				strShift="Noon";
+			}
+			else{
+				strShift="Night";
+			}
+			regInfo = new String[]{
+					reg_guid,
+					rs.getString("registration_info.p_no"),
+					rs.getString("Name"),
+					rs.getString("patients_info.gender"),
+					rs.getString("registration_info.reg_time"),
+					rs.getString("policlinic.name"),
+					strShift,
+					"Room "+rs.getString("policlinic.room_num"),
+					rs.getString("Doctor"),
+					Integer.toString(m_Number)
+					};
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		PrinterJob pj = PrinterJob.getPrinterJob();
+		PageFormat pf = pj.defaultPage();
+		Paper paper = new Paper();
+		paper.setSize(600, 800);
+		paper.setImageableArea(0, 0, 600, 800);
+		pf.setPaper(paper);
+		pj.setPrintable(new RegPrintable(regInfo), pf);
+		try {
+			pj.print();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void printRegInpatient(String reg_guid) {
+		String sql="SELECT "
+				+ "registration_info.p_no, "
+				+ "concat(patients_info.firstname,'  ',patients_info.lastname) AS 'Name', "
+				+ "patients_info.gender, "
+				+ "registration_info.reg_time "
+				+ "FROM "
+				+ "registration_info, patients_info "
+				+ "WHERE "
+				+ "registration_info.guid = '"+reg_guid+"' "
+				+ "AND patients_info.p_no=registration_info.p_no";
+
+		System.out.print(sql);
+		ResultSet rs=null;
+		String[] regInfo=null;
+		try{
+			rs = DBC.executeQuery(sql);
+			rs.next();
+			regInfo = new String[]{
+					reg_guid,
+					rs.getString("registration_info.p_no"),
+					rs.getString("Name"),
+					rs.getString("patients_info.gender"),
+					rs.getString("registration_info.reg_time"),
+					(String)tab_BedList.getValueAt(tab_BedList.getSelectedRow(), 2),
+					"----",
+					"----",
+					(String)cbb_InpatientDoctor.getSelectedItem(),
+					"----"
+					};
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		PrinterJob pj = PrinterJob.getPrinterJob();
+		PageFormat pf = pj.defaultPage();
+		Paper paper = new Paper();
+		paper.setSize(600, 800);
+		paper.setImageableArea(0, 0, 600, 800);
+		pf.setPaper(paper);
+		pj.setPrintable(new RegPrintable(regInfo), pf);
+		try {
+			pj.print();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}	
+	
+	
 	@Override
 	public void reLoad() {
 		this.setEnabled(true);
@@ -1818,7 +1930,6 @@ public class Frm_RegAndInpatient extends JFrame implements
 
 	@Override
 	public void onPatientMod(String pno) {
-		// TODO Auto-generated method stub
 
 	}
 
