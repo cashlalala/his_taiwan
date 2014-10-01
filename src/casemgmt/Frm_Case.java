@@ -33,12 +33,10 @@ import cc.johnwu.date.DateInterface;
 import cc.johnwu.date.DateMethod;
 import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
-
 import common.Constant;
 import common.PrintTools;
 import common.TabTools;
 import common.Tools;
-
 import diagnosis.Frm_DiagnosisPrescription;
 import errormessage.StoredErrorMessage;
 
@@ -76,13 +74,9 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 	StoredErrorMessage ErrorMessage = new StoredErrorMessage();
 
 	private boolean m_FinishState; // T 完成 F 第一次
-	private int m_PrintType; // 列印項目 0:藥品列印 1:處置列印 2:X-Ray列印
 	private String m_RegGuid; // registration guid
 	private int m_ModifyCount = 0; // 修改次數
 	private String m_From;
-	/* 是否使用套餐記錄 */
-	private String m_PackageSet;
-	private String m_PackageSetId;
 
 	public Frm_Case(String p_no, String regGuid, boolean finishState,
 			String From) {
@@ -567,8 +561,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 				.getColumn(2);
 		TableColumn prescriptionColumnPlace = tab_Prescription.getColumnModel()
 				.getColumn(3);
-		TableColumn prescriptionColumnType = tab_Prescription.getColumnModel()
-				.getColumn(4);
+		tab_Prescription.getColumnModel().getColumn(4);
 		prescriptionColumnNo.setMaxWidth(30);
 		prescriptionColumnCode.setMaxWidth(80);
 		prescriptionColumnName.setPreferredWidth(650);
@@ -649,7 +642,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 				/**
 						 * 
 						 */
-						private static final long serialVersionUID = -2995151919565263320L;
+				private static final long serialVersionUID = -2995151919565263320L;
 
 				@Override
 				public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -767,7 +760,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 				/**
 						 * 
 						 */
-						private static final long serialVersionUID = -5596812643978453160L;
+				private static final long serialVersionUID = -5596812643978453160L;
 
 				@Override
 				public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -860,7 +853,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 				tab_Prescription.setValueAt(rs.getString("type"),
 						rowPrescription, 4);
 				if ((rowPrescription + 2) > tab_Prescription.getRowCount()) {
-					m_PrescriptionModel.addRow(new Vector());
+					m_PrescriptionModel.addRow(new Vector<Object>());
 					tab_Prescription.setValueAt(++m_PrescriptionRowNo,
 							tab_Prescription.getRowCount() - 1, 0);
 				}
@@ -879,6 +872,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 	}
 
 	// 取得檢驗值
+	@SuppressWarnings("unused")
 	private double getResult(String name) {
 		try {
 			ResultSet rs = null;
@@ -1238,7 +1232,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 						.getValueAt(m_SelectTableRowNo - 1,
 								m_SelectTableAddRowLimitColumn).toString()
 						.trim().equals("")) {
-			m_SelectTableModel.addRow(new Vector());
+			m_SelectTableModel.addRow(new Vector<Object>());
 			m_SelectTable.setValueAt(++m_SelectTableRowNo,
 					m_SelectTable.getRowCount() - 1, 0);
 		}
@@ -1351,8 +1345,8 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		tab_PrescriptionFocusGained(null);
 
 		int[] column = { 1, 2, 4 };
-		Collection collection = Tools.getV(v).values();
-		Iterator iterator = collection.iterator();
+		Collection<?> collection = Tools.getV(v).values();
+		Iterator<?> iterator = collection.iterator();
 		while (iterator.hasNext()) {
 			Object[] value = iterator.next().toString().split("  ");
 			if (isCodeAtHashMap(value[0].toString().trim()))
@@ -1377,7 +1371,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 				break;
 			} else if (i == m_SelectTable.getRowCount()) {
 
-				m_SelectTableModel.addRow(new Vector());
+				m_SelectTableModel.addRow(new Vector<Object>());
 				m_SelectTable.setValueAt(m_SelectTableRowNo + 1,
 						m_SelectTableRowNo, 0); // 設定行號
 				for (int t = 0; t < value.length; t++) {
@@ -1510,7 +1504,6 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	// <editor-fold defaultstate="collapsed"
 	// desc="Generated Code">//GEN-BEGIN:initComponents
 	private void initComponents() {
@@ -5480,6 +5473,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		pack();
 	}// </editor-fold>//GEN-END:initComponents
 
+	@SuppressWarnings("unused")
 	private void jCheckBox142ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jCheckBox142ActionPerformed
 		// TODO add your handling code here:
 	}// GEN-LAST:event_jCheckBox142ActionPerformed
@@ -6528,22 +6522,16 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 
 	private void mnit_V1ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnit_V1ActionPerformed
 		setV("V1");
-		m_PackageSet = "V1 new patient,";
-		m_PackageSetId = "V1,";
 		jTabbedPane1.setSelectedIndex(3);
 	}// GEN-LAST:event_mnit_V1ActionPerformed
 
 	private void mnit_V2ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnit_V2ActionPerformed
 		setV("V2");
-		m_PackageSet = "V2 F/U per 3 months,";
-		m_PackageSetId = "V2,";
 		jTabbedPane1.setSelectedIndex(3);
 	}// GEN-LAST:event_mnit_V2ActionPerformed
 
 	private void mnit_V3ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnit_V3ActionPerformed
 		setV("V3");
-		m_PackageSet = "V3 per year,";
-		m_PackageSetId = "V3,";
 		jTabbedPane1.setSelectedIndex(3);
 
 	}// GEN-LAST:event_mnit_V3ActionPerformed
