@@ -38,7 +38,6 @@ import admission.Frm_InpatientHistory;
 import admission.InpatientInterface;
 import admission.SysName2Invisible;
 import admission.SysName2Visible;
-import casemgmt.Frm_Case;
 import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
 import diagnosis.DiagnosisInterface;
@@ -256,9 +255,11 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 					&& tab_WorkList
 							.getValueAt(tab_WorkListInterface.getSelectedRow(),
 									3).toString().equals("F")) {
-				new Frm_Case(m_Pno, m_RegGuid, true, "").setVisible(true);
+				new casemgmt.Frm_Case(m_Pno, m_RegGuid, true, "")
+						.setVisible(true);
 			} else {
-				new Frm_Case(m_Pno, m_RegGuid, false, "").setVisible(true);
+				new casemgmt.Frm_Case(m_Pno, m_RegGuid, false, "")
+						.setVisible(true);
 			}
 
 		} else if (m_SysName.equals("inp")) {
