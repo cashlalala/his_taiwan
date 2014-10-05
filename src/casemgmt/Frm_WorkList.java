@@ -117,12 +117,12 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 			}
 		});
 		this.m_RefrashWorkList = new RefrashWorkList(this.tab_WorkList,
-				REFRASHTIME, m_SysName, "W");
+				REFRASHTIME, m_SysName, "N");
 		m_RefrashWorkList.setParentFrame(this);
 		this.m_RefrashWorkList.start();
 
 		m_RefrashWorkList2 = new RefrashWorkList(this.table_FinishList,
-				REFRASHTIME, m_SysName, "F");
+				REFRASHTIME, m_SysName, "C");
 		m_RefrashWorkList2.setParentFrame(this);
 		this.m_RefrashWorkList2.start();
 
@@ -190,7 +190,7 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 				tab_WorkListInterface.getSelectedRow(), 3) != null
 				&& tab_WorkList
 						.getValueAt(tab_WorkListInterface.getSelectedRow(), 3)
-						.toString().equals("F")) {
+						.toString().equals("C")) {
 			new casemgmt.Frm_Case(m_Pno, m_RegGuid, true, "").setVisible(true);
 		} else {
 			new casemgmt.Frm_Case(m_Pno, m_RegGuid, false, "").setVisible(true);
@@ -649,7 +649,8 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 	}// GEN-LAST:event_mnit_EnterActionPerformed
 
 	private void mnit_CloseActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnit_CloseActionPerformed
-
+		m_RefrashWorkList2.stopRunning();
+		m_RefrashWorkList2.interrupt();
 		m_RefrashWorkList.stopRunning();
 		m_RefrashWorkList.interrupt(); // 終止重複讀取掛號表單
 		m_Clock.interrupt();
@@ -771,10 +772,10 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 			dateComboBox.setValue(new SimpleDateFormat("yyyy-MM-dd")
 					.format(Calendar.getInstance().getTime()));
 			this.m_RefrashWorkList = new RefrashWorkList(this.tab_WorkList,
-					REFRASHTIME, m_SysName, "W");
+					REFRASHTIME, m_SysName, "N");
 			this.m_RefrashWorkList.start();
 			this.m_RefrashWorkList2 = new RefrashWorkList(
-					this.table_FinishList, REFRASHTIME, m_SysName, "F");
+					this.table_FinishList, REFRASHTIME, m_SysName, "C");
 			this.m_RefrashWorkList2.start();
 			this.m_Clock = new Thread() { // Clock
 				@Override
@@ -804,9 +805,9 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 			dateComboBox.setEnabled(false);
 			btn_Search.setText("Cancels Search");
 			m_RefrashWorkList.interrupt(); // 終止重複讀取掛號表單
-			m_RefrashWorkList.getSelectDate(dateComboBox.getValue(), "W");
+			m_RefrashWorkList.getSelectDate(dateComboBox.getValue(), "N");
 			m_RefrashWorkList2.interrupt(); // 終止重複讀取掛號表單
-			m_RefrashWorkList2.getSelectDate(dateComboBox.getValue(), "F");
+			m_RefrashWorkList2.getSelectDate(dateComboBox.getValue(), "C");
 		}
 	}// GEN-LAST:event_btn_SearchActionPerformed
 

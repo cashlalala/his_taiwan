@@ -72,7 +72,7 @@ public class RefrashWorkList extends Thread {
 				+ "WHERE registration_info.guid = outpatient_services.reg_guid AND p_no = A.p_no ) AS '"
 				+ paragraph.getString("COL_FIRST")
 				+ "', "
-				+ "CASE A.case_finish WHEN 'F' THEN 'F' END 'Status', "
+				+ "case_manage.status AS 'Status', "
 				+ "A.reg_time AS '"
 				+ paragraph.getString("COL_REGTIME")
 				+ "', A.p_no AS '"
@@ -93,19 +93,17 @@ public class RefrashWorkList extends Thread {
 				+ "patients_info.ps AS '"
 				+ paragraph.getString("COL_PS")
 				+ "', "
-				+ "A.guid, policlinic.type  "
-				+ "FROM registration_info AS A, patients_info, shift_table,staff_info, poli_room, policlinic  "
-				+ "WHERE A.shift_guid = shift_table.guid "
-				+ "AND shift_table.room_guid = poli_room.guid "
-				+ "AND shift_table.shift_date = '" + DateMethod.getTodayYMD()
-				+ "' " + "AND shift_table.shift = '"
-				+ DateMethod.getNowShiftNum() + "' "
-				+ "AND poli_room.poli_guid = policlinic.guid "
-				+ "AND shift_table.s_id = staff_info.s_id "
-				+ "AND (A.case_finish = 'F' OR A.case_finish IS NULL) "
-				+ "AND A.p_no = patients_info.p_no "
-				+ "AND policlinic.type = 'DM' "
-				+ "ORDER BY Status, A.visits_no";
+				+ "A.guid "
+				+ "FROM registration_info AS A, patients_info, case_manage, staff_info "
+				+ "WHERE "
+				// + "AND shift_table.shift_date = '" + DateMethod.getTodayYMD()
+				// + "' " + "AND shift_table.shift = '"
+				// + DateMethod.getNowShiftNum() + "' "
+				+ "case_manage.s_no = staff_info.s_no "
+				+ "AND case_manage.reg_guid = A.guid "
+				+ "AND case_manage.p_no = patients_info.p_no "
+				+ "AND case_manage.status = '" + finished + "' "
+				+ "ORDER BY A.visits_no";
 
 		this.m_Tab = tab;
 		this.m_Time = time;
@@ -251,7 +249,7 @@ public class RefrashWorkList extends Thread {
 				+ "WHERE registration_info.guid = outpatient_services.reg_guid AND p_no = A.p_no ) AS '"
 				+ paragraph.getLanguage(line, "COL_FIRST")
 				+ "', "
-				+ "CASE A.case_finish WHEN 'F' THEN 'F' END 'State', "
+				+ "case_manage.status AS 'Status', "
 				+ "A.reg_time AS '"
 				+ paragraph.getLanguage(line, "COL_REGTIME")
 				+ "', A.p_no AS '"
@@ -272,18 +270,14 @@ public class RefrashWorkList extends Thread {
 				+ "patients_info.ps AS '"
 				+ paragraph.getLanguage(line, "COL_PS")
 				+ "', "
-				+ "A.guid, policlinic.type  "
-				+ "FROM registration_info AS A, patients_info, shift_table,staff_info, poli_room, policlinic  "
-				+ "WHERE A.shift_guid = shift_table.guid "
-				+ "AND shift_table.room_guid = poli_room.guid "
-				+ "AND poli_room.poli_guid = policlinic.guid "
-				+ "AND shift_table.s_id = staff_info.s_id "
-				+ "AND (A.case_finish = 'F' OR A.case_finish IS NULL) "
-				+ "AND A.p_no = patients_info.p_no "
-				+ "AND policlinic.type = 'DM' " + "AND A.reg_time LIKE '"
-				+ date + "%' " + "ORDER BY State, A.visits_no";
+				+ "A.guid "
+				+ "FROM registration_info AS A, patients_info, staff_info, case_manage "
+				+ "WHERE " + "case_manage.reg_guid = A.guid "
+				+ "AND case_manage.p_no = patients_info.p_no "
+				+ "AND case_manage.s_no = staff_info.s_no "
+				+ "AND A.p_no = patients_info.p_no " + "AND A.reg_time LIKE '"
+				+ date + "%' " + "ORDER BY A.visits_no";
 		try {
-			System.out.println(sql);
 			rs = DBC.executeQuery(sql);
 			((DefaultTableModel) this.m_Tab.getModel()).setRowCount(0);
 			this.m_Tab.setModel(HISModel.getModel(rs));
