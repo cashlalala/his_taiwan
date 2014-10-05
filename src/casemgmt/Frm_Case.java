@@ -79,7 +79,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 	private String m_From;
 
 	public Frm_Case(String p_no, String regGuid, boolean finishState,
-			String From) {
+			String from) {
 		initComponents();
 
 		addWindowListener(new WindowAdapter() {
@@ -95,7 +95,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 				setCloseRevisitTime();
 			}
 		});
-		if (From.equals("dia")) {
+		if (from.equals("dia")) {
 			pan_Ass.setVisible(false);
 			btn_Ddate_Save.setVisible(false);
 			mnb.setVisible(false);
@@ -157,7 +157,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 			tab_HealthTeach.setEnabled(false);
 			tab_Prescription.setEnabled(false);
 			jTabbedPane1.setSelectedIndex(1);
-		} else if (From.equals("medicine")) {
+		} else if (from.equals("medicine")) {
 			jPanel4.setVisible(false);
 			btn_Ddate_Save.setVisible(false);
 			mnb.setVisible(false);
@@ -167,7 +167,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 			jTabbedPane1.remove(0);
 			this.setTitle("Medicine Education");
 		}
-		m_From = From;
+		m_From = from;
 		m_Pno = p_no;
 		m_RegGuid = regGuid;
 		m_FinishState = finishState;
