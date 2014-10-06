@@ -132,7 +132,8 @@ public class Frm_Main extends javax.swing.JFrame {
 		this.btn_MedicineStock.setText(paragraph.getString("PHARMACYSTOCK"));
 		this.btn_MaterialStock.setText(paragraph.getString("MATERIALSTOCK"));
 		this.btn_BedManagement.setText(paragraph.getString("BEDMANAGEMENT"));
-		this.btn_CodeMaintenance.setText(paragraph.getString("CODEMAINTENANCE"));
+		this.btn_CodeMaintenance
+				.setText(paragraph.getString("CODEMAINTENANCE"));
 		this.btn_Pharmacy.setText(paragraph.getString("PHARMACY"));
 		this.btn_PositionManagement.setText(paragraph
 				.getString("POSITION_MANAGEMENT"));
@@ -205,14 +206,15 @@ public class Frm_Main extends javax.swing.JFrame {
 		btn_Case.setEnabled(UserInfo.getSelectPow("Case Management"));
 		btn_Cashier.setEnabled(UserInfo.getSelectPow("Cashier"));
 		btn_BedManagement.setEnabled(UserInfo.getSelectPow("Bed Management"));
-		btn_CodeMaintenance.setEnabled(UserInfo.getSelectPow("Code Maintenance"));
+		btn_CodeMaintenance.setEnabled(UserInfo
+				.getSelectPow("Code Maintenance"));
 		btn_Inpatient.setEnabled(UserInfo.getSelectPow("InPatient"));
 
 		// btn_Inpatient.setEnabled(true);
 
 		// btn_Anamnesis.setEnabled(false);
 		// btn_AnamnesisReturn.setEnabled(false);
-		//btn_Statistic.setEnabled(false);
+		// btn_Statistic.setEnabled(false);
 		// btn_Sms.setEnabled(false);
 		// btn_Case.setEnabled(false);
 		// btn_BedManagement.setEnabled(false);
@@ -608,8 +610,7 @@ public class Frm_Main extends javax.swing.JFrame {
 																javax.swing.GroupLayout.Alignment.LEADING,
 																javax.swing.GroupLayout.DEFAULT_SIZE,
 																200,
-																Short.MAX_VALUE)
-										)
+																Short.MAX_VALUE))
 										.addContainerGap(
 												javax.swing.GroupLayout.DEFAULT_SIZE,
 												Short.MAX_VALUE)));
@@ -627,7 +628,7 @@ public class Frm_Main extends javax.swing.JFrame {
 								.addContainerGap(
 										javax.swing.GroupLayout.DEFAULT_SIZE,
 										Short.MAX_VALUE)));
-		
+
 		pan_BedManagement.setBackground(new java.awt.Color(240, 246, 255));
 
 		javax.swing.GroupLayout pan_BedManagementLayout = new javax.swing.GroupLayout(
@@ -980,11 +981,12 @@ public class Frm_Main extends javax.swing.JFrame {
 						btn_BedManagementActionPerformed(evt);
 					}
 				});
-		btn_CodeMaintenance.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				btn_CodeMaintenanceActionPerformed(evt);
-			}
-		});
+		btn_CodeMaintenance
+				.addActionListener(new java.awt.event.ActionListener() {
+					public void actionPerformed(java.awt.event.ActionEvent evt) {
+						btn_CodeMaintenanceActionPerformed(evt);
+					}
+				});
 
 		pan_Case.setBackground(new java.awt.Color(240, 246, 255));
 		pan_Case.setBorder(javax.swing.BorderFactory
@@ -1165,7 +1167,7 @@ public class Frm_Main extends javax.swing.JFrame {
 														pan_CodeMaintenance,
 														javax.swing.GroupLayout.PREFERRED_SIZE,
 														javax.swing.GroupLayout.DEFAULT_SIZE,
-														javax.swing.GroupLayout.PREFERRED_SIZE)		
+														javax.swing.GroupLayout.PREFERRED_SIZE)
 
 								// .addGroup(
 								// layout.createSequentialGroup()
@@ -1292,8 +1294,7 @@ public class Frm_Main extends javax.swing.JFrame {
 																		javax.swing.GroupLayout.DEFAULT_SIZE,
 																		javax.swing.GroupLayout.PREFERRED_SIZE)
 																.addPreferredGap(
-																		javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-														))
+																		javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
 								.addContainerGap()));
 
 		pack();
@@ -1451,7 +1452,7 @@ public class Frm_Main extends javax.swing.JFrame {
 	}// GEN-LAST:event_btn_AnamnesisReturnActionPerformed
 
 	private void btn_CaseActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_CaseActionPerformed
-		new worklist.Frm_WorkList(0, "case").setVisible(true);
+		new casemgmt.Frm_WorkList(0, "case").setVisible(true);
 		this.dispose();
 	}// GEN-LAST:event_btn_CaseActionPerformed
 
@@ -1464,8 +1465,9 @@ public class Frm_Main extends javax.swing.JFrame {
 		new bedMgmt.Frm_BedList(0).setVisible(true);
 		this.dispose();
 	}
-	
-	private void btn_CodeMaintenanceActionPerformed(java.awt.event.ActionEvent evt) {
+
+	private void btn_CodeMaintenanceActionPerformed(
+			java.awt.event.ActionEvent evt) {
 		Frm_TableChooser chooser = new Frm_TableChooser();
 		chooser.setLocationRelativeTo(this);
 		chooser.setVisible(true);

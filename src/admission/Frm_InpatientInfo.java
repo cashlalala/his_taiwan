@@ -32,21 +32,18 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
-import com.mysql.jdbc.Statement;
-
 import laboratory.Frm_LabDM;
-import laboratory.Frm_LabHistory;
 import multilingual.Language;
-import radiology.Frm_RadiologyHistory;
 import worklist.Frm_WorkList;
-import casemgmt.Frm_Case;
 import cc.johnwu.date.DateMethod;
 import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
+
 import common.Constant;
 import common.PrintTools;
 import common.TabTools;
 import common.Tools;
+
 import errormessage.StoredErrorMessage;
 
 @SuppressWarnings("serial")
@@ -3984,7 +3981,7 @@ public class Frm_InpatientInfo extends javax.swing.JFrame implements
 
 	private void mnit_LabHistoryActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnit_LabHistoryActionPerformed
 		this.setEnabled(false);
-//		new Frm_LabHistory(this, m_Pno).setVisible(true);
+		// new Frm_LabHistory(this, m_Pno).setVisible(true);
 	}// GEN-LAST:event_mnit_LabHistoryActionPerformed
 
 	private void list_MenuKeyReleased(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_list_MenuKeyReleased
@@ -4040,11 +4037,12 @@ public class Frm_InpatientInfo extends javax.swing.JFrame implements
 
 	private void mnit_XRayHistoryActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnit_XRayHistoryActionPerformed
 		this.setEnabled(false);
-//		new Frm_RadiologyHistory(this, m_Pno).setVisible(true);
+		// new Frm_RadiologyHistory(this, m_Pno).setVisible(true);
 	}// GEN-LAST:event_mnit_XRayHistoryActionPerformed
 
 	private void mnit_ComplicationActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnit_ComplicationActionPerformed
-		new Frm_Case(m_Pno, m_RegistrationGuid, true, "dia").setVisible(true);
+		new casemgmt.Frm_Case(m_Pno, m_RegistrationGuid, true, "dia")
+				.setVisible(true);
 	}// GEN-LAST:event_mnit_ComplicationActionPerformed
 
 	private void mnit_LabHistoryDMActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnit_LabHistoryDMActionPerformed
@@ -4053,7 +4051,8 @@ public class Frm_InpatientInfo extends javax.swing.JFrame implements
 
 	private void btn_CaseManagementActionPerformed(
 			java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_CaseManagementActionPerformed
-		new Frm_Case(m_Pno, m_RegistrationGuid, true, "dia").setVisible(true);
+		new casemgmt.Frm_Case(m_Pno, m_RegistrationGuid, true, "dia")
+				.setVisible(true);
 	}// GEN-LAST:event_btn_CaseManagementActionPerformed
 
 	private void menu_SendActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_menu_SendActionPerformed
