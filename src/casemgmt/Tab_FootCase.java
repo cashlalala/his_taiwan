@@ -2,6 +2,8 @@ package casemgmt;
 
 import java.awt.LayoutManager;
 
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JPanel;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -20,6 +22,8 @@ import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.JComboBox;
 import javax.swing.JCheckBox;
+import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.DefaultTableModel;
 
 import multilingual.Language;
 
@@ -58,10 +62,53 @@ public class Tab_FootCase extends JPanel {
 	private JComboBox comboBox_7;
 	private JComboBox comboBox_8;
 	private JComboBox comboBox_9;
-	private JLabel lblNewLabel_10;
+	private JLabel lblEducated;
+
+	private DefaultComboBoxModel footPos1;
+	private DefaultComboBoxModel footPos2;
+	private DefaultComboBoxModel footPos3;
+	private DefaultComboBoxModel footPos4;
+	private DefaultComboBoxModel footPos5;
+	private DefaultComboBoxModel footPos6;
+	private DefaultComboBoxModel footPos7;
+	private DefaultComboBoxModel footPos8;
+	private DefaultComboBoxModel footPos9;
+	private DefaultComboBoxModel footPos10;
+
+	private DefaultTableModel diabeteRec;
+
+	private static final String[] colName = new String[] {
+			lang.getString("FOOT_CASE_NO"), lang.getString("FOOT_CTIME"),
+			lang.getString("FOOT_DOC"), lang.getString("FOOT_EDU"),
+			lang.getString("FOOT_1"), lang.getString("FOOT_2"),
+			lang.getString("FOOT_3"), lang.getString("FOOT_4"),
+			lang.getString("FOOT_5"), lang.getString("FOOT_6"),
+			lang.getString("FOOT_7"), lang.getString("FOOT_8"),
+			lang.getString("FOOT_9"), lang.getString("FOOT_10"), };
+	private JScrollPane scrollPane_1;
 
 	public Tab_FootCase() {
+		initModel();
+		initComponent();
+	}
 
+	private void initModel() {
+		footPos1 = new DefaultComboBoxModel(new String[] { "-", "+" });
+		footPos2 = new DefaultComboBoxModel(new String[] { "-", "+" });
+		footPos3 = new DefaultComboBoxModel(new String[] { "-", "+" });
+		footPos4 = new DefaultComboBoxModel(new String[] { "-", "+" });
+		footPos5 = new DefaultComboBoxModel(new String[] { "-", "+" });
+		footPos6 = new DefaultComboBoxModel(new String[] { "-", "+" });
+		footPos7 = new DefaultComboBoxModel(new String[] { "-", "+" });
+		footPos8 = new DefaultComboBoxModel(new String[] { "-", "+" });
+		footPos9 = new DefaultComboBoxModel(new String[] { "-", "+" });
+		footPos10 = new DefaultComboBoxModel(new String[] { "-", "+" });
+
+		diabeteRec = new DefaultTableModel(new Object[][] { { "", "", "", "",
+				"", "", "", "", "", "", "", "", "", "", } }, colName);
+	}
+
+	private void initComponent() {
 		JScrollPane scrollPane = new JScrollPane();
 
 		btnSave = new JButton(lang.getString("FOOT_SAVE"));
@@ -108,11 +155,11 @@ public class Tab_FootCase extends JPanel {
 
 		btnSearch = new JButton(lang.getString("FOOT_SEARCH"));
 
-		table = new JTable();
-
 		panelFoot = new ImagePanel();
 
 		panelFootChk = new JPanel();
+
+		scrollPane_1 = new JScrollPane();
 		GroupLayout gl_panel = new GroupLayout(panel);
 		gl_panel.setHorizontalGroup(gl_panel
 				.createParallelGroup(Alignment.LEADING)
@@ -121,73 +168,77 @@ public class Tab_FootCase extends JPanel {
 								.addContainerGap()
 								.addGroup(
 										gl_panel.createParallelGroup(
-												Alignment.TRAILING)
+												Alignment.LEADING)
+												.addComponent(
+														scrollPane_1,
+														GroupLayout.DEFAULT_SIZE,
+														752, Short.MAX_VALUE)
 												.addGroup(
 														gl_panel.createSequentialGroup()
 																.addComponent(
 																		textField,
 																		GroupLayout.DEFAULT_SIZE,
-																		317,
+																		661,
 																		Short.MAX_VALUE)
 																.addPreferredGap(
-																		ComponentPlacement.RELATED)
+																		ComponentPlacement.UNRELATED)
 																.addComponent(
-																		btnSearch))
-												.addComponent(
-														table,
-														GroupLayout.DEFAULT_SIZE,
-														412, Short.MAX_VALUE))
+																		btnSearch,
+																		GroupLayout.PREFERRED_SIZE,
+																		81,
+																		GroupLayout.PREFERRED_SIZE)))
 								.addPreferredGap(ComponentPlacement.RELATED)
 								.addComponent(panelFootChk,
 										GroupLayout.PREFERRED_SIZE, 210,
 										GroupLayout.PREFERRED_SIZE)
-								.addGap(18)
+								.addGap(93)
 								.addComponent(panelFoot,
 										GroupLayout.PREFERRED_SIZE, 292,
 										GroupLayout.PREFERRED_SIZE).addGap(21)));
 		gl_panel.setVerticalGroup(gl_panel
-				.createParallelGroup(Alignment.TRAILING)
+				.createParallelGroup(Alignment.LEADING)
 				.addGroup(
 						gl_panel.createSequentialGroup()
 								.addContainerGap()
 								.addGroup(
 										gl_panel.createParallelGroup(
-												Alignment.TRAILING)
+												Alignment.LEADING)
 												.addComponent(
 														panelFootChk,
-														Alignment.LEADING,
 														GroupLayout.DEFAULT_SIZE,
-														616, Short.MAX_VALUE)
+														635, Short.MAX_VALUE)
 												.addComponent(
 														panelFoot,
-														Alignment.LEADING,
 														GroupLayout.DEFAULT_SIZE,
-														616, Short.MAX_VALUE)
+														635, Short.MAX_VALUE)
 												.addGroup(
-														Alignment.LEADING,
 														gl_panel.createSequentialGroup()
 																.addGroup(
 																		gl_panel.createParallelGroup(
-																				Alignment.BASELINE,
-																				false)
-																				.addComponent(
-																						btnSearch,
-																						GroupLayout.PREFERRED_SIZE,
-																						35,
-																						GroupLayout.PREFERRED_SIZE)
+																				Alignment.BASELINE)
 																				.addComponent(
 																						textField,
 																						GroupLayout.PREFERRED_SIZE,
 																						35,
+																						GroupLayout.PREFERRED_SIZE)
+																				.addComponent(
+																						btnSearch,
+																						GroupLayout.PREFERRED_SIZE,
+																						35,
 																						GroupLayout.PREFERRED_SIZE))
 																.addPreferredGap(
-																		ComponentPlacement.RELATED)
+																		ComponentPlacement.UNRELATED)
 																.addComponent(
-																		table,
+																		scrollPane_1,
 																		GroupLayout.DEFAULT_SIZE,
-																		575,
-																		Short.MAX_VALUE)))
-								.addGap(24)));
+																		554,
+																		Short.MAX_VALUE)
+																.addGap(35)))
+								.addContainerGap()));
+
+		table = new JTable();
+		scrollPane_1.setViewportView(table);
+		table.setModel(diabeteRec);
 		gl_panel.setAutoCreateGaps(true);
 		gl_panel.setAutoCreateContainerGaps(true);
 		panelFootChk
@@ -255,6 +306,7 @@ public class Tab_FootCase extends JPanel {
 
 		comboBox = new JComboBox();
 		panelFootChk.add(comboBox, "6, 6, 5, 1, fill, default");
+		comboBox.setModel(footPos1);
 
 		lblNewLabel_1 = new JLabel("2");
 		lblNewLabel_1.setHorizontalAlignment(SwingConstants.CENTER);
@@ -262,6 +314,7 @@ public class Tab_FootCase extends JPanel {
 
 		comboBox_1 = new JComboBox();
 		panelFootChk.add(comboBox_1, "6, 10, 5, 1, fill, default");
+		comboBox_1.setModel(footPos2);
 
 		lblNewLabel_2 = new JLabel("3");
 		lblNewLabel_2.setHorizontalAlignment(SwingConstants.CENTER);
@@ -269,6 +322,7 @@ public class Tab_FootCase extends JPanel {
 
 		comboBox_2 = new JComboBox();
 		panelFootChk.add(comboBox_2, "6, 14, 5, 1, fill, default");
+		comboBox_2.setModel(footPos3);
 
 		lblNewLabel_3 = new JLabel("4");
 		lblNewLabel_3.setHorizontalAlignment(SwingConstants.CENTER);
@@ -276,6 +330,7 @@ public class Tab_FootCase extends JPanel {
 
 		comboBox_3 = new JComboBox();
 		panelFootChk.add(comboBox_3, "6, 18, 5, 1, fill, default");
+		comboBox_3.setModel(footPos4);
 
 		lblNewLabel_4 = new JLabel("5");
 		lblNewLabel_4.setHorizontalAlignment(SwingConstants.CENTER);
@@ -283,6 +338,7 @@ public class Tab_FootCase extends JPanel {
 
 		comboBox_4 = new JComboBox();
 		panelFootChk.add(comboBox_4, "6, 22, 5, 1, fill, default");
+		comboBox_4.setModel(footPos5);
 
 		lblNewLabel_5 = new JLabel("6");
 		lblNewLabel_5.setHorizontalAlignment(SwingConstants.CENTER);
@@ -290,6 +346,7 @@ public class Tab_FootCase extends JPanel {
 
 		comboBox_5 = new JComboBox();
 		panelFootChk.add(comboBox_5, "6, 26, 5, 1, fill, default");
+		comboBox_5.setModel(footPos6);
 
 		lblNewLabel_6 = new JLabel("7");
 		lblNewLabel_6.setHorizontalAlignment(SwingConstants.CENTER);
@@ -297,6 +354,7 @@ public class Tab_FootCase extends JPanel {
 
 		comboBox_6 = new JComboBox();
 		panelFootChk.add(comboBox_6, "6, 30, 5, 1, fill, default");
+		comboBox_6.setModel(footPos7);
 
 		lblNewLabel_7 = new JLabel("8");
 		lblNewLabel_7.setHorizontalAlignment(SwingConstants.CENTER);
@@ -304,6 +362,7 @@ public class Tab_FootCase extends JPanel {
 
 		comboBox_7 = new JComboBox();
 		panelFootChk.add(comboBox_7, "6, 34, 5, 1, fill, default");
+		comboBox_7.setModel(footPos8);
 
 		lblNewLabel_8 = new JLabel("9");
 		lblNewLabel_8.setHorizontalAlignment(SwingConstants.CENTER);
@@ -311,6 +370,7 @@ public class Tab_FootCase extends JPanel {
 
 		comboBox_8 = new JComboBox();
 		panelFootChk.add(comboBox_8, "6, 38, 5, 1, fill, default");
+		comboBox_8.setModel(footPos9);
 
 		lblNewLabel_9 = new JLabel("10");
 		lblNewLabel_9.setHorizontalAlignment(SwingConstants.CENTER);
@@ -318,29 +378,26 @@ public class Tab_FootCase extends JPanel {
 
 		comboBox_9 = new JComboBox();
 		panelFootChk.add(comboBox_9, "6, 42, 5, 1");
+		comboBox_9.setModel(footPos10);
 
-		lblNewLabel_10 = new JLabel("Medical Education");
-		panelFootChk.add(lblNewLabel_10, "2, 46");
+		lblEducated = new JLabel("Medical Education");
+		panelFootChk.add(lblEducated, "2, 46");
 
 		JCheckBox chckbxNewCheckBox = new JCheckBox("");
 		panelFootChk.add(chckbxNewCheckBox, "8, 46");
 		panel.setLayout(gl_panel);
 		setLayout(groupLayout);
-		// TODO Auto-generated constructor stub
 	}
 
 	public Tab_FootCase(LayoutManager layout) {
 		super(layout);
-		// TODO Auto-generated constructor stub
 	}
 
 	public Tab_FootCase(boolean isDoubleBuffered) {
 		super(isDoubleBuffered);
-		// TODO Auto-generated constructor stub
 	}
 
 	public Tab_FootCase(LayoutManager layout, boolean isDoubleBuffered) {
 		super(layout, isDoubleBuffered);
-		// TODO Auto-generated constructor stub
 	}
 }
