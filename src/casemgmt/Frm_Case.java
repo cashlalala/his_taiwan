@@ -78,7 +78,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 	private String m_RegGuid; // registration guid
 	private int m_ModifyCount = 0; // 修改次數
 	private String m_From;
-	
+
 	private static Language lang = Language.getInstance();
 
 	public Frm_Case(String p_no, String regGuid, boolean finishState,
@@ -4874,7 +4874,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 										.addContainerGap()));
 
 		jTabbedPane1.addTab("Medicine Education", jPanel9);
-		
+
 		jTabbedPane1.addTab(lang.getString("FOOT_EXAM"), jPanelFoot);
 
 		btn_CaseClose.setText("Send");
@@ -5481,7 +5481,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 
 	@SuppressWarnings("unused")
 	private void jCheckBox142ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jCheckBox142ActionPerformed
-		// TODO add your handling code here:
+
 	}// GEN-LAST:event_jCheckBox142ActionPerformed
 
 	private void btn_CaseCloseActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_CaseCloseActionPerformed
@@ -5572,18 +5572,18 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 	}// GEN-LAST:event_txt_HeightFocusLost
 
 	private void txt_HeightFocusGained(java.awt.event.FocusEvent evt) {// GEN-FIRST:event_txt_HeightFocusGained
-		// TODO add your handling code here:
+
 	}// GEN-LAST:event_txt_HeightFocusGained
 
 	private void txt_HeightActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_txt_HeightActionPerformed
-		// TODO add your handling code here:
+
 	}// GEN-LAST:event_txt_HeightActionPerformed
 
 	private void txt_WeightFocusLost(java.awt.event.FocusEvent evt) {// GEN-FIRST:event_txt_WeightFocusLost
 	}// GEN-LAST:event_txt_WeightFocusLost
 
 	private void txt_WeightActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_txt_WeightActionPerformed
-		// TODO add your handling code here:
+
 	}// GEN-LAST:event_txt_WeightActionPerformed
 
 	private void btn_Ddate_SaveActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_Ddate_SaveActionPerformed
@@ -5993,16 +5993,16 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 
 	private void rad_postural_hypotension_yesActionPerformed(
 			java.awt.event.ActionEvent evt) {// GEN-FIRST:event_rad_postural_hypotension_yesActionPerformed
-		// TODO add your handling code here:
+
 	}// GEN-LAST:event_rad_postural_hypotension_yesActionPerformed
 
 	private void ItemStateChanged_C(java.awt.event.ItemEvent evt) {// GEN-FIRST:event_ItemStateChanged_C
-		// TODO add your handling code here:
+
 		btn_ComSave.setEnabled(true);
 	}// GEN-LAST:event_ItemStateChanged_C
 
 	private void KeyReleased_C(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_KeyReleased_C
-		// TODO add your handling code here:
+
 		btn_ComSave.setEnabled(true);
 	}// GEN-LAST:event_KeyReleased_C
 
@@ -6406,12 +6406,12 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 	}// GEN-LAST:event_btn_AssSaveActionPerformed
 
 	private void KeyReleased(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_KeyReleased
-		// TODO add your handling code here:
+
 		btn_AssSave.setEnabled(true);
 	}// GEN-LAST:event_KeyReleased
 
 	private void com_insulinActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_com_insulinActionPerformed
-		// TODO add your handling code here:
+
 	}// GEN-LAST:event_com_insulinActionPerformed
 
 	private void ItemStateChanged(java.awt.event.ItemEvent evt) {// GEN-FIRST:event_ItemStateChanged
@@ -6429,50 +6429,49 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 
 	private void che_bypass_surgery_RActionPerformed(
 			java.awt.event.ActionEvent evt) {// GEN-FIRST:event_che_bypass_surgery_RActionPerformed
-		// TODO add your handling code here:
+
 	}// GEN-LAST:event_che_bypass_surgery_RActionPerformed
 
 	private void che_ulcer_cured_RActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_che_ulcer_cured_RActionPerformed
-		// TODO add your handling code here:
 	}// GEN-LAST:event_che_ulcer_cured_RActionPerformed
 
 	private void che_acupuncture_RActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_che_acupuncture_RActionPerformed
-		// TODO add your handling code here:
+
 	}// GEN-LAST:event_che_acupuncture_RActionPerformed
 
 	private void che_ulcer_RActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_che_ulcer_RActionPerformed
-		// TODO add your handling code here:
+
 	}// GEN-LAST:event_che_ulcer_RActionPerformed
 
 	private void che_pulse_LActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_che_pulse_LActionPerformed
-		// TODO add your handling code here:
+
 	}// GEN-LAST:event_che_pulse_LActionPerformed
 
 	private void che_pulse_RActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_che_pulse_RActionPerformed
-		// TODO add your handling code here:
+
 	}// GEN-LAST:event_che_pulse_RActionPerformed
 
 	private void che_vibration_RActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_che_vibration_RActionPerformed
-		// TODO add your handling code here:
+
 	}// GEN-LAST:event_che_vibration_RActionPerformed
 
 	private void che_advanced_dm_eyedisease_LActionPerformed(
 			java.awt.event.ActionEvent evt) {// GEN-FIRST:event_che_advanced_dm_eyedisease_LActionPerformed
-		// TODO add your handling code here:
+
 	}// GEN-LAST:event_che_advanced_dm_eyedisease_LActionPerformed
 
 	private void che_proliferative_retinopathy_RActionPerformed(
 			java.awt.event.ActionEvent evt) {// GEN-FIRST:event_che_proliferative_retinopathy_RActionPerformed
-		// TODO add your handling code here:
+
 	}// GEN-LAST:event_che_proliferative_retinopathy_RActionPerformed
 
 	private void StateChanged(javax.swing.event.ChangeEvent evt) {// GEN-FIRST:event_StateChanged
-		// TODO add your handling code here:
+
 		btn_AssSave.setEnabled(true);
 	}// GEN-LAST:event_StateChanged
 
 	private void btn_DheSaveActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_DheSaveActionPerformed
-		// TODO add your handling code here:
+
 		for (int i = 0; i < tab_MedicineTeach.getRowCount(); i++) {
 			if (tab_MedicineTeach.getValueAt(i, 5).toString().equals("true")) {
 				try {
@@ -6517,12 +6516,12 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 	}// GEN-LAST:event_btn_DheSaveActionPerformed
 
 	private void ItemStateChanged_D(java.awt.event.ItemEvent evt) {// GEN-FIRST:event_ItemStateChanged_D
-		// TODO add your handling code here:
+
 		btn_Ddate_Save.setEnabled(true);
 	}// GEN-LAST:event_ItemStateChanged_D
 
 	private void KeyReleased_D(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_KeyReleased_D
-		// TODO add your handling code here:
+
 		btn_Ddate_Save.setEnabled(true);
 	}// GEN-LAST:event_KeyReleased_D
 
