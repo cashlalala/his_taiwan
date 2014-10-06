@@ -27,6 +27,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
 import laboratory.Frm_LabDM;
+import multilingual.Language;
 import casemgmt.TableTriStateCell.TriStateCellEditor;
 import casemgmt.TableTriStateCell.TriStateCellRenderer;
 import cc.johnwu.date.DateInterface;
@@ -77,6 +78,8 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 	private String m_RegGuid; // registration guid
 	private int m_ModifyCount = 0; // 修改次數
 	private String m_From;
+	
+	private static Language lang = Language.getInstance();
 
 	public Frm_Case(String p_no, String regGuid, boolean finishState,
 			String from) {
@@ -1696,6 +1699,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		tab_Prescription = new javax.swing.JTable();
 		btn_PreSave = new javax.swing.JButton();
 		jPanel9 = new javax.swing.JPanel();
+		jPanelFoot = new Tab_FootCase();
 		jScrollPane2 = new javax.swing.JScrollPane();
 		tab_MedicineTeach = new javax.swing.JTable();
 		btn_DheSave = new javax.swing.JButton();
@@ -4870,6 +4874,8 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 										.addContainerGap()));
 
 		jTabbedPane1.addTab("Medicine Education", jPanel9);
+		
+		jTabbedPane1.addTab(lang.getString("FOOT_EXAM"), jPanelFoot);
 
 		btn_CaseClose.setText("Send");
 		btn_CaseClose.addActionListener(new java.awt.event.ActionListener() {
@@ -6774,6 +6780,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 	private javax.swing.JPanel jPanel7;
 	private javax.swing.JPanel jPanel8;
 	private javax.swing.JPanel jPanel9;
+	private javax.swing.JPanel jPanelFoot;
 	private javax.swing.JScrollPane jScrollPane1;
 	private javax.swing.JScrollPane jScrollPane2;
 	private javax.swing.JScrollPane jScrollPane4;
