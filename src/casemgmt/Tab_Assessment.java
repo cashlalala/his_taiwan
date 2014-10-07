@@ -92,6 +92,12 @@ public class Tab_Assessment extends JPanel {
 	private String regGuid;
 	private String pNo;
 
+	private Frm_Case parent;
+
+	public void setParent(Frm_Case parent) {
+		this.parent = parent;
+	}
+
 	public Tab_Assessment(String pNo, String regGuid) {
 		super();
 		this.regGuid = regGuid;
@@ -340,7 +346,6 @@ public class Tab_Assessment extends JPanel {
 				// 所有資料帶入空值
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -2756,6 +2761,7 @@ public class Tab_Assessment extends JPanel {
 					+ ", '"
 					+ UserInfo.getUserID() + "', NOW() )";
 			DBC.executeUpdate(sql);
+			parent.setOverValue();
 			JOptionPane.showMessageDialog(null, "Save Complete");
 			btn_AssSave.setEnabled(false);
 		} catch (SQLException ex) {
