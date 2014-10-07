@@ -1,5 +1,7 @@
 package casemgmt;
 
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.Frame;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
@@ -34,12 +36,10 @@ import cc.johnwu.date.DateInterface;
 import cc.johnwu.date.DateMethod;
 import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
-
 import common.Constant;
 import common.PrintTools;
 import common.TabTools;
 import common.Tools;
-
 import diagnosis.Frm_DiagnosisPrescription;
 import errormessage.StoredErrorMessage;
 
@@ -83,6 +83,16 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 
 	private static Language lang = Language.getInstance();
 
+	public static void enableComponents(Container container, boolean enable) {
+		Component[] components = container.getComponents();
+		for (Component component : components) {
+			component.setEnabled(enable);
+			if (component instanceof Container) {
+				enableComponents((Container) component, enable);
+			}
+		}
+	}
+
 	public Frm_Case(String p_no, String regGuid, boolean finishState,
 			String from) {
 		m_RegGuid = regGuid;
@@ -103,8 +113,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 			}
 		});
 		if (from.equals("dia")) {
-//			pan_AssComp.setVisible(false);
-			pan_AssComp.setEnabled(false);
+			enableComponents(pan_AssComp, false);
 			btn_Ddate_Save.setVisible(false);
 			mnb.setVisible(false);
 			tab_HealthTeach.setEnabled(false);
@@ -164,75 +173,6 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 			this.txt_ST.setText(Tools.getPrescriptionResult("St.", m_Pno));
 			if (rs.getString("education") != null)
 				this.com_edu.setSelectedIndex(rs.getInt("education"));
-
-			String sqlcs = "SELECT dka, hhs, hypoglycemia, stroke, coronary_heart, paod, eye_lesions, neuropathy, kidney, waist, other, postural_hypotension, peripheral_neuropathy, angina, claudication, u_sid, udate "
-					+ " FROM complication, registration_info "
-					+ " WHERE registration_info.guid = complication.reg_guid "
-					+ " AND registration_info.p_no = '"
-					+ m_Pno
-					+ "' ORDER BY udate DESC LIMIT 0, 1";
-			System.out.println(sqlcs);
-			ResultSet cs = DBC.executeQuery(sqlcs);
-			if (cs.next()) {
-				if (cs.getString("udate") != null) {
-					// 讀取complication
-					com_dka.setSelectedIndex(Integer.parseInt(cs
-							.getString("dka")));
-					com_hhs.setSelectedIndex(Integer.parseInt(cs
-							.getString("hhs")));
-					com_hypoglycemia.setSelectedIndex(Integer.parseInt(cs
-							.getString("hypoglycemia")));
-
-					com_stroke.setSelectedIndex(Integer.parseInt(cs
-							.getString("stroke")));
-					com_coronary_heart.setSelectedIndex(Integer.parseInt(cs
-							.getString("coronary_heart")));
-					com_paod.setSelectedIndex(Integer.parseInt(cs
-							.getString("paod")));
-
-					com_eye_lesions.setSelectedIndex(Integer.parseInt(cs
-							.getString("eye_lesions")));
-					com_neuropathy.setSelectedIndex(Integer.parseInt(cs
-							.getString("neuropathy")));
-					com_kidney.setSelectedIndex(Integer.parseInt(cs
-							.getString("kidney")));
-
-					txt_waist.setText(cs.getString("waist"));
-					txt_other.setText(cs.getString("other"));
-					// txt_other.setSelectedIndex(Integer.parseInt(cs.getString("dka")));
-
-					if (cs.getString("postural_hypotension").equals("1")) {
-						rad_postural_hypotension_yes.setSelected(true);
-					} else if (cs.getString("postural_hypotension").equals("2")) {
-						rad_postural_hypotension_no.setSelected(true);
-					} else {
-					}
-
-					if (cs.getString("peripheral_neuropathy").equals("1")) {
-						rad_peripheral_neuropathy_yes.setSelected(true);
-					} else if (cs.getString("peripheral_neuropathy")
-							.equals("2")) {
-						rad_peripheral_neuropathy_no.setSelected(true);
-					} else {
-					}
-
-					if (cs.getString("angina").equals("1")) {
-						rad_angina_yes.setSelected(true);
-					} else if (cs.getString("angina").equals("2")) {
-						rad_angina_no.setSelected(true);
-					} else {
-					}
-
-					if (cs.getString("claudication").equals("1")) {
-						rad_claudication_yes.setSelected(true);
-					} else if (cs.getString("claudication").equals("2")) {
-						rad_claudication_no.setSelected(true);
-					} else {
-					}
-				}
-			} else {
-				// 所有資料帶入空值
-			}
 		} catch (SQLException ex) {
 			Logger.getLogger(Frm_Case.class.getName()).log(Level.SEVERE, null,
 					ex);
@@ -240,7 +180,6 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 
 		// Save按鍵初始化
 		btn_Ddate_Save.setEnabled(false);
-		btn_ComSave.setEnabled(false);
 		btn_ConSave.setEnabled(false);
 		btn_PreSave.setEnabled(false);
 		btn_DheSave.setEnabled(false);
@@ -609,24 +548,24 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		}
 	}
 
-	private void setOverValue() {
+	public void setOverValue() {
 		int check = 0;
 		String tg = Tools.getPrescriptionResult("TG", m_Pno);
 		String hdl = Tools.getPrescriptionResult("HDL", m_Pno);
 		String bgac = Tools.getPrescriptionResult("BGAc", m_Pno);
-		String sbp = this.pan_AssComp.txt_sbp.getText();
-		String waist = txt_waist.getText();
+		String sbp = pan_AssComp.txt_sbp.getText();
+		String waist = pan_CompliComp.txt_waist.getText();
 
 		// ----------------------------
 		if (!tg.equals("")) {
 			if (Double.parseDouble(tg) >= 150) {
-				lab_tg.setText("Yes");
+				pan_CompliComp.lab_tg.setText("Yes");
 				check++;
 			} else {
-				lab_tg.setText("No");
+				pan_CompliComp.lab_tg.setText("No");
 			}
 		} else {
-			lab_tg.setText("");
+			pan_CompliComp.lab_tg.setText("");
 		}
 		// ----------------------------
 		if (!hdl.equals("")) {
@@ -634,38 +573,36 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 					&& Double.parseDouble(hdl) < 40
 					|| lab_Gender.getText().equals("F")
 					&& Double.parseDouble(hdl) < 50) {
-				lab_hdl.setText("Yes");
+				pan_CompliComp.lab_hdl.setText("Yes");
 				check++;
 			} else {
-				lab_hdl.setText("No");
+				pan_CompliComp.lab_hdl.setText("No");
 			}
 		} else {
-			lab_hdl.setText("");
+			pan_CompliComp.lab_hdl.setText("");
 		}
 		// ----------------------------
 		if (!sbp.equals("")) {
 			if (Double.parseDouble(sbp) >= 130) {
-				lab_sbp.setText("Yes");
+				pan_CompliComp.lab_sbp.setText("Yes");
 				check++;
 			} else {
-				lab_sbp.setText("No");
+				pan_CompliComp.lab_sbp.setText("No");
 			}
 		} else {
-			lab_sbp.setText("");
+			pan_CompliComp.lab_sbp.setText("");
 		}
 		// ---------------------------
 		if (!bgac.equals("")) {
 			if (Double.parseDouble(bgac) >= 5.6) {
-				lab_bgac.setText("Yes");
+				pan_CompliComp.lab_bgac.setText("Yes");
 				check++;
 			} else {
-				lab_bgac.setText("No");
+				pan_CompliComp.lab_bgac.setText("No");
 			}
 		} else {
-			lab_bgac.setText("");
+			pan_CompliComp.lab_bgac.setText("");
 		}
-		// ---------------------------
-		txt_waist.setText(String.valueOf(waist));
 		if (!bgac.equals("") && lab_Gender.getText() != null && waist != null
 				&& !waist.trim().equals("")) {
 			if ((lab_Gender.getText().equals("M") && Double.parseDouble(waist) >= 90)
@@ -677,9 +614,9 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		}
 
 		if (check >= 3) {
-			lab_dm.setText("Yes");
+			pan_CompliComp.lab_dm.setText("Yes");
 		} else {
-			lab_dm.setText("No");
+			pan_CompliComp.lab_dm.setText("No");
 		}
 
 	}
@@ -1033,15 +970,17 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 								+ m_RegGuid + "'");
 				while (rs.next()) {
 					// 跳出Lable"顯示資訊"
-					this.Lab_record.setText("Last Modified By : "
-							+ rs.getString("s_no") + " "
-							+ rs.getString("firstname") + " "
-							+ rs.getString("lastname") + "    Last Modified : "
-							+ rs.getString("finish_time"));
+					this.pan_CompliComp.Lab_record
+							.setText("Last Modified By : "
+									+ rs.getString("s_no") + " "
+									+ rs.getString("firstname") + " "
+									+ rs.getString("lastname")
+									+ "    Last Modified : "
+									+ rs.getString("finish_time"));
 				}
 			} else {
 				// 跳出Lable"尚無資訊"
-				this.Lab_record.setText("No Modify the message");
+				this.pan_CompliComp.Lab_record.setText("No Modify the message");
 			}
 		} catch (SQLException ex) {
 			Logger.getLogger(Frm_Case.class.getName()).log(Level.SEVERE, null,
@@ -1220,10 +1159,6 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 	// desc="Generated Code">//GEN-BEGIN:initComponents
 	private void initComponents() {
 
-		buttonGroup1 = new javax.swing.ButtonGroup();
-		buttonGroup2 = new javax.swing.ButtonGroup();
-		buttonGroup3 = new javax.swing.ButtonGroup();
-		buttonGroup4 = new javax.swing.ButtonGroup();
 		btn_Close = new javax.swing.JButton();
 		dia = new javax.swing.JDialog();
 		span_ListMenu = new javax.swing.JScrollPane();
@@ -1240,57 +1175,9 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		txt_ComeBackDays = new javax.swing.JTextField();
 		jTabbedPane1 = new javax.swing.JTabbedPane();
 		pan_AssComp = new Tab_Assessment(m_Pno, m_RegGuid);
-		jPanel18 = new javax.swing.JPanel();
-		jScrollPane6 = new javax.swing.JScrollPane();
-		jPanel15 = new javax.swing.JPanel();
-		jLabel182 = new javax.swing.JLabel();
-		com_dka = new javax.swing.JComboBox();
-		jLabel183 = new javax.swing.JLabel();
-		jLabel184 = new javax.swing.JLabel();
-		com_stroke = new javax.swing.JComboBox();
-		com_coronary_heart = new javax.swing.JComboBox();
-		jLabel185 = new javax.swing.JLabel();
-		com_neuropathy = new javax.swing.JComboBox();
-		jLabel186 = new javax.swing.JLabel();
-		jLabel187 = new javax.swing.JLabel();
-		jLabel188 = new javax.swing.JLabel();
-		jLabel189 = new javax.swing.JLabel();
-		jLabel190 = new javax.swing.JLabel();
-		txt_other = new javax.swing.JTextField();
-		com_hhs = new javax.swing.JComboBox();
-		jLabel47 = new javax.swing.JLabel();
-		jPanel16 = new javax.swing.JPanel();
-		jLabel48 = new javax.swing.JLabel();
-		jLabel49 = new javax.swing.JLabel();
-		jLabel50 = new javax.swing.JLabel();
-		jLabel58 = new javax.swing.JLabel();
-		rad_postural_hypotension_yes = new javax.swing.JRadioButton();
-		rad_postural_hypotension_no = new javax.swing.JRadioButton();
-		rad_peripheral_neuropathy_yes = new javax.swing.JRadioButton();
-		rad_peripheral_neuropathy_no = new javax.swing.JRadioButton();
-		rad_angina_yes = new javax.swing.JRadioButton();
-		rad_angina_no = new javax.swing.JRadioButton();
-		rad_claudication_yes = new javax.swing.JRadioButton();
-		rad_claudication_no = new javax.swing.JRadioButton();
-		jLabel67 = new javax.swing.JLabel();
-		jLabel68 = new javax.swing.JLabel();
-		jLabel69 = new javax.swing.JLabel();
-		com_paod = new javax.swing.JComboBox();
-		com_eye_lesions = new javax.swing.JComboBox();
-		jLabel59 = new javax.swing.JLabel();
-		com_hypoglycemia = new javax.swing.JComboBox();
-		com_kidney = new javax.swing.JComboBox();
-		jLabel12 = new javax.swing.JLabel();
-		lab_sbp = new javax.swing.JLabel();
-		lab_hdl = new javax.swing.JLabel();
-		lab_tg = new javax.swing.JLabel();
-		lab_dm = new javax.swing.JLabel();
-		txt_waist = new javax.swing.JTextField();
-		jLabel13 = new javax.swing.JLabel();
-		jLabel14 = new javax.swing.JLabel();
-		lab_bgac = new javax.swing.JLabel();
-		btn_ComSave = new javax.swing.JButton();
-		Lab_record = new javax.swing.JLabel();
+		pan_AssComp.setParent(this);
+		pan_CompliComp = new Tab_Complication(m_Pno, m_RegGuid);
+		pan_CompliComp.setParent(this);
 		jPanel2 = new javax.swing.JPanel();
 		btn_ConSave = new javax.swing.JButton();
 		jScrollPane1 = new javax.swing.JScrollPane();
@@ -1556,764 +1443,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		setTitle("Case Management");
 
 		jTabbedPane1.addTab("Assessment", pan_AssComp);
-
-		jPanel15.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
-
-		jLabel182.setText("DKA：");
-
-		com_dka.setModel(new javax.swing.DefaultComboBoxModel(new String[] {
-				"　", "Yes", "No", "I don’t know" }));
-		com_dka.addItemListener(new java.awt.event.ItemListener() {
-			public void itemStateChanged(java.awt.event.ItemEvent evt) {
-				ItemStateChanged_C(evt);
-			}
-		});
-
-		jLabel183.setText("Stroke：");
-
-		jLabel184.setText("Coronary Heart Disease：");
-
-		com_stroke.setModel(new javax.swing.DefaultComboBoxModel(new String[] {
-				"　", "Yes", "No", "I don’t know" }));
-		com_stroke.addItemListener(new java.awt.event.ItemListener() {
-			public void itemStateChanged(java.awt.event.ItemEvent evt) {
-				ItemStateChanged_C(evt);
-			}
-		});
-
-		com_coronary_heart.setModel(new javax.swing.DefaultComboBoxModel(
-				new String[] { "　", "Yes", "No", "I don’t know" }));
-		com_coronary_heart.addItemListener(new java.awt.event.ItemListener() {
-			public void itemStateChanged(java.awt.event.ItemEvent evt) {
-				ItemStateChanged_C(evt);
-			}
-		});
-
-		jLabel185.setText("Neuropathy：");
-
-		com_neuropathy.setModel(new javax.swing.DefaultComboBoxModel(
-				new String[] { "　", "Yes", "No", "I don’t know" }));
-		com_neuropathy.addItemListener(new java.awt.event.ItemListener() {
-			public void itemStateChanged(java.awt.event.ItemEvent evt) {
-				ItemStateChanged_C(evt);
-			}
-		});
-
-		jLabel186.setText("SBP：");
-
-		jLabel187.setText("HDL：");
-
-		jLabel188.setText("Kidney Diseases：");
-
-		jLabel189.setText("TG > 150：");
-
-		jLabel190.setText("Others：");
-
-		txt_other.addKeyListener(new java.awt.event.KeyAdapter() {
-			public void keyReleased(java.awt.event.KeyEvent evt) {
-				KeyReleased_C(evt);
-			}
-		});
-
-		com_hhs.setModel(new javax.swing.DefaultComboBoxModel(new String[] {
-				"　", "Yes", "No", "I don’t know" }));
-		com_hhs.addItemListener(new java.awt.event.ItemListener() {
-			public void itemStateChanged(java.awt.event.ItemEvent evt) {
-				ItemStateChanged_C(evt);
-			}
-		});
-
-		jLabel47.setText("Hypertension：");
-
-		jPanel16.setBorder(javax.swing.BorderFactory
-				.createTitledBorder("Symptom"));
-
-		jLabel48.setText("Postural hypotension：");
-
-		jLabel49.setText("Peripheral neuropathy：");
-
-		jLabel50.setText("Angina chest pain：");
-
-		jLabel58.setText("Leg claudication：");
-
-		buttonGroup1.add(rad_postural_hypotension_yes);
-		rad_postural_hypotension_yes.setText("Yes");
-		rad_postural_hypotension_yes
-				.addItemListener(new java.awt.event.ItemListener() {
-					public void itemStateChanged(java.awt.event.ItemEvent evt) {
-						ItemStateChanged_C(evt);
-					}
-				});
-		rad_postural_hypotension_yes
-				.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(java.awt.event.ActionEvent evt) {
-						rad_postural_hypotension_yesActionPerformed(evt);
-					}
-				});
-
-		buttonGroup1.add(rad_postural_hypotension_no);
-		rad_postural_hypotension_no.setText("No");
-		rad_postural_hypotension_no
-				.addItemListener(new java.awt.event.ItemListener() {
-					public void itemStateChanged(java.awt.event.ItemEvent evt) {
-						ItemStateChanged_C(evt);
-					}
-				});
-
-		buttonGroup2.add(rad_peripheral_neuropathy_yes);
-		rad_peripheral_neuropathy_yes.setText("Yes");
-		rad_peripheral_neuropathy_yes
-				.addItemListener(new java.awt.event.ItemListener() {
-					public void itemStateChanged(java.awt.event.ItemEvent evt) {
-						ItemStateChanged_C(evt);
-					}
-				});
-
-		buttonGroup2.add(rad_peripheral_neuropathy_no);
-		rad_peripheral_neuropathy_no.setText("No");
-		rad_peripheral_neuropathy_no
-				.addItemListener(new java.awt.event.ItemListener() {
-					public void itemStateChanged(java.awt.event.ItemEvent evt) {
-						ItemStateChanged_C(evt);
-					}
-				});
-
-		buttonGroup3.add(rad_angina_yes);
-		rad_angina_yes.setText("Yes");
-		rad_angina_yes.addItemListener(new java.awt.event.ItemListener() {
-			public void itemStateChanged(java.awt.event.ItemEvent evt) {
-				ItemStateChanged_C(evt);
-			}
-		});
-
-		buttonGroup3.add(rad_angina_no);
-		rad_angina_no.setText("No");
-		rad_angina_no.addItemListener(new java.awt.event.ItemListener() {
-			public void itemStateChanged(java.awt.event.ItemEvent evt) {
-				ItemStateChanged_C(evt);
-			}
-		});
-
-		buttonGroup4.add(rad_claudication_yes);
-		rad_claudication_yes.setText("Yes");
-		rad_claudication_yes.addItemListener(new java.awt.event.ItemListener() {
-			public void itemStateChanged(java.awt.event.ItemEvent evt) {
-				ItemStateChanged_C(evt);
-			}
-		});
-
-		buttonGroup4.add(rad_claudication_no);
-		rad_claudication_no.setText("No");
-		rad_claudication_no.addItemListener(new java.awt.event.ItemListener() {
-			public void itemStateChanged(java.awt.event.ItemEvent evt) {
-				ItemStateChanged_C(evt);
-			}
-		});
-
-		javax.swing.GroupLayout jPanel16Layout = new javax.swing.GroupLayout(
-				jPanel16);
-		jPanel16.setLayout(jPanel16Layout);
-		jPanel16Layout
-				.setHorizontalGroup(jPanel16Layout
-						.createParallelGroup(
-								javax.swing.GroupLayout.Alignment.LEADING)
-						.addGroup(
-								jPanel16Layout
-										.createSequentialGroup()
-										.addContainerGap()
-										.addGroup(
-												jPanel16Layout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.LEADING)
-														.addComponent(
-																jLabel50,
-																javax.swing.GroupLayout.Alignment.TRAILING)
-														.addComponent(
-																jLabel49,
-																javax.swing.GroupLayout.Alignment.TRAILING)
-														.addComponent(
-																jLabel48,
-																javax.swing.GroupLayout.Alignment.TRAILING)
-														.addComponent(
-																jLabel58,
-																javax.swing.GroupLayout.Alignment.TRAILING))
-										.addGap(33, 33, 33)
-										.addGroup(
-												jPanel16Layout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.LEADING)
-														.addComponent(
-																rad_claudication_yes)
-														.addComponent(
-																rad_angina_yes)
-														.addComponent(
-																rad_peripheral_neuropathy_yes)
-														.addComponent(
-																rad_postural_hypotension_yes))
-										.addGap(18, 18, 18)
-										.addGroup(
-												jPanel16Layout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.LEADING)
-														.addComponent(
-																rad_angina_no)
-														.addComponent(
-																rad_peripheral_neuropathy_no)
-														.addComponent(
-																rad_postural_hypotension_no)
-														.addComponent(
-																rad_claudication_no))
-										.addContainerGap(573, Short.MAX_VALUE)));
-		jPanel16Layout
-				.setVerticalGroup(jPanel16Layout
-						.createParallelGroup(
-								javax.swing.GroupLayout.Alignment.LEADING)
-						.addGroup(
-								jPanel16Layout
-										.createSequentialGroup()
-										.addContainerGap()
-										.addGroup(
-												jPanel16Layout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.BASELINE)
-														.addComponent(jLabel48)
-														.addComponent(
-																rad_postural_hypotension_yes)
-														.addComponent(
-																rad_postural_hypotension_no))
-										.addPreferredGap(
-												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-										.addGroup(
-												jPanel16Layout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.BASELINE)
-														.addComponent(jLabel49)
-														.addComponent(
-																rad_peripheral_neuropathy_no)
-														.addComponent(
-																rad_peripheral_neuropathy_yes))
-										.addPreferredGap(
-												javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-										.addGroup(
-												jPanel16Layout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.BASELINE)
-														.addComponent(jLabel50)
-														.addComponent(
-																rad_angina_no)
-														.addComponent(
-																rad_angina_yes))
-										.addPreferredGap(
-												javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-										.addGroup(
-												jPanel16Layout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.BASELINE)
-														.addComponent(jLabel58)
-														.addComponent(
-																rad_claudication_no)
-														.addComponent(
-																rad_claudication_yes))
-										.addContainerGap(18, Short.MAX_VALUE)));
-
-		jLabel67.setText("HHHK：");
-
-		jLabel68.setText("PAOD：");
-
-		jLabel69.setText("Eye lesions：");
-
-		com_paod.setModel(new javax.swing.DefaultComboBoxModel(new String[] {
-				"　", "Yes", "No", "I don’t know" }));
-		com_paod.addItemListener(new java.awt.event.ItemListener() {
-			public void itemStateChanged(java.awt.event.ItemEvent evt) {
-				ItemStateChanged_C(evt);
-			}
-		});
-
-		com_eye_lesions.setModel(new javax.swing.DefaultComboBoxModel(
-				new String[] { "　", "Yes", "No", "I don’t know" }));
-		com_eye_lesions.addItemListener(new java.awt.event.ItemListener() {
-			public void itemStateChanged(java.awt.event.ItemEvent evt) {
-				ItemStateChanged_C(evt);
-			}
-		});
-
-		jLabel59.setText("Waist：");
-
-		com_hypoglycemia.setModel(new javax.swing.DefaultComboBoxModel(
-				new String[] { "　", "Yes", "No", "I don’t know" }));
-		com_hypoglycemia.addItemListener(new java.awt.event.ItemListener() {
-			public void itemStateChanged(java.awt.event.ItemEvent evt) {
-				ItemStateChanged_C(evt);
-			}
-		});
-
-		com_kidney.setModel(new javax.swing.DefaultComboBoxModel(new String[] {
-				"　", "Yes", "No", "I don’t know" }));
-		com_kidney.addItemListener(new java.awt.event.ItemListener() {
-			public void itemStateChanged(java.awt.event.ItemEvent evt) {
-				ItemStateChanged_C(evt);
-			}
-		});
-
-		jLabel12.setText("DM：");
-
-		lab_sbp.setText("No");
-
-		lab_hdl.setText("No");
-
-		lab_tg.setText("No");
-
-		lab_dm.setText("No");
-
-		txt_waist.addKeyListener(new java.awt.event.KeyAdapter() {
-			public void keyReleased(java.awt.event.KeyEvent evt) {
-				KeyReleased_C(evt);
-			}
-		});
-
-		jLabel13.setText("cm");
-
-		jLabel14.setText("BGAc：");
-
-		lab_bgac.setText("No");
-
-		javax.swing.GroupLayout jPanel15Layout = new javax.swing.GroupLayout(
-				jPanel15);
-		jPanel15.setLayout(jPanel15Layout);
-		jPanel15Layout
-				.setHorizontalGroup(jPanel15Layout
-						.createParallelGroup(
-								javax.swing.GroupLayout.Alignment.LEADING)
-						.addGroup(
-								jPanel15Layout
-										.createSequentialGroup()
-										.addContainerGap()
-										.addGroup(
-												jPanel15Layout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.TRAILING,
-																false)
-														.addComponent(
-																jPanel16,
-																javax.swing.GroupLayout.Alignment.LEADING,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																Short.MAX_VALUE)
-														.addGroup(
-																javax.swing.GroupLayout.Alignment.LEADING,
-																jPanel15Layout
-																		.createSequentialGroup()
-																		.addGroup(
-																				jPanel15Layout
-																						.createParallelGroup(
-																								javax.swing.GroupLayout.Alignment.TRAILING)
-																						.addComponent(
-																								jLabel187)
-																						.addComponent(
-																								jLabel186)
-																						.addComponent(
-																								jLabel67)
-																						.addComponent(
-																								jLabel47)
-																						.addComponent(
-																								jLabel182)
-																						.addComponent(
-																								jLabel189))
-																		.addPreferredGap(
-																				javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-																		.addGroup(
-																				jPanel15Layout
-																						.createParallelGroup(
-																								javax.swing.GroupLayout.Alignment.LEADING)
-																						.addComponent(
-																								com_dka,
-																								javax.swing.GroupLayout.PREFERRED_SIZE,
-																								125,
-																								javax.swing.GroupLayout.PREFERRED_SIZE)
-																						.addComponent(
-																								com_hhs,
-																								javax.swing.GroupLayout.PREFERRED_SIZE,
-																								125,
-																								javax.swing.GroupLayout.PREFERRED_SIZE)
-																						.addComponent(
-																								com_hypoglycemia,
-																								javax.swing.GroupLayout.PREFERRED_SIZE,
-																								125,
-																								javax.swing.GroupLayout.PREFERRED_SIZE)
-																						.addComponent(
-																								lab_tg)
-																						.addComponent(
-																								lab_hdl)
-																						.addComponent(
-																								lab_sbp))
-																		.addGap(30,
-																				30,
-																				30)
-																		.addGroup(
-																				jPanel15Layout
-																						.createParallelGroup(
-																								javax.swing.GroupLayout.Alignment.TRAILING)
-																						.addComponent(
-																								jLabel183)
-																						.addComponent(
-																								jLabel12)
-																						.addComponent(
-																								jLabel14)
-																						.addComponent(
-																								jLabel59)
-																						.addComponent(
-																								jLabel184)
-																						.addComponent(
-																								jLabel68))
-																		.addGap(10,
-																				10,
-																				10)
-																		.addGroup(
-																				jPanel15Layout
-																						.createParallelGroup(
-																								javax.swing.GroupLayout.Alignment.LEADING)
-																						.addComponent(
-																								com_stroke,
-																								javax.swing.GroupLayout.PREFERRED_SIZE,
-																								125,
-																								javax.swing.GroupLayout.PREFERRED_SIZE)
-																						.addComponent(
-																								lab_bgac)
-																						.addGroup(
-																								jPanel15Layout
-																										.createSequentialGroup()
-																										.addComponent(
-																												txt_waist,
-																												javax.swing.GroupLayout.PREFERRED_SIZE,
-																												56,
-																												javax.swing.GroupLayout.PREFERRED_SIZE)
-																										.addPreferredGap(
-																												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-																										.addComponent(
-																												jLabel13))
-																						.addComponent(
-																								lab_dm)
-																						.addComponent(
-																								com_coronary_heart,
-																								javax.swing.GroupLayout.PREFERRED_SIZE,
-																								125,
-																								javax.swing.GroupLayout.PREFERRED_SIZE)
-																						.addComponent(
-																								com_paod,
-																								javax.swing.GroupLayout.PREFERRED_SIZE,
-																								125,
-																								javax.swing.GroupLayout.PREFERRED_SIZE))
-																		.addGap(70,
-																				70,
-																				70)
-																		.addGroup(
-																				jPanel15Layout
-																						.createParallelGroup(
-																								javax.swing.GroupLayout.Alignment.LEADING)
-																						.addComponent(
-																								jLabel185,
-																								javax.swing.GroupLayout.Alignment.TRAILING)
-																						.addComponent(
-																								jLabel190,
-																								javax.swing.GroupLayout.Alignment.TRAILING)
-																						.addComponent(
-																								jLabel69,
-																								javax.swing.GroupLayout.Alignment.TRAILING)
-																						.addComponent(
-																								jLabel188,
-																								javax.swing.GroupLayout.Alignment.TRAILING))
-																		.addPreferredGap(
-																				javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-																		.addGroup(
-																				jPanel15Layout
-																						.createParallelGroup(
-																								javax.swing.GroupLayout.Alignment.LEADING)
-																						.addComponent(
-																								txt_other)
-																						.addComponent(
-																								com_eye_lesions,
-																								javax.swing.GroupLayout.PREFERRED_SIZE,
-																								125,
-																								javax.swing.GroupLayout.PREFERRED_SIZE)
-																						.addComponent(
-																								com_kidney,
-																								javax.swing.GroupLayout.PREFERRED_SIZE,
-																								125,
-																								javax.swing.GroupLayout.PREFERRED_SIZE)
-																						.addComponent(
-																								com_neuropathy,
-																								javax.swing.GroupLayout.PREFERRED_SIZE,
-																								125,
-																								javax.swing.GroupLayout.PREFERRED_SIZE))))
-										.addContainerGap()));
-		jPanel15Layout
-				.setVerticalGroup(jPanel15Layout
-						.createParallelGroup(
-								javax.swing.GroupLayout.Alignment.LEADING)
-						.addGroup(
-								jPanel15Layout
-										.createSequentialGroup()
-										.addContainerGap()
-										.addGroup(
-												jPanel15Layout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.LEADING)
-														.addGroup(
-																jPanel15Layout
-																		.createSequentialGroup()
-																		.addGroup(
-																				jPanel15Layout
-																						.createParallelGroup(
-																								javax.swing.GroupLayout.Alignment.LEADING)
-																						.addGroup(
-																								jPanel15Layout
-																										.createSequentialGroup()
-																										.addGroup(
-																												jPanel15Layout
-																														.createParallelGroup(
-																																javax.swing.GroupLayout.Alignment.BASELINE)
-																														.addComponent(
-																																com_dka,
-																																javax.swing.GroupLayout.PREFERRED_SIZE,
-																																javax.swing.GroupLayout.DEFAULT_SIZE,
-																																javax.swing.GroupLayout.PREFERRED_SIZE)
-																														.addComponent(
-																																jLabel182))
-																										.addPreferredGap(
-																												javax.swing.LayoutStyle.ComponentPlacement.UNRELATED))
-																						.addGroup(
-																								javax.swing.GroupLayout.Alignment.TRAILING,
-																								jPanel15Layout
-																										.createSequentialGroup()
-																										.addGroup(
-																												jPanel15Layout
-																														.createParallelGroup(
-																																javax.swing.GroupLayout.Alignment.BASELINE)
-																														.addComponent(
-																																com_eye_lesions,
-																																javax.swing.GroupLayout.PREFERRED_SIZE,
-																																javax.swing.GroupLayout.DEFAULT_SIZE,
-																																javax.swing.GroupLayout.PREFERRED_SIZE)
-																														.addComponent(
-																																jLabel69))
-																										.addPreferredGap(
-																												javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
-																		.addGroup(
-																				jPanel15Layout
-																						.createParallelGroup(
-																								javax.swing.GroupLayout.Alignment.BASELINE)
-																						.addComponent(
-																								com_hhs,
-																								javax.swing.GroupLayout.PREFERRED_SIZE,
-																								javax.swing.GroupLayout.DEFAULT_SIZE,
-																								javax.swing.GroupLayout.PREFERRED_SIZE)
-																						.addComponent(
-																								jLabel67)
-																						.addComponent(
-																								jLabel184)
-																						.addComponent(
-																								com_coronary_heart,
-																								javax.swing.GroupLayout.PREFERRED_SIZE,
-																								javax.swing.GroupLayout.DEFAULT_SIZE,
-																								javax.swing.GroupLayout.PREFERRED_SIZE)
-																						.addComponent(
-																								jLabel185)
-																						.addComponent(
-																								com_neuropathy,
-																								javax.swing.GroupLayout.PREFERRED_SIZE,
-																								javax.swing.GroupLayout.DEFAULT_SIZE,
-																								javax.swing.GroupLayout.PREFERRED_SIZE)))
-														.addGroup(
-																jPanel15Layout
-																		.createParallelGroup(
-																				javax.swing.GroupLayout.Alignment.BASELINE)
-																		.addComponent(
-																				jLabel183)
-																		.addComponent(
-																				com_stroke,
-																				javax.swing.GroupLayout.PREFERRED_SIZE,
-																				javax.swing.GroupLayout.DEFAULT_SIZE,
-																				javax.swing.GroupLayout.PREFERRED_SIZE)))
-										.addPreferredGap(
-												javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-										.addGroup(
-												jPanel15Layout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.LEADING)
-														.addGroup(
-																jPanel15Layout
-																		.createParallelGroup(
-																				javax.swing.GroupLayout.Alignment.BASELINE)
-																		.addComponent(
-																				com_hypoglycemia,
-																				javax.swing.GroupLayout.PREFERRED_SIZE,
-																				javax.swing.GroupLayout.DEFAULT_SIZE,
-																				javax.swing.GroupLayout.PREFERRED_SIZE)
-																		.addComponent(
-																				jLabel47)
-																		.addComponent(
-																				com_paod,
-																				javax.swing.GroupLayout.PREFERRED_SIZE,
-																				javax.swing.GroupLayout.DEFAULT_SIZE,
-																				javax.swing.GroupLayout.PREFERRED_SIZE)
-																		.addComponent(
-																				jLabel68))
-														.addGroup(
-																jPanel15Layout
-																		.createSequentialGroup()
-																		.addGroup(
-																				jPanel15Layout
-																						.createParallelGroup(
-																								javax.swing.GroupLayout.Alignment.BASELINE)
-																						.addComponent(
-																								jLabel188)
-																						.addComponent(
-																								com_kidney,
-																								javax.swing.GroupLayout.PREFERRED_SIZE,
-																								javax.swing.GroupLayout.DEFAULT_SIZE,
-																								javax.swing.GroupLayout.PREFERRED_SIZE))
-																		.addGap(19,
-																				19,
-																				19)
-																		.addGroup(
-																				jPanel15Layout
-																						.createParallelGroup(
-																								javax.swing.GroupLayout.Alignment.BASELINE)
-																						.addComponent(
-																								jLabel186)
-																						.addComponent(
-																								lab_sbp)
-																						.addComponent(
-																								jLabel59)
-																						.addComponent(
-																								txt_waist,
-																								javax.swing.GroupLayout.PREFERRED_SIZE,
-																								javax.swing.GroupLayout.DEFAULT_SIZE,
-																								javax.swing.GroupLayout.PREFERRED_SIZE)
-																						.addComponent(
-																								jLabel13)
-																						.addComponent(
-																								jLabel190)
-																						.addComponent(
-																								txt_other,
-																								javax.swing.GroupLayout.PREFERRED_SIZE,
-																								javax.swing.GroupLayout.DEFAULT_SIZE,
-																								javax.swing.GroupLayout.PREFERRED_SIZE))))
-										.addPreferredGap(
-												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-										.addGroup(
-												jPanel15Layout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.LEADING)
-														.addGroup(
-																jPanel15Layout
-																		.createParallelGroup(
-																				javax.swing.GroupLayout.Alignment.BASELINE)
-																		.addComponent(
-																				lab_hdl)
-																		.addComponent(
-																				jLabel14)
-																		.addComponent(
-																				lab_bgac))
-														.addComponent(jLabel187))
-										.addGap(8, 8, 8)
-										.addGroup(
-												jPanel15Layout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.BASELINE)
-														.addComponent(jLabel189)
-														.addComponent(lab_tg)
-														.addComponent(jLabel12)
-														.addComponent(lab_dm))
-										.addGap(15, 15, 15)
-										.addComponent(
-												jPanel16,
-												javax.swing.GroupLayout.PREFERRED_SIZE,
-												javax.swing.GroupLayout.DEFAULT_SIZE,
-												javax.swing.GroupLayout.PREFERRED_SIZE)
-										.addContainerGap(
-												javax.swing.GroupLayout.DEFAULT_SIZE,
-												Short.MAX_VALUE)));
-
-		jScrollPane6.setViewportView(jPanel15);
-
-		btn_ComSave.setText("Save");
-		btn_ComSave.setEnabled(false);
-		btn_ComSave.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				btn_ComSaveActionPerformed(evt);
-			}
-		});
-
-		javax.swing.GroupLayout jPanel18Layout = new javax.swing.GroupLayout(
-				jPanel18);
-		jPanel18.setLayout(jPanel18Layout);
-		jPanel18Layout
-				.setHorizontalGroup(jPanel18Layout
-						.createParallelGroup(
-								javax.swing.GroupLayout.Alignment.LEADING)
-						.addGroup(
-								javax.swing.GroupLayout.Alignment.TRAILING,
-								jPanel18Layout
-										.createSequentialGroup()
-										.addContainerGap()
-										.addGroup(
-												jPanel18Layout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.TRAILING)
-														.addComponent(
-																jScrollPane6,
-																javax.swing.GroupLayout.Alignment.LEADING,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																791,
-																Short.MAX_VALUE)
-														.addGroup(
-																jPanel18Layout
-																		.createSequentialGroup()
-																		.addComponent(
-																				Lab_record,
-																				javax.swing.GroupLayout.DEFAULT_SIZE,
-																				701,
-																				Short.MAX_VALUE)
-																		.addPreferredGap(
-																				javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-																		.addComponent(
-																				btn_ComSave,
-																				javax.swing.GroupLayout.PREFERRED_SIZE,
-																				86,
-																				javax.swing.GroupLayout.PREFERRED_SIZE)))
-										.addContainerGap()));
-		jPanel18Layout
-				.setVerticalGroup(jPanel18Layout
-						.createParallelGroup(
-								javax.swing.GroupLayout.Alignment.LEADING)
-						.addGroup(
-								javax.swing.GroupLayout.Alignment.TRAILING,
-								jPanel18Layout
-										.createSequentialGroup()
-										.addContainerGap()
-										.addComponent(
-												jScrollPane6,
-												javax.swing.GroupLayout.DEFAULT_SIZE,
-												278, Short.MAX_VALUE)
-										.addPreferredGap(
-												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-										.addGroup(
-												jPanel18Layout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.TRAILING)
-														.addComponent(
-																btn_ComSave)
-														.addComponent(
-																Lab_record,
-																javax.swing.GroupLayout.PREFERRED_SIZE,
-																24,
-																javax.swing.GroupLayout.PREFERRED_SIZE))
-										.addContainerGap()));
-
-		jTabbedPane1.addTab("Complication", jPanel18);
-
+		jTabbedPane1.addTab("Complication", pan_CompliComp);
 		btn_ConSave.setText("Save");
 		btn_ConSave.setEnabled(false);
 		btn_ConSave.addActionListener(new java.awt.event.ActionListener() {
@@ -3163,7 +2293,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 
 		if (m_From.equals("dia") || m_From.equals("medicine")) {
 			if (m_From.equals("dia")) {
-				if (btn_ComSave.isEnabled() == true) {
+				if (this.pan_CompliComp.btn_ComSave.isEnabled() == true) {
 					Object[] options = { "YES", "NO" };
 					int dialog = JOptionPane.showOptionDialog(new Frame(),
 							"Not saved to continue ?", "Message",
@@ -3212,7 +2342,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 				tab_name += "Asscement \n";
 			}
 
-			if (btn_ComSave.isEnabled()) {
+			if (this.pan_CompliComp.btn_ComSave.isEnabled()) {
 				tab_name += "Complication \n";
 			}
 
@@ -3582,105 +2712,6 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		btn_ConSave.setEnabled(false);
 	}// GEN-LAST:event_btn_ConSaveActionPerformed
 
-	private void btn_ComSaveActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_ComSaveActionPerformed
-		String bg1 = "0", bg2 = "0", bg3 = "0", bg4 = "0";
-
-		if (buttonGroup1.getSelection() == rad_postural_hypotension_yes
-				.getModel()) {
-			bg1 = "1";
-		} else if (buttonGroup1.getSelection() == rad_postural_hypotension_no
-				.getModel()) {
-			bg1 = "2";
-		} else {
-			bg1 = "3";
-		}
-
-		if (buttonGroup2.getSelection() == rad_peripheral_neuropathy_yes
-				.getModel()) {
-			bg2 = "1";
-		} else if (buttonGroup2.getSelection() == rad_peripheral_neuropathy_no
-				.getModel()) {
-			bg2 = "2";
-		} else {
-			bg2 = "3";
-		}
-
-		if (buttonGroup3.getSelection() == rad_angina_yes.getModel()) {
-			bg3 = "1";
-		} else if (buttonGroup3.getSelection() == rad_angina_no.getModel()) {
-			bg3 = "2";
-		} else {
-			bg3 = "3";
-		}
-
-		if (buttonGroup4.getSelection() == rad_claudication_yes.getModel()) {
-			bg4 = "1";
-		} else if (buttonGroup4.getSelection() == rad_claudication_no
-				.getModel()) {
-			bg4 = "2";
-		} else {
-			bg4 = "3";
-		}
-
-		try {
-			String sql = "INSERT INTO complication (guid, reg_guid, dka, hhs, hypoglycemia, stroke, "
-					+ " coronary_heart, paod, eye_lesions, neuropathy, kidney, waist, other, postural_hypotension, "
-					+ " peripheral_neuropathy, angina, claudication, u_sid, udate ) VALUES (UUID(), '"
-					+ m_RegGuid
-					+ "', "
-					+ " "
-					+ com_dka.getSelectedIndex()
-					+ ", "
-					+ com_hhs.getSelectedIndex()
-					+ ", "
-					+ com_hypoglycemia.getSelectedIndex()
-					+ ","
-					+ " "
-					+ com_stroke.getSelectedIndex()
-					+ ", "
-					+ com_coronary_heart.getSelectedIndex()
-					+ ", "
-					+ com_paod.getSelectedIndex()
-					+ ","
-					+ " "
-					+ com_eye_lesions.getSelectedIndex()
-					+ ", "
-					+ com_neuropathy.getSelectedIndex()
-					+ ", "
-					+ com_kidney.getSelectedIndex() + ",";
-			if (txt_waist.getText().equals("")) {
-				sql += " NULL, ";
-			} else {
-				sql += "'" + txt_waist.getText() + "',";
-			}
-			sql += " '" + txt_other.getText() + "', " + bg1 + ", " + bg2 + ", "
-					+ bg3 + ", " + bg4 + ", '" + UserInfo.getUserID()
-					+ "', NOW() )";
-			DBC.executeUpdate(sql);
-			setOverValue();
-			JOptionPane.showMessageDialog(null, "Save Complete");
-			btn_ComSave.setEnabled(false);
-		} catch (SQLException ex) {
-			Logger.getLogger(Frm_Case.class.getName()).log(Level.SEVERE, null,
-					ex);
-		}
-	}// GEN-LAST:event_btn_ComSaveActionPerformed
-
-	private void rad_postural_hypotension_yesActionPerformed(
-			java.awt.event.ActionEvent evt) {// GEN-FIRST:event_rad_postural_hypotension_yesActionPerformed
-
-	}// GEN-LAST:event_rad_postural_hypotension_yesActionPerformed
-
-	private void ItemStateChanged_C(java.awt.event.ItemEvent evt) {// GEN-FIRST:event_ItemStateChanged_C
-
-		btn_ComSave.setEnabled(true);
-	}// GEN-LAST:event_ItemStateChanged_C
-
-	private void KeyReleased_C(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_KeyReleased_C
-
-		btn_ComSave.setEnabled(true);
-	}// GEN-LAST:event_KeyReleased_C
-
 	private void mnit_LabActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnit_LabActionPerformed
 		new Frm_DiagnosisPrescription(this).setVisible(true);
 		tab_Prescription.removeRowSelectionInterval(0,
@@ -3828,45 +2859,18 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		}
 	}// GEN-LAST:event_jButton2ActionPerformed
 
-	private javax.swing.JLabel Lab_record;
 	private javax.swing.JButton btn_CaseClose;
 	private javax.swing.JButton btn_Close;
-	private javax.swing.JButton btn_ComSave;
 	private javax.swing.JButton btn_ConSave;
 	private javax.swing.JButton btn_Ddate_Save;
 	private javax.swing.JButton btn_DheSave;
 	private javax.swing.JButton btn_PreSave;
-	private javax.swing.ButtonGroup buttonGroup1;
-	private javax.swing.ButtonGroup buttonGroup2;
-	private javax.swing.ButtonGroup buttonGroup3;
-	private javax.swing.ButtonGroup buttonGroup4;
-	private javax.swing.JComboBox com_coronary_heart;
-	private javax.swing.JComboBox com_dka;
 	private javax.swing.JComboBox com_edu;
-	private javax.swing.JComboBox com_eye_lesions;
-	private javax.swing.JComboBox com_hhs;
-	private javax.swing.JComboBox com_hypoglycemia;
-	private javax.swing.JComboBox com_kidney;
-	private javax.swing.JComboBox com_neuropathy;
-	private javax.swing.JComboBox com_paod;
-	private javax.swing.JComboBox com_stroke;
 	private javax.swing.JDialog dia;
 	private javax.swing.JDialog dia_RevisitTime;
 	private javax.swing.JButton jButton2;
-	private javax.swing.JLabel jLabel12;
-	private javax.swing.JLabel jLabel13;
-	private javax.swing.JLabel jLabel14;
 	private javax.swing.JLabel jLabel15;
 	private javax.swing.JLabel jLabel18;
-	private javax.swing.JLabel jLabel182;
-	private javax.swing.JLabel jLabel183;
-	private javax.swing.JLabel jLabel184;
-	private javax.swing.JLabel jLabel185;
-	private javax.swing.JLabel jLabel186;
-	private javax.swing.JLabel jLabel187;
-	private javax.swing.JLabel jLabel188;
-	private javax.swing.JLabel jLabel189;
-	private javax.swing.JLabel jLabel190;
 	private javax.swing.JLabel jLabel20;
 	private javax.swing.JLabel jLabel23;
 	private javax.swing.JLabel jLabel24;
@@ -3876,18 +2880,9 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 	private javax.swing.JLabel jLabel28;
 	private javax.swing.JLabel jLabel29;
 	private javax.swing.JLabel jLabel31;
-	private javax.swing.JLabel jLabel47;
-	private javax.swing.JLabel jLabel48;
-	private javax.swing.JLabel jLabel49;
-	private javax.swing.JLabel jLabel50;
-	private javax.swing.JLabel jLabel58;
-	private javax.swing.JLabel jLabel59;
 	private javax.swing.JLabel jLabel60;
 	private javax.swing.JLabel jLabel62;
 	private javax.swing.JLabel jLabel63;
-	private javax.swing.JLabel jLabel67;
-	private javax.swing.JLabel jLabel68;
-	private javax.swing.JLabel jLabel69;
 	private javax.swing.JLabel jLabel7;
 	private javax.swing.JLabel jLabel71;
 	private javax.swing.JLabel jLabel85;
@@ -3897,26 +2892,17 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 	private javax.swing.JPanel jPanel11;
 	private javax.swing.JPanel jPanel12;
 	private javax.swing.JPanel jPanel13;
-	private javax.swing.JPanel jPanel15;
-	private javax.swing.JPanel jPanel16;
-	private javax.swing.JPanel jPanel18;
 	private javax.swing.JPanel jPanel2;
 	private javax.swing.JPanel jPanel4;
 	private javax.swing.JPanel jPanel9;
 	private javax.swing.JPanel jPanelFoot;
 	private javax.swing.JScrollPane jScrollPane1;
 	private javax.swing.JScrollPane jScrollPane2;
-	private javax.swing.JScrollPane jScrollPane6;
 	private javax.swing.JTabbedPane jTabbedPane1;
 	private javax.swing.JLabel lab_Age;
 	private javax.swing.JLabel lab_Gender;
 	private javax.swing.JLabel lab_Name;
 	private javax.swing.JLabel lab_Pno;
-	private javax.swing.JLabel lab_bgac;
-	private javax.swing.JLabel lab_dm;
-	private javax.swing.JLabel lab_hdl;
-	private javax.swing.JLabel lab_sbp;
-	private javax.swing.JLabel lab_tg;
 	private javax.swing.JList list_Menu;
 	private javax.swing.JMenu menu_SetDM;
 	private javax.swing.JMenu mn_Fiele;
@@ -3928,15 +2914,8 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 	private javax.swing.JMenuItem mnit_V2;
 	private javax.swing.JMenuItem mnit_V3;
 	private Tab_Assessment pan_AssComp;
+	private Tab_Complication pan_CompliComp;
 	private javax.swing.JPanel pan_Prescription;
-	private javax.swing.JRadioButton rad_angina_no;
-	private javax.swing.JRadioButton rad_angina_yes;
-	private javax.swing.JRadioButton rad_claudication_no;
-	private javax.swing.JRadioButton rad_claudication_yes;
-	private javax.swing.JRadioButton rad_peripheral_neuropathy_no;
-	private javax.swing.JRadioButton rad_peripheral_neuropathy_yes;
-	private javax.swing.JRadioButton rad_postural_hypotension_no;
-	private javax.swing.JRadioButton rad_postural_hypotension_yes;
 	private javax.swing.JScrollPane span_ListMenu;
 	private javax.swing.JScrollPane span_Prescription;
 	private javax.swing.JTable tab_HealthTeach;
@@ -3950,8 +2929,6 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 	private javax.swing.JTextField txt_PackageType;
 	private javax.swing.JTextField txt_ST;
 	private javax.swing.JTextField txt_Weight;
-	private javax.swing.JTextField txt_other;
-	private javax.swing.JTextField txt_waist;
 
 	// End of variables declaration//GEN-END:variables
 	@Override
