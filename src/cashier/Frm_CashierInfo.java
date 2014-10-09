@@ -268,7 +268,9 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
 				        "AND no like 'XR%' " +
 				        " order by payment_time desc ";
 	
-	        }
+	        } else if (m_Sysname.equals("bed")) {
+            	// TODO
+            }
 
             rsPaid = DBC.executeQuery(sqlPaid);
             rsPaid.last();
@@ -712,7 +714,9 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
 	            sqlStr = "XR";
 	            paymentType = "X";
 	            //sql = "UPDATE registration_info SET radiology_payment = '"+finish+"'";
-	        }
+	        } else if (m_Sysname.equals("bed")) {
+            	// TODO
+            }
 	    	
 	        // 判斷資料不是數值先把格子清空
 	        for (int i = 0; i < tab_Payment.getRowCount() ; i++) {
@@ -862,6 +866,10 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
                 	//System.out.println(sql);
                 	DBC.executeUpdate(sql);
                 }
+            } else if (m_Sysname.equals("lab")) {
+            	// TODO lab didnt save money?
+            }else if (m_Sysname.equals("bed")) {
+            	// TODO
             }
             JOptionPane.showMessageDialog(null, "Saved successfully.");
 

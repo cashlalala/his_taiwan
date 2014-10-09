@@ -112,6 +112,8 @@ public class RefrashCashier extends Thread{
         			+ " AND registration_info.finish = 'F' "
         			+ " AND registration_info.pharmacy_payment is null "
         			+ " ORDER BY registration_info.touchtime DESC";
+        } else if (m_SysName.equals("bed")) {
+        	// TODO
         }
         System.out.println(sql);
         this.m_Tab = tab;
@@ -192,6 +194,8 @@ public class RefrashCashier extends Thread{
                                    "WHERE registration_info.shift_guid = shift_table.guid " +
                                    "AND shift_table.shift_date = '"+DateMethod.getTodayYMD()+"' " +
                                    "AND shift_table.shift = '"+DateMethod.getNowShiftNum()+"' ";
+                } else if (m_SysName.equals("bed")) {
+                	// TODO
                 }
                
                 rs = DBC.executeQuery(check_sql);
@@ -226,7 +230,7 @@ public class RefrashCashier extends Thread{
     }
 
  
-
+/*
     // 取得選定日期資料
     public void getSelectDate(String date) {
       if (m_SysName.equals("lab")) {
@@ -356,7 +360,7 @@ public class RefrashCashier extends Thread{
         }catch (SQLException ex) {System.out.println(ex);
         }finally{ try{ DBC.closeConnection(rs); }catch(SQLException ex){} }
     }
-
+*/
 //    @Override
 //    public void interrupt(){
 //        super.interrupt();

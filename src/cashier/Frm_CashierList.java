@@ -32,7 +32,10 @@ public class Frm_CashierList extends javax.swing.JFrame {
     //private boolean m_IsStop = false;
     //private String m_RegGuid;
     //private String m_Pno;
-    public Frm_CashierList() {
+    public Frm_CashierList(String sysname) {
+    	if(sysname != null)
+    		m_SysName = sysname;
+    	
         initComponents();
 
         this.setExtendedState(Frm_CashierList.MAXIMIZED_BOTH);  // 最大化
@@ -44,7 +47,6 @@ public class Frm_CashierList extends javax.swing.JFrame {
                 jButton2ActionPerformed(null);
             }
         });
-
 
         this.m_Clock = new Thread(){ // Clock
             @Override
@@ -60,7 +62,12 @@ public class Frm_CashierList extends javax.swing.JFrame {
         };
         this.m_Clock.start();
         this.txt_Name.setText(UserInfo.getUserName());
-
+        
+    	//this();
+    	
+    }
+    public Frm_CashierList() {
+    	this(null);
     }
 
     
@@ -101,6 +108,10 @@ public class Frm_CashierList extends javax.swing.JFrame {
                 cbox_SystemItemStateChanged(evt);
             }
         });
+        if(m_SysName == "bed") {
+        	cbox_System.setVisible(false);
+        	reFreshCashier();
+        }
 
         txt_Name.setEditable(false);
 
@@ -273,32 +284,36 @@ public class Frm_CashierList extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void reFreshCashier() {
+    	if(m_RefrashCashier != null) {
+    		m_RefrashCashier.interrupt();  // 終止重複讀取掛號表單
+            m_Clock.interrupt();
+    	}
+        m_RefrashCashier = new RefrashCashier(this.tab_Cashier, Constant.REFRASHTIME, m_SysName, lab_WaitCount);
+        m_RefrashCashier.start();
+    }
+    private void switchSystem() {
+    	switch(cbox_System.getSelectedIndex()) {
+	        case 1:
+	            m_SysName = "reg";
+	            break;
+	        case 2:
+	            m_SysName = "lab";
+	            break;
+	        case 3:
+	            m_SysName = "xray";
+	            break;
+	        case 4:
+	            m_SysName = "pha";
+	            break;
+	    }
+    	reFreshCashier();
+    }
+    
     private void cbox_SystemItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbox_SystemItemStateChanged
-        switch(cbox_System.getSelectedIndex()) {
-            case 1:
-                m_SysName = "reg";
-                break;
-            case 2:
-                m_SysName = "lab";
-                break;
-            case 3:
-                m_SysName = "xray";
-                break;
-            case 4:
-                m_SysName = "pha";
-                break;
-        }
-
-
-        if(evt.getStateChange() == java.awt.event.ItemEvent.SELECTED && cbox_System.getSelectedIndex() != 0) {
-        	if(m_RefrashCashier != null) {
-        		m_RefrashCashier.interrupt();  // 終止重複讀取掛號表單
-                m_Clock.interrupt();
-        	}
-            m_RefrashCashier = new RefrashCashier(this.tab_Cashier, Constant.REFRASHTIME, m_SysName, lab_WaitCount);
-            m_RefrashCashier.start();
-        }
-
+    	if(evt.getStateChange() == java.awt.event.ItemEvent.SELECTED && cbox_System.getSelectedIndex() != 0) {
+    		switchSystem();
+	    }
     }//GEN-LAST:event_cbox_SystemItemStateChanged
 
     private void mnit_EnterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnit_EnterActionPerformed
