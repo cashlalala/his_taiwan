@@ -20,7 +20,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.DefaultCellEditor;
-import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -36,10 +35,12 @@ import cc.johnwu.date.DateInterface;
 import cc.johnwu.date.DateMethod;
 import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
+
 import common.Constant;
 import common.PrintTools;
 import common.TabTools;
 import common.Tools;
+
 import diagnosis.Frm_DiagnosisPrescription;
 import errormessage.StoredErrorMessage;
 
@@ -116,7 +117,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 			// enableComponents(pan_AssComp, false);
 			btn_Ddate_Save.setVisible(false);
 			mnb.setVisible(false);
-			tab_HealthTeach.setEnabled(false);
+			pan_ConfEdu.tab_HealthTeach.setEnabled(false);
 			tab_Prescription.setEnabled(false);
 			jTabbedPane1.setSelectedIndex(1);
 		} else if (from.equals("medicine")) {
@@ -180,7 +181,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 
 		// Save按鍵初始化
 		btn_Ddate_Save.setEnabled(false);
-		btn_ConSave.setEnabled(false);
+		pan_ConfEdu.btn_ConSave.setEnabled(false);
 		btn_PreSave.setEnabled(false);
 		btn_DheSave.setEnabled(false);
 	}
@@ -219,148 +220,6 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		prescriptionColumnPlace.setPreferredWidth(80);
 		prescriptionColumnCode.setCellEditor(new DefaultCellEditor(m_AutoTxt)); // textField加入table
 		TabTools.setHideColumn(tab_Prescription, 3);
-
-		// ----tab_HealthTeach 衛教確認---------------------
-		Object[][] dataArray = null;
-		ResultSet rs = null;
-
-		try {
-			Object[] title = { "", "Code", "Item", "ID", "Uesr", "Check",
-					"Acceptance", "guid" };
-			String sql = "";
-
-			sql = "SELECT health_teach_item.item, health_teach.guid, "
-					+ "concat(staff_info.firstname,'  ',staff_info.lastname) AS user, "
-					+ "health_teach_item.code, health_teach.s_id, health_teach.confirm, "
-					+ "health_teach.acceptance FROM health_teach_item "
-					+ "LEFT JOIN (health_teach LEFT JOIN staff_info ON health_teach.s_id = staff_info.s_id "
-					+ " ) "
-					+ "ON health_teach_item.code = health_teach.hti_code AND health_teach.reg_guid = '"
-					+ this.m_RegGuid + "'";
-
-			System.out.println(sql);
-
-			rs = DBC.executeQuery(sql);
-			rs.last();
-			dataArray = new Object[rs.getRow()][8];
-			rs.beforeFirst();
-			int i = 0;
-
-			while (rs.next()) {
-				dataArray[i][1] = rs.getString("code");
-				dataArray[i][2] = rs.getString("item");
-				if (rs.getString("s_id") != null) {
-					dataArray[i][3] = rs.getString("s_id");
-				}
-
-				if (rs.getString("user") != null) {
-					dataArray[i][4] = rs.getString("user");
-				}
-
-				if (rs.getString("confirm") != null
-						&& rs.getString("confirm").equals("1")) {
-					dataArray[i][5] = true;
-				} else {
-					dataArray[i][5] = false;
-				}
-
-				if (rs.getString("acceptance") != null
-						&& !rs.getString("acceptance").equals("0")) {
-					if (rs.getString("acceptance").equals("1")) {
-						dataArray[i][6] = "Excellent";
-					} else if (rs.getString("acceptance").equals("2")) {
-						dataArray[i][6] = "Good";
-					} else if (rs.getString("acceptance").equals("3")) {
-						dataArray[i][6] = "<html><font color='FF0000'>Poor</font></html>";
-					}
-				} else {
-					dataArray[i][6] = "";
-				}
-
-				if (rs.getString("guid") != null) {
-					dataArray[i][7] = rs.getString("guid");
-				}
-
-				dataArray[i][1] = rs.getString("code");
-				dataArray[i][2] = rs.getString("item");
-				dataArray[i][0] = i + 1;
-				i++;
-			}
-
-			DefaultTableModel TableModel = new DefaultTableModel(dataArray,
-					title) {
-
-				/**
-						 * 
-						 */
-				private static final long serialVersionUID = -2995151919565263320L;
-
-				@Override
-				public boolean isCellEditable(int rowIndex, int columnIndex) {
-					if (columnIndex == 5 || columnIndex == 6) {
-						return true;
-					} else {
-						return false;
-					}
-				}
-			};
-			tab_HealthTeach.setModel(TableModel);
-			TableColumn columnNumber = this.tab_HealthTeach.getColumnModel()
-					.getColumn(0);
-			common.TabTools.setHideColumn(tab_HealthTeach, 1);
-			TableColumn columnName = this.tab_HealthTeach.getColumnModel()
-					.getColumn(2);
-			common.TabTools.setHideColumn(tab_HealthTeach, 3);
-			TableColumn columnUser = this.tab_HealthTeach.getColumnModel()
-					.getColumn(4);
-			TableColumn columnChoose = this.tab_HealthTeach.getColumnModel()
-					.getColumn(5);
-			TableColumn columnAcceptance = this.tab_HealthTeach
-					.getColumnModel().getColumn(6);
-			common.TabTools.setHideColumn(tab_HealthTeach, 7);
-			// set column width
-			columnNumber.setMaxWidth(30);
-			columnName.setPreferredWidth(250);
-			columnUser.setPreferredWidth(50);
-			columnChoose.setMaxWidth(40);
-			// columnAcceptance.setPreferredWidth(50);
-			final JComboBox com_Acceptance = new JComboBox();
-
-			com_Acceptance.addItem("");
-			com_Acceptance.addItem("Excellent");
-			com_Acceptance.addItem("Good");
-			com_Acceptance
-					.addItem("<html><font color='FF0000'>Poor</font></html>");
-			columnAcceptance
-					.setCellEditor(new DefaultCellEditor(com_Acceptance));
-
-			columnChoose.setCellRenderer(new TriStateCellRenderer());
-			columnChoose.setCellEditor(new TriStateCellEditor());
-			tab_HealthTeach.setRowHeight(30);
-
-		} catch (SQLException e) {
-			Logger.getLogger(Frm_Case.class.getName()).log(Level.SEVERE, null,
-					e);
-			ErrorMessage.setData(
-					"Case",
-					"Frm_Case",
-					"initTable()",
-					e.toString().substring(e.toString().lastIndexOf(".") + 1,
-							e.toString().length()));
-		} finally {
-			try {
-				DBC.closeConnection(rs);
-			} catch (SQLException e) {
-				ErrorMessage
-						.setData(
-								"Diagnosis",
-								"Frm_DiagnosisTherapy",
-								"setModel(String condition, String state) - DBC.closeConnection",
-								e.toString().substring(
-										e.toString().lastIndexOf(".") + 1,
-										e.toString().length()));
-			}
-		}
 
 		// ---- tab_MedicineTeach 藥品衛教---------------------
 		Object[][] dataArray_MT = null;
@@ -455,7 +314,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 							e.toString().length()));
 		} finally {
 			try {
-				DBC.closeConnection(rs);
+				DBC.closeConnection(rs_MT);
 			} catch (SQLException e) {
 				ErrorMessage
 						.setData(
@@ -1178,10 +1037,8 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		pan_AssComp.setParent(this);
 		pan_CompliComp = new Tab_Complication(m_Pno, m_RegGuid);
 		pan_CompliComp.setParent(this);
-		jPanel2 = new javax.swing.JPanel();
-		btn_ConSave = new javax.swing.JButton();
-		jScrollPane1 = new javax.swing.JScrollPane();
-		tab_HealthTeach = new javax.swing.JTable();
+		new javax.swing.JPanel();
+		new javax.swing.JScrollPane();
 		jPanel12 = new javax.swing.JPanel();
 		pan_Prescription = new javax.swing.JPanel();
 		span_Prescription = new javax.swing.JScrollPane();
@@ -1191,6 +1048,8 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		jPanelFoot = new Tab_FootCase();
 		pan_HIVComp = new Tab_HIVCase();
 		pan_HIVComp.setParent(this);
+		pan_ConfEdu = new Tab_ConfirmEducation(m_Pno, m_RegGuid);
+		pan_ConfEdu.setParent(this);
 		jScrollPane2 = new javax.swing.JScrollPane();
 		tab_MedicineTeach = new javax.swing.JTable();
 		btn_DheSave = new javax.swing.JButton();
@@ -1446,72 +1305,8 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 
 		jTabbedPane1.addTab("Assessment", pan_AssComp);
 		jTabbedPane1.addTab("Complication", pan_CompliComp);
-		btn_ConSave.setText("Save");
-		btn_ConSave.setEnabled(false);
-		btn_ConSave.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				btn_ConSaveActionPerformed(evt);
-			}
-		});
-
-		tab_HealthTeach.setModel(new javax.swing.table.DefaultTableModel(
-				new Object[][] { {}, {} }, new String[] {
-
-				}));
-		tab_HealthTeach.addMouseListener(new java.awt.event.MouseAdapter() {
-			public void mouseClicked(java.awt.event.MouseEvent evt) {
-				tab_HealthTeachMouseClicked(evt);
-			}
-		});
-		jScrollPane1.setViewportView(tab_HealthTeach);
-
-		javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(
-				jPanel2);
-		jPanel2.setLayout(jPanel2Layout);
-		jPanel2Layout
-				.setHorizontalGroup(jPanel2Layout
-						.createParallelGroup(
-								javax.swing.GroupLayout.Alignment.LEADING)
-						.addGroup(
-								javax.swing.GroupLayout.Alignment.TRAILING,
-								jPanel2Layout
-										.createSequentialGroup()
-										.addContainerGap()
-										.addGroup(
-												jPanel2Layout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.TRAILING)
-														.addComponent(
-																jScrollPane1,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																791,
-																Short.MAX_VALUE)
-														.addComponent(
-																btn_ConSave,
-																javax.swing.GroupLayout.PREFERRED_SIZE,
-																86,
-																javax.swing.GroupLayout.PREFERRED_SIZE))
-										.addContainerGap()));
-		jPanel2Layout
-				.setVerticalGroup(jPanel2Layout
-						.createParallelGroup(
-								javax.swing.GroupLayout.Alignment.LEADING)
-						.addGroup(
-								javax.swing.GroupLayout.Alignment.TRAILING,
-								jPanel2Layout
-										.createSequentialGroup()
-										.addContainerGap()
-										.addComponent(
-												jScrollPane1,
-												javax.swing.GroupLayout.DEFAULT_SIZE,
-												279, Short.MAX_VALUE)
-										.addPreferredGap(
-												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-										.addComponent(btn_ConSave)
-										.addContainerGap()));
-
 		jTabbedPane1.addTab("Confirm the completion of health education",
-				jPanel2);
+				pan_ConfEdu);
 
 		pan_Prescription.setBorder(javax.swing.BorderFactory
 				.createTitledBorder(""));
@@ -2349,7 +2144,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 				tab_name += "Complication \n";
 			}
 
-			if (btn_ConSave.isEnabled()) {
+			if (pan_ConfEdu.btn_ConSave.isEnabled()) {
 				tab_name += "Confirm the completion of health education \n";
 			}
 
@@ -2595,125 +2390,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 
 	private void tab_PrescriptionMouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_tab_PrescriptionMouseClicked
 
-	}// GEN-LAST:event_tab_PrescriptionMouseClicked
-
-	private void tab_HealthTeachMouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_tab_HealthTeachMouseClicked
-		if (!m_From.equals("dia")) {
-			if (tab_HealthTeach.getSelectedColumn() == 5
-					|| tab_HealthTeach.getSelectedColumn() == 6) {
-				btn_ConSave.setEnabled(true);
-			}
-
-			if (tab_HealthTeach.getValueAt(tab_HealthTeach.getSelectedRow(), 5)
-					.toString().equals("true")) {
-				tab_HealthTeach.setValueAt(UserInfo.getUserID(),
-						tab_HealthTeach.getSelectedRow(), 3);
-				tab_HealthTeach.setValueAt(UserInfo.getUserName(),
-						tab_HealthTeach.getSelectedRow(), 4);
-			} else {
-				tab_HealthTeach.setValueAt("",
-						tab_HealthTeach.getSelectedRow(), 3);
-				tab_HealthTeach.setValueAt("",
-						tab_HealthTeach.getSelectedRow(), 4);
-			}
-		}
-	}// GEN-LAST:event_tab_HealthTeachMouseClicked
-
-	private void btn_ConSaveActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_ConSaveActionPerformed
-		for (int i = 0; i < tab_HealthTeach.getRowCount(); i++) {
-
-			if (tab_HealthTeach.getValueAt(i, 3) == null
-					|| tab_HealthTeach.getValueAt(i, 3).toString().trim()
-							.equals(""))
-				continue;
-
-			try {
-				if (tab_HealthTeach.getValueAt(i, 7) == null) {
-					System.out.println("INININININININININ");
-					String thcheck = "0";
-					if (tab_HealthTeach.getValueAt(i, 5).toString()
-							.equals("true")) {
-						thcheck = "1";
-					}
-					String acceptance = "0";
-					if (tab_HealthTeach.getValueAt(i, 6).toString()
-							.equals("Excellent")) {
-						acceptance = "1";
-					} else if (tab_HealthTeach.getValueAt(i, 6).toString()
-							.equals("Good")) {
-						acceptance = "2";
-					} else if (tab_HealthTeach
-							.getValueAt(i, 6)
-							.toString()
-							.equals("<html><font color='FF0000'>Poor</font></html>")) {
-						acceptance = "3";
-					}
-
-					String sql = "INSERT INTO health_teach (guid, hti_code, reg_guid, s_id, confirm, acceptance) "
-							+ "VALUES (uuid(), '"
-							+ tab_HealthTeach.getValueAt(i, 1)
-							+ "','"
-							+ m_RegGuid + "', ";
-
-					if (tab_HealthTeach.getValueAt(i, 3) == null) {
-						sql += "NULL, ";
-					} else {
-						sql += "'" + tab_HealthTeach.getValueAt(i, 3) + "', ";
-					}
-					sql += " '" + thcheck + "','" + acceptance + "' )";
-
-					System.out.println(sql);
-					DBC.executeUpdate(sql);
-
-				} else {
-					System.out.println("UPUPUPUPUUPUPUPUUPUP");
-					// 做UPDATE的動作
-					String thcheck = "0";
-					if (tab_HealthTeach.getValueAt(i, 5).toString()
-							.equals("true")) {
-						thcheck = "1";
-					}
-
-					String acceptance = "0";
-					if (tab_HealthTeach.getValueAt(i, 6).toString()
-							.equals("Excellent")) {
-						acceptance = "1";
-					} else if (tab_HealthTeach.getValueAt(i, 6).toString()
-							.equals("Good")) {
-						acceptance = "2";
-					} else if (tab_HealthTeach
-							.getValueAt(i, 6)
-							.toString()
-							.equals("<html><font color='FF0000'>Poor</font></html>")) {
-						acceptance = "3";
-					}
-
-					String sql = "UPDATE health_teach SET " + "guid = uuid(),"
-							+ "hti_code = '" + tab_HealthTeach.getValueAt(i, 1)
-							+ "'," + "reg_guid = '" + m_RegGuid + "',";
-
-					if (tab_HealthTeach.getValueAt(i, 3) == null) {
-						sql += "s_id = NULL, ";
-					} else {
-						sql += "s_id = '" + tab_HealthTeach.getValueAt(i, 3)
-								+ "', ";
-					}
-
-					sql += " confirm = '" + thcheck + "'," + "acceptance = '"
-							+ acceptance + "'" + " WHERE hti_code = '"
-							+ tab_HealthTeach.getValueAt(i, 1) + "'";
-					System.out.println(sql);
-					DBC.executeUpdate(sql);
-				}
-
-			} catch (SQLException ex) {
-				Logger.getLogger(Frm_Case.class.getName()).log(Level.SEVERE,
-						null, ex);
-			}
-		}
-		JOptionPane.showMessageDialog(null, "Save Complete");
-		btn_ConSave.setEnabled(false);
-	}// GEN-LAST:event_btn_ConSaveActionPerformed
+	}
 
 	private void mnit_LabActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnit_LabActionPerformed
 		new Frm_DiagnosisPrescription(this).setVisible(true);
@@ -2864,7 +2541,6 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 
 	private javax.swing.JButton btn_CaseClose;
 	private javax.swing.JButton btn_Close;
-	private javax.swing.JButton btn_ConSave;
 	private javax.swing.JButton btn_Ddate_Save;
 	private javax.swing.JButton btn_DheSave;
 	private javax.swing.JButton btn_PreSave;
@@ -2895,11 +2571,9 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 	private javax.swing.JPanel jPanel11;
 	private javax.swing.JPanel jPanel12;
 	private javax.swing.JPanel jPanel13;
-	private javax.swing.JPanel jPanel2;
 	private javax.swing.JPanel jPanel4;
 	private javax.swing.JPanel jPanel9;
 	private javax.swing.JPanel jPanelFoot;
-	private javax.swing.JScrollPane jScrollPane1;
 	private javax.swing.JScrollPane jScrollPane2;
 	private javax.swing.JTabbedPane jTabbedPane1;
 	private javax.swing.JLabel lab_Age;
@@ -2919,10 +2593,10 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 	private Tab_Assessment pan_AssComp;
 	private Tab_Complication pan_CompliComp;
 	private Tab_HIVCase pan_HIVComp;
+	private Tab_ConfirmEducation pan_ConfEdu;
 	private javax.swing.JPanel pan_Prescription;
 	private javax.swing.JScrollPane span_ListMenu;
 	private javax.swing.JScrollPane span_Prescription;
-	private javax.swing.JTable tab_HealthTeach;
 	private javax.swing.JTable tab_MedicineTeach;
 	private javax.swing.JTable tab_Prescription;
 	private javax.swing.JTextField txt_AC;
