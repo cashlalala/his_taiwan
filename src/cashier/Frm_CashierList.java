@@ -29,9 +29,9 @@ public class Frm_CashierList extends javax.swing.JFrame {
     private RefrashCashier m_RefrashCashier;
     private Thread m_Clock;
     private String m_SysName ;  // 系統名稱
-    private boolean m_IsStop = false;
-    private String m_RegGuid;
-    private String m_Pno;
+    //private boolean m_IsStop = false;
+    //private String m_RegGuid;
+    //private String m_Pno;
     public Frm_CashierList() {
         initComponents();
 
@@ -81,6 +81,7 @@ public class Frm_CashierList extends javax.swing.JFrame {
         tab_Cashier = new javax.swing.JTable();
         jPanel2 = new javax.swing.JPanel();
         btn_Enter = new javax.swing.JButton();
+        btn_History = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         mnb = new javax.swing.JMenuBar();
         mn_Fiele = new javax.swing.JMenu();
@@ -94,7 +95,7 @@ public class Frm_CashierList extends javax.swing.JFrame {
         jLabel1.setText("System:");
 
         //cbox_System.setFont(new java.awt.Font("新細明體", 1, 14)); // NOI18N
-        cbox_System.setModel(new javax.swing.DefaultComboBoxModel(new String[] { " ", "Registration", "Laboratory", "Radiology(X-RAY)" }));
+        cbox_System.setModel(new javax.swing.DefaultComboBoxModel(new String[] { " ", "Registration", "Laboratory", "Radiology(X-RAY)", "Pharmacy" }));
         cbox_System.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 cbox_SystemItemStateChanged(evt);
@@ -171,6 +172,14 @@ public class Frm_CashierList extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(tab_Cashier);
 
+        btn_History.setText("Cashier Arrears");
+        btn_History.setEnabled(false);
+        btn_History.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_HistoryActionPerformed(evt);
+            }
+        });
+        
         btn_Enter.setText("Enter");
         btn_Enter.setEnabled(false);
         btn_Enter.addActionListener(new java.awt.event.ActionListener() {
@@ -195,6 +204,7 @@ public class Frm_CashierList extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jButton2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 113, Short.MAX_VALUE)
+                    .addComponent(btn_History, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 113, Short.MAX_VALUE)
                     .addComponent(btn_Enter, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 113, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -203,6 +213,8 @@ public class Frm_CashierList extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(btn_Enter)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btn_History)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton2)
                 .addContainerGap(405, Short.MAX_VALUE))
@@ -305,11 +317,22 @@ public class Frm_CashierList extends javax.swing.JFrame {
 }//GEN-LAST:event_mnit_CloseActionPerformed
 
     private void tab_CashierMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tab_CashierMouseClicked
-        if(this.tab_Cashier.getRowCount() > 0) this.btn_Enter.setEnabled(true);
+        if(this.tab_Cashier.getRowCount() > 0) {
+        	this.btn_Enter.setEnabled(true);
+        	this.btn_History.setEnabled(true);
+        }
 
         if(evt.getClickCount() == 2) btn_EnterActionPerformed(null);
     }//GEN-LAST:event_tab_CashierMouseClicked
 
+    private void btn_HistoryActionPerformed(java.awt.event.ActionEvent evt) {
+    	if (tab_Cashier.getValueAt(tab_Cashier.getSelectedRow(), 0) != null) {
+	    	String p_no = tab_Cashier.getValueAt(tab_Cashier.getSelectedRow(), 2).toString();
+	    	this.setEnabled(false);
+	    	new Frm_CashierHistory(this, p_no).setVisible(true);
+    	}
+    }
+    
     private void btn_EnterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_EnterActionPerformed
         if (tab_Cashier.getValueAt(tab_Cashier.getSelectedRow(), 0) != null) {
             this.setEnabled(false);
@@ -324,6 +347,7 @@ public class Frm_CashierList extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_Enter;
+    private javax.swing.JButton btn_History;
     private javax.swing.JComboBox cbox_System;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;

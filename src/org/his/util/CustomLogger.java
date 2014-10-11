@@ -29,4 +29,8 @@ public class CustomLogger {
 	public static void error(Logger logger, String message, Object... args) {
 		log(logger, Level.ERROR, message, args);
 	}
+	
+	public static void trace(Logger logger, String message, Object... args) {
+		log(logger, Level.TRACE, message, args);
+	}
 }

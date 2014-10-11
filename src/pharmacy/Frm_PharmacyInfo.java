@@ -630,7 +630,7 @@ public class Frm_PharmacyInfo extends javax.swing.JFrame {
 
 	private void btn_EducationActionPerformed(java.awt.event.ActionEvent evt) {
 		this.setAlwaysOnTop(false);
-		new Frm_Case(txt_Dep.getText(), m_Guid, true, "medicine")
+		new casemgmt.Frm_Case(txt_Dep.getText(), m_Guid, true, "medicine")
 				.setVisible(true);
 	}
 

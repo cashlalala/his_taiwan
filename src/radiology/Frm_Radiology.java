@@ -747,7 +747,7 @@ public class Frm_Radiology extends javax.swing.JFrame {
                         if (m_WorkListRowNo -1 == -1) {m_WorkListRowNo = 0;}
                         else {m_WorkListRowNo--;}
                     }
-                    new Frm_WorkList(m_WorkListRowNo,"lab").setVisible(true);
+                    new Frm_WorkList(m_WorkListRowNo,"xray").setVisible(true);
                     this.dispose();
               }
         } catch (SQLException ex) {
