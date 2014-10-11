@@ -113,7 +113,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 			}
 		});
 		if (from.equals("dia")) {
-			enableComponents(pan_AssComp, false);
+			// enableComponents(pan_AssComp, false);
 			btn_Ddate_Save.setVisible(false);
 			mnb.setVisible(false);
 			tab_HealthTeach.setEnabled(false);
@@ -1189,6 +1189,8 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		btn_PreSave = new javax.swing.JButton();
 		jPanel9 = new javax.swing.JPanel();
 		jPanelFoot = new Tab_FootCase();
+		pan_HIVComp = new Tab_HIVCase();
+		pan_HIVComp.setParent(this);
 		jScrollPane2 = new javax.swing.JScrollPane();
 		tab_MedicineTeach = new javax.swing.JTable();
 		btn_DheSave = new javax.swing.JButton();
@@ -1681,6 +1683,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		jTabbedPane1.addTab("Medicine Education", jPanel9);
 
 		jTabbedPane1.addTab(lang.getString("FOOT_EXAM"), jPanelFoot);
+		jTabbedPane1.addTab(lang.getString("HIV_TAB"), pan_HIVComp);
 
 		btn_CaseClose.setText("Send");
 		btn_CaseClose.addActionListener(new java.awt.event.ActionListener() {
@@ -2915,6 +2918,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 	private javax.swing.JMenuItem mnit_V3;
 	private Tab_Assessment pan_AssComp;
 	private Tab_Complication pan_CompliComp;
+	private Tab_HIVCase pan_HIVComp;
 	private javax.swing.JPanel pan_Prescription;
 	private javax.swing.JScrollPane span_ListMenu;
 	private javax.swing.JScrollPane span_Prescription;
