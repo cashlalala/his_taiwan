@@ -103,12 +103,7 @@ public class Tab_ConfirmEducation extends JPanel {
 
 			DefaultTableModel TableModel = new DefaultTableModel(dataArray,
 					title) {
-
-				/**
-						 * 
-						 */
 				private static final long serialVersionUID = -2995151919565263320L;
-
 				@Override
 				public boolean isCellEditable(int rowIndex, int columnIndex) {
 					if (columnIndex == 5 || columnIndex == 6) {

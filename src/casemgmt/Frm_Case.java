@@ -115,14 +115,12 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		});
 		if (from.equals("dia")) {
 			// enableComponents(pan_AssComp, false);
-			btn_Ddate_Save.setVisible(false);
 			mnb.setVisible(false);
-			pan_ConfEdu.tab_HealthTeach.setEnabled(false);
+			pan_ConfEdu.tab_HealthTeach.setEnabled(true);
 			tab_Prescription.setEnabled(false);
 			jTabbedPane1.setSelectedIndex(1);
 		} else if (from.equals("medicine")) {
 			jPanel4.setVisible(false);
-			btn_Ddate_Save.setVisible(false);
 			mnb.setVisible(false);
 			jTabbedPane1.remove(3);
 			jTabbedPane1.remove(2);
@@ -130,6 +128,8 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 			jTabbedPane1.remove(0);
 			this.setTitle("Medicine Education");
 		}
+		btn_Ddate_Save.setVisible(true);
+		btn_Ddate_Save.setEnabled(true);
 		m_From = from;
 		m_Pno = p_no;
 		m_RegGuid = regGuid;
@@ -180,7 +180,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		}
 
 		// Save按鍵初始化
-		btn_Ddate_Save.setEnabled(false);
+		btn_Ddate_Save.setEnabled(true);
 		pan_ConfEdu.btn_ConSave.setEnabled(false);
 		btn_PreSave.setEnabled(false);
 		btn_DheSave.setEnabled(false);
