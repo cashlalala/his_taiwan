@@ -128,7 +128,7 @@ public class Tab_Assessment extends JPanel {
 		String sqlas = "SELECT family_history, self_care, dm_type, dm_typeo, dm_year, oral_hypoglycemic, oral_syear, insulin, insulin_syear, "
 				+ " gestation, gestation_count, abortions_count, education, sport, fundus_check, gestation_count, "
 				+ " abortions_count, smoke, drink, smoke_aday, drink_aweek, education, sport, bloodtest_aweek, urine_aweek, "
-				+ " dbp, sbp, eye_lvision, eye_rvision, fundus_check, light_coagulation, cataract, retinal_check, non_proliferative_retinopathy, pre_proliferative_retinopathy ,proliferative_retinopathy, macular_degeneration, advanced_dm_eyedisease, vibration, pulse, ulcer, acupuncture, ulcer_cured, bypass_surgery, u_sid, udate"
+				+ " dbp, sbp, bmi, eye_lvision, eye_rvision, fundus_check, light_coagulation, cataract, retinal_check, non_proliferative_retinopathy, pre_proliferative_retinopathy ,proliferative_retinopathy, macular_degeneration, advanced_dm_eyedisease, vibration, pulse, ulcer, acupuncture, ulcer_cured, bypass_surgery, u_sid, udate"
 				+ " FROM asscement , registration_info"
 				+ " WHERE registration_info.guid = asscement.reg_guid"
 				+ " AND registration_info.p_no = '"
@@ -200,6 +200,7 @@ public class Tab_Assessment extends JPanel {
 							.getString("urine_aweek")));
 					txt_dbp.setText(as.getString("dbp"));
 					txt_sbp.setText(as.getString("sbp"));
+					txt_bmi.setText(as.getString("bmi"));
 					ftf_eye_lvision.setText(as.getString("eye_lvision"));
 					ftf_eye_rvision.setText(as.getString("eye_rvision"));
 					com_fundus_check.setSelectedIndex(Integer.parseInt(as
@@ -2662,6 +2663,13 @@ public class Tab_Assessment extends JPanel {
 		} catch (Exception ex) {
 			System.out.println("Bug");
 		}
+		
+		Double bmi = null;
+		try {
+			bmi = Double.valueOf(txt_bmi.getText());
+		} catch (Exception ex) {
+			System.out.println("Bug");
+		}
 
 		Double eye_l = null;
 		try {
@@ -2687,7 +2695,7 @@ public class Tab_Assessment extends JPanel {
 			DBC.executeUpdate(caseMgmtSql);
 			String sql = "INSERT INTO asscement (guid, reg_guid, case_guid, p_no, family_history, self_care, dm_type, dm_typeo, dm_year, "
 					+ " oral_hypoglycemic, oral_syear, insulin, insulin_syear, gestation, gestation_count, abortions_count, "
-					+ " smoke, smoke_aday, drink, drink_aweek, sport, education, bloodtest_aweek, urine_aweek, dbp, sbp, "
+					+ " smoke, smoke_aday, drink, drink_aweek, sport, education, bloodtest_aweek, urine_aweek, dbp, sbp, bmi, "
 					+ " eye_lvision, eye_rvision, fundus_check, light_coagulation, cataract, retinal_check, non_proliferative_retinopathy, "
 					+ " pre_proliferative_retinopathy, proliferative_retinopathy, macular_degeneration, advanced_dm_eyedisease, "
 					+ " vibration, pulse, ulcer, acupuncture, ulcer_cured, bypass_surgery, u_sid, udate) "
@@ -2746,6 +2754,8 @@ public class Tab_Assessment extends JPanel {
 					+ dbp
 					+ ", "
 					+ sbp
+					+ ", "
+					+ bmi
 					+ ", "
 					+ eye_l
 					+ ", "
