@@ -39,6 +39,8 @@ public class Frm_ReturnToMerchant extends JFrame {
 	private static final Language paragraph = Language.getInstance();
 	private Frm_Pharmacy Frm_Parent;
 	StoredErrorMessage ErrorMessage = new StoredErrorMessage();
+	
+
 
 	/**
 	 * Create the frame.
