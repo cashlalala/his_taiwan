@@ -1044,7 +1044,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		span_Prescription = new javax.swing.JScrollPane();
 		tab_Prescription = new javax.swing.JTable();
 		btn_PreSave = new javax.swing.JButton();
-		jPanel9 = new javax.swing.JPanel();
+		pan_MedEdu = new Tab_MedicineEducation(m_Pno, m_RegGuid);
 		jPanelFoot = new Tab_FootCase();
 		pan_HIVComp = new Tab_HIVCase();
 		pan_HIVComp.setParent(this);
@@ -1430,52 +1430,11 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 			}
 		});
 
-		javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(
-				jPanel9);
-		jPanel9.setLayout(jPanel9Layout);
-		jPanel9Layout
-				.setHorizontalGroup(jPanel9Layout
-						.createParallelGroup(
-								javax.swing.GroupLayout.Alignment.LEADING)
-						.addGroup(
-								jPanel9Layout
-										.createSequentialGroup()
-										.addContainerGap()
-										.addGroup(
-												jPanel9Layout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.LEADING)
-														.addComponent(
-																jScrollPane2,
-																javax.swing.GroupLayout.Alignment.TRAILING,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																791,
-																Short.MAX_VALUE)
-														.addComponent(
-																btn_DheSave,
-																javax.swing.GroupLayout.Alignment.TRAILING,
-																javax.swing.GroupLayout.PREFERRED_SIZE,
-																86,
-																javax.swing.GroupLayout.PREFERRED_SIZE))
-										.addContainerGap()));
-		jPanel9Layout
-				.setVerticalGroup(jPanel9Layout
-						.createParallelGroup(
-								javax.swing.GroupLayout.Alignment.LEADING)
-						.addGroup(
-								jPanel9Layout
-										.createSequentialGroup()
-										.addContainerGap()
-										.addComponent(
-												jScrollPane2,
-												javax.swing.GroupLayout.DEFAULT_SIZE,
-												279, Short.MAX_VALUE)
-										.addPreferredGap(
-												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-										.addComponent(btn_DheSave)
-										.addContainerGap()));
+		
+		
 
-		jTabbedPane1.addTab("Medicine Education", jPanel9);
+
+		jTabbedPane1.addTab("Medicine Education", pan_MedEdu);
 
 		jTabbedPane1.addTab(lang.getString("FOOT_EXAM"), jPanelFoot);
 		jTabbedPane1.addTab(lang.getString("HIV_TAB"), pan_HIVComp);
@@ -2572,7 +2531,6 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 	private javax.swing.JPanel jPanel12;
 	private javax.swing.JPanel jPanel13;
 	private javax.swing.JPanel jPanel4;
-	private javax.swing.JPanel jPanel9;
 	private javax.swing.JPanel jPanelFoot;
 	private javax.swing.JScrollPane jScrollPane2;
 	private javax.swing.JTabbedPane jTabbedPane1;
@@ -2594,6 +2552,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 	private Tab_Complication pan_CompliComp;
 	private Tab_HIVCase pan_HIVComp;
 	private Tab_ConfirmEducation pan_ConfEdu;
+	private Tab_MedicineEducation pan_MedEdu;
 	private javax.swing.JPanel pan_Prescription;
 	private javax.swing.JScrollPane span_ListMenu;
 	private javax.swing.JScrollPane span_Prescription;
