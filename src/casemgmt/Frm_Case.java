@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,12 +36,10 @@ import cc.johnwu.date.DateInterface;
 import cc.johnwu.date.DateMethod;
 import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
-
 import common.Constant;
 import common.PrintTools;
 import common.TabTools;
 import common.Tools;
-
 import diagnosis.Frm_DiagnosisPrescription;
 import errormessage.StoredErrorMessage;
 
@@ -1035,7 +1034,8 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		jTabbedPane1 = new javax.swing.JTabbedPane();
 		pan_AssComp = new Tab_Assessment(m_Pno, m_RegGuid);
 		pan_AssComp.setParent(this);
-		pan_CompliComp = new Tab_Complication(m_Pno, m_RegGuid);
+		pan_CompliComp = new Tab_Complication(UUID.randomUUID().toString(),
+				m_Pno, m_RegGuid);
 		pan_CompliComp.setParent(this);
 		new javax.swing.JPanel();
 		new javax.swing.JScrollPane();
