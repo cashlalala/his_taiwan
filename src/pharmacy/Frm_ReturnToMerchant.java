@@ -12,6 +12,8 @@ import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JTable;
@@ -35,12 +37,11 @@ import java.awt.event.ActionEvent;
 public class Frm_ReturnToMerchant extends JFrame {
 	private JPanel contentPane;
 	private JTextField txt_Search;
+	private JScrollPane scrollPane_MedList;
 	private JTable tab_MedicineList;
 	private static final Language paragraph = Language.getInstance();
 	private Frm_Pharmacy Frm_Parent;
 	StoredErrorMessage ErrorMessage = new StoredErrorMessage();
-	
-
 
 	/**
 	 * Create the frame.
@@ -115,16 +116,20 @@ public class Frm_ReturnToMerchant extends JFrame {
 		gbl_panel_1.rowWeights = new double[] { 0.0, 0.0, Double.MIN_VALUE };
 		panel_1.setLayout(gbl_panel_1);
 
+		scrollPane_MedList = new JScrollPane();
 		tab_MedicineList = new JTable();
-		GridBagConstraints gbc_tab_MedicineList = new GridBagConstraints();
-		gbc_tab_MedicineList.weightx = 1.0;
-		gbc_tab_MedicineList.weighty = 0.9;
-		gbc_tab_MedicineList.fill = GridBagConstraints.BOTH;
-		gbc_tab_MedicineList.insets = new Insets(0, 0, 5, 0);
-		gbc_tab_MedicineList.gridwidth = 2;
-		gbc_tab_MedicineList.gridx = 0;
-		gbc_tab_MedicineList.gridy = 0;
-		panel_1.add(tab_MedicineList, gbc_tab_MedicineList);
+		scrollPane_MedList.setViewportView(tab_MedicineList);
+		GridBagConstraints gbc_scrollPane_MedList = new GridBagConstraints();
+		gbc_scrollPane_MedList.weightx = 1.0;
+		gbc_scrollPane_MedList.weighty = 0.9;
+		gbc_scrollPane_MedList.fill = GridBagConstraints.BOTH;
+		gbc_scrollPane_MedList.insets = new Insets(0, 0, 5, 0);
+		gbc_scrollPane_MedList.gridwidth = 2;
+		gbc_scrollPane_MedList.gridx = 0;
+		gbc_scrollPane_MedList.gridy = 0;
+		panel_1.add(scrollPane_MedList, gbc_scrollPane_MedList);
+
+		
 
 		JButton btn_Return = new JButton(
 				paragraph.getString("RETURNTOMERCHANT"));
@@ -165,7 +170,7 @@ public class Frm_ReturnToMerchant extends JFrame {
 	}
 
 	private void btn_CloseActionPerformed(java.awt.event.ActionEvent evt) {
-		this.Frm_Parent.setEnabled(true);		
+		this.Frm_Parent.setEnabled(true);
 		this.Frm_Parent.initWorkList();
 		this.dispose();
 	}
@@ -219,20 +224,59 @@ public class Frm_ReturnToMerchant extends JFrame {
 				+ "medicines.code, medicines.item, medicine_stock.dosage, medicines.unit, "
 				+ "medicine_stock.usage, medicine_stock.unit_price, medicine_stock.price "
 				+ "FROM medicines, medicine_stock, registration_info "
-				+ "WHERE registration_info.guid = '" + reg_guid + "' "
+				+ "WHERE registration_info.guid = '" + txt_Search.getText() + "' "
 				+ "AND medicine_stock.reg_guid = registration_info.guid "
 				+ "AND medicines.code = medicine_stock.m_code";
 		ResultSet rsMedicines = null;
 		try {
-			Connection conn = DriverManager.getConnection(DBC.s_ServerURL,
-					DBC.s_ServerName, DBC.s_ServerPasswd);
-			Statement stmt = conn
-					.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-							ResultSet.CONCUR_READ_ONLY);
-			rsMedicines = stmt.executeQuery(sqlMedicines);
-			ArrayList<ArrayList<String>> MedicineList = ConvertToMatrix(rsMedicines);
-			tab_MedicineList
-					.setModel(new MedicineReturnTableBind(MedicineList));
+			String[] MedTitle = { "a", "", "", "", "", "", "", "" };
+			rsMedicines = DBC.executeQuery(sqlMedicines);
+			rsMedicines.last();
+			Object[][] MedicineList = new Object[rsMedicines.getRow()][8];
+
+			rsMedicines.beforeFirst();
+
+			int i = 0;
+			while (rsMedicines.next()) {
+				MedicineList[i][0] = false;
+				MedicineList[i][1] = rsMedicines.getString(1);
+				System.out.print(rsMedicines.getString(2)+"\n");
+				MedicineList[i][2] = rsMedicines.getString(2);
+				MedicineList[i][3] = rsMedicines.getString(3);
+				MedicineList[i][4] = rsMedicines.getString(4);
+				MedicineList[i][5] = rsMedicines.getString(5);
+				MedicineList[i][6] = rsMedicines.getString(6);
+				MedicineList[i][7] = rsMedicines.getString(7);
+				i = i + 1;
+			}
+
+			tab_MedicineList.setModel(new DefaultTableModel(MedicineList,
+					MedTitle) {
+
+
+				/**
+						 * 
+						 */
+						private static final long serialVersionUID = 1379918560104957676L;
+
+				@Override
+				public Class<?> getColumnClass(int columnIndex) {
+					if (columnIndex == 0) {
+						return Boolean.class;
+					} else {
+						return String.class;
+					}
+				}
+
+				@Override
+				public boolean isCellEditable(int row, int column) {
+					if (column == 0) {
+						return true;
+					} else {
+						return false;
+					}
+				}
+			});
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
