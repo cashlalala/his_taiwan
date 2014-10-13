@@ -3,6 +3,7 @@ package casemgmt;
 import java.awt.event.ItemEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.UUID;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -74,28 +75,36 @@ public class Tab_Complication extends JPanel {
 
 	private String regGuid;
 	private String pNo;
+	private String caseGuid;
 	private Frm_Case parent;
+	private String complicationId;
+
+	private int modifyCount;
 
 	public void setParent(Frm_Case parent) {
 		this.parent = parent;
 	}
 
-	public Tab_Complication(String pNo, String regGuid) {
+	public Tab_Complication(String caseGuid, String pNo, String regGuid) {
+		this.caseGuid = caseGuid;
 		this.regGuid = regGuid;
 		this.pNo = pNo;
+		modifyCount = 0;
+		complicationId = UUID.randomUUID().toString();
 		initComponents();
 		init();
 	}
 
 	private void init() {
-		String sqlcs = "SELECT dka, hhs, hypoglycemia, stroke, coronary_heart, paod, eye_lesions, neuropathy, kidney, waist, other, postural_hypotension, peripheral_neuropathy, angina, claudication, u_sid, udate "
-				+ " FROM complication, registration_info "
-				+ " WHERE registration_info.guid = complication.reg_guid "
-				+ " AND registration_info.p_no = '"
-				+ pNo
-				+ "' ORDER BY udate DESC LIMIT 0, 1";
-		System.out.println(sqlcs);
-		ResultSet cs;
+		String sqlcs = String
+				.format("SELECT dka, hhs, hypoglycemia, stroke, coronary_heart, paod, eye_lesions, neuropathy, "
+						+ "kidney, waist, other, postural_hypotension, peripheral_neuropathy, angina, "
+						+ "claudication, u_sid, udate "
+						+ " FROM complication "
+						+ " WHERE complication.reg_guid = '%s' "
+						+ " AND complication.p_no = '%s' "
+						+ " ORDER BY udate DESC LIMIT 0, 1", regGuid, pNo);
+		ResultSet cs = null;
 		try {
 			cs = DBC.executeQuery(sqlcs);
 
@@ -160,6 +169,12 @@ public class Tab_Complication extends JPanel {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				DBC.closeConnection(cs);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -1013,39 +1028,63 @@ public class Tab_Complication extends JPanel {
 		}
 
 		try {
-			String sql = "INSERT INTO complication (guid, reg_guid, dka, hhs, hypoglycemia, stroke, "
-					+ " coronary_heart, paod, eye_lesions, neuropathy, kidney, waist, other, postural_hypotension, "
-					+ " peripheral_neuropathy, angina, claudication, u_sid, udate ) VALUES (UUID(), '"
-					+ regGuid
-					+ "', "
-					+ " "
-					+ com_dka.getSelectedIndex()
-					+ ", "
-					+ com_hhs.getSelectedIndex()
-					+ ", "
-					+ com_hypoglycemia.getSelectedIndex()
-					+ ","
-					+ " "
-					+ com_stroke.getSelectedIndex()
-					+ ", "
-					+ com_coronary_heart.getSelectedIndex()
-					+ ", "
-					+ com_paod.getSelectedIndex()
-					+ ","
-					+ " "
-					+ com_eye_lesions.getSelectedIndex()
-					+ ", "
-					+ com_neuropathy.getSelectedIndex()
-					+ ", "
-					+ com_kidney.getSelectedIndex() + ",";
-			if (txt_waist.getText().equals("")) {
-				sql += " NULL, ";
-			} else {
-				sql += "'" + txt_waist.getText() + "',";
-			}
-			sql += " '" + txt_other.getText() + "', " + bg1 + ", " + bg2 + ", "
-					+ bg3 + ", " + bg4 + ", '" + UserInfo.getUserID()
-					+ "', NOW() )";
+			String caseMgmtSql = String
+					.format("INSERT into case_manage (guid, reg_guid, p_no, status, s_no, modify_count,isdiagnosis, finish_time) "
+							+ "VALUES ('%s','%s','%s','N', %s, %d, '1', NOW()) ON DUPLICATE KEY "
+							+ "UPDATE reg_guid='%s',p_no='%s', status='N', s_no=%s, modify_count=%d, isdiagnosis='1', finish_time=NOW() ",
+							caseGuid, regGuid, pNo, UserInfo.getUserNO(),
+							++modifyCount, regGuid, pNo, UserInfo.getUserNO(),
+							modifyCount);
+			DBC.executeUpdate(caseMgmtSql);
+
+			String sql = String
+					.format("INSERT INTO complication (guid, reg_guid, dka, hhs, hypoglycemia, stroke, "
+							+ " coronary_heart, paod, eye_lesions, neuropathy, kidney, waist, other, postural_hypotension, "
+							+ " peripheral_neuropathy, angina, claudication, u_sid, udate, case_guid, p_no ) "
+							+ "VALUES ( "
+							+ "'%s','%s', %d, %d, %d, %d, %d, %d, %d, %d, %d, "
+							+ "%s,'%s', %s, %s, %s, %s, '%s', NOW(), '%s', '%s')  ON DUPLICATE KEY "
+							+ "UPDATE "
+							+ "reg_guid='%s', dka=%d, hhs=%d, hypoglycemia=%d, stroke=%d, coronary_heart=%d, "
+							+ "paod=%d, eye_lesions=%d, neuropathy=%d, kidney=%d, "
+							+ "waist=%s,other='%s', postural_hypotension=%s, peripheral_neuropathy=%s, angina=%s, "
+							+ "claudication=%s, u_sid='%s', udate=NOW(), p_no='%s' ",
+							complicationId,
+							regGuid,
+							com_dka.getSelectedIndex(),
+							com_hhs.getSelectedIndex(),
+							com_hypoglycemia.getSelectedIndex(),
+							com_stroke.getSelectedIndex(),
+							com_coronary_heart.getSelectedIndex(),
+							com_paod.getSelectedIndex(),
+							com_eye_lesions.getSelectedIndex(),
+							com_neuropathy.getSelectedIndex(),
+							com_kidney.getSelectedIndex(),
+							(txt_waist.getText().equals("")) ? "NULL" : String
+									.format("'%s'", txt_waist.getText()),
+							txt_other.getText(),
+							bg1,
+							bg2,
+							bg3,
+							bg4,
+							UserInfo.getUserID(),
+							caseGuid,
+							pNo,
+							regGuid,
+							com_dka.getSelectedIndex(),
+							com_hhs.getSelectedIndex(),
+							com_hypoglycemia.getSelectedIndex(),
+							com_stroke.getSelectedIndex(),
+							com_coronary_heart.getSelectedIndex(),
+							com_paod.getSelectedIndex(),
+							com_eye_lesions.getSelectedIndex(),
+							com_neuropathy.getSelectedIndex(),
+							com_kidney.getSelectedIndex(),
+							(txt_waist.getText().equals("")) ? "NULL" : String
+									.format("'%s'", txt_waist.getText()),
+							txt_other.getText(), bg1, bg2, bg3, bg4, UserInfo
+									.getUserID(), pNo);
+
 			DBC.executeUpdate(sql);
 			parent.setOverValue();
 			JOptionPane.showMessageDialog(null, "Save Complete");
