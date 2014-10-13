@@ -7,16 +7,19 @@ import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,16 +33,23 @@ import javax.swing.table.TableColumn;
 
 import laboratory.Frm_LabDM;
 import multilingual.Language;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.his.util.CustomLogger;
+
 import casemgmt.TableTriStateCell.TriStateCellEditor;
 import casemgmt.TableTriStateCell.TriStateCellRenderer;
 import cc.johnwu.date.DateInterface;
 import cc.johnwu.date.DateMethod;
 import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
+
 import common.Constant;
 import common.PrintTools;
 import common.TabTools;
 import common.Tools;
+
 import diagnosis.Frm_DiagnosisPrescription;
 import errormessage.StoredErrorMessage;
 
@@ -80,6 +90,10 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 	private String m_RegGuid; // registration guid
 	private int m_ModifyCount = 0; // 修改次數
 	private String m_From;
+	private String caseGuid;
+
+	private static Logger logger = LogManager.getLogger(Frm_Case.class
+			.getName());
 
 	private static Language lang = Language.getInstance();
 
@@ -93,10 +107,81 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		}
 	}
 
-	public Frm_Case(String p_no, String regGuid, boolean finishState,
-			String from) {
+	private String type;
+
+	private String icdVersion;
+
+	private List<Pair<String, String>> presCodeMap;
+
+	private class Pair<K, V> implements Entry<K, V> {
+
+		public Pair(K key, V value) {
+			super();
+			this.key = key;
+			this.value = value;
+		}
+
+		private K key;
+		private V value;
+
+		@Override
+		public K getKey() {
+			return key;
+		}
+
+		@Override
+		public V getValue() {
+			return value;
+		}
+
+		@Override
+		public V setValue(V value) {
+			this.value = value;
+			return value;
+		}
+
+	}
+
+	public Frm_Case(String caseGuid, String type, String p_no, String regGuid,
+			boolean finishState, String from) {
+		this.caseGuid = caseGuid;
+		this.type = type;
 		m_RegGuid = regGuid;
 		m_Pno = p_no;
+		presCodeMap = new ArrayList<Pair<String, String>>();
+
+		ResultSet rs = null;
+		try {
+			rs = DBC.executeQuery("Select ICDVersion from setting");
+			icdVersion = (rs.first()) ? rs.getString("ICDVersion") : "ICD-10";
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (rs != null) {
+				try {
+					DBC.closeConnection(rs);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+
+			if (icdVersion.equalsIgnoreCase("ICD-10")) {
+				presCodeMap.add(new Pair<String, String>("155601", UUID
+						.randomUUID().toString()));
+				presCodeMap.add(new Pair<String, String>("1044971", UUID
+						.randomUUID().toString()));
+				presCodeMap.add(new Pair<String, String>("1507481", UUID
+						.randomUUID().toString()));
+			} else {
+				presCodeMap.add(new Pair<String, String>("155602", UUID
+						.randomUUID().toString()));
+				presCodeMap.add(new Pair<String, String>("1044972", UUID
+						.randomUUID().toString()));
+				presCodeMap.add(new Pair<String, String>("1507482", UUID
+						.randomUUID().toString()));
+			}
+		}
+
 		initComponents();
 
 		addWindowListener(new WindowAdapter() {
@@ -136,6 +221,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		showWhoUpdate(m_FinishState);
 		this.setExtendedState(Frm_Case.MAXIMIZED_BOTH); // 最大化
 		this.setLocationRelativeTo(this);
+		setAlwaysOnTop(true);
 		init();
 		initTable();
 		if (finishState)
@@ -174,8 +260,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 			if (rs.getString("education") != null)
 				this.com_edu.setSelectedIndex(rs.getInt("education"));
 		} catch (SQLException ex) {
-			Logger.getLogger(Frm_Case.class.getName()).log(Level.SEVERE, null,
-					ex);
+			ex.printStackTrace();
 		}
 
 		// Save按鍵初始化
@@ -303,8 +388,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 			columnPs.setPreferredWidth(100);
 			tab_MedicineTeach.setRowHeight(30);
 		} catch (SQLException e) {
-			Logger.getLogger(Frm_Case.class.getName()).log(Level.SEVERE, null,
-					e);
+			e.printStackTrace();
 			ErrorMessage.setData(
 					"Case",
 					"Frm_Case",
@@ -328,12 +412,70 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 	}
 
 	public void setFrmClose() {
+		Connection conn = null;
+		if (m_From.equalsIgnoreCase("dia")) {
+			try {
+				conn = DBC.getConnectionExternel();
+				conn.setAutoCommit(false);
+
+				String sql = String.format(
+						"Delete from asscement where case_guid = '%s'",
+						caseGuid);
+				PreparedStatement stmt = conn.prepareStatement(sql);
+				stmt.executeUpdate();
+				stmt.close();
+				CustomLogger.debug(logger, sql);
+
+				sql = String.format(
+						"Delete from complication where case_guid = '%s'",
+						caseGuid);
+				PreparedStatement stmt2 = conn.prepareStatement(sql);
+				stmt2.executeUpdate();
+				stmt2.close();
+				CustomLogger.debug(logger, sql);
+
+				sql = String.format(
+						"Delete from case_manage where guid = '%s'", caseGuid);
+				PreparedStatement stmt3 = conn.prepareStatement(sql);
+				stmt3.executeUpdate();
+				stmt3.close();
+				CustomLogger.debug(logger, sql);
+
+				for (Pair<String, String> pair : presCodeMap) {
+					sql = String.format(
+							"delete from prescription where guid = '%s'",
+							pair.getValue());
+					PreparedStatement stmt4 = conn.prepareStatement(sql);
+					stmt4.executeUpdate();
+					stmt4.close();
+					CustomLogger.debug(logger, sql);
+				}
+
+				conn.commit();
+			} catch (SQLException ex) {
+				ex.printStackTrace();
+				try {
+					if (conn != null)
+						conn.rollback();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			} finally {
+				try {
+					if (conn != null)
+						conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
 		if (m_From.equals("dia") || m_From.equals("medicine")) {
 			// 關閉此視窗
 			this.dispose();
 		} else {
 			// 開啟看診 視窗
-			new worklist.Frm_WorkList(0, "case").setVisible(true);
+			new Frm_WorkList(0, "case").setVisible(true);
 			// 關閉此視窗
 			this.dispose();
 		}
@@ -369,8 +511,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 				rowPrescription++;
 			}
 		} catch (SQLException ex) {
-			Logger.getLogger(Frm_Case.class.getName()).log(Level.SEVERE, null,
-					ex);
+			ex.printStackTrace();
 		} finally {
 			try {
 				DBC.closeConnection(rs);
@@ -400,8 +541,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 			}
 
 		} catch (SQLException ex) {
-			Logger.getLogger(Frm_Case.class.getName()).log(Level.SEVERE, null,
-					ex);
+			ex.printStackTrace();
 			return -1;
 		}
 	}
@@ -841,8 +981,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 				this.pan_CompliComp.Lab_record.setText("No Modify the message");
 			}
 		} catch (SQLException ex) {
-			Logger.getLogger(Frm_Case.class.getName()).log(Level.SEVERE, null,
-					ex);
+			ex.printStackTrace();
 		}
 	}
 
@@ -1008,8 +1147,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 				this.dispose();
 			}
 		} catch (SQLException ex) {
-			Logger.getLogger(Frm_Case.class.getName()).log(Level.SEVERE, null,
-					ex);
+			ex.printStackTrace();
 		}
 	}
 
@@ -1034,8 +1172,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		jTabbedPane1 = new javax.swing.JTabbedPane();
 		pan_AssComp = new Tab_Assessment(m_Pno, m_RegGuid);
 		pan_AssComp.setParent(this);
-		pan_CompliComp = new Tab_Complication(UUID.randomUUID().toString(),
-				m_Pno, m_RegGuid);
+		pan_CompliComp = new Tab_Complication(caseGuid, m_Pno, m_RegGuid);
 		pan_CompliComp.setParent(this);
 		new javax.swing.JPanel();
 		new javax.swing.JScrollPane();
@@ -1045,9 +1182,6 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		tab_Prescription = new javax.swing.JTable();
 		btn_PreSave = new javax.swing.JButton();
 		pan_MedEdu = new Tab_MedicineEducation(m_Pno, m_RegGuid);
-		jPanelFoot = new Tab_FootCase();
-		pan_HIVComp = new Tab_HIVCase();
-		pan_HIVComp.setParent(this);
 		pan_ConfEdu = new Tab_ConfirmEducation(m_Pno, m_RegGuid);
 		pan_ConfEdu.setParent(this);
 		jScrollPane2 = new javax.swing.JScrollPane();
@@ -1430,14 +1564,18 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 			}
 		});
 
-		
-		
-
-
 		jTabbedPane1.addTab("Medicine Education", pan_MedEdu);
 
-		jTabbedPane1.addTab(lang.getString("FOOT_EXAM"), jPanelFoot);
-		jTabbedPane1.addTab(lang.getString("HIV_TAB"), pan_HIVComp);
+		if (type.equalsIgnoreCase("D")) {
+			jPanelFoot = new Tab_FootCase(caseGuid);
+			jTabbedPane1.addTab(lang.getString("FOOT_EXAM"), jPanelFoot);
+		} else if (type.equalsIgnoreCase("H")) {
+			pan_HIVComp = new Tab_HIVCase(caseGuid);
+			pan_HIVComp.setParent(this);
+			jTabbedPane1.addTab(lang.getString("HIV_TAB"), pan_HIVComp);
+		} else if (type.equalsIgnoreCase("W")) {
+			// To-Do : add wound
+		}
 
 		btn_CaseClose.setText("Send");
 		btn_CaseClose.addActionListener(new java.awt.event.ActionListener() {
@@ -2150,37 +2288,52 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 
 	private void btn_Ddate_SaveActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_Ddate_SaveActionPerformed
 
+		Connection conn = null;
 		try {
+
+			conn = DBC.getConnectionExternel();
+
 			String sql = "UPDATE patients_info  SET height = '"
 					+ txt_Height.getText() + "',  weight = '"
 					+ txt_Weight.getText() + "', education = '"
 					+ com_edu.getSelectedIndex() + "' WHERE p_no = '" + m_Pno
 					+ "'";
-			System.out.println(sql);
-			DBC.executeUpdate(sql);
+			CustomLogger.debug(logger, sql);
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.executeUpdate();
+			ps.close();
 
-			String sqlBgac = "INSERT INTO prescription (guid, code, case_guid, date_test, date_results, result, isnormal, cost, finish, state) "
-					+ "SELECT UUID(), prescription_code.code,'"
-					+ m_RegGuid
-					+ "', NOW(), NOW(), '"
-					+ txt_AC.getText()
-					+ "', 0,0,'F',1  FROM prescription_code WHERE prescription_code.name = 'BGAc'";
+			String sqlBgac = String
+					.format("INSERT INTO prescription (guid, code, reg_guid, date_test, date_results, result, "
+							+ "isnormal, cost, finish, state) "
+							+ "values ('%s', '%s', '%s', NOW(), NOW(), '%s', 0, 0 , 'F', 1) ON DUPLICATE KEY UPDATE "
+							+ "date_test = NOW(), date_results= NOW(), result = '%s', "
+							+ "isnormal = 0, cost = 0, finish = 'F', state = 1 ",
+							presCodeMap.get(0).getValue(), presCodeMap.get(0)
+									.getKey(), m_RegGuid, txt_AC.getText(),
+							txt_AC.getText());
 			DBC.executeUpdate(sqlBgac);
 
-			String sqlBgpc = "INSERT INTO prescription (guid, code, case_guid, date_test, date_results, result, isnormal, cost, finish, state) "
-					+ "SELECT UUID(), prescription_code.code,'"
-					+ m_RegGuid
-					+ "', NOW(), NOW(), '"
-					+ txt_PC.getText()
-					+ "', 0,0,'F',1  FROM prescription_code WHERE prescription_code.name = 'BGPc'";
+			String sqlBgpc = String
+					.format("INSERT INTO prescription (guid, code, reg_guid, date_test, date_results, result, "
+							+ "isnormal, cost, finish, state) "
+							+ "values ('%s', '%s', '%s', NOW(), NOW(), '%s', 0, 0 , 'F', 1) ON DUPLICATE KEY UPDATE "
+							+ "date_test = NOW(), date_results= NOW(), result = '%s', "
+							+ "isnormal = 0, cost = 0, finish = 'F', state = 1 ",
+							presCodeMap.get(1).getValue(), presCodeMap.get(1)
+									.getKey(), m_RegGuid, txt_PC.getText(),
+							txt_PC.getText());
 			DBC.executeUpdate(sqlBgpc);
 
-			String sqlSt = "INSERT INTO prescription (guid, code, case_guid, date_test, date_results, result, isnormal, cost, finish, state) "
-					+ "SELECT UUID(), prescription_code.code,'"
-					+ m_RegGuid
-					+ "', NOW(), NOW(), '"
-					+ txt_ST.getText()
-					+ "', 0,0,'F',1  FROM prescription_code WHERE prescription_code.name = 'St.'";
+			String sqlSt = String
+					.format("INSERT INTO prescription (guid, code, reg_guid, date_test, date_results, result, "
+							+ "isnormal, cost, finish, state) "
+							+ "values ('%s', '%s', '%s', NOW(), NOW(), '%s', 0, 0 , 'F', 1) ON DUPLICATE KEY UPDATE "
+							+ "date_test = NOW(), date_results= NOW(), result = '%s', "
+							+ "isnormal = 0, cost = 0, finish = 'F', state = 1 ",
+							presCodeMap.get(2).getValue(), presCodeMap.get(2)
+									.getKey(), m_RegGuid, txt_ST.getText(),
+							txt_ST.getText());
 			DBC.executeUpdate(sqlSt);
 
 			JOptionPane.showMessageDialog(null, "Save Complete");
@@ -2188,8 +2341,13 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 					txt_Weight.getText()));
 			btn_Ddate_Save.setEnabled(false);
 		} catch (SQLException ex) {
-			Logger.getLogger(Frm_Case.class.getName()).log(Level.SEVERE, null,
-					ex);
+			ex.printStackTrace();
+		} finally {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 
 	}// GEN-LAST:event_btn_Ddate_SaveActionPerformed
@@ -2293,8 +2451,8 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 			// *************************************************
 			btn_PreSave.setEnabled(false);
 		} catch (SQLException ex) {
-			Logger.getLogger(Frm_Case.class.getName()).log(Level.SEVERE, null,
-					ex);
+			ex.printStackTrace();
+			;
 		}
 	}// GEN-LAST:event_btn_PreSaveActionPerformed
 
@@ -2406,8 +2564,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 					System.out.println(sql);
 					DBC.executeUpdate(sql);
 				} catch (SQLException ex) {
-					Logger.getLogger(Frm_Case.class.getName()).log(
-							Level.SEVERE, null, ex);
+					ex.printStackTrace();
 				}
 			}
 		}
@@ -2493,8 +2650,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 				JOptionPane.showMessageDialog(null, "Please Check Days");
 			}
 		} catch (SQLException ex) {
-			Logger.getLogger(Frm_Case.class.getName()).log(Level.SEVERE, null,
-					ex);
+			ex.printStackTrace();
 		}
 	}// GEN-LAST:event_jButton2ActionPerformed
 

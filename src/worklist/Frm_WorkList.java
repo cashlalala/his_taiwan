@@ -249,27 +249,6 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 					tab_WorkListInterface.getSelectedRow(), 5);
 			new Frm_Radiology(m_Pno, m_RegGuid, getSelectRow, finishState)
 					.setVisible(true);
-		} else if (m_SysName.equals("case")) {
-			if (tab_WorkListInterface.getValueAt(
-					tab_WorkListInterface.getSelectedRow(), 3) != null
-					&& tab_WorkList
-							.getValueAt(tab_WorkListInterface.getSelectedRow(),
-									3).toString().equals("F")) {
-				new casemgmt.Frm_Case(m_Pno, m_RegGuid, true, "")
-						.setVisible(true);
-			} else {
-				new casemgmt.Frm_Case(m_Pno, m_RegGuid, false, "")
-						.setVisible(true);
-			}
-
-		} else if (m_SysName.equals("inp")) {
-			this.dummy = "inp_hist";
-			m_RegGuid = (String) tab_WorkListInterface.getValueAt(
-					tab_WorkListInterface.getSelectedRow(), 13);
-			m_Pno = (String) tab_WorkListInterface.getValueAt(
-					tab_WorkListInterface.getSelectedRow(), 0);
-			new Frm_DiagnosisInfo(this, m_Pno, m_RegGuid, getSelectRow, true,
-					false).setVisible(true);
 		}
 		this.dispose();
 	}

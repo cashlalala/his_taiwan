@@ -2,30 +2,27 @@ package casemgmt;
 
 import java.awt.LayoutManager;
 
-import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JPanel;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
-import javax.swing.JScrollPane;
 import javax.swing.JButton;
-import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.JTextField;
-import javax.swing.JTable;
-
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.RowSpec;
-import com.jgoodies.forms.factories.FormFactory;
-
-import javax.swing.JLabel;
-import javax.swing.SwingConstants;
-import javax.swing.JComboBox;
 import javax.swing.JCheckBox;
-import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 
 import multilingual.Language;
+
+import com.jgoodies.forms.factories.FormFactory;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.RowSpec;
 
 public class Tab_FootCase extends JPanel {
 	/**
@@ -87,7 +84,13 @@ public class Tab_FootCase extends JPanel {
 			lang.getString("FOOT_9"), lang.getString("FOOT_10"), };
 	private JScrollPane scrollPane_1;
 
-	public Tab_FootCase() {
+	private String caseGuid;
+
+	/**
+	 * @wbp.parser.constructor
+	 */
+	public Tab_FootCase(String caseGuid) {
+		this.caseGuid = caseGuid;
 		initModel();
 		initComponent();
 	}
