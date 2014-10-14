@@ -114,8 +114,21 @@ public class RefrashCashier extends Thread{
         			+ " ORDER BY registration_info.touchtime DESC";
         } else if (m_SysName.equals("bed")) {
         	// TODO
+        	sql = "SELECT registration_info.guid, registration_info.bed_guid, "
+        			+ " registration_info.p_no, registration_info.reg_time, "
+        			+ " registration_info.reg_cost, registration_info.dia_cost, "
+        			+ " bed_record.checkinTime, bed_record.checkoutTime, "
+        			+ " bed_record.cost FROM registration_info, bed_record "
+        			+ " WHERE registration_info.bed_guid = bed_record.guid "
+        			+ " AND registration_info.type = 'I' "
+        			+ " AND bed_record.checkinTime is not null "
+        			+ " AND bed_record.checkoutTime is not null "
+        			+ " AND bed_record.status = 'L' "
+        			+ " AND bed_payment is null "
+        			+ " ORDER by registration_info.reg_time ASC ";
+			//+ " AND shift_table.shift_date = '"+DateMethod.getTodayYMD()+"' "
         }
-        System.out.println(sql);
+        //System.out.println(sql);
         this.m_Tab = tab;
         this.m_Time = time;
         try{
@@ -154,7 +167,10 @@ public class RefrashCashier extends Thread{
 //                TabTools.setHideColumn(this.m_Tab,11);
 //            }
             System.out.println(sql);
-            if(this.m_Tab.getRowCount()>0) lab_await.setText(String.valueOf(m_Tab.getRowCount()));
+            if(this.m_Tab.getRowCount()>0) {
+            	lab_await.setText(String.valueOf(m_Tab.getRowCount()));
+            	System.out.println(this.m_Tab.getRowCount());
+            }
             DBC.closeConnection(rs);
         }catch (SQLException ex) {System.out.println(ex);
         }finally{ try{ DBC.closeConnection(rs); }catch(SQLException ex){} }
@@ -196,8 +212,19 @@ public class RefrashCashier extends Thread{
                                    "AND shift_table.shift = '"+DateMethod.getNowShiftNum()+"' ";
                 } else if (m_SysName.equals("bed")) {
                 	// TODO
+                	check_sql = "SELECT MAX(touchtime) " +
+                            "FROM registration_info, bed_record " +
+                            "WHERE registration_info.bed_guid = bed_record.guid "
+                            + " AND registration_info.type = 'I' "
+                			+ " AND bed_record.checkinTime is not null "
+                			+ " AND bed_record.checkoutTime is not null "
+                			+ " AND bed_record.status = 'L' "
+                			+ " AND bed_payment is null "
+                			;
+//                            + " AND shift_table.shift_date = '"+DateMethod.getTodayYMD()+"' " +
+//                            "AND shift_table.shift = '"+DateMethod.getNowShiftNum()+"' ";
                 }
-               
+                System.out.println(check_sql);
                 rs = DBC.executeQuery(check_sql);
                 if(rs.next()
                 && (rs.getString(1) == null || rs.getString(1).equals(m_LastTouchTime))){
@@ -206,6 +233,7 @@ public class RefrashCashier extends Thread{
                 }                
                 m_LastTouchTime = rs.getString(1);
                 DBC.closeConnection(rs);
+                System.out.println(m_LastTouchTime);
 
                 rs = DBC.executeQuery(sql);
                 if(rs.last()){

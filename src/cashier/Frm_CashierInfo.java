@@ -89,8 +89,9 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
                             //"medicine_stock.price AS 'Price' " +
                             "FROM medicines, medicine_stock, registration_info, medical_stock " +
                             "WHERE registration_info.guid = '" + m_Guid + "' " +
-                            "AND medicine_stock.reg_guid = registration_info.guid " +
-                            "AND medicines.code = medicine_stock.m_code " +
+                            " AND medicine_stock.return_medicine_time is null " +
+                            " AND medicine_stock.reg_guid = registration_info.guid " +
+                            " AND medicines.code = medicine_stock.m_code " +
                             " AND medical_stock.type = 'P' AND medical_stock.item_guid = medicine_stock.m_code " +
                             " ORDER BY registration_info.reg_time ASC";
                     System.out.println(sql);

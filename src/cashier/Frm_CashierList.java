@@ -37,6 +37,11 @@ public class Frm_CashierList extends javax.swing.JFrame {
     		m_SysName = sysname;
     	
         initComponents();
+        
+        if(sysname == "bed") {
+        	cbox_System.setVisible(false);
+        	reFreshCashier();
+        }
 
         this.setExtendedState(Frm_CashierList.MAXIMIZED_BOTH);  // 最大化
         this.setLocationRelativeTo(this);//視窗顯示至中
@@ -108,10 +113,6 @@ public class Frm_CashierList extends javax.swing.JFrame {
                 cbox_SystemItemStateChanged(evt);
             }
         });
-        if(m_SysName == "bed") {
-        	cbox_System.setVisible(false);
-        	reFreshCashier();
-        }
 
         txt_Name.setEditable(false);
 
@@ -289,6 +290,7 @@ public class Frm_CashierList extends javax.swing.JFrame {
     		m_RefrashCashier.interrupt();  // 終止重複讀取掛號表單
             m_Clock.interrupt();
     	}
+    	System.out.println(m_SysName);
         m_RefrashCashier = new RefrashCashier(this.tab_Cashier, Constant.REFRASHTIME, m_SysName, lab_WaitCount);
         m_RefrashCashier.start();
     }
