@@ -1,5 +1,6 @@
 package pharmacy;
 
+import casemgmt.Dlg_CaseMgmtType;
 import casemgmt.Frm_Case;
 import cc.johnwu.sql.DBC;
 import cc.johnwu.sql.HISModel;
@@ -630,7 +631,7 @@ public class Frm_PharmacyInfo extends javax.swing.JFrame {
 
 	private void btn_EducationActionPerformed(java.awt.event.ActionEvent evt) {
 		this.setAlwaysOnTop(false);
-		new casemgmt.Frm_Case(txt_Dep.getText(), m_Guid, true, "medicine")
+		new Dlg_CaseMgmtType(this, txt_Dep.getText(), m_Guid, true, "medicine")
 				.setVisible(true);
 	}
 
@@ -644,12 +645,12 @@ public class Frm_PharmacyInfo extends javax.swing.JFrame {
 					sql = "UPDATE medicine_stock SET medicine_stock.get_medicine_time=now() "
 							+ "WHERE medicine_stock.guid='"
 							+ this.medicine_guid[i] + "' ";
-					System.out.print(sql+"\n");
+					System.out.print(sql + "\n");
 					DBC.executeUpdate(sql);
 					amountReceivable = amountReceivable
 							+ (Integer) this.tab_Medicines.getValueAt(i, 13);
 				}
-			}			
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

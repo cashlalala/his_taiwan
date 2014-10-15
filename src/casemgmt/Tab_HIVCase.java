@@ -13,11 +13,14 @@ public class Tab_HIVCase extends JPanel {
 
 	private Frm_Case parent;
 
+	private String caseGuid;
+
 	public void setParent(Frm_Case parent) {
 		this.parent = parent;
 	}
 
-	public Tab_HIVCase() {
+	public Tab_HIVCase(String caseGuid) {
+		this.caseGuid = caseGuid;
 		setLayout(null);
 
 		JLabel lbl_Risk = new JLabel("Risk:");

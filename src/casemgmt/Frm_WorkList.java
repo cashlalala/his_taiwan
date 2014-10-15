@@ -179,6 +179,7 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 	// 進入看診
 	public void setEnter(boolean finishState) {
 		getSelectedTable();
+
 		m_RefrashWorkList.interrupt(); // 終止重複讀取掛號表單
 		m_RefrashWorkList2.interrupt();
 		m_Clock.interrupt();
@@ -191,9 +192,17 @@ public class Frm_WorkList extends javax.swing.JFrame implements
 				&& tab_WorkList
 						.getValueAt(tab_WorkListInterface.getSelectedRow(), 3)
 						.toString().equals("C")) {
-			new casemgmt.Frm_Case(m_Pno, m_RegGuid, true, "").setVisible(true);
+			new casemgmt.Frm_Case((String) tab_WorkListInterface.getValueAt(
+					tab_WorkListInterface.getSelectedRow(), 0),
+					(String) tab_WorkListInterface.getValueAt(
+							tab_WorkListInterface.getSelectedRow(), 4), m_Pno,
+					m_RegGuid, true, "").setVisible(true);
 		} else {
-			new casemgmt.Frm_Case(m_Pno, m_RegGuid, false, "").setVisible(true);
+			new casemgmt.Frm_Case((String) tab_WorkListInterface.getValueAt(
+					tab_WorkListInterface.getSelectedRow(), 0),
+					(String) tab_WorkListInterface.getValueAt(
+							tab_WorkListInterface.getSelectedRow(), 4), m_Pno,
+					m_RegGuid, false, "").setVisible(true);
 		}
 		this.dispose();
 	}

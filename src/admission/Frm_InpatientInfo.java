@@ -35,15 +35,14 @@ import javax.swing.table.TableColumn;
 import laboratory.Frm_LabDM;
 import multilingual.Language;
 import worklist.Frm_WorkList;
+import casemgmt.Dlg_CaseMgmtType;
 import cc.johnwu.date.DateMethod;
 import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
-
 import common.Constant;
 import common.PrintTools;
 import common.TabTools;
 import common.Tools;
-
 import errormessage.StoredErrorMessage;
 
 @SuppressWarnings("serial")
@@ -4041,7 +4040,7 @@ public class Frm_InpatientInfo extends javax.swing.JFrame implements
 	}// GEN-LAST:event_mnit_XRayHistoryActionPerformed
 
 	private void mnit_ComplicationActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnit_ComplicationActionPerformed
-		new casemgmt.Frm_Case(m_Pno, m_RegistrationGuid, true, "dia")
+		new Dlg_CaseMgmtType(this, m_Pno, m_RegistrationGuid, true, "dia")
 				.setVisible(true);
 	}// GEN-LAST:event_mnit_ComplicationActionPerformed
 
@@ -4051,7 +4050,7 @@ public class Frm_InpatientInfo extends javax.swing.JFrame implements
 
 	private void btn_CaseManagementActionPerformed(
 			java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_CaseManagementActionPerformed
-		new casemgmt.Frm_Case(m_Pno, m_RegistrationGuid, true, "dia")
+		new Dlg_CaseMgmtType(this, m_Pno, m_RegistrationGuid, true, "dia")
 				.setVisible(true);
 	}// GEN-LAST:event_btn_CaseManagementActionPerformed
 
