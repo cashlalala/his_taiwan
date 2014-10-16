@@ -17,6 +17,7 @@ import java.util.Calendar;
 import javax.swing.ListSelectionModel;
 
 import main.Frm_Main;
+import multilingual.Language;
 import common.Constant;
 
 /**
@@ -29,6 +30,8 @@ public class Frm_CashierList extends javax.swing.JFrame {
     private RefrashCashier m_RefrashCashier;
     private Thread m_Clock;
     private String m_SysName ;  // 系統名稱
+    
+    private Language paragraph = Language.getInstance();;
     //private boolean m_IsStop = false;
     //private String m_RegGuid;
     //private String m_Pno;
@@ -40,6 +43,7 @@ public class Frm_CashierList extends javax.swing.JFrame {
         
         if(sysname == "bed") {
         	cbox_System.setVisible(false);
+        	setTitle("Bed Cashier");
         	reFreshCashier();
         }
 
