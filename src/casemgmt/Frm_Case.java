@@ -1163,7 +1163,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		jLabel31 = new javax.swing.JLabel();
 		txt_ComeBackDays = new javax.swing.JTextField();
 		jTabbedPane1 = new javax.swing.JTabbedPane();
-		pan_AssComp = new Tab_Assessment(m_Pno, m_RegGuid);
+		pan_AssComp = new Tab_Assessment(caseGuid, m_Pno, m_RegGuid);
 		pan_AssComp.setParent(this);
 		pan_CompliComp = new Tab_Complication(caseGuid, m_Pno, m_RegGuid);
 		pan_CompliComp.setParent(this);
