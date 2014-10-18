@@ -107,7 +107,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		}
 	}
 
-	private String type;
+	private String caseType;
 
 	private String icdVersion;
 
@@ -145,7 +145,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 	public Frm_Case(String caseGuid, String type, String p_no, String regGuid,
 			boolean finishState, String from) {
 		this.caseGuid = caseGuid;
-		this.type = type;
+		this.caseType = type;
 		m_RegGuid = regGuid;
 		m_Pno = p_no;
 		presCodeMap = new ArrayList<Pair<String, String>>();
@@ -399,14 +399,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 			try {
 				DBC.closeConnection(rs_MT);
 			} catch (SQLException e) {
-				ErrorMessage
-						.setData(
-								"Diagnosis",
-								"Frm_DiagnosisTherapy",
-								"setModel(String condition, String state) - DBC.closeConnection",
-								e.toString().substring(
-										e.toString().lastIndexOf(".") + 1,
-										e.toString().length()));
+				e.printStackTrace();
 			}
 		}
 	}
@@ -475,7 +468,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 			this.dispose();
 		} else {
 			// 開啟看診 視窗
-			new Frm_WorkList(0, "case").setVisible(true);
+			new Frm_WorkList(0, this.caseType).setVisible(true);
 			// 關閉此視窗
 			this.dispose();
 		}
@@ -1566,14 +1559,14 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 
 		jTabbedPane1.addTab("Medicine Education", pan_MedEdu);
 
-		if (type.equalsIgnoreCase("D")) {
+		if (caseType.equalsIgnoreCase("D")) {
 			jPanelFoot = new Tab_FootCase(caseGuid);
 			jTabbedPane1.addTab(lang.getString("FOOT_EXAM"), jPanelFoot);
-		} else if (type.equalsIgnoreCase("H")) {
+		} else if (caseType.equalsIgnoreCase("H")) {
 			pan_HIVComp = new Tab_HIVCase(caseGuid);
 			pan_HIVComp.setParent(this);
 			jTabbedPane1.addTab(lang.getString("HIV_TAB"), pan_HIVComp);
-		} else if (type.equalsIgnoreCase("W")) {
+		} else if (caseType.equalsIgnoreCase("W")) {
 			// To-Do : add wound
 		}
 

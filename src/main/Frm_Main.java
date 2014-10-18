@@ -10,7 +10,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.JButton;
 import javax.swing.JOptionPane;
+import javax.swing.LayoutStyle.ComponentPlacement;
 
 import mobilehealth.Frm_MobileHealth;
 import multilingual.Language;
@@ -25,6 +29,8 @@ import cc.johnwu.login.Frm_Login;
 import cc.johnwu.login.UserInfo;
 import codemaintenance.Frm_TableChooser;
 import errormessage.StoredErrorMessage;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class Frm_Main extends javax.swing.JFrame {
 	/**
@@ -118,7 +124,10 @@ public class Frm_Main extends javax.swing.JFrame {
 		pan_Case.setBorder(javax.swing.BorderFactory
 				.createTitledBorder(paragraph.getString("CASE_MANAGEMENT")));
 
-		btn_Case.setText(paragraph.getString("CASE_MANAGEMENT"));
+		btn_HIVCase.setText(paragraph.getString("HIV_CASE_MANAGEMENT"));
+		btn_DiabetesCase.setText(paragraph
+				.getString("DIABETES_CASE_MANAGEMENT"));
+		btn_WoundCase.setText(paragraph.getString("WOUND_CASE_MANAGEMENT"));
 
 		btn_Sms.setText(paragraph.getString("MOBILE_HEALTH"));
 
@@ -203,7 +212,9 @@ public class Frm_Main extends javax.swing.JFrame {
 		btn_System.setEnabled(UserInfo.getSelectPow("System"));
 		btn_Statistic.setEnabled(UserInfo.getSelectPow("Statistic"));
 		btn_Sms.setEnabled(UserInfo.getSelectPow("Mobile Health"));
-		btn_Case.setEnabled(UserInfo.getSelectPow("Case Management"));
+		btn_HIVCase.setEnabled(UserInfo.getSelectPow("Case Management"));
+		btn_WoundCase.setEnabled(UserInfo.getSelectPow("Case Management"));
+		btn_DiabetesCase.setEnabled(UserInfo.getSelectPow("Case Management"));
 		btn_Cashier.setEnabled(UserInfo.getSelectPow("Cashier"));
 		btn_BedManagement.setEnabled(UserInfo.getSelectPow("Bed Management"));
 		btn_CodeMaintenance.setEnabled(UserInfo
@@ -254,7 +265,7 @@ public class Frm_Main extends javax.swing.JFrame {
 		btn_CodeMaintenance = new javax.swing.JButton();
 		btn_Inpatient = new javax.swing.JButton();
 		pan_Case = new javax.swing.JPanel();
-		btn_Case = new javax.swing.JButton();
+		btn_HIVCase = new javax.swing.JButton();
 		btn_Sms = new javax.swing.JButton();
 		mbar = new javax.swing.JMenuBar();
 		jMenu1 = new javax.swing.JMenu();
@@ -992,8 +1003,8 @@ public class Frm_Main extends javax.swing.JFrame {
 		pan_Case.setBorder(javax.swing.BorderFactory
 				.createTitledBorder(paragraph.getString("CASE_MANAGEMENT")));
 
-		btn_Case.setText(paragraph.getString("CASE_MANAGEMENT"));
-		btn_Case.addActionListener(new java.awt.event.ActionListener() {
+		btn_HIVCase.setText(paragraph.getString("CASE_MANAGEMENT"));
+		btn_HIVCase.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				btn_CaseActionPerformed(evt);
 			}
@@ -1006,55 +1017,65 @@ public class Frm_Main extends javax.swing.JFrame {
 			}
 		});
 
+		btn_DiabetesCase = new JButton(
+				paragraph.getString("DIABETES_CASE_MANAGEMENT"));
+		btn_DiabetesCase.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				onDiabetesCaseClicked(e);
+			}
+		});
+		btn_WoundCase = new JButton(
+				paragraph.getString("WOUND_CASE_MANAGEMENT"));
+		btn_WoundCase.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				onWoundCaseClicked(e);
+			}
+		});
+
 		javax.swing.GroupLayout pan_CaseLayout = new javax.swing.GroupLayout(
 				pan_Case);
+		pan_CaseLayout.setHorizontalGroup(pan_CaseLayout.createParallelGroup(
+				Alignment.LEADING).addGroup(
+				pan_CaseLayout
+						.createSequentialGroup()
+						.addContainerGap()
+						.addGroup(
+								pan_CaseLayout
+										.createParallelGroup(Alignment.LEADING)
+										.addComponent(btn_DiabetesCase,
+												GroupLayout.DEFAULT_SIZE, 200,
+												Short.MAX_VALUE)
+										.addComponent(btn_WoundCase,
+												GroupLayout.DEFAULT_SIZE, 200,
+												Short.MAX_VALUE)
+										.addComponent(btn_HIVCase,
+												GroupLayout.DEFAULT_SIZE, 200,
+												Short.MAX_VALUE)
+										.addComponent(btn_Sms,
+												GroupLayout.DEFAULT_SIZE, 200,
+												Short.MAX_VALUE))
+						.addContainerGap()));
+		pan_CaseLayout.setVerticalGroup(pan_CaseLayout.createParallelGroup(
+				Alignment.LEADING).addGroup(
+				pan_CaseLayout
+						.createSequentialGroup()
+						.addContainerGap()
+						.addComponent(btn_WoundCase,
+								GroupLayout.PREFERRED_SIZE, 60,
+								GroupLayout.PREFERRED_SIZE)
+						.addPreferredGap(ComponentPlacement.UNRELATED)
+						.addComponent(btn_HIVCase, GroupLayout.PREFERRED_SIZE,
+								60, GroupLayout.PREFERRED_SIZE)
+						.addPreferredGap(ComponentPlacement.UNRELATED)
+						.addComponent(btn_DiabetesCase,
+								GroupLayout.PREFERRED_SIZE, 60,
+								GroupLayout.PREFERRED_SIZE)
+						.addPreferredGap(ComponentPlacement.UNRELATED)
+						.addComponent(btn_Sms, GroupLayout.PREFERRED_SIZE, 60,
+								GroupLayout.PREFERRED_SIZE)
+						.addContainerGap(GroupLayout.DEFAULT_SIZE,
+								Short.MAX_VALUE)));
 		pan_Case.setLayout(pan_CaseLayout);
-		pan_CaseLayout
-				.setHorizontalGroup(pan_CaseLayout
-						.createParallelGroup(
-								javax.swing.GroupLayout.Alignment.LEADING)
-						.addGroup(
-								pan_CaseLayout
-										.createSequentialGroup()
-										.addContainerGap()
-										.addGroup(
-												pan_CaseLayout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.LEADING)
-														.addComponent(
-																btn_Case,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																200,
-																Short.MAX_VALUE)
-														.addComponent(
-																btn_Sms,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																200,
-																Short.MAX_VALUE))
-										.addContainerGap()));
-		pan_CaseLayout
-				.setVerticalGroup(pan_CaseLayout
-						.createParallelGroup(
-								javax.swing.GroupLayout.Alignment.LEADING)
-						.addGroup(
-								pan_CaseLayout
-										.createSequentialGroup()
-										.addContainerGap()
-										.addComponent(
-												btn_Case,
-												javax.swing.GroupLayout.PREFERRED_SIZE,
-												60,
-												javax.swing.GroupLayout.PREFERRED_SIZE)
-										.addPreferredGap(
-												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-										.addComponent(
-												btn_Sms,
-												javax.swing.GroupLayout.PREFERRED_SIZE,
-												60,
-												javax.swing.GroupLayout.PREFERRED_SIZE)
-										.addContainerGap(
-												javax.swing.GroupLayout.DEFAULT_SIZE,
-												Short.MAX_VALUE)));
 
 		jMenu1.setText(paragraph.getString("FILE"));
 
@@ -1300,6 +1321,16 @@ public class Frm_Main extends javax.swing.JFrame {
 		pack();
 	}// </editor-fold>//GEN-END:initComponents
 
+	protected void onWoundCaseClicked(ActionEvent e) {
+		new casemgmt.Frm_WorkList(0, "W").setVisible(true);
+		this.dispose();
+	}
+
+	protected void onDiabetesCaseClicked(ActionEvent e) {
+		new casemgmt.Frm_WorkList(0, "D").setVisible(true);
+		this.dispose();
+	}
+
 	private void btn_RegisterActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_RegisterActionPerformed
 		// 開啟掛號視窗
 		new registration.Frm_RegAndInpatient().setVisible(true);
@@ -1452,7 +1483,7 @@ public class Frm_Main extends javax.swing.JFrame {
 	}// GEN-LAST:event_btn_AnamnesisReturnActionPerformed
 
 	private void btn_CaseActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_CaseActionPerformed
-		new casemgmt.Frm_WorkList(0, "case").setVisible(true);
+		new casemgmt.Frm_WorkList(0, "H").setVisible(true);
 		this.dispose();
 	}// GEN-LAST:event_btn_CaseActionPerformed
 
@@ -1532,7 +1563,9 @@ public class Frm_Main extends javax.swing.JFrame {
 	// Variables declaration - do not modify//GEN-BEGIN:variables
 	private javax.swing.JButton btn_Anamnesis;
 	private javax.swing.JButton btn_AnamnesisReturn;
-	private javax.swing.JButton btn_Case;
+	private javax.swing.JButton btn_HIVCase;
+	private JButton btn_DiabetesCase;
+	private JButton btn_WoundCase;
 	private javax.swing.JButton btn_Cashier;
 	private javax.swing.JButton btn_DepartmentManagement;
 	private javax.swing.JButton btn_Diagnosis;
@@ -1568,6 +1601,4 @@ public class Frm_Main extends javax.swing.JFrame {
 	private javax.swing.JPanel pan_StockManagement;
 	private javax.swing.JPanel pan_BedManagement;
 	private javax.swing.JPanel pan_CodeMaintenance;
-	// End of variables declaration//GEN-END:variables
-
 }
