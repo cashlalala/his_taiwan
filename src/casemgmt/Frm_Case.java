@@ -38,8 +38,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.his.util.CustomLogger;
 
-import casemgmt.TableTriStateCell.TriStateCellEditor;
-import casemgmt.TableTriStateCell.TriStateCellRenderer;
 import cc.johnwu.date.DateInterface;
 import cc.johnwu.date.DateMethod;
 import cc.johnwu.login.UserInfo;
@@ -267,7 +265,6 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		btn_Ddate_Save.setEnabled(true);
 		pan_ConfEdu.btn_ConSave.setEnabled(false);
 		btn_PreSave.setEnabled(false);
-		btn_DheSave.setEnabled(false);
 	}
 
 	private void setCloseRevisitTime() {
@@ -304,104 +301,6 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		prescriptionColumnPlace.setPreferredWidth(80);
 		prescriptionColumnCode.setCellEditor(new DefaultCellEditor(m_AutoTxt)); // textField加入table
 		TabTools.setHideColumn(tab_Prescription, 3);
-
-		// ---- tab_MedicineTeach 藥品衛教---------------------
-		Object[][] dataArray_MT = null;
-		ResultSet rs_MT = null;
-		try {
-			Object[] title_MT = { "", "Code", "Item", "s_id", "Uesr", "Check",
-					"ps" };
-			String sql_MT = "SELECT medicine_stock.m_code AS 'code', medicines.item AS 'item', medicine_stock.ps AS 'ps', medicine_stock.teach_complete AS 'teach_complete', concat(staff_info.firstname,'  ',staff_info.lastname) AS 'user', medicine_stock.s_id AS 'sid'"
-					+ " FROM  medicine_stock LEFT JOIN staff_info ON staff_info.s_id = medicine_stock.s_id , medicines, registration_info, outpatient_services "
-					+ " WHERE  medicines.code= medicine_stock.m_code "
-					+ " AND outpatient_services.reg_guid = registration_info.guid "
-					+ " AND registration_info.p_no = '"
-					+ m_Pno
-					+ "' "
-					+ " AND registration_info.guid = '" + m_RegGuid + "'";
-			System.out.println(sql_MT);
-			rs_MT = DBC.executeQuery(sql_MT);
-			rs_MT.last();
-			dataArray_MT = new Object[rs_MT.getRow()][7];
-			rs_MT.beforeFirst();
-
-			int i = 0;
-			while (rs_MT.next()) {
-				dataArray_MT[i][0] = i + 1;
-				dataArray_MT[i][1] = rs_MT.getString("code");
-				dataArray_MT[i][2] = rs_MT.getString("item");
-				dataArray_MT[i][3] = rs_MT.getString("sid");
-
-				if (rs_MT.getString("user") != null) {
-					dataArray_MT[i][4] = rs_MT.getString("user");
-				}
-
-				if (rs_MT.getString("teach_complete") != null
-						&& rs_MT.getString("teach_complete").equals("1")) {
-					dataArray_MT[i][5] = true;
-				} else {
-					dataArray_MT[i][5] = false;
-				}
-				if (rs_MT.getString("ps") != null) {
-					dataArray_MT[i][6] = rs_MT.getString("ps");
-				}
-				i++;
-			}
-
-			DefaultTableModel TableModel = new DefaultTableModel(dataArray_MT,
-					title_MT) {
-
-				/**
-						 * 
-						 */
-				private static final long serialVersionUID = -5596812643978453160L;
-
-				@Override
-				public boolean isCellEditable(int rowIndex, int columnIndex) {
-					if (columnIndex == 5 || columnIndex == 6) {
-						return true;
-					} else {
-						return false;
-					}
-				}
-			};
-			tab_MedicineTeach.setModel(TableModel);
-			TableColumn columnNumber = this.tab_MedicineTeach.getColumnModel()
-					.getColumn(0);
-			common.TabTools.setHideColumn(tab_MedicineTeach, 1);
-			TableColumn columnName = this.tab_MedicineTeach.getColumnModel()
-					.getColumn(2);
-			common.TabTools.setHideColumn(tab_MedicineTeach, 3);
-			TableColumn columnUser = this.tab_MedicineTeach.getColumnModel()
-					.getColumn(4);
-			TableColumn columnChoose = this.tab_MedicineTeach.getColumnModel()
-					.getColumn(5);
-			TableColumn columnPs = this.tab_MedicineTeach.getColumnModel()
-					.getColumn(6);
-			// set column width
-			columnNumber.setMaxWidth(30);
-			columnName.setPreferredWidth(200);
-			columnUser.setPreferredWidth(50);
-			columnChoose.setMaxWidth(40);
-			columnChoose.setCellRenderer(new TriStateCellRenderer());
-			columnChoose.setCellEditor(new TriStateCellEditor());
-			columnPs.setPreferredWidth(100);
-			tab_MedicineTeach.setRowHeight(30);
-		} catch (SQLException e) {
-			e.printStackTrace();
-			ErrorMessage.setData(
-					"Case",
-					"Frm_Case",
-					"initTable()",
-					e.toString().substring(e.toString().lastIndexOf(".") + 1,
-							e.toString().length()));
-		} finally {
-			try {
-				DBC.closeConnection(rs_MT);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
 	}
 
 	public void setFrmClose() {
@@ -1177,9 +1076,6 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		pan_MedEdu = new Tab_MedicineEducation(m_Pno, m_RegGuid);
 		pan_ConfEdu = new Tab_ConfirmEducation(m_Pno, m_RegGuid);
 		pan_ConfEdu.setParent(this);
-		jScrollPane2 = new javax.swing.JScrollPane();
-		tab_MedicineTeach = new javax.swing.JTable();
-		btn_DheSave = new javax.swing.JButton();
 		btn_CaseClose = new javax.swing.JButton();
 		jPanel11 = new javax.swing.JPanel();
 		jLabel60 = new javax.swing.JLabel();
@@ -1537,25 +1433,6 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 										.addContainerGap()));
 
 		jTabbedPane1.addTab("Laboratory", jPanel12);
-
-		tab_MedicineTeach.setModel(new javax.swing.table.DefaultTableModel(
-				new Object[][] { {}, {}, {}, {} }, new String[] {
-
-				}));
-		tab_MedicineTeach.addMouseListener(new java.awt.event.MouseAdapter() {
-			public void mouseClicked(java.awt.event.MouseEvent evt) {
-				tab_MedicineTeachMouseClicked(evt);
-			}
-		});
-		jScrollPane2.setViewportView(tab_MedicineTeach);
-
-		btn_DheSave.setText("Save");
-		btn_DheSave.setEnabled(false);
-		btn_DheSave.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				btn_DheSaveActionPerformed(evt);
-			}
-		});
 
 		jTabbedPane1.addTab("Medicine Education", pan_MedEdu);
 
@@ -2200,20 +2077,17 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 				// 關閉此視窗
 				this.dispose();
 			} else if (m_From.equals("medicine")) {
-				if (btn_DheSave.isEnabled() == true) {
-					Object[] options = { "YES", "NO" };
-					int dialog = JOptionPane.showOptionDialog(new Frame(),
-							"Not saved to continue ?", "Message",
-							JOptionPane.YES_OPTION,
-							JOptionPane.QUESTION_MESSAGE, null, options,
-							options[0]);
-					if (dialog == 0) {
-						// 選擇 YES 時
-						// 關閉此視窗
-						this.dispose();
-					} else {
-						// 選擇 NO 時
-					}
+				Object[] options = { "YES", "NO" };
+				int dialog = JOptionPane.showOptionDialog(new Frame(),
+						"Not saved to continue ?", "Message",
+						JOptionPane.YES_OPTION, JOptionPane.QUESTION_MESSAGE,
+						null, options, options[0]);
+				if (dialog == 0) {
+					// 選擇 YES 時
+					// 關閉此視窗
+					this.dispose();
+				} else {
+					// 選擇 NO 時
 				}
 				// 關閉此視窗
 				this.dispose();
@@ -2240,10 +2114,6 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 
 			if (btn_PreSave.isEnabled()) {
 				tab_name += "Laboratory \n";
-			}
-
-			if (btn_DheSave.isEnabled()) {
-				tab_name += "Drug health education \n";
 			}
 
 			if (!tab_name.equals("")) {
@@ -2384,28 +2254,6 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		dia.setVisible(false);
 	}// GEN-LAST:event_btn_CloseActionPerformed
 
-	private void tab_MedicineTeachMouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_tab_MedicineTeachMouseClicked
-
-		if (tab_MedicineTeach.getSelectedColumn() == 5
-				|| tab_MedicineTeach.getSelectedColumn() == 6) {
-			btn_DheSave.setEnabled(true);
-		}
-
-		if (tab_MedicineTeach.getValueAt(tab_MedicineTeach.getSelectedRow(), 5)
-				.toString().equals("true")) {
-			tab_MedicineTeach.setValueAt(UserInfo.getUserID(),
-					tab_MedicineTeach.getSelectedRow(), 3);
-			tab_MedicineTeach.setValueAt(UserInfo.getUserName(),
-					tab_MedicineTeach.getSelectedRow(), 4);
-		} else {
-			tab_MedicineTeach.setValueAt("",
-					tab_MedicineTeach.getSelectedRow(), 3);
-			tab_MedicineTeach.setValueAt("",
-					tab_MedicineTeach.getSelectedRow(), 4);
-		}
-
-	}// GEN-LAST:event_tab_MedicineTeachMouseClicked
-
 	private void btn_PreSaveActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_PreSaveActionPerformed
 
 		try {
@@ -2543,50 +2391,6 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 
 	}// GEN-LAST:event_mn_FieleActionPerformed
 
-	private void btn_DheSaveActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_DheSaveActionPerformed
-
-		for (int i = 0; i < tab_MedicineTeach.getRowCount(); i++) {
-			if (tab_MedicineTeach.getValueAt(i, 5).toString().equals("true")) {
-				try {
-
-					String check = "0";
-					if (tab_MedicineTeach.getValueAt(i, 5).toString()
-							.equals("true")) {
-						check = "1";
-					}
-
-					String sql = "UPDATE medicine_stock SET ";
-
-					if (tab_MedicineTeach.getValueAt(i, 3) == null) {
-						sql += "s_id = NULL, ";
-					} else {
-						sql += "s_id = '" + tab_MedicineTeach.getValueAt(i, 3)
-								+ "', ";
-					}
-
-					sql += "teach_complete = '" + check + "', ";
-
-					if (tab_MedicineTeach.getValueAt(i, 6) == null) {
-						sql += " ps = NULL ";
-					} else {
-						sql += " ps = '" + tab_MedicineTeach.getValueAt(i, 6)
-								+ "' ";
-					}
-					sql += " WHERE os_guid = (SELECT outpatient_services.guid  FROM outpatient_services, registration_info WHERE registration_info.guid = outpatient_services.reg_guid AND registration_info.guid = '"
-							+ m_RegGuid
-							+ "' AND m_code = '"
-							+ tab_MedicineTeach.getValueAt(i, 1) + "')";
-					System.out.println(sql);
-					DBC.executeUpdate(sql);
-				} catch (SQLException ex) {
-					ex.printStackTrace();
-				}
-			}
-		}
-		JOptionPane.showMessageDialog(null, "Save Complete");
-		btn_DheSave.setEnabled(false);
-	}// GEN-LAST:event_btn_DheSaveActionPerformed
-
 	private void ItemStateChanged_D(java.awt.event.ItemEvent evt) {// GEN-FIRST:event_ItemStateChanged_D
 
 		btn_Ddate_Save.setEnabled(true);
@@ -2672,7 +2476,6 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 	private javax.swing.JButton btn_CaseClose;
 	private javax.swing.JButton btn_Close;
 	private javax.swing.JButton btn_Ddate_Save;
-	private javax.swing.JButton btn_DheSave;
 	private javax.swing.JButton btn_PreSave;
 	private javax.swing.JComboBox com_edu;
 	private javax.swing.JDialog dia;
@@ -2703,7 +2506,6 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 	private javax.swing.JPanel jPanel13;
 	private javax.swing.JPanel jPanel4;
 	private javax.swing.JPanel jPanelFoot;
-	private javax.swing.JScrollPane jScrollPane2;
 	private javax.swing.JTabbedPane jTabbedPane1;
 	private javax.swing.JLabel lab_Age;
 	private javax.swing.JLabel lab_Gender;
@@ -2727,7 +2529,6 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 	private javax.swing.JPanel pan_Prescription;
 	private javax.swing.JScrollPane span_ListMenu;
 	private javax.swing.JScrollPane span_Prescription;
-	private javax.swing.JTable tab_MedicineTeach;
 	private javax.swing.JTable tab_Prescription;
 	private javax.swing.JTextField txt_AC;
 	private javax.swing.JTextField txt_ComeBackDays;
