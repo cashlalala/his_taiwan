@@ -167,12 +167,14 @@ public class Tab_FootCase extends JPanel {
 			while (rs.next()) {
 				caseGuids = String.format("'%s',", rs.getString("guid"));
 			}
-			varList.add(caseGuids.substring(0, caseGuids.length() - 1));
-			sqlDia = String.format(sqlDia, varList.toArray());
-			rsRec = DBC.executeQuery(sqlDia);
-			diabeteRec = HISModel.getModel(rsRec);
-			table.setModel(diabeteRec);
-			TabTools.setHideColumn(table, 0);
+			if (!caseGuids.isEmpty()) {
+				varList.add(caseGuids.substring(0, caseGuids.length() - 1));
+				sqlDia = String.format(sqlDia, varList.toArray());
+				rsRec = DBC.executeQuery(sqlDia);
+				diabeteRec = HISModel.getModel(rsRec);
+				table.setModel(diabeteRec);
+				TabTools.setHideColumn(table, 0);
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
