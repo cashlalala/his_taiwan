@@ -90,6 +90,7 @@ public class Tab_Assessment extends JPanel {
 	private JSpinner spi_bloodtest_aweek;
 	private JSpinner spi_urine_aweek;
 
+	private String guid;
 	private String regGuid;
 	private String caseGuid;
 	private String pNo;
@@ -100,18 +101,9 @@ public class Tab_Assessment extends JPanel {
 		this.parent = parent;
 	}
 
-	/* delete this constructor when integrate code */
-	public Tab_Assessment(String pNo, String regGuid) {
-		super();
-		this.caseGuid = UUID.randomUUID().toString();
-		this.regGuid = regGuid;
-		this.pNo = pNo;
-		initComponents();
-		init();
-	}
-	
 	public Tab_Assessment(String caseGuid, String pNo, String regGuid) {
 		super();
+		this.guid = "";
 		this.caseGuid = caseGuid;
 		this.regGuid = regGuid;
 		this.pNo = pNo;
@@ -125,22 +117,23 @@ public class Tab_Assessment extends JPanel {
 			cbox_insulin_syear.addItem(i);
 		}
 		// 新病患第一次進入case management 所有資料帶入空值
-		String sqlas = "SELECT family_history, self_care, dm_type, dm_typeo, dm_year, oral_hypoglycemic, oral_syear, insulin, insulin_syear, "
+		String sqlas = "SELECT guid, family_history, self_care, dm_type, dm_typeo, dm_year, oral_hypoglycemic, oral_syear, insulin, insulin_syear, "
 				+ " gestation, gestation_count, abortions_count, education, sport, fundus_check, gestation_count, "
 				+ " abortions_count, smoke, drink, smoke_aday, drink_aweek, education, sport, bloodtest_aweek, urine_aweek, "
 				+ " dbp, sbp, bmi, eye_lvision, eye_rvision, fundus_check, light_coagulation, cataract, retinal_check, non_proliferative_retinopathy, pre_proliferative_retinopathy ,proliferative_retinopathy, macular_degeneration, advanced_dm_eyedisease, vibration, pulse, ulcer, acupuncture, ulcer_cured, bypass_surgery, u_sid, udate"
-				+ " FROM asscement , registration_info"
-				+ " WHERE registration_info.guid = asscement.reg_guid"
-				+ " AND registration_info.p_no = '"
-				+ pNo
+				+ " FROM asscement"
+				+ " WHERE asscement.case_guid = '"
+				+ caseGuid
 				+ "' ORDER BY udate DESC LIMIT 0, 1";
 		ResultSet as;
 		try {
+			System.out.println(sqlas);
 			as = DBC.executeQuery(sqlas);
 
 			if (as.next()) {
 				if (as.getString("udate") != null) {
 					// 讀取asscement
+					this.guid = as.getString("guid");
 					com_family_history.setSelectedIndex(Integer.parseInt(as
 							.getString("family_history")));
 					com_self_care.setSelectedIndex(Integer.parseInt(as
@@ -2686,26 +2679,24 @@ public class Tab_Assessment extends JPanel {
 		}
 
 		try {
-			String caseMgmtSql = String
-					.format("INSERT into case_manage (guid, reg_guid, p_no, status, s_no, modify_count, isdiagnosis, finish_time) "
-					+ "VALUES ('%s','%s','%s','N', %s, %d, '1', NOW()) "
-					+ " ON DUPLICATE KEY UPDATE finish_time=NOW() ",
-					caseGuid, regGuid, pNo, UserInfo.getUserNO(), 1);
-			System.out.println(caseMgmtSql);
-			DBC.executeUpdate(caseMgmtSql);
-			String sql = "INSERT INTO asscement (guid, reg_guid, case_guid, p_no, family_history, self_care, dm_type, dm_typeo, dm_year, "
+//			String caseMgmtSql = String
+//					.format("INSERT into case_manage (guid, reg_guid, p_no, status, s_no, modify_count, isdiagnosis, finish_time) "
+//					+ "VALUES ('%s','%s','%s','N', %s, %d, '1', NOW()) "
+//					+ " ON DUPLICATE KEY UPDATE finish_time=NOW() ",
+//					caseGuid, regGuid, pNo, UserInfo.getUserNO(), 1);
+//			System.out.println(caseMgmtSql);
+//			DBC.executeUpdate(caseMgmtSql);
+			String sql = "INSERT INTO asscement (guid, case_guid, p_no, family_history, self_care, dm_type, dm_typeo, dm_year, "
 					+ " oral_hypoglycemic, oral_syear, insulin, insulin_syear, gestation, gestation_count, abortions_count, "
 					+ " smoke, smoke_aday, drink, drink_aweek, sport, education, bloodtest_aweek, urine_aweek, dbp, sbp, bmi, "
 					+ " eye_lvision, eye_rvision, fundus_check, light_coagulation, cataract, retinal_check, non_proliferative_retinopathy, "
 					+ " pre_proliferative_retinopathy, proliferative_retinopathy, macular_degeneration, advanced_dm_eyedisease, "
 					+ " vibration, pulse, ulcer, acupuncture, ulcer_cured, bypass_surgery, u_sid, udate) "
-					+ " VALUES (UUID(), '"
-					+ regGuid
-					+ "', '"
-					+ caseGuid
-					+ "', '"
-					+ pNo
-					+ "', "
+					+ " VALUES ('" 
+					+ this.guid + "', '"
+//					+ this.regGuid + "', '"
+					+ this.caseGuid	+ "', '"
+					+ this.pNo + "', "
 					+ com_family_history.getSelectedIndex()
 					+ ", "
 					+ com_self_care.getSelectedIndex()
@@ -2793,7 +2784,51 @@ public class Tab_Assessment extends JPanel {
 					+ ", "
 					+ byp
 					+ ", '"
-					+ UserInfo.getUserID() + "', NOW() )";
+					+ UserInfo.getUserID() + "', NOW() ) " + 
+					" ON DUPLICATE KEY UPDATE case_guid = '" + this.caseGuid + "', "
+					+ "p_no = '" + this.pNo + "', "
+					+ "family_history = '" + com_family_history.getSelectedIndex() + "', "
+					+ "self_care = '" + com_self_care.getSelectedIndex() + "', "
+					+ "dm_type = '" + com_dm_type.getSelectedIndex() + "', "
+					+ "dm_typeo = '" + txt_dm_typeo.getText() + "', "
+					+ "dm_year = " + dm_year + ", "
+					+ "oral_hypoglycemic = '" + com_oral_hypoglycemic.getSelectedIndex() + "', "
+					+ "oral_syear = '" + oral_syear + "', "
+					+ "insulin = '" + com_insulin.getSelectedIndex() + "', "
+					+ "insulin_syear = '" + insulin_syear + "', "
+					+ "gestation = '" + com_gestation.getSelectedIndex() + "', "
+					+ "gestation_count = '" + spi_gestation_count.getValue() + "', "
+					+ "abortions_count = '" + spi_abortions_count.getValue() + "', "
+					+ "smoke = '" + smo + "', "
+					+ "smoke_aday = '" + spi_smoke_aday.getValue() + "', "
+					+ "drink = '" + dri + "', "
+					+ "drink_aweek = '" + drink_aweek + "', "
+					+ "sport = '" + com_sport.getSelectedIndex() + "', "
+					+ "education = '" + com_education.getSelectedIndex() + "', "
+					+ "bloodtest_aweek = '" + spi_bloodtest_aweek.getValue() + "', "
+					+ "urine_aweek = '" + spi_urine_aweek.getValue() + "', "
+					+ "dbp = '" + dbp + "', "
+					+ "sbp = '" + sbp + "', "
+					+ "bmi = '" + bmi + "', "
+					+ "eye_lvision = '" + eye_l + "', "
+					+ "eye_rvision = '" + eye_r + "', "
+					+ "fundus_check = '" + com_fundus_check.getSelectedIndex() + "', "
+					+ "light_coagulation = '" + lig + "', "
+					+ "cataract = '" + cat + "', "
+					+ "retinal_check = '" + ret + "', "
+					+ "non_proliferative_retinopathy = '" + non + "', "
+					+ "pre_proliferative_retinopathy = '" + pre + "', "
+					+ "proliferative_retinopathy = '" + pro + "', "
+					+ "macular_degeneration = '" + mac + "', "
+					+ "advanced_dm_eyedisease = '" + adv + "', "
+					+ "vibration = '" + vib + "', "
+					+ "pulse = '" + pul + "', "
+					+ "ulcer = '" + ulc + "', "
+					+ "acupuncture = '" + acu + "', "
+					+ "ulcer_cured = '" + cur + "', "
+					+ "bypass_surgery = '" + byp + "', "
+					+ "u_sid = '" + UserInfo.getUserID() + "', "
+					+ "udate = NOW() ";
 			System.out.println(sql);
 			DBC.executeUpdate(sql);
 			parent.setOverValue();

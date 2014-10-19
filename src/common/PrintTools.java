@@ -41,6 +41,7 @@ public class PrintTools {
 	private String m_RegGuid; // 迴圈列印資料
 	private String m_CashierType; // 收據類別
 	private final String X_RAY_CODE = Constant.X_RAY_CODE; // 處置X光代碼
+	private String m_icdVersion;
 
 	public int drawString(Graphics g, String s, int x, int y, int width) {
 		FontMetrics fm = g.getFontMetrics();
@@ -64,7 +65,7 @@ public class PrintTools {
 			g.drawString(word, curX, curY);
 			curX += wordWidth;
 		}
-		
+
 		return curY;
 	}
 
@@ -120,6 +121,74 @@ public class PrintTools {
 	public void DoPrint(int i, String guid, boolean t) {
 		m_RegGuid = guid;
 		m_Type = i;
+		PrinterJob pj = PrinterJob.getPrinterJob();
+
+		PageFormat pf = pj.defaultPage();
+		Paper paper = new Paper();
+		pf.setPaper(paper);
+		pj.setPrintable(new MyPrintable(), pf);
+
+		// if (pj.printDialog()) {
+		try {
+			pj.print();
+		} catch (PrinterException e) {
+
+		}
+	}
+
+	public void DoPrintCase(int i, String guid, String icdVersion2) {
+		m_RegGuid = guid;
+		m_Type = i;
+		m_icdVersion = icdVersion2;
+		// 病患資料
+		String sqlPatient = "SELECT  patients_info.p_no, "
+				+ "registration_info.pharmacy_no, registration_info.modify_count,concat(patients_info.firstname,'  ',patients_info.lastname) AS name, "
+				+ "patients_info.gender, patients_info.birth , shift_table.shift_date AS date, policlinic.name AS dept, poli_room.name AS clinic, "
+				+ "concat(staff_info.firstname,'  ',staff_info.lastname) AS doctor, "
+				+ "(YEAR(CURDATE())-YEAR(patients_info.birth))-(RIGHT(CURDATE(),5)< RIGHT(patients_info.birth,5)) AS age, "
+				+ "CASE shift_table.shift  "
+				+ "WHEN '1' THEN 'Morning'  "
+				+ "WHEN '2' THEN 'Afternoon'  "
+				+ "WHEN '3' THEN 'Night'  "
+				+ "ELSE 'All Night' "
+				+ "END shift "
+				+ "FROM registration_info, patients_info, shift_table,poli_room,policlinic, staff_info WHERE registration_info.guid = '"
+				+ m_RegGuid + "'  "
+				+ "AND registration_info.p_no = patients_info.p_no "
+				+ "AND registration_info.shift_guid = shift_table.guid "
+				+ "AND shift_table.room_guid = poli_room.guid "
+				+ "AND poli_room.poli_guid = policlinic.guid "
+				+ "AND shift_table.s_id = staff_info.s_id";
+		try {
+			m_Rs = DBC.executeQuery(sqlPatient);
+			if (!m_Rs.next()) {
+				DBC.closeConnection(m_Rs);
+				sqlPatient = "SELECT patients_info.p_no, "
+						+ "reg.pharmacy_no, reg.modify_count, "
+						+ "concat(patients_info.firstname,'  ',patients_info.lastname) AS name, "
+						+ "patients_info.gender, patients_info.birth ,  bed_record.checkinTime AS date, "
+						+ "policlinic.name AS dept, "
+						+ "bed_code.description AS clinic, "
+						+ "concat(staff_info.firstname,'  ',staff_info.lastname) AS doctor, "
+						+ "(YEAR(CURDATE())-YEAR(patients_info.birth))-(RIGHT(CURDATE(),5)< RIGHT(patients_info.birth,5)) AS age, "
+						+ "'Inpatient' AS shift "
+						+ "FROM registration_info reg, patients_info, policlinic, staff_info, bed_record, bed_code "
+						+ "WHERE reg.guid = '" + m_RegGuid + "' "
+						+ "AND reg.p_no = patients_info.p_no "
+						+ "AND reg.shift_guid is null "
+						+ "AND bed_record.guid = reg.bed_guid "
+						+ "AND bed_record.bed_guid =  bed_code.guid "
+						+ "AND bed_code.poli_guid = policlinic.guid "
+						+ "AND bed_record.mainDr_no = staff_info.s_no";
+				m_Rs = DBC.executeQuery(sqlPatient);
+				m_Rs.next();
+			}
+		} catch (SQLException ex) {
+			Logger.getLogger(PrintTools.class.getName()).log(Level.SEVERE,
+					null, ex);
+			ex.printStackTrace();
+		}
+
 		PrinterJob pj = PrinterJob.getPrinterJob();
 
 		PageFormat pf = pj.defaultPage();
@@ -495,13 +564,15 @@ public class PrintTools {
 					break;
 				case 4:
 					// 4.X-Ray(給病患)
-					sqlData = "SELECT prescription_code.code AS code, prescription_code.name AS name, prescription.place, prescription_code.type "
+					sqlData = "SELECT prescription_code.code AS code, prescription_code.name AS name, "
+							+ "prescription.place, prescription_code.type "
 							+ "FROM prescription, prescription_code, registration_info "
 							+ "WHERE registration_info.guid = '"
 							+ m_RegGuid
 							+ "' "
 							+ "AND prescription.reg_guid = registration_info.guid "
 							+ "AND prescription_code.code = prescription.code "
+							+ "AND prescription_code.icdversion = '" + m_icdVersion + "'"
 							+ "AND prescription_code.type = '"
 							+ Constant.X_RAY_CODE + "' ";
 
@@ -840,9 +911,8 @@ public class PrintTools {
 						y += 40;
 						rowNo = 0;
 						while (rs.next()) {
-							String item = ++rowNo + ". "
-									+ rs.getString("code") + " "
-									+ rs.getString("name");
+							String item = ++rowNo + ". " + rs.getString("code")
+									+ " " + rs.getString("name");
 							g2.drawString(rs.getString("type"), x + 1105, y);
 							y = drawString(g2, item, x + 75, y, 1000);
 							y += space;
@@ -1106,10 +1176,11 @@ public class PrintTools {
 							+ "WHERE registration_info.guid = '"
 							+ m_RegGuid
 							+ "' "
-							+ "AND prescription.case_guid = '"
+							+ "AND prescription.reg_guid = '"
 							+ m_RegGuid
 							+ "'"
 							+ "AND prescription_code.code = prescription.code "
+							+ "AND prescription_code.icdversion = '" + m_icdVersion + "'"
 							+ "AND prescription_code.type <> '"
 							+ Constant.X_RAY_CODE + "'";
 
@@ -1126,11 +1197,14 @@ public class PrintTools {
 					g2.setFont(new Font("Serif", Font.BOLD, 32)); // 資料
 					y += 40;
 					while (m_RsData.next()) {
-						g2.drawString(
+						int lowestY = 0;
+						lowestY = drawString(g2,
 								++rowNo + ". " + m_RsData.getString("code")
 										+ " " + m_RsData.getString("name"),
-								x + 75, y);
-						g2.drawString(m_RsData.getString("type"), x + 1105, y);
+								x + 75, y, 1000);
+						y = drawString(g2, m_RsData.getString("type"),
+								x + 1100, y, 100);
+						y = (lowestY > y) ? lowestY : y;
 						y += space;
 					}
 					break;

@@ -31,7 +31,7 @@ public class Frm_Loading extends javax.swing.JFrame {
         this.dispose();
     }
 
-    @SuppressWarnings("unchecked")
+    
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
