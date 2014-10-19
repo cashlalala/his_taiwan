@@ -91,7 +91,7 @@ public class Tab_FootCase extends JPanel {
 	private DefaultTableModel diabeteRec;
 
 	private static final String[] colName = new String[] {
-			lang.getString("FOOT_CASE_NO"), lang.getString("FOOT_EDU"),
+			lang.getString("FOOT_CASE_RECORD_NO"), lang.getString("FOOT_EDU"),
 			lang.getString("FOOT_CTIME"), lang.getString("FOOT_DOC"),
 			lang.getString("FOOT_1"), lang.getString("FOOT_2"),
 			lang.getString("FOOT_3"), lang.getString("FOOT_4"),
@@ -150,14 +150,15 @@ public class Tab_FootCase extends JPanel {
 		List<String> varList = new ArrayList<String>(Arrays.asList(colName));
 
 		String searchKeyWord = textSearch.getText().trim();
-		String sqlDia = "select d.guid, d.case_guid as '%s', d.educated as '%s', d.createdatetime as '%s', "
+		String sqlDia = "select d.guid as '%s', d.case_guid, d.educated as '%s', d.createdatetime as '%s', "
 				+ "(select concat(s.firstname, s.lastname) from staff_info s where s.s_no = d.s_no) as '%s', "
 				+ "d.foot1 as '%s', d.foot2 as '%s', "
 				+ "d.foot3 as '%s', d.foot4 as '%s', d.foot5 as '%s', d.foot6  as '%s', "
 				+ "d.foot7 as '%s', d.foot8 as '%s', d.foot9 as '%s', d.foot10 as '%s' "
 				+ " from diabetes_record d where case_guid in (%s) "
-				+ ((searchKeyWord.isEmpty()) ? "" : "and case_guid like '%"
-						+ searchKeyWord + "%' ");
+				+ ((searchKeyWord.isEmpty()) ? "" : "and guid like '"
+						+ searchKeyWord + "%%' ")
+				+ "order by d.createdatetime desc";
 		ResultSet rs = null;
 		ResultSet rsRec = null;
 		try {
@@ -173,6 +174,8 @@ public class Tab_FootCase extends JPanel {
 			table.setModel(diabeteRec);
 			TabTools.setHideColumn(table, 0);
 		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			try {
@@ -209,7 +212,7 @@ public class Tab_FootCase extends JPanel {
 		btnSave = new JButton(lang.getString("FOOT_SAVE"));
 		btnSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				onBtnFootCaseClicked(e);
+				onBtnSaveFootCaseClicked(e);
 			}
 		});
 		GroupLayout groupLayout = new GroupLayout(this);
@@ -547,43 +550,48 @@ public class Tab_FootCase extends JPanel {
 		guid = UUID.randomUUID().toString();
 
 		lblRecNoValue.setText(lang.getString("DIABETES_NEW_RECORD"));
+		table.getSelectionModel().clearSelection();
 	}
 
 	protected void onItemSelected(ListSelectionEvent event) {
-		if (table.getSelectedRow() == -1)
+		int selectedIdx = table.getSelectedRow();
+		if (selectedIdx == -1)
 			return;
-		guid = (String) table.getValueAt(table.getSelectedRow(), 0);
-		this.lblRecNoValue.setText(guid);
+		try {
+			guid = (String) table.getValueAt(selectedIdx, 0);
+			this.lblRecNoValue.setText(guid);
 
-		Boolean isEdued = (((String) table
-				.getValueAt(table.getSelectedRow(), 2)).equalsIgnoreCase("1") ? true
-				: false);
-		this.chckbxNewCheckBox.setSelected(isEdued);
+			Boolean isEdued = (((String) table.getValueAt(selectedIdx, 2))
+					.equalsIgnoreCase("1") ? true : false);
+			this.chckbxNewCheckBox.setSelected(isEdued);
 
-		String foot1 = (String) table.getValueAt(table.getSelectedRow(), 5);
-		comboBox.setSelectedItem(foot1);
-		String foot2 = (String) table.getValueAt(table.getSelectedRow(), 6);
-		comboBox_1.setSelectedItem(foot2);
-		String foot3 = (String) table.getValueAt(table.getSelectedRow(), 7);
-		comboBox_2.setSelectedItem(foot3);
-		String foot4 = (String) table.getValueAt(table.getSelectedRow(), 8);
-		comboBox_3.setSelectedItem(foot4);
-		String foot5 = (String) table.getValueAt(table.getSelectedRow(), 9);
-		comboBox_4.setSelectedItem(foot5);
-		String foot6 = (String) table.getValueAt(table.getSelectedRow(), 10);
-		comboBox_5.setSelectedItem(foot6);
-		String foot7 = (String) table.getValueAt(table.getSelectedRow(), 11);
-		comboBox_6.setSelectedItem(foot7);
-		String foot8 = (String) table.getValueAt(table.getSelectedRow(), 12);
-		comboBox_7.setSelectedItem(foot8);
-		String foot9 = (String) table.getValueAt(table.getSelectedRow(), 13);
-		comboBox_8.setSelectedItem(foot9);
-		String foot10 = (String) table.getValueAt(table.getSelectedRow(), 14);
-		comboBox_9.setSelectedItem(foot10);
+			String foot1 = (String) table.getValueAt(selectedIdx, 5);
+			comboBox.setSelectedItem(foot1);
+			String foot2 = (String) table.getValueAt(selectedIdx, 6);
+			comboBox_1.setSelectedItem(foot2);
+			String foot3 = (String) table.getValueAt(selectedIdx, 7);
+			comboBox_2.setSelectedItem(foot3);
+			String foot4 = (String) table.getValueAt(selectedIdx, 8);
+			comboBox_3.setSelectedItem(foot4);
+			String foot5 = (String) table.getValueAt(selectedIdx, 9);
+			comboBox_4.setSelectedItem(foot5);
+			String foot6 = (String) table.getValueAt(selectedIdx, 10);
+			comboBox_5.setSelectedItem(foot6);
+			String foot7 = (String) table.getValueAt(selectedIdx, 11);
+			comboBox_6.setSelectedItem(foot7);
+			String foot8 = (String) table.getValueAt(selectedIdx, 12);
+			comboBox_7.setSelectedItem(foot8);
+			String foot9 = (String) table.getValueAt(selectedIdx, 13);
+			comboBox_8.setSelectedItem(foot9);
+			String foot10 = (String) table.getValueAt(selectedIdx, 14);
+			comboBox_9.setSelectedItem(foot10);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 	}
 
-	protected void onBtnFootCaseClicked(ActionEvent e) {
+	protected void onBtnSaveFootCaseClicked(ActionEvent e) {
 
 		String sql = String
 				.format("insert into diabetes_record (guid, case_guid, educated, createdatetime, s_no, "
@@ -621,7 +629,10 @@ public class Tab_FootCase extends JPanel {
 
 		try {
 			DBC.executeUpdate(sql);
+			table.getSelectionModel().clearSelection();
 		} catch (SQLException e1) {
+			e1.printStackTrace();
+		} catch (Exception e1) {
 			e1.printStackTrace();
 		} finally {
 			new Thread(new Runnable() {
