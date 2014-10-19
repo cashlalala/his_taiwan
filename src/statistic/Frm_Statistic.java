@@ -2,24 +2,34 @@ package statistic;
 
 import autocomplete.CompleterComboBox;
 import cc.johnwu.date.DateInterface;
+import cc.johnwu.login.SysInfo;
 import cc.johnwu.sql.DBC;
 import cc.johnwu.sql.HISModel;
 
+import java.awt.Color;
+import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 
 import javax.swing.table.TableColumn;
 
 import java.sql.* ;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
 
+import jxl.Workbook;
+import jxl.write.Label;
+import jxl.write.WritableSheet;
+import jxl.write.WritableWorkbook;
 import pharmacy.Frm_Pharmacy;
 import errormessage.StoredErrorMessage;
 import main.Frm_Main;
@@ -34,18 +44,22 @@ public class Frm_Statistic extends javax.swing.JFrame  implements DateInterface{
     private CompleterComboBox m_CobwwTown;
     private CompleterComboBox m_CobwwRegion;
     private CompleterComboBox m_CobwwCountry;
+    private CompleterComboBox m_CobwwDiaSearch;
     private CompleterComboBox m_Cobww_Medicine;
+    private CompleterComboBox m_Cobww_Cashier;
     private final String DEFAULTDATE =  "01-01-2010";
     private final String DEFAULTCONDATE =  "2010-01-01";
+	private String Cashier_Sql;
 
     public Frm_Statistic() {
         initComponents();
         initFrame();
         initRealTimeInfo();
         initBasicInfo();
-        initAutoComplete("SELECT distinct town FROM patients_info WHERE town IS NOT NULL ", pan_Town, m_CobwwTown);
-        initAutoComplete("SELECT distinct state FROM patients_info WHERE state IS NOT NULL ", pan_Region, m_CobwwRegion);
-        initAutoComplete("SELECT distinct country FROM patients_info WHERE country IS NOT NULL ", pan_Country, m_CobwwCountry);
+//        initAutoComplete("SELECT distinct town as keynote FROM patients_info WHERE town IS NOT NULL ", pan_Town, m_CobwwTown);
+//        initAutoComplete("SELECT distinct state as keynote FROM patients_info WHERE state IS NOT NULL ", pan_Region, m_CobwwRegion);
+//        initAutoComplete("SELECT distinct country as keynote FROM patients_info WHERE country IS NOT NULL ", pan_Country, m_CobwwCountry);
+//        initAutoComplete("select distinct diagnosis_code.name from diagnostic, diagnosis_code where diagnostic.dia_code = diagnosis_code.dia_code", pan_DiaSearch, m_CobwwDiaSearch);
         for (int i = 1; i < 120; i++) {
             cbox_AgeS.addItem(i);
             cbox_AgeE.addItem(i);
@@ -53,6 +67,8 @@ public class Frm_Statistic extends javax.swing.JFrame  implements DateInterface{
 
         datec_RegTimeS.setValue(DEFAULTDATE);
         datec_RegTimeE.setValue(DEFAULTDATE);
+        QueryTimeS.setValue(DEFAULTDATE);
+        QueryTimeE.setValue(DEFAULTDATE);
     }
 
     private void initBasicInfo() {
@@ -63,7 +79,9 @@ public class Frm_Statistic extends javax.swing.JFrame  implements DateInterface{
                         "(SELECT COUNT(s_no) FROM staff_info LEFT JOIN department ON department.guid=staff_info.dep_guid WHERE department.name = 'Doctor' AND staff_info.exist = '1') AS 'totslDoctor',"+
                         "(SELECT COUNT(s_no) FROM staff_info LEFT JOIN department ON department.guid=staff_info.dep_guid WHERE department.name <> 'Doctor' AND staff_info.exist = '1')  AS 'totslStaff',"+
                         "(SELECT COUNT(guid) FROM policlinic) AS 'totalPoli', "+
-                        "(SELECT COUNT(guid) FROM poli_room) AS 'totalClinic' "; // 病患總人數
+                        "(SELECT COUNT(guid) FROM poli_room) AS 'totalClinic', " +
+                        "(SELECT COUNT(p_no) FROM bed_record WHERE status = 'N' or status = 'R') AS 'totalinpatient', " +
+                        "(select COUNT(guid) from bed_code where status='N') AS 'totalbed'"; // 病患總人數
      
             rs = DBC.executeQuery(sql);
             if(rs.next()) {
@@ -72,6 +90,8 @@ public class Frm_Statistic extends javax.swing.JFrame  implements DateInterface{
                 txt_TotalStaff.setText(rs.getString("totslStaff"));
                 txt_totalPoli.setText(rs.getString("totalPoli"));
                 txt_TotalClinic.setText(rs.getString("totalClinic"));
+                txt_TotalInpatient.setText(rs.getString("totalinpatient"));
+                txt_TotalBed.setText(rs.getString("totalbed"));
             }
             
         } catch (SQLException ex) {
@@ -108,6 +128,8 @@ public class Frm_Statistic extends javax.swing.JFrame  implements DateInterface{
         this.setExtendedState(Frm_Statistic.MAXIMIZED_BOTH);  // 最大化
         this.datec_RegTimeS.setParentFrame(this);
         this.datec_RegTimeE.setParentFrame(this);
+        this.QueryTimeS.setParentFrame(this);
+        this.QueryTimeE.setParentFrame(this);
         this.tab_Medicine.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);  // tabble不可按住多選
         addWindowListener(new WindowAdapter() {  // 畫面關閉原視窗enable
             @Override
@@ -117,8 +139,51 @@ public class Frm_Statistic extends javax.swing.JFrame  implements DateInterface{
         });
 
         showCombo();
+		showDepartment();
         initCobww();
+		initDiaTable(0);
+		initDiaTable(1);
+		initDiaTable(2);
+//		initDiaTable(3);
+
     }
+
+	private void initCashier(){
+		String sql = "";
+		if (m_Cobww_Cashier.getSelectedItem().equals("All Department")){
+			sql = "select patients_info.firstname as firstname, patients_info.lastname as lastname, max(cashier.payment_time) as 'time', cashier.type as type, cashier.amount_receivable as totalamount, cashier.paid_amount as paid, cashier.arrears as arrears from cashier, patients_info where patients_info.p_no = cashier.p_no group by cashier.p_no";
+		} else {
+			sql = "select patients_info.firstname as firstname, patients_info.lastname as lastname, max(cashier.payment_time) as time, cashier.type as type, cashier.amount_receivable as totalamount, cashier.paid_amount as paid, cashier.arrears as arrears" + 
+				" from cashier, patients_info, registration_info, shift_table, staff_info, department" + 
+				" where patients_info.p_no = cashier.p_no " +
+				"and cashier.reg_guid = registration_info.guid " +
+				"and registration_info.shift_guid = shift_table.guid " + 
+				"and shift_table.s_id = staff_info.s_id " +
+				"and staff_info.dep_guid = department.guid " +
+				"and department.name = '" + m_Cobww_Cashier.getSelectedItem() + "' " +
+				"group by cashier.p_no";
+		}
+		Cashier_Sql = sql;
+		ResultSet rs = null;
+		try {
+			System.out.println(sql);
+			rs = DBC.executeQuery(sql);
+			tab_Cashier.setModel(HISModel.getModel(rs, true));
+			tab_Cashier.setRowHeight(30);
+			txt_TotalCashier.setText("");
+			setCloumnWidth(tab_Cashier);
+
+		
+		} catch ( SQLException e){
+			Logger.getLogger(Frm_Statistic.class.getName()).log(Level.SEVERE, null, e);
+		} finally {
+			try {
+				DBC.closeConnection(rs);
+			} catch (SQLException e){}
+		}
+
+
+	}
 
    public void setTable() {
         String sql = "SELECT registration_info.reg_time AS 'Date', medicines.item AS ' Medicine', " +
@@ -130,11 +195,16 @@ public class Frm_Statistic extends javax.swing.JFrame  implements DateInterface{
                             "AND registration_info.shift_guid = shift_table.guid " +
                             "AND shift_table.s_id = staff_info.s_id " +
                             "AND medicines.code = medicine_stock.m_code " +
-                            "AND registration_info.p_no = patients_info.p_no "+
-                            "AND registration_info.guid = outpatient_services.reg_guid " +
-                            "AND medicine_stock.os_guid = outpatient_services.guid " +
-                            "AND os_guid IS NOT NULL";
+                            "AND registration_info.p_no = patients_info.p_no ";
+ //                           "AND registration_info.p_no = patients_info.p_no "+
+ //                           "AND registration_info.guid = outpatient_services.reg_guid " +
+ //                           "AND medicine_stock.os_guid = outpatient_services.guid " +
+ //                           "AND os_guid IS NOT NULL";
+ 		if (!QueryTimeS.getValue().equals(DEFAULTCONDATE) && !QueryTimeE.getValue().equals(DEFAULTCONDATE)){
+			sql += "AND registration_info.reg_time BETWEEN '" + QueryTimeS.getValue() + "' AND '" + QueryTimeE.getValue() + "'";
+		}
         ResultSet rs = null;
+        
         try {
             System.out.println(sql);
             rs = DBC.executeQuery(sql);
@@ -174,7 +244,7 @@ public class Frm_Statistic extends javax.swing.JFrame  implements DateInterface{
         ResultSet rsArray= null;
 
         try{
-            String ArraySql="SELECT medicines.item AS name FROM medicines WHERE effective = 1";
+            String ArraySql="SELECT distinct medicines.item AS name FROM medicines WHERE effective = 1";
             rsArray= DBC.executeQuery(ArraySql);
             rsArray.last();
             String[] medicineArray = new String[(rsArray.getRow()+1)];
@@ -189,7 +259,7 @@ public class Frm_Statistic extends javax.swing.JFrame  implements DateInterface{
             m_Cobww_Medicine = new CompleterComboBox(medicineArray);
             m_Cobww_Medicine.setBounds(0, 0, 650, 20);
             m_Cobww_Medicine.addItemListener(new java.awt.event.ItemListener() {
-                public void itemStateChanged(java.awt.event.ItemEvent evt) {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
                     setTable();
                     if (tab_Medicine.getRowCount() != 0) {
                         int total = 0;
@@ -212,6 +282,45 @@ public class Frm_Statistic extends javax.swing.JFrame  implements DateInterface{
             }
         }
     }
+	
+	private void showDepartment(){
+		ResultSet res = null;
+		try {
+			String sql = "select distinct department.name as name from department";
+			res = DBC.executeQuery(sql);
+			res.last();
+			String[] DepartmentArray = new String[(res.getRow() + 1)];
+			res.beforeFirst();
+			DepartmentArray[0] = "All Department";
+			int pathArray = 1;
+			while(res.next()){
+				DepartmentArray[pathArray] = res.getString("name");
+				pathArray++;
+			}
+			new CompleterComboBox(DepartmentArray);
+			m_Cobww_Cashier = new CompleterComboBox(DepartmentArray);
+			m_Cobww_Cashier.setBounds(0, 0, 650, 20);
+			m_Cobww_Cashier.addItemListener(new java.awt.event.ItemListener(){
+				public void itemStateChanged(java.awt.event.ItemEvent evt){
+					initCashier();
+					if (tab_Cashier.getRowCount() != 0){
+						float total = 0;
+						for (int co = 0; co < tab_Cashier.getRowCount(); co++){
+							total += Float.parseFloat(tab_Cashier.getValueAt(co, 7).toString());
+						}
+						txt_TotalCashier.setText(String.valueOf(total));
+					}
+				}
+			});
+			this.pan_Cashier.add(m_Cobww_Cashier);
+			m_Cobww_Cashier.setSelectedIndex(0);
+		} catch (SQLException e){
+            Logger.getLogger(Frm_Statistic.class.getName()).log(Level.SEVERE, null, e);
+		} finally {
+            try {DBC.closeConnection(res);}
+            catch (SQLException e){}
+		}
+	}
 
    public void initAutoComplete(String sql, JPanel pan, CompleterComboBox Cobww ) {
         String[] cob = null ;
@@ -226,7 +335,7 @@ public class Frm_Statistic extends javax.swing.JFrame  implements DateInterface{
             int i = 0;
             cob[i++] = "";
             while (rs.next()) {
-                  cob[i++] = rs.getString(1);
+                  cob[i++] = rs.getString("keynote").trim();
             }
             Cobww = new CompleterComboBox(cob);
             Cobww.setBounds(0, 0, pan.getWidth(), pan.getHeight());
@@ -243,17 +352,64 @@ public class Frm_Statistic extends javax.swing.JFrame  implements DateInterface{
         }
    }
 
-
+	public void initDiaTable(int flag){ //0:town, 1: state, 2: country
+		String[] tlist = null;
+		ResultSet rs = null;
+		try {
+			String sql = "";
+			if (flag == 0){
+				sql = "SELECT distinct town as keynote FROM patients_info WHERE town IS NOT NULL";
+			} else if (flag == 1){
+				sql = "SELECT distinct state as keynote FROM patients_info WHERE town IS NOT NULL";
+			} else if (flag == 2){
+				sql = "SELECT distinct country as keynote FROM patients_info WHERE town IS NOT NULL";
+			}
+			rs = DBC.executeQuery(sql);
+			rs.last();
+			tlist = new String[rs.getRow() + 1];
+			rs.beforeFirst();
+			int co = 0;
+			tlist[co++] = "";
+			while(rs.next()){
+				tlist[co++] = rs.getString("keynote").trim();
+			}
+			if (flag == 0){
+				m_CobwwTown = new CompleterComboBox(tlist);
+				m_CobwwTown.setBounds(0, 0, pan_Town.getWidth(), pan_Town.getHeight());
+				pan_Town.add(m_CobwwTown);
+				m_CobwwTown.setSelectedIndex(0);
+			} else if (flag == 1){
+				m_CobwwRegion = new CompleterComboBox(tlist);
+				m_CobwwRegion.setBounds(0, 0, pan_Region.getWidth(), pan_Region.getHeight());
+				pan_Region.add(m_CobwwRegion);
+				m_CobwwRegion.setSelectedIndex(0);
+			} else if (flag == 2){
+				m_CobwwCountry = new CompleterComboBox(tlist);
+				m_CobwwCountry.setBounds(0, 0, pan_Country.getWidth(), pan_Country.getHeight());
+				pan_Country.add(m_CobwwCountry);
+				m_CobwwCountry.setSelectedIndex(0);
+			}
+		
+		} catch(SQLException e){
+            Logger.getLogger(Frm_Statistic.class.getName()).log(Level.SEVERE, null, e);		
+		} finally {
+            try {DBC.closeConnection(rs);}
+            catch (SQLException e){}			
+		}
+	}
 
         // 初始化下拉式選單
     public void initCobww() {
         String[] icdCob = null ;
         ResultSet rs = null;
         try {
-            String sql = "SELECT icd_code, name " +
-                         "FROM Diagnosis_Code " +
-                         "WHERE effective = 0";
-            rs = DBC.localExecuteQuery(sql);
+			String sql = "select distinct icd_code, name " + 
+				"from diagnosis_code, diagnostic " + 
+				"where diagnosis_code.dia_code = diagnostic.dia_code";
+//            String sql = "SELECT icd_code, name " +
+  //                       "FROM diagnosis_code " +
+   //                      "WHERE effective = 0";
+            rs = DBC.executeQuery(sql);
             rs.last();
             icdCob = new String[rs.getRow()+1];
             rs.beforeFirst();
@@ -278,6 +434,75 @@ public class Frm_Statistic extends javax.swing.JFrame  implements DateInterface{
             }
         }
     }
+
+	private void SetOutputXLS(String url){
+		try{
+			ResultSet rsExcel = null;
+			rsExcel = DBC.executeQuery(Cashier_Sql);
+			WritableWorkbook workbook = Workbook.createWorkbook(new File(url));
+			WritableSheet sheet = workbook.createSheet("First", 0);
+			Label label = null;
+
+            // 標頭 Taichung Hospital 第一列  第一行
+            label = new Label (0,0, SysInfo.getHosName()+" Export to Excel "+new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime()) );
+                System.out.println(SysInfo.getHosName());
+            sheet.addCell(label);
+
+			int col = 0;
+            label =new Label(col,2,"Firstname");
+            sheet.addCell(label);
+            col++;
+            label =new Label(col,2,"Lastname");
+            sheet.addCell(label);
+            col++;
+            label =new Label(col,2,"Time");
+            sheet.addCell(label);
+            col++;
+            label =new Label(col,2,"Type");
+            sheet.addCell(label);
+            col++;
+            label =new Label(col,2,"TotalAmount");
+            sheet.addCell(label);
+            col++;
+            label =new Label(col,2,"Paid");
+            sheet.addCell(label);
+            col++;
+            label =new Label(col,2,"Arrears");
+            sheet.addCell(label);
+
+			int x = 0;
+			int y = 3;
+			while(rsExcel.next()){
+                label =new Label(x,y,rsExcel.getString("firstname"));
+                sheet.addCell(label);
+                x++;
+                label =new Label(x,y,rsExcel.getString("lastname"));
+                sheet.addCell(label);
+                x++;
+                label =new Label(x,y,rsExcel.getString("time"));
+                sheet.addCell(label);
+                x++;
+                label =new Label(x,y,rsExcel.getString("type"));
+                sheet.addCell(label);
+                x++;
+                label =new Label(x,y,rsExcel.getString("totalamount"));
+                sheet.addCell(label);
+                x++;
+                label =new Label(x,y,rsExcel.getString("paid"));
+                sheet.addCell(label);
+                x++;
+                label =new Label(x,y,rsExcel.getString("arrears"));
+                sheet.addCell(label);
+				
+				y++;
+				x = 0;
+			}
+			workbook.write();
+			workbook.close();
+		} catch (Exception e){
+			System.out.println(e);
+		}
+	}
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -313,6 +538,8 @@ public class Frm_Statistic extends javax.swing.JFrame  implements DateInterface{
         jPanel11 = new javax.swing.JPanel();
         datec_RegTimeS = new cc.johnwu.date.DateChooser();
         datec_RegTimeE = new cc.johnwu.date.DateChooser();
+        QueryTimeS = new cc.johnwu.date.DateChooser();
+        QueryTimeE = new cc.johnwu.date.DateChooser();
         jLabel14 = new javax.swing.JLabel();
         jPanel9 = new javax.swing.JPanel();
         jButton10 = new javax.swing.JButton();
@@ -328,14 +555,28 @@ public class Frm_Statistic extends javax.swing.JFrame  implements DateInterface{
         pan_Region = new javax.swing.JPanel();
         pan_Country = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
+        jPanelCashier = new javax.swing.JPanel();
         jLabel13 = new javax.swing.JLabel();
         pan_Top = new javax.swing.JPanel();
+        pan_Cashier = new javax.swing.JPanel();
         lab_Total = new javax.swing.JLabel();
         jScrollPane4 = new javax.swing.JScrollPane();
+        jScrollPaneCashier = new javax.swing.JScrollPane();
         tab_Medicine = new javax.swing.JTable();
+        tab_Cashier = new javax.swing.JTable();
         txt_Total = new javax.swing.JTextField();
+        txt_TotalCashier = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
-
+        
+        txt_TotalBed = new javax.swing.JTextField();
+        jLabel15 = new javax.swing.JLabel();
+        txt_TotalInpatient = new javax.swing.JTextField();
+        jLabel16 = new javax.swing.JLabel();
+        
+        jLabel17 = new javax.swing.JLabel();
+        jLabel18 = new javax.swing.JLabel();
+        jLabel19 = new javax.swing.JLabel();
+        jLabel20 = new javax.swing.JLabel();
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Statistic");
 
@@ -369,8 +610,22 @@ public class Frm_Statistic extends javax.swing.JFrame  implements DateInterface{
         jLabel12.setFont(new java.awt.Font("新細明體", 1, 14));
         jLabel12.setText("Number of people waiting to see the doctor:");
 
+        
         txt_TotalWaiting.setEditable(false);
 
+        jLabel15.setFont(new java.awt.Font("新細明體", 1, 14));
+        jLabel15.setText("The total number of bed:");
+        
+        txt_TotalBed.setEditable(false);
+        
+        jLabel16.setFont(new java.awt.Font("新細明體", 1, 14));
+        jLabel16.setText("The total number of in-patient:");
+        
+        txt_TotalInpatient.setEditable(false);
+
+		btn_CashierExcel = new javax.swing.JButton();
+        
+        
         javax.swing.GroupLayout jPanel13Layout = new javax.swing.GroupLayout(jPanel13);
         jPanel13.setLayout(jPanel13Layout);
         jPanel13Layout.setHorizontalGroup(
@@ -385,14 +640,19 @@ public class Frm_Statistic extends javax.swing.JFrame  implements DateInterface{
                             .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING))
+                            .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel15, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel16, javax.swing.GroupLayout.Alignment.TRAILING))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(txt_TotalStaff, javax.swing.GroupLayout.Alignment.CENTER, javax.swing.GroupLayout.DEFAULT_SIZE, 322, Short.MAX_VALUE)
                             .addComponent(txt_TotalPatient, javax.swing.GroupLayout.Alignment.CENTER, javax.swing.GroupLayout.DEFAULT_SIZE, 322, Short.MAX_VALUE)
                             .addComponent(txt_TotalClinic, javax.swing.GroupLayout.Alignment.CENTER, javax.swing.GroupLayout.DEFAULT_SIZE, 322, Short.MAX_VALUE)
                             .addComponent(txt_TotalDoctor, javax.swing.GroupLayout.Alignment.CENTER, javax.swing.GroupLayout.DEFAULT_SIZE, 322, Short.MAX_VALUE)
-                            .addComponent(txt_totalPoli, javax.swing.GroupLayout.Alignment.CENTER, javax.swing.GroupLayout.DEFAULT_SIZE, 322, Short.MAX_VALUE)))
+                            .addComponent(txt_totalPoli, javax.swing.GroupLayout.Alignment.CENTER, javax.swing.GroupLayout.DEFAULT_SIZE, 322, Short.MAX_VALUE)
+                            .addComponent(txt_TotalBed, javax.swing.GroupLayout.Alignment.CENTER, javax.swing.GroupLayout.DEFAULT_SIZE, 322, Short.MAX_VALUE)
+                            .addComponent(txt_TotalInpatient, javax.swing.GroupLayout.Alignment.CENTER, javax.swing.GroupLayout.DEFAULT_SIZE, 322, Short.MAX_VALUE)
+                        		))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel13Layout.createSequentialGroup()
                         .addComponent(jLabel12)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -426,6 +686,16 @@ public class Frm_Statistic extends javax.swing.JFrame  implements DateInterface{
                 .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel12)
                     .addComponent(txt_TotalWaiting, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                 
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel15)
+                    .addComponent(txt_TotalBed, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel16)
+                    .addComponent(txt_TotalInpatient, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    
                 .addContainerGap(194, Short.MAX_VALUE))
         );
 
@@ -772,6 +1042,10 @@ public class Frm_Statistic extends javax.swing.JFrame  implements DateInterface{
 
         jLabel13.setFont(new java.awt.Font("新細明體", 1, 14));
         jLabel13.setText("Medicine:");
+        jLabel17.setFont(new java.awt.Font("新細明體", 1, 14));
+        jLabel17.setText("From:");
+        jLabel18.setFont(new java.awt.Font("新細明體", 1, 14));
+        jLabel18.setText("To:");
 
         javax.swing.GroupLayout pan_TopLayout = new javax.swing.GroupLayout(pan_Top);
         pan_Top.setLayout(pan_TopLayout);
@@ -808,37 +1082,50 @@ public class Frm_Statistic extends javax.swing.JFrame  implements DateInterface{
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 767, Short.MAX_VALUE)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(lab_Total)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(txt_Total, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
+                jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel3Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 767, Short.MAX_VALUE)
+                        .addGroup(jPanel3Layout.createSequentialGroup()
+                            .addComponent(lab_Total)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(txt_Total, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanel3Layout.createSequentialGroup()
+                            .addComponent(jLabel13)
+                            .addGap(18, 18, 18)
+                            .addComponent(pan_Top, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel17)
+                            .addGap(10, 10, 10)
+                            .addComponent(QueryTimeS, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(jLabel18)
+                            .addGap(10, 10, 10)
+                            .addComponent(QueryTimeE, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        ))
+                    .addContainerGap())
+            );
+            jPanel3Layout.setVerticalGroup(
+                jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel3Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(jLabel13)
-                        .addGap(18, 18, 18)
-                        .addComponent(pan_Top, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addContainerGap())
-        );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel13)
-                    .addComponent(pan_Top, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 436, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lab_Total)
-                    .addComponent(txt_Total, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
-        );
-
+                        .addComponent(pan_Top, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel17)
+                        .addComponent(QueryTimeS, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel18)
+                        .addComponent(QueryTimeE, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    )
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 436, Short.MAX_VALUE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(lab_Total)
+                        .addComponent(txt_Total, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addContainerGap())
+            );
         jTabbedPane1.addTab(" MedicineUsed ", jPanel3);
 
         jButton1.setText("Close");
@@ -847,6 +1134,80 @@ public class Frm_Statistic extends javax.swing.JFrame  implements DateInterface{
                 jButton1ActionPerformed(evt);
             }
         });
+        
+		tab_Cashier.setModel(new javax.swing.table.DefaultTableModel(
+				new Object [][]{},
+				new String []{}
+			)
+		);
+		tab_Cashier.addMouseListener(new java.awt.event.MouseAdapter(){
+			public void CashiermouseClicked(java.awt.event.MouseEvent evt){
+				tab_CashierMouseClicked(evt);
+			}
+		});
+		jScrollPaneCashier.setViewportView(tab_Cashier);
+
+		jLabel19.setFont(new java.awt.Font("新細明體", 1, 14));
+        jLabel19.setText("Division:");
+		jLabel20.setFont(new java.awt.Font("新細明體", 1, 14));
+        jLabel20.setText("Total amount of user arrearages:");
+		txt_TotalCashier.setEditable(false);
+		txt_TotalCashier.setFont(new java.awt.Font("新細明體", 1, 14));
+		txt_TotalCashier.setForeground(new Color(255, 0, 0));
+		btn_CashierExcel.setText("Export to Excel");
+		
+		btn_CashierExcel.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt){
+				btn_CashierExcelPerformed(evt);
+			}
+		});
+        
+        javax.swing.GroupLayout jPanelCashierLayout = new javax.swing.GroupLayout(jPanelCashier);
+        jPanelCashier.setLayout(jPanelCashierLayout);
+		jPanelCashierLayout.setHorizontalGroup(
+			jPanelCashierLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+			.addGroup(jPanelCashierLayout.createSequentialGroup()
+				.addContainerGap()
+				.addGroup(jPanelCashierLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				.addComponent(jScrollPaneCashier, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 767, Short.MAX_VALUE)
+				.addGroup(jPanelCashierLayout.createSequentialGroup()
+					.addComponent(jLabel20)
+					.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+					.addComponent(txt_TotalCashier, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+					.addComponent(btn_CashierExcel)
+				)
+				.addGroup(jPanelCashierLayout.createSequentialGroup()
+					.addComponent(jLabel19)
+					.addGap(10, 10, 10)
+					.addComponent(pan_Cashier, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+					.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+					.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+				))
+				.addContainerGap()
+			)
+		);
+		jPanelCashierLayout.setVerticalGroup(
+			jPanelCashierLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+			.addGroup(jPanelCashierLayout.createSequentialGroup()
+				.addContainerGap()
+				.addGroup(jPanelCashierLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+					.addComponent(jLabel19)
+					.addComponent(pan_Cashier, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+				)
+				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+				.addComponent(jScrollPaneCashier, javax.swing.GroupLayout.DEFAULT_SIZE, 436, Short.MAX_VALUE)
+				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+				.addGroup(jPanelCashierLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+					.addComponent(jLabel20)
+					.addComponent(txt_TotalCashier, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)				  
+					.addComponent(btn_CashierExcel)
+				)
+				.addContainerGap()
+			)
+		);
+		jTabbedPane1.addTab(" CashierUsed ", jPanelCashier);
+        
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -895,30 +1256,27 @@ public class Frm_Statistic extends javax.swing.JFrame  implements DateInterface{
         String gender = "--";
         String age = "--";
         String regtime = "--";
-
-        String sql = "SELECT patients_info.p_no AS 'NO.', "+
-                "(YEAR(CURDATE())-YEAR(patients_info.birth))-(RIGHT(CURDATE(),5)< RIGHT(patients_info.birth,5)) AS Age, "+
-                "patients_info.gender AS Gender, "+
-                "concat(diagnosis_code.icd_code,'  ',diagnosis_code.name) AS Diagnosis, "+
-                "registration_info.reg_time AS 'Registration Time' , "+
-                "patients_info.bloodtype AS Bloodtype "+
-                "FROM diagnosis_code, "+
-                "diagnostic, "+
-                "registration_info, "+
-                "patients_info, "+
-                "outpatient_services "+
-                "WHERE "+
-                "outpatient_services.reg_guid=registration_info.guid "+
-                "AND patients_info.p_no=registration_info.p_no "+
-                "AND diagnostic.dia_code=diagnosis_code.icd_code "+
-                "AND diagnostic.os_guid=outpatient_services.guid ";
-
+		String sql = "select patients_info.p_no as 'No.', " +
+			"(YEAR(CURDATE()) - YEAR(patients_info.birth))-(RIGHT(CURDATE(), 5)< RIGHT(patients_info.birth, 5)) as Age, " +
+			"patients_info.gender as Gender, " + 
+			"concat(diagnosis_code.icd_code,'  ',diagnosis_code.name) AS Diagnosis, " +
+			"registration_info.reg_time AS 'Registration Time', " +
+			"patients_info.bloodtype AS Bloodtype, " +
+			"patients_info.address as address, " + 
+			"patients_info.town as town, " + 
+			"patients_info.state as state, " + 
+			"patients_info.country as country " +
+			"from diagnostic, patients_info, diagnosis_code, registration_info " +
+			"where patients_info.p_no = registration_info.p_no " +
+			"and registration_info.guid = diagnostic.reg_guid " +
+			"and diagnostic.dia_code = diagnosis_code.dia_code ";
+		
         // 年齡條件
         if (cbox_AgeS.getSelectedItem() != null && cbox_AgeE.getSelectedItem() != null  && !cbox_AgeS.getSelectedItem().toString().trim().equals("") && !cbox_AgeE.getSelectedItem().toString().trim().equals("") ){
              sql+= "AND (YEAR(CURDATE())-YEAR(patients_info.birth))-(RIGHT(CURDATE(),5)< RIGHT(patients_info.birth,5)) BETWEEN "+cbox_AgeS.getSelectedItem().toString()+" AND "+cbox_AgeE.getSelectedItem().toString()+"  ";
              age = cbox_AgeS.getSelectedItem().toString() + " - "+ cbox_AgeE.getSelectedItem().toString();
         }
-           
+        
 
         // 性別條件
         if (cbox_Gender.getSelectedIndex() == 1) {
@@ -930,14 +1288,24 @@ public class Frm_Statistic extends javax.swing.JFrame  implements DateInterface{
              gender = "F";
         }
 
-//        // 城市條件
-//        if (m_CobwwTown.getSelectedItem() != null && !m_CobwwTown.getSelectedItem().toString().trim().equals("")) sql+= "AND patients_info.town = '"+m_CobwwTown.getSelectedItem().toString()+"' ";
-//
-//        // 區域條件
-//        if (m_CobwwRegion.getSelectedItem() != null && !m_CobwwRegion.getSelectedItem().toString().trim().equals("")) sql+= "AND patients_info.state = '"+m_CobwwRegion.getSelectedItem().toString()+"' ";
-//
-//        // 國家條件
-//        if (m_CobwwCountry.getSelectedItem() != null && !m_CobwwCountry.getSelectedItem().toString().trim().equals("")) sql+= "AND patients_info.country = '"+m_CobwwCountry.getSelectedItem().toString()+"' ";
+        // 城市條件
+        
+//        if (m_CobwwTown.getSelectedItem() != null && !m_CobwwTown.getSelectedItem().toString().trim().equals("")) {
+        if (m_CobwwTown != null && m_CobwwTown.getSelectedItem() != null && !m_CobwwTown.getSelectedItem().toString().trim().equals("")) {
+			sql+= "AND patients_info.town = '"+m_CobwwTown.getSelectedItem().toString()+"' ";
+		}
+
+        // 區域條件
+ //       if (m_CobwwRegion.getSelectedItem() != null && !m_CobwwRegion.getSelectedItem().toString().trim().equals("")) {
+        if (m_CobwwRegion != null && m_CobwwRegion.getSelectedItem() != null && !m_CobwwRegion.getSelectedItem().toString().trim().equals("")) {
+			sql+= "AND patients_info.state = '"+m_CobwwRegion.getSelectedItem().toString()+"' ";
+		}
+
+        // 國家條件
+//        if (m_CobwwCountry.getSelectedItem() != null && !m_CobwwCountry.getSelectedItem().toString().trim().equals("")) {
+        if (m_CobwwCountry != null && m_CobwwCountry.getSelectedItem() != null && !m_CobwwCountry.getSelectedItem().toString().trim().equals("")) {
+			sql+= "AND patients_info.country = '"+m_CobwwCountry.getSelectedItem().toString()+"' ";
+		}
 
         // 診斷條件
         for (int i = 0; i < lis_DCselect.getModel().getSize() ; i++  ) {
@@ -960,21 +1328,39 @@ public class Frm_Statistic extends javax.swing.JFrame  implements DateInterface{
     private void tab_MedicineMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tab_MedicineMouseClicked
 
 }//GEN-LAST:event_tab_MedicineMouseClicked
+    private void tab_CashierMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tab_CashierMouseClicked
+
+}//GEN-LAST:event_tab_MedicineMouseClicked
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         new Frm_Main().setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
+	private void btn_CashierExcelPerformed(java.awt.event.ActionEvent evt){
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setSelectedFile(new File("output.xls"));
+//        fileChooser.setSelectedFile(new File("output.csv"));
+        int option = fileChooser.showSaveDialog(null);
+
+        if(option == JFileChooser.OPEN_DIALOG) { // 按確定鍵
+			SetOutputXLS(fileChooser.getSelectedFile().toString());
+        } else if(option == JFileChooser.CANCEL_OPTION ) { // 按取消鍵
+
+        }
+	}
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_DCadd;
     private javax.swing.JButton btn_DCclear;
+	private javax.swing.JButton btn_CashierExcel;
     private javax.swing.JComboBox cbox_AgeE;
     private javax.swing.JComboBox cbox_AgeS;
     private javax.swing.JComboBox cbox_Gender;
     private cc.johnwu.date.DateChooser datec_RegTimeE;
     private cc.johnwu.date.DateChooser datec_RegTimeS;
+    private cc.johnwu.date.DateChooser QueryTimeE;
+    private cc.johnwu.date.DateChooser QueryTimeS;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton10;
     private javax.swing.JLabel jLabel1;
@@ -982,6 +1368,13 @@ public class Frm_Statistic extends javax.swing.JFrame  implements DateInterface{
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
+    private javax.swing.JLabel jLabel20;
+	
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel3;
@@ -999,8 +1392,10 @@ public class Frm_Statistic extends javax.swing.JFrame  implements DateInterface{
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
+    private javax.swing.JPanel jPanelCashier;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPaneCashier;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JLabel lab_Country;
     private javax.swing.JLabel lab_TitleState;
@@ -1012,14 +1407,19 @@ public class Frm_Statistic extends javax.swing.JFrame  implements DateInterface{
     private javax.swing.JPanel pan_Region;
     private javax.swing.JPanel pan_Top;
     private javax.swing.JPanel pan_Town;
+    private javax.swing.JPanel pan_Cashier;
     private javax.swing.JTable tab_Medicine;
+    private javax.swing.JTable tab_Cashier;
     private javax.swing.JTextField txt_Total;
+    private javax.swing.JTextField txt_TotalCashier;
     private javax.swing.JTextField txt_TotalClinic;
     private javax.swing.JTextField txt_TotalDoctor;
     private javax.swing.JTextField txt_TotalPatient;
     private javax.swing.JTextField txt_TotalStaff;
     private javax.swing.JTextField txt_TotalWaiting;
     private javax.swing.JTextField txt_totalPoli;
+    private javax.swing.JTextField txt_TotalBed;
+    private javax.swing.JTextField txt_TotalInpatient;
     // End of variables declaration//GEN-END:variables
 
     public void onDateChanged() {
