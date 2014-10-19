@@ -51,7 +51,7 @@ public class Tab_FootCase extends JPanel {
 	private JTextField textSearch;
 	private JTable table;
 	private JButton btnSearch;
-	private JButton btnSave;
+	public JButton btnSave;
 	private JPanel panelFoot;
 
 	private JPanel panelFootChk;

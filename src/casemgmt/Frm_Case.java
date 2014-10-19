@@ -1447,7 +1447,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 			// To-Do : add wound
 		}
 
-		btn_CaseClose.setText("Send");
+		btn_CaseClose.setText("Close case");
 		btn_CaseClose.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				btn_CaseCloseActionPerformed(evt);
@@ -2023,7 +2023,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 																						btn_CaseClose,
 																						javax.swing.GroupLayout.Alignment.TRAILING,
 																						javax.swing.GroupLayout.PREFERRED_SIZE,
-																						85,
+																						120,
 																						javax.swing.GroupLayout.PREFERRED_SIZE))))
 								.addContainerGap()));
 		layout.setVerticalGroup(layout
@@ -2055,8 +2055,43 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 	}// GEN-LAST:event_jCheckBox142ActionPerformed
 
 	private void btn_CaseCloseActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_CaseCloseActionPerformed
-
-		if (m_From.equals("dia") || m_From.equals("medicine")) {
+		Object[] options = { "YES", "NO" };
+		int dialog = JOptionPane.showOptionDialog(new Frame(),
+				"Save all modifications and close case?", "Message",
+				JOptionPane.YES_OPTION,
+				JOptionPane.QUESTION_MESSAGE, null, options,
+				options[0]);
+		if (dialog == 0) {
+			// 選擇 YES 時
+			this.pan_AssComp.btn_AssSave.doClick();
+			this.pan_CompliComp.btn_ComSave.doClick();
+			this.pan_ConfEdu.btn_ConSave.doClick();
+			this.pan_MedEdu.btn_ConSave.doClick();
+			this.btn_PreSave.doClick();
+			//this.btn_DheSave.doClick();
+			if (caseType.equalsIgnoreCase("D")) {
+				this.jPanelFoot.btnSave.doClick();
+			} else if (caseType.equalsIgnoreCase("H")) {
+				//this.pan_HIVComp
+			} else if (caseType.equalsIgnoreCase("W")) {
+				// To-Do : add wound
+			}
+			String sql = "UPDATE case_manage SET " + "status  = 'C'," + "close_time = NOW()"
+					+ "WHERE guid = '" + caseGuid + "' ";
+			try {
+				DBC.executeUpdate(sql);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			// 關閉此視窗
+			//this.mnit_Close.doClick();
+			//this.dispose();
+		} else {
+			// 選擇 NO 時
+		}
+		
+		/*if (m_From.equals("dia") || m_From.equals("medicine")) {
 			if (m_From.equals("dia")) {
 				if (this.pan_CompliComp.btn_ComSave.isEnabled() == true) {
 					Object[] options = { "YES", "NO" };
@@ -2127,7 +2162,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 					showEnterClinic();
 			} else
 				showEnterClinic();
-		}
+		}*/
 
 	}// GEN-LAST:event_btn_CaseCloseActionPerformed
 
@@ -2505,7 +2540,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 	private javax.swing.JPanel jPanel12;
 	private javax.swing.JPanel jPanel13;
 	private javax.swing.JPanel jPanel4;
-	private javax.swing.JPanel jPanelFoot;
+	private Tab_FootCase jPanelFoot;
 	private javax.swing.JTabbedPane jTabbedPane1;
 	private javax.swing.JLabel lab_Age;
 	private javax.swing.JLabel lab_Gender;
