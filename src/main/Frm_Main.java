@@ -1031,6 +1031,7 @@ public class Frm_Main extends javax.swing.JFrame {
 				onWoundCaseClicked(e);
 			}
 		});
+		btn_WoundCase.setEnabled(false);
 
 		javax.swing.GroupLayout pan_CaseLayout = new javax.swing.GroupLayout(
 				pan_Case);
