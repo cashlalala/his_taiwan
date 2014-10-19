@@ -1437,7 +1437,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		jTabbedPane1.addTab("Medicine Education", pan_MedEdu);
 
 		if (caseType.equalsIgnoreCase("D")) {
-			jPanelFoot = new Tab_FootCase(caseGuid);
+			jPanelFoot = new Tab_FootCase(caseGuid, this.m_Pno, this.m_RegGuid, m_FinishState);
 			jTabbedPane1.addTab(lang.getString("FOOT_EXAM"), jPanelFoot);
 		} else if (caseType.equalsIgnoreCase("H")) {
 			pan_HIVComp = new Tab_HIVCase(caseGuid);
