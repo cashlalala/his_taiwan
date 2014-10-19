@@ -146,6 +146,8 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		this.caseType = type;
 		m_RegGuid = regGuid;
 		m_Pno = p_no;
+		m_From = from;
+		m_FinishState = finishState;
 		presCodeMap = new ArrayList<Pair<String, String>>();
 
 		ResultSet rs = null;
@@ -212,10 +214,6 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		}
 		btn_Ddate_Save.setVisible(true);
 		btn_Ddate_Save.setEnabled(true);
-		m_From = from;
-		m_Pno = p_no;
-		m_RegGuid = regGuid;
-		m_FinishState = finishState;
 		showWhoUpdate(m_FinishState);
 		this.setExtendedState(Frm_Case.MAXIMIZED_BOTH); // 最大化
 		this.setLocationRelativeTo(this);
@@ -2059,6 +2057,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 			this.pan_ConfEdu.btn_ConSave.doClick();
 			this.pan_MedEdu.btn_ConSave.doClick();
 			this.btn_PreSave.doClick();
+			this.pan_HIVComp.btn_Save.doClick();;
 			//this.btn_DheSave.doClick();
 			if (caseType.equalsIgnoreCase("D")) {
 				this.jPanelFoot.btnSave.doClick();

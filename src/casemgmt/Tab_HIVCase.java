@@ -89,7 +89,7 @@ public class Tab_HIVCase extends JPanel {
 	private JScrollPane scrollPane_1;
 	private JTable tab_VenerealDisease;
 
-	private JButton btn_Save;
+	public JButton btn_Save;
 
 	private String caseGuid;
 
