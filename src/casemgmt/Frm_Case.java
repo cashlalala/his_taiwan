@@ -2285,6 +2285,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		try {
 
 			conn = DBC.getConnectionExternel();
+			conn.setAutoCommit(false);
 
 			String sql = "UPDATE patients_info  SET height = '"
 					+ txt_Height.getText() + "',  weight = '"
@@ -2296,44 +2297,65 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 			ps.executeUpdate();
 			ps.close();
 
-			String sqlBgac = String
-					.format("INSERT INTO prescription (guid, code, reg_guid, date_test, date_results, result, "
-							+ "isnormal, cost, finish, state) "
-							+ "values ('%s', '%s', '%s', NOW(), NOW(), '%s', 0, 0 , 'F', 1) ON DUPLICATE KEY UPDATE "
-							+ "date_test = NOW(), date_results= NOW(), result = '%s', "
-							+ "isnormal = 0, cost = 0, finish = 'F', state = 1 ",
-							presCodeMap.get(0).getValue(), presCodeMap.get(0)
-									.getKey(), m_RegGuid, txt_AC.getText(),
-							txt_AC.getText());
-			DBC.executeUpdate(sqlBgac);
+			if (!txt_AC.getText().isEmpty()) {
+				String sqlBgac = String
+						.format("INSERT INTO prescription (guid, code, reg_guid, date_test, date_results, result, "
+								+ "isnormal, cost, finish, state) "
+								+ "values ('%s', '%s', '%s', NOW(), NOW(), '%s', 0, 0 , 'F', 1) ON DUPLICATE KEY UPDATE "
+								+ "date_test = NOW(), date_results= NOW(), result = '%s', "
+								+ "isnormal = 0, cost = 0, finish = 'F', state = 1 ",
+								presCodeMap.get(0).getValue(),
+								presCodeMap.get(0).getKey(), m_RegGuid,
+								txt_AC.getText(), txt_AC.getText());
+				CustomLogger.debug(logger, sqlBgac);
+				PreparedStatement psBgac = conn.prepareStatement(sqlBgac);
+				psBgac.executeUpdate();
+				psBgac.close();
+			}
 
-			String sqlBgpc = String
-					.format("INSERT INTO prescription (guid, code, reg_guid, date_test, date_results, result, "
-							+ "isnormal, cost, finish, state) "
-							+ "values ('%s', '%s', '%s', NOW(), NOW(), '%s', 0, 0 , 'F', 1) ON DUPLICATE KEY UPDATE "
-							+ "date_test = NOW(), date_results= NOW(), result = '%s', "
-							+ "isnormal = 0, cost = 0, finish = 'F', state = 1 ",
-							presCodeMap.get(1).getValue(), presCodeMap.get(1)
-									.getKey(), m_RegGuid, txt_PC.getText(),
-							txt_PC.getText());
-			DBC.executeUpdate(sqlBgpc);
+			if (!txt_PC.getText().isEmpty()) {
+				String sqlBgpc = String
+						.format("INSERT INTO prescription (guid, code, reg_guid, date_test, date_results, result, "
+								+ "isnormal, cost, finish, state) "
+								+ "values ('%s', '%s', '%s', NOW(), NOW(), '%s', 0, 0 , 'F', 1) ON DUPLICATE KEY UPDATE "
+								+ "date_test = NOW(), date_results= NOW(), result = '%s', "
+								+ "isnormal = 0, cost = 0, finish = 'F', state = 1 ",
+								presCodeMap.get(1).getValue(),
+								presCodeMap.get(1).getKey(), m_RegGuid,
+								txt_PC.getText(), txt_PC.getText());
+				CustomLogger.debug(logger, sqlBgpc);
+				PreparedStatement psBgpc = conn.prepareStatement(sqlBgpc);
+				psBgpc.executeUpdate();
+				psBgpc.close();
+			}
 
-			String sqlSt = String
-					.format("INSERT INTO prescription (guid, code, reg_guid, date_test, date_results, result, "
-							+ "isnormal, cost, finish, state) "
-							+ "values ('%s', '%s', '%s', NOW(), NOW(), '%s', 0, 0 , 'F', 1) ON DUPLICATE KEY UPDATE "
-							+ "date_test = NOW(), date_results= NOW(), result = '%s', "
-							+ "isnormal = 0, cost = 0, finish = 'F', state = 1 ",
-							presCodeMap.get(2).getValue(), presCodeMap.get(2)
-									.getKey(), m_RegGuid, txt_ST.getText(),
-							txt_ST.getText());
-			DBC.executeUpdate(sqlSt);
+			if (!txt_ST.getText().isEmpty()) {
+				String sqlSt = String
+						.format("INSERT INTO prescription (guid, code, reg_guid, date_test, date_results, result, "
+								+ "isnormal, cost, finish, state) "
+								+ "values ('%s', '%s', '%s', NOW(), NOW(), '%s', 0, 0 , 'F', 1) ON DUPLICATE KEY UPDATE "
+								+ "date_test = NOW(), date_results= NOW(), result = '%s', "
+								+ "isnormal = 0, cost = 0, finish = 'F', state = 1 ",
+								presCodeMap.get(2).getValue(),
+								presCodeMap.get(2).getKey(), m_RegGuid,
+								txt_ST.getText(), txt_ST.getText());
+				CustomLogger.debug(logger, sqlSt);
+				PreparedStatement psSt = conn.prepareStatement(sqlSt);
+				psSt.executeUpdate();
+				psSt.close();
+			}
+			conn.commit();
 
 			JOptionPane.showMessageDialog(null, "Save Complete");
 			pan_AssComp.txt_bmi.setText(Tools.getBmi(txt_Height.getText(),
 					txt_Weight.getText()));
 			btn_Ddate_Save.setEnabled(false);
 		} catch (SQLException ex) {
+			try {
+				conn.rollback();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 			ex.printStackTrace();
 		} finally {
 			try {
