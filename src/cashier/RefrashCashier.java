@@ -115,16 +115,20 @@ public class RefrashCashier extends Thread{
         } else if (m_SysName.equals("bed")) {
         	// TODO
         	sql = "SELECT registration_info.guid, registration_info.bed_guid, "
-        			+ " registration_info.p_no, registration_info.reg_time, "
-        			+ " registration_info.reg_cost, registration_info.dia_cost, "
-        			+ " bed_record.checkinTime, bed_record.checkoutTime, "
-        			+ " bed_record.cost FROM registration_info, bed_record "
+        			+ " registration_info.p_no, "
+        			+ " concat(patients_info.firstname,'  ',patients_info.lastname) AS 'Name', "
+        			+ " registration_info.reg_time AS 'Registration Time', "
+        			//+ " registration_info.reg_cost, registration_info.dia_cost, "
+        			+ " bed_record.checkinTime AS 'Check in Time', bed_record.checkoutTime AS 'Check out Time' "
+        			//+ " DATEDIFF(bed_record.checkoutTime, bed_record.checkinTime) * setting.bed_price as 'Price' "
+        			+ " FROM registration_info, bed_record, setting, patients_info "
         			+ " WHERE registration_info.bed_guid = bed_record.guid "
         			+ " AND registration_info.type = 'I' "
+        			+ " AND registration_info.p_no = patients_info.p_no "
         			+ " AND bed_record.checkinTime is not null "
         			+ " AND bed_record.checkoutTime is not null "
         			+ " AND bed_record.status = 'L' "
-        			+ " AND bed_payment is null "
+        			+ " AND (bed_payment is null OR radiology_payment is null OR lab_payment is null OR pharmacy_payment is null)"
         			+ " ORDER by registration_info.reg_time ASC ";
 			//+ " AND shift_table.shift_date = '"+DateMethod.getTodayYMD()+"' "
         }
@@ -219,7 +223,7 @@ public class RefrashCashier extends Thread{
                 			+ " AND bed_record.checkinTime is not null "
                 			+ " AND bed_record.checkoutTime is not null "
                 			+ " AND bed_record.status = 'L' "
-                			+ " AND bed_payment is null "
+                			+ " AND (bed_payment is null OR radiology_payment is null OR lab_payment is null OR pharmacy_payment is null)"
                 			;
 //                            + " AND shift_table.shift_date = '"+DateMethod.getTodayYMD()+"' " +
 //                            "AND shift_table.shift = '"+DateMethod.getNowShiftNum()+"' ";
