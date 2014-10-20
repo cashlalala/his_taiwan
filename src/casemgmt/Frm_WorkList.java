@@ -151,7 +151,9 @@ public class Frm_WorkList extends javax.swing.JFrame {
 		getSelectedTable();
 
 		m_RefrashWorkList.interrupt(); // 終止重複讀取掛號表單
+		m_RefrashWorkList.stopRunning();
 		m_RefrashWorkList2.interrupt();
+		m_RefrashWorkList2.stopRunning();
 		m_Clock.interrupt();
 		m_Pno = (String) this.tab_WorkListInterface.getValueAt(
 				tab_WorkListInterface.getSelectedRow(), 1);
@@ -567,14 +569,10 @@ public class Frm_WorkList extends javax.swing.JFrame {
 					JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 
 			if (dialog == 0) {
-				m_RefrashWorkList.interrupt(); // 終止重複讀取掛號表單
-				m_RefrashWorkList2.interrupt(); // 終止重複讀取掛號表單
 				setEnter(finishStatus);
 			}
 		} else if (finishStatus == null
 				|| finishStatus.trim().equalsIgnoreCase("N")) {
-			m_RefrashWorkList.interrupt(); // 終止重複讀取掛號表單
-			m_RefrashWorkList2.interrupt(); // 終止重複讀取掛號表單
 			setEnter(finishStatus);
 		}
 
@@ -636,8 +634,10 @@ public class Frm_WorkList extends javax.swing.JFrame {
 			dateComboBox.setEnabled(false);
 			btn_Search.setText("Cancels Search");
 			m_RefrashWorkList.interrupt(); // 終止重複讀取掛號表單
+			m_RefrashWorkList.stopRunning();
 			m_RefrashWorkList.getSelectDate(dateComboBox.getValue(), "N");
 			m_RefrashWorkList2.interrupt(); // 終止重複讀取掛號表單
+			m_RefrashWorkList2.stopRunning();
 			m_RefrashWorkList2.getSelectDate(dateComboBox.getValue(), "C");
 		}
 	}// GEN-LAST:event_btn_SearchActionPerformed

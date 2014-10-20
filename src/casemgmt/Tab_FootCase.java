@@ -1,6 +1,15 @@
 package casemgmt;
 
-import java.awt.LayoutManager;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.GroupLayout;
@@ -9,6 +18,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -20,6 +30,10 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
 import multilingual.Language;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
 import cc.johnwu.sql.HISModel;
@@ -28,19 +42,11 @@ import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
-
 import common.TabTools;
+import java.awt.event.ItemListener;
+import java.awt.event.ItemEvent;
 
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
-
-public class Tab_FootCase extends JPanel {
+public class Tab_FootCase extends JPanel implements ISaveable {
 	/**
 	 * 
 	 */
@@ -102,6 +108,7 @@ public class Tab_FootCase extends JPanel {
 
 	private String caseGuid;
 
+	@SuppressWarnings("unused")
 	private String regGuid;
 
 	private String pNo;
@@ -114,8 +121,6 @@ public class Tab_FootCase extends JPanel {
 	private JLabel lblRecNo;
 
 	private JLabel lblRecNoValue;
-
-	private String searchSqlTemplate;
 
 	/**
 	 * @param regGuid
@@ -433,6 +438,11 @@ public class Tab_FootCase extends JPanel {
 		panelFootChk.add(lblNewLabel, "2, 6, 3, 1");
 
 		comboBox = new JComboBox();
+		comboBox.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				onItemStateChanged();
+			}
+		});
 		panelFootChk.add(comboBox, "6, 6, 5, 1, fill, default");
 		comboBox.setModel(footPos1);
 
@@ -441,6 +451,11 @@ public class Tab_FootCase extends JPanel {
 		panelFootChk.add(lblNewLabel_1, "2, 10, 3, 1");
 
 		comboBox_1 = new JComboBox();
+		comboBox_1.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				onItemStateChanged();
+			}
+		});
 		panelFootChk.add(comboBox_1, "6, 10, 5, 1, fill, default");
 		comboBox_1.setModel(footPos2);
 
@@ -449,6 +464,11 @@ public class Tab_FootCase extends JPanel {
 		panelFootChk.add(lblNewLabel_2, "2, 14, 3, 1");
 
 		comboBox_2 = new JComboBox();
+		comboBox_2.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				onItemStateChanged();
+			}
+		});
 		panelFootChk.add(comboBox_2, "6, 14, 5, 1, fill, default");
 		comboBox_2.setModel(footPos3);
 
@@ -457,6 +477,11 @@ public class Tab_FootCase extends JPanel {
 		panelFootChk.add(lblNewLabel_3, "2, 18, 3, 1");
 
 		comboBox_3 = new JComboBox();
+		comboBox_3.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				onItemStateChanged();
+			}
+		});
 		panelFootChk.add(comboBox_3, "6, 18, 5, 1, fill, default");
 		comboBox_3.setModel(footPos4);
 
@@ -465,6 +490,11 @@ public class Tab_FootCase extends JPanel {
 		panelFootChk.add(lblNewLabel_4, "2, 22, 3, 1");
 
 		comboBox_4 = new JComboBox();
+		comboBox_4.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				onItemStateChanged();
+			}
+		});
 		panelFootChk.add(comboBox_4, "6, 22, 5, 1, fill, default");
 		comboBox_4.setModel(footPos5);
 
@@ -473,6 +503,11 @@ public class Tab_FootCase extends JPanel {
 		panelFootChk.add(lblNewLabel_5, "2, 26, 3, 1");
 
 		comboBox_5 = new JComboBox();
+		comboBox_5.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				onItemStateChanged();
+			}
+		});
 		panelFootChk.add(comboBox_5, "6, 26, 5, 1, fill, default");
 		comboBox_5.setModel(footPos6);
 
@@ -481,6 +516,11 @@ public class Tab_FootCase extends JPanel {
 		panelFootChk.add(lblNewLabel_6, "2, 30, 3, 1");
 
 		comboBox_6 = new JComboBox();
+		comboBox_6.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				onItemStateChanged();
+			}
+		});
 		panelFootChk.add(comboBox_6, "6, 30, 5, 1, fill, default");
 		comboBox_6.setModel(footPos7);
 
@@ -489,6 +529,11 @@ public class Tab_FootCase extends JPanel {
 		panelFootChk.add(lblNewLabel_7, "2, 34, 3, 1");
 
 		comboBox_7 = new JComboBox();
+		comboBox_7.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				onItemStateChanged();
+			}
+		});
 		panelFootChk.add(comboBox_7, "6, 34, 5, 1, fill, default");
 		comboBox_7.setModel(footPos8);
 
@@ -497,6 +542,11 @@ public class Tab_FootCase extends JPanel {
 		panelFootChk.add(lblNewLabel_8, "2, 38, 3, 1");
 
 		comboBox_8 = new JComboBox();
+		comboBox_8.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				onItemStateChanged();
+			}
+		});
 		panelFootChk.add(comboBox_8, "6, 38, 5, 1, fill, default");
 		comboBox_8.setModel(footPos9);
 
@@ -505,6 +555,11 @@ public class Tab_FootCase extends JPanel {
 		panelFootChk.add(lblNewLabel_9, "2, 42, 3, 1");
 
 		comboBox_9 = new JComboBox();
+		comboBox_9.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				onItemStateChanged();
+			}
+		});
 		panelFootChk.add(comboBox_9, "6, 42, 5, 1");
 		comboBox_9.setModel(footPos10);
 
@@ -512,6 +567,11 @@ public class Tab_FootCase extends JPanel {
 		panelFootChk.add(lblEducated, "2, 46");
 
 		chckbxNewCheckBox = new JCheckBox("");
+		chckbxNewCheckBox.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				onItemStateChanged();
+			}
+		});
 		panelFootChk.add(chckbxNewCheckBox, "8, 46");
 
 		JButton btnReset = new JButton(lang.getString("DIABETES_RESET"));
@@ -523,6 +583,10 @@ public class Tab_FootCase extends JPanel {
 		panelFootChk.add(btnReset, "8, 48");
 		panel.setLayout(gl_panel);
 		setLayout(groupLayout);
+	}
+
+	protected void onItemStateChanged() {
+		this.btnSave.setEnabled(true);
 	}
 
 	protected void onBtnSearchClicked(ActionEvent e) {
@@ -594,7 +658,45 @@ public class Tab_FootCase extends JPanel {
 	}
 
 	protected void onBtnSaveFootCaseClicked(ActionEvent e) {
+		try {
+			save();
+			table.getSelectionModel().clearSelection();
+			JOptionPane.showMessageDialog(null, "Save Complete");
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			JOptionPane.showMessageDialog(null,
+					"Save Failed: " + e1.getMessage());
+		} finally {
+			new Thread(new Runnable() {
 
+				@Override
+				public void run() {
+					showList();
+				}
+			}).start();
+		}
+	}
+
+	@Override
+	public boolean isSaveable() {
+		return btnSave.isEnabled();
+	}
+
+	@Override
+	public void save() throws Exception {
+		Connection conn = DBC.getConnectionExternel();
+		try {
+			save(conn);
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			if (conn != null)
+				conn.close();
+		}
+	}
+
+	@Override
+	public void save(Connection conn) throws Exception {
 		String sql = String
 				.format("insert into diabetes_record (guid, case_guid, educated, createdatetime, s_no, "
 						+ "foot1, foot2, foot3, foot4, foot5, "
@@ -628,22 +730,20 @@ public class Tab_FootCase extends JPanel {
 								.getSelectedItem().toString(),
 						(chckbxNewCheckBox.isSelected() ? "1" : "0"), UserInfo
 								.getUserNO());
-
+		logger.debug("[{}][{}] {}", UserInfo.getUserID(),
+				UserInfo.getUserName(), sql);
+		PreparedStatement ps = conn.prepareStatement(sql);
 		try {
-			DBC.executeUpdate(sql);
-			table.getSelectionModel().clearSelection();
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-		} catch (Exception e1) {
-			e1.printStackTrace();
+			ps.executeUpdate();
+		} catch (Exception e) {
+			throw e;
 		} finally {
-			new Thread(new Runnable() {
-
-				@Override
-				public void run() {
-					showList();
-				}
-			}).start();
+			if (ps != null)
+				ps.close();
 		}
+		btnSave.setEnabled(false);
 	}
+
+	private static Logger logger = LogManager.getLogger(Tab_FootCase.class
+			.getName());
 }

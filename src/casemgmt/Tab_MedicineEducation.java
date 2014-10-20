@@ -1,23 +1,32 @@
 package casemgmt;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import javax.swing.DefaultCellEditor;
-import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
 
-public class Tab_MedicineEducation extends JPanel {
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+public class Tab_MedicineEducation extends JPanel implements ISaveable {
 	private static final long serialVersionUID = -2973240376137842576L;
+	@SuppressWarnings("unused")
 	private String regGuid;
 	private String pNo;
 	private String[] title = { "", "Guid", "Code", "Item", "Injection" };
+	@SuppressWarnings("unused")
 	private Frm_Case parent;
 
 	public void setParent(Frm_Case parent) {
@@ -63,6 +72,17 @@ public class Tab_MedicineEducation extends JPanel {
 			DefaultTableModel TableModel = new DefaultTableModel(dataArray,
 					title) {
 				@Override
+				public void setValueAt(Object aValue, int row, int column) {
+					super.setValueAt(aValue, row, column);
+					onMouseClicked(column);
+				}
+
+				/**
+						 * 
+						 */
+				private static final long serialVersionUID = -8914636449822252206L;
+
+				@Override
 				public Class<?> getColumnClass(int columnIndex) {
 					if (columnIndex == 0) {
 						return Boolean.class;
@@ -98,7 +118,7 @@ public class Tab_MedicineEducation extends JPanel {
 		tab_MedicineTeach = new javax.swing.JTable();
 
 		btn_ConSave.setText("Save");
-		btn_ConSave.setEnabled(true);
+		btn_ConSave.setEnabled(false);
 		btn_ConSave.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				btn_ConSaveActionPerformed(evt);
@@ -156,27 +176,79 @@ public class Tab_MedicineEducation extends JPanel {
 										.addContainerGap()));
 	}
 
-	private void btn_ConSaveActionPerformed(java.awt.event.ActionEvent evt) {
-		for (int i = 0; i < tab_MedicineTeach.getRowCount(); i++) {
-			if ((Boolean) tab_MedicineTeach.getValueAt(i, 0) == true) {
-				try {
-					String sql = "UPDATE medicine_stock SET "
-							+ "teach_complete = '1' "
-							+ "WHERE medicine_stock.guid = '"
-							+ (String) tab_MedicineTeach.getValueAt(i, 1)
-							+ "'";
-					System.out.println(sql);
-					DBC.executeUpdate(sql);
-				} catch (SQLException ex) {
-					ex.printStackTrace();
-				}
-			}
+	protected void onMouseClicked(int column) {
+		if (column == 0) {
+			this.btn_ConSave.setEnabled(true);
 		}
-		JOptionPane.showMessageDialog(null, "Save Complete");
+	}
+
+	private void btn_ConSaveActionPerformed(java.awt.event.ActionEvent evt) {
+		try {
+			save();
+			JOptionPane.showMessageDialog(null, "Save Complete");
+		} catch (Exception e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null,
+					"Save Failed: " + e.getMessage());
+			btn_ConSave.setEnabled(true);
+		}
 	}
 
 	public javax.swing.JButton btn_ConSave;
 	private javax.swing.JScrollPane jScrollPane1;
 	public javax.swing.JTable tab_MedicineTeach;
+
+	@Override
+	public boolean isSaveable() {
+		return btn_ConSave.isEnabled();
+	}
+
+	@Override
+	public void save() throws Exception {
+		Connection conn = DBC.getConnectionExternel();
+		try {
+			conn.setAutoCommit(false);
+			save(conn);
+			conn.commit();
+		} catch (Exception e) {
+			conn.rollback();
+		} finally {
+			if (conn != null)
+				conn.close();
+		}
+	}
+
+	private static Logger logger = LogManager
+			.getLogger(Tab_MedicineEducation.class.getName());
+
+	@Override
+	public void save(Connection conn) throws Exception {
+		String msg = "";
+		String sql = "UPDATE medicine_stock SET " + "teach_complete = '1' "
+				+ "WHERE medicine_stock.guid = ? ";
+		logger.debug("[{}][{}] {}", UserInfo.getUserID(),
+				UserInfo.getUserName(), sql);
+		PreparedStatement ps = conn.prepareStatement(sql);
+		for (int i = 0; i < tab_MedicineTeach.getRowCount(); i++) {
+			if ((Boolean) tab_MedicineTeach.getValueAt(i, 0) == true) {
+				logger.debug("[{}][{}] value: {}", UserInfo.getUserID(),
+						UserInfo.getUserName(),
+						tab_MedicineTeach.getValueAt(i, 1));
+				ps.setString(1, (String) tab_MedicineTeach.getValueAt(i, 1));
+				ps.addBatch();
+			}
+		}
+		try {
+			ps.executeBatch();
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			if (ps != null)
+				ps.close();
+		}
+		if (msg.isEmpty())
+			btn_ConSave.setEnabled(false);
+
+	}
 
 }
