@@ -1,6 +1,8 @@
 package main;
 
 import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.SQLException;
@@ -29,8 +31,6 @@ import cc.johnwu.login.Frm_Login;
 import cc.johnwu.login.UserInfo;
 import codemaintenance.Frm_TableChooser;
 import errormessage.StoredErrorMessage;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 public class Frm_Main extends javax.swing.JFrame {
 	/**
@@ -1102,17 +1102,21 @@ public class Frm_Main extends javax.swing.JFrame {
 								pan_CaseLayout
 										.createParallelGroup(Alignment.LEADING)
 										.addComponent(btn_DiabetesCase,
-												GroupLayout.DEFAULT_SIZE, 200,
-												Short.MAX_VALUE)
+												javax.swing.GroupLayout.PREFERRED_SIZE,
+												200,
+												javax.swing.GroupLayout.PREFERRED_SIZE)
 										.addComponent(btn_WoundCase,
-												GroupLayout.DEFAULT_SIZE, 200,
-												Short.MAX_VALUE)
+												javax.swing.GroupLayout.PREFERRED_SIZE,
+												200,
+												javax.swing.GroupLayout.PREFERRED_SIZE)
 										.addComponent(btn_HIVCase,
-												GroupLayout.DEFAULT_SIZE, 200,
-												Short.MAX_VALUE)
+												javax.swing.GroupLayout.PREFERRED_SIZE,
+												200,
+												javax.swing.GroupLayout.PREFERRED_SIZE)
 										.addComponent(btn_Sms,
-												GroupLayout.DEFAULT_SIZE, 200,
-												Short.MAX_VALUE))
+												javax.swing.GroupLayout.PREFERRED_SIZE,
+												200,
+												javax.swing.GroupLayout.PREFERRED_SIZE))
 						.addContainerGap()));
 		pan_CaseLayout.setVerticalGroup(pan_CaseLayout.createParallelGroup(
 				Alignment.LEADING).addGroup(
@@ -1192,12 +1196,12 @@ public class Frm_Main extends javax.swing.JFrame {
 												.addComponent(
 														pan_Pharmacy,
 														javax.swing.GroupLayout.PREFERRED_SIZE,
-														230,
+														javax.swing.GroupLayout.DEFAULT_SIZE,
 														javax.swing.GroupLayout.PREFERRED_SIZE)
 												.addComponent(
 														pan_Investgations,
 														javax.swing.GroupLayout.PREFERRED_SIZE,
-														230,
+														javax.swing.GroupLayout.DEFAULT_SIZE,
 														javax.swing.GroupLayout.PREFERRED_SIZE)
 												.addGroup(
 														layout.createSequentialGroup()
@@ -1231,7 +1235,7 @@ public class Frm_Main extends javax.swing.JFrame {
 												.addComponent(
 														pan_PersonalManagement,
 														javax.swing.GroupLayout.PREFERRED_SIZE,
-														230,
+														javax.swing.GroupLayout.DEFAULT_SIZE,
 														javax.swing.GroupLayout.PREFERRED_SIZE))
 								.addPreferredGap(
 										javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1570,10 +1574,10 @@ public class Frm_Main extends javax.swing.JFrame {
 
 	private void btn_CodeMaintenanceActionPerformed(
 			java.awt.event.ActionEvent evt) {
-		Frm_TableChooser chooser = new Frm_TableChooser();
+		Frm_TableChooser chooser = new Frm_TableChooser(this);
 		chooser.setLocationRelativeTo(this);
 		chooser.setVisible(true);
-		this.dispose();
+		//this.dispose();
 	}
 
 	private void btn_LaboratoryActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_LaboratoryActionPerformed
