@@ -1,5 +1,7 @@
 package casemgmt;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -10,10 +12,13 @@ import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
 
-public class Tab_ConfirmEducation extends JPanel {
+public class Tab_ConfirmEducation extends JPanel implements ISaveable {
 
 	/**
 	 * 
@@ -21,9 +26,11 @@ public class Tab_ConfirmEducation extends JPanel {
 	private static final long serialVersionUID = -698594221923096308L;
 
 	private String regGuid;
+	@SuppressWarnings("unused")
 	private String pNo;
 	private String[] title = { "", "Code", "Item", "ID", "Uesr", "Check",
 			"Acceptance", "guid" };
+	@SuppressWarnings("unused")
 	private Frm_Case parent;
 
 	public void setParent(Frm_Case parent) {
@@ -104,6 +111,7 @@ public class Tab_ConfirmEducation extends JPanel {
 			DefaultTableModel TableModel = new DefaultTableModel(dataArray,
 					title) {
 				private static final long serialVersionUID = -2995151919565263320L;
+
 				@Override
 				public boolean isCellEditable(int rowIndex, int columnIndex) {
 					if (columnIndex == 5 || columnIndex == 6) {
@@ -148,6 +156,8 @@ public class Tab_ConfirmEducation extends JPanel {
 			columnChoose
 					.setCellEditor(new TableTriStateCell.TriStateCellEditor());
 			tab_HealthTeach.setRowHeight(30);
+
+			btn_ConSave.setEnabled(false);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -252,6 +262,43 @@ public class Tab_ConfirmEducation extends JPanel {
 	}
 
 	private void btn_ConSaveActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_ConSaveActionPerformed
+		try {
+			save();
+			JOptionPane.showMessageDialog(null, "Save Complete");
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			JOptionPane.showMessageDialog(null,
+					"Save Failed: " + ex.getMessage());
+			btn_ConSave.setEnabled(true);
+		}
+	}
+
+	public javax.swing.JButton btn_ConSave;
+	private javax.swing.JScrollPane jScrollPane1;
+	public javax.swing.JTable tab_HealthTeach;
+
+	@Override
+	public boolean isSaveable() {
+		return btn_ConSave.isEnabled();
+	}
+
+	@Override
+	public void save() throws Exception {
+		Connection conn = DBC.getConnectionExternel();
+		try {
+			conn.setAutoCommit(false);
+			save(conn);
+			conn.commit();
+		} catch (Exception e) {
+			conn.rollback();
+		} finally {
+			if (conn != null)
+				conn.close();
+		}
+	}
+
+	@Override
+	public void save(Connection conn) throws Exception {
 		for (int i = 0; i < tab_HealthTeach.getRowCount(); i++) {
 
 			if (tab_HealthTeach.getValueAt(i, 3) == null
@@ -259,95 +306,95 @@ public class Tab_ConfirmEducation extends JPanel {
 							.equals(""))
 				continue;
 
-			try {
-				if (tab_HealthTeach.getValueAt(i, 7) == null) {
-					System.out.println("INININININININININ");
-					String thcheck = "0";
-					if (tab_HealthTeach.getValueAt(i, 5).toString()
-							.equals("true")) {
-						thcheck = "1";
-					}
-					String acceptance = "0";
-					if (tab_HealthTeach.getValueAt(i, 6).toString()
-							.equals("Excellent")) {
-						acceptance = "1";
-					} else if (tab_HealthTeach.getValueAt(i, 6).toString()
-							.equals("Good")) {
-						acceptance = "2";
-					} else if (tab_HealthTeach
-							.getValueAt(i, 6)
-							.toString()
-							.equals("<html><font color='FF0000'>Poor</font></html>")) {
-						acceptance = "3";
-					}
-
-					String sql = "INSERT INTO health_teach (guid, hti_code, reg_guid, s_id, confirm, acceptance) "
-							+ "VALUES (uuid(), '"
-							+ tab_HealthTeach.getValueAt(i, 1)
-							+ "','"
-							+ regGuid + "', ";
-
-					if (tab_HealthTeach.getValueAt(i, 3) == null) {
-						sql += "NULL, ";
-					} else {
-						sql += "'" + tab_HealthTeach.getValueAt(i, 3) + "', ";
-					}
-					sql += " '" + thcheck + "','" + acceptance + "' )";
-
-					System.out.println(sql);
-					DBC.executeUpdate(sql);
-
-				} else {
-					System.out.println("UPUPUPUPUUPUPUPUUPUP");
-					// 做UPDATE的動作
-					String thcheck = "0";
-					if (tab_HealthTeach.getValueAt(i, 5).toString()
-							.equals("true")) {
-						thcheck = "1";
-					}
-
-					String acceptance = "0";
-					if (tab_HealthTeach.getValueAt(i, 6).toString()
-							.equals("Excellent")) {
-						acceptance = "1";
-					} else if (tab_HealthTeach.getValueAt(i, 6).toString()
-							.equals("Good")) {
-						acceptance = "2";
-					} else if (tab_HealthTeach
-							.getValueAt(i, 6)
-							.toString()
-							.equals("<html><font color='FF0000'>Poor</font></html>")) {
-						acceptance = "3";
-					}
-
-					String sql = "UPDATE health_teach SET " + "guid = uuid(),"
-							+ "hti_code = '" + tab_HealthTeach.getValueAt(i, 1)
-							+ "'," + "reg_guid = '" + regGuid + "',";
-
-					if (tab_HealthTeach.getValueAt(i, 3) == null) {
-						sql += "s_id = NULL, ";
-					} else {
-						sql += "s_id = '" + tab_HealthTeach.getValueAt(i, 3)
-								+ "', ";
-					}
-
-					sql += " confirm = '" + thcheck + "'," + "acceptance = '"
-							+ acceptance + "'" + " WHERE hti_code = '"
-							+ tab_HealthTeach.getValueAt(i, 1) + "'";
-					System.out.println(sql);
-					DBC.executeUpdate(sql);
+			String sql = "";
+			if (tab_HealthTeach.getValueAt(i, 7) == null) {
+				System.out.println("INININININININININ");
+				String thcheck = "0";
+				if (tab_HealthTeach.getValueAt(i, 5).toString().equals("true")) {
+					thcheck = "1";
+				}
+				String acceptance = "0";
+				if (tab_HealthTeach.getValueAt(i, 6).toString()
+						.equals("Excellent")) {
+					acceptance = "1";
+				} else if (tab_HealthTeach.getValueAt(i, 6).toString()
+						.equals("Good")) {
+					acceptance = "2";
+				} else if (tab_HealthTeach
+						.getValueAt(i, 6)
+						.toString()
+						.equals("<html><font color='FF0000'>Poor</font></html>")) {
+					acceptance = "3";
 				}
 
-			} catch (SQLException ex) {
-				ex.printStackTrace();
+				sql = "INSERT INTO health_teach (guid, hti_code, reg_guid, s_id, confirm, acceptance) "
+						+ "VALUES (uuid(), '"
+						+ tab_HealthTeach.getValueAt(i, 1)
+						+ "','"
+						+ regGuid
+						+ "', ";
+
+				if (tab_HealthTeach.getValueAt(i, 3) == null) {
+					sql += "NULL, ";
+				} else {
+					sql += "'" + tab_HealthTeach.getValueAt(i, 3) + "', ";
+				}
+				sql += " '" + thcheck + "','" + acceptance + "' )";
+
+			} else {
+				System.out.println("UPUPUPUPUUPUPUPUUPUP");
+				// 做UPDATE的動作
+				String thcheck = "0";
+				if (tab_HealthTeach.getValueAt(i, 5).toString().equals("true")) {
+					thcheck = "1";
+				}
+
+				String acceptance = "0";
+				if (tab_HealthTeach.getValueAt(i, 6).toString()
+						.equals("Excellent")) {
+					acceptance = "1";
+				} else if (tab_HealthTeach.getValueAt(i, 6).toString()
+						.equals("Good")) {
+					acceptance = "2";
+				} else if (tab_HealthTeach
+						.getValueAt(i, 6)
+						.toString()
+						.equals("<html><font color='FF0000'>Poor</font></html>")) {
+					acceptance = "3";
+				}
+
+				sql = "UPDATE health_teach SET " + "guid = uuid(),"
+						+ "hti_code = '" + tab_HealthTeach.getValueAt(i, 1)
+						+ "'," + "reg_guid = '" + regGuid + "',";
+
+				if (tab_HealthTeach.getValueAt(i, 3) == null) {
+					sql += "s_id = NULL, ";
+				} else {
+					sql += "s_id = '" + tab_HealthTeach.getValueAt(i, 3)
+							+ "', ";
+				}
+
+				sql += " confirm = '" + thcheck + "'," + "acceptance = '"
+						+ acceptance + "'" + " WHERE hti_code = '"
+						+ tab_HealthTeach.getValueAt(i, 1) + "'";
+			}
+			logger.debug("[{}][{}] {}", UserInfo.getUserID(),
+					UserInfo.getUserName(), sql);
+			PreparedStatement ps = conn.prepareStatement(sql);
+			try {
+				ps.executeUpdate();
+			} catch (Exception e) {
+				throw e;
+			} finally {
+				if (ps != null)
+					ps.close();
 			}
 		}
-		JOptionPane.showMessageDialog(null, "Save Complete");
 		btn_ConSave.setEnabled(false);
+
 	}
 
-	public javax.swing.JButton btn_ConSave;
-	private javax.swing.JScrollPane jScrollPane1;
-	public javax.swing.JTable tab_HealthTeach;
+	private static Logger logger = LogManager
+			.getLogger(Tab_ConfirmEducation.class.getName());
 
 }
