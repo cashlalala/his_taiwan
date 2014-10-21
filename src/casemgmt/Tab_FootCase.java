@@ -217,6 +217,7 @@ public class Tab_FootCase extends JPanel implements ISaveable {
 		JScrollPane scrollPane = new JScrollPane();
 
 		btnSave = new JButton(lang.getString("FOOT_SAVE"));
+		btnSave.setEnabled(false);
 		btnSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				onBtnSaveFootCaseClicked(e);
