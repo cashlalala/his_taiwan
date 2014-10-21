@@ -1037,6 +1037,8 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface,
 		tabs.add(pan_PatientInfo);
 		if (caseType.equalsIgnoreCase("W")) {
 		} else {
+			jTabbedPane1.addTab("Assessment", pan_AssComp);
+			jTabbedPane1.addTab("Complication", pan_CompliComp);
 			tabs.add(pan_AssComp);
 			tabs.add(pan_CompliComp);
 		}
@@ -1257,8 +1259,6 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface,
 		setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 		setTitle("Case Management");
 
-		jTabbedPane1.addTab("Assessment", pan_AssComp);
-		jTabbedPane1.addTab("Complication", pan_CompliComp);
 		jTabbedPane1.addTab("Confirm the completion of health education",
 				pan_ConfEdu);
 
