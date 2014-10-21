@@ -33,16 +33,17 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
-import org.apache.logging.log4j.LogManager;
-import org.his.util.CustomLogger;
-
 import laboratory.Frm_LabDM;
 import laboratory.Frm_LabHistory;
 import multilingual.Language;
+
+import org.apache.logging.log4j.LogManager;
+import org.his.util.CustomLogger;
+
 import radiology.Frm_RadiologyHistory;
 import registration.Frm_RegAndInpatient;
 import worklist.Frm_WorkList;
-import casemgmt.Frm_Case;
+import casemgmt.Dlg_CaseMgmtType;
 import cc.johnwu.date.DateMethod;
 import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
@@ -3899,7 +3900,8 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 	}// GEN-LAST:event_mnit_XRayHistoryActionPerformed
 
 	private void mnit_ComplicationActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnit_ComplicationActionPerformed
-		new Frm_Case(m_Pno, m_RegistrationGuid, true, "dia").setVisible(true);
+		new Dlg_CaseMgmtType(this, m_Pno, m_RegistrationGuid, true, "dia")
+				.setVisible(true);
 	}// GEN-LAST:event_mnit_ComplicationActionPerformed
 
 	private void mnit_LabHistoryDMActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnit_LabHistoryDMActionPerformed
@@ -3908,7 +3910,8 @@ public class Frm_DiagnosisInfo extends javax.swing.JFrame implements
 
 	private void btn_CaseManagementActionPerformed(
 			java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_CaseManagementActionPerformed
-		new Frm_Case(m_Pno, m_RegistrationGuid, true, "dia").setVisible(true);
+		new Dlg_CaseMgmtType(this, m_Pno, m_RegistrationGuid, true, "dia")
+				.setVisible(true);
 	}// GEN-LAST:event_btn_CaseManagementActionPerformed
 
 	private void menu_SendActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_menu_SendActionPerformed
