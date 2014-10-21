@@ -475,7 +475,7 @@ public class Frm_WorkList extends javax.swing.JFrame {
 		lab_Date = new javax.swing.JLabel();
 		lab_Date.setHorizontalAlignment(SwingConstants.LEFT);
 
-		lab_Date.setText("Date:");
+		lab_Date.setText(paragraph.getString("CASE_REG_TIME"));
 		pan_Top.add(lab_Date);
 		dateComboBox = new cc.johnwu.date.DateComboBox();
 		pan_Top.add(dateComboBox);
@@ -608,7 +608,6 @@ public class Frm_WorkList extends javax.swing.JFrame {
 			this.m_RefrashWorkList2.start();
 			this.m_Clock = new Thread() { // Clock
 				@Override
-				@SuppressWarnings("static-access")
 				public void run() {
 					try {
 						while (true) {
@@ -616,16 +615,10 @@ public class Frm_WorkList extends javax.swing.JFrame {
 									"yyyy/MM/dd HH:mm:ss").format(Calendar
 									.getInstance().getTime()));
 							showVisitsCount();
-							this.sleep(500);
+							Thread.sleep(500);
 						}
 					} catch (InterruptedException e) {
-						ErrorMessage.setData(
-								"Diagnosis",
-								"Frm_DiagnosisWorkList",
-								"initWorkList() - run()",
-								e.toString().substring(
-										e.toString().lastIndexOf(".") + 1,
-										e.toString().length()));
+						e.printStackTrace();
 					}
 				}
 			};

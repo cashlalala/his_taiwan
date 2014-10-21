@@ -264,8 +264,10 @@ public class RefrashWorkList extends Thread {
 				+ "WHERE " + "case_manage.reg_guid = A.guid "
 				+ "AND case_manage.p_no = patients_info.p_no "
 				+ "AND case_manage.s_no = staff_info.s_no "
-				+ "AND A.p_no = patients_info.p_no " + "AND A.reg_time LIKE '"
-				+ date + "%' " + "AND case_manage.type = '" + caseType + "' "
+				+ "AND A.p_no = patients_info.p_no "
+				+ "AND A.reg_time LIKE '" + date + "%' "
+				+ "AND case_manage.type = '" + caseType + "' "
+				+ "AND case_manage.status = '" + finished + "' "
 				+ "ORDER BY A.visits_no";
 		try {
 			rs = DBC.executeQuery(sql);
