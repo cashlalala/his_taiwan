@@ -787,11 +787,13 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface,
 	}
 
 	public void showWhoUpdate(boolean m_finsh) {
+		ResultSet rs = null;
 		try {
 			if (m_finsh) {
-				ResultSet rs = DBC
-						.executeQuery("SELECT * FROM case_manage , staff_info WHERE reg_guid = '"
-								+ m_RegGuid + "'");
+				rs = DBC.executeQuery("SELECT * FROM case_manage , staff_info WHERE case_manage.guid = '"
+						+ caseGuid
+						+ "' "
+						+ "and case_manage.s_no = staff_info.s_no ");
 				while (rs.next()) {
 					// 跳出Lable"顯示資訊"
 					this.pan_CompliComp.Lab_record
@@ -808,6 +810,12 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface,
 			}
 		} catch (SQLException ex) {
 			ex.printStackTrace();
+		} finally {
+			try {
+				DBC.closeConnection(rs);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -1026,6 +1034,18 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface,
 		mnit_V2 = new javax.swing.JMenuItem();
 		mnit_V3 = new javax.swing.JMenuItem();
 
+		tabs.add(pan_PatientInfo);
+		if (caseType.equalsIgnoreCase("W")) {
+		} else {
+			jTabbedPane1.addTab("Assessment", pan_AssComp);
+			jTabbedPane1.addTab("Complication", pan_CompliComp);
+			tabs.add(pan_AssComp);
+			tabs.add(pan_CompliComp);
+		}
+		tabs.add(pan_ConfEdu);
+		tabs.add(this);
+		tabs.add(pan_MedEdu);
+
 		pan_PatientInfo.setBorder(javax.swing.BorderFactory
 				.createTitledBorder("Demographic data"));
 
@@ -1239,8 +1259,6 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface,
 		setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 		setTitle("Case Management");
 
-		jTabbedPane1.addTab("Assessment", pan_AssComp);
-		jTabbedPane1.addTab("Complication", pan_CompliComp);
 		jTabbedPane1.addTab("Confirm the completion of health education",
 				pan_ConfEdu);
 
@@ -1504,12 +1522,6 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface,
 		jTabbedPane1.getAccessibleContext().setAccessibleName("Assess");
 
 		pack();
-		tabs.add(pan_PatientInfo);
-		tabs.add(pan_AssComp);
-		tabs.add(pan_CompliComp);
-		tabs.add(pan_ConfEdu);
-		tabs.add(this);
-		tabs.add(pan_MedEdu);
 	}// </editor-fold>//GEN-END:initComponents
 
 	@SuppressWarnings("unused")
