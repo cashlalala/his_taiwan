@@ -173,7 +173,7 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
                     }
                 };
 
-                sqlPaid = "SELECT * FROM cashier WHERE p_no = '" + m_Pno + "' " +
+                sqlPaid = "SELECT * FROM cashier WHERE reg_guid = '" + m_Guid + "' " +
                         "AND no like 'PH%' " +
                         " order by payment_time desc ";
 
@@ -204,7 +204,7 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
                     }
                 };
                 
-                sqlPaid = "SELECT * FROM cashier WHERE p_no = '" + m_Pno + "' " +
+                sqlPaid = "SELECT * FROM cashier WHERE reg_guid = '" + m_Guid + "' " +
                         "AND no like 'LA%' " +
                         " order by payment_time desc ";
     
@@ -238,7 +238,7 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
                     }
                 };
                 
-                sqlPaid = "SELECT * FROM cashier WHERE p_no = '" + m_Pno + "' " +
+                sqlPaid = "SELECT * FROM cashier WHERE reg_guid = '" + m_Guid + "' " +
                         "AND no like 'RE%' " +
                         " order by payment_time desc ";
 
@@ -270,7 +270,7 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
 				        }
 				    }
 				};
-				sqlPaid = "SELECT * FROM cashier WHERE p_no = '" + m_Pno + "' " +
+				sqlPaid = "SELECT * FROM cashier WHERE reg_guid = '" + m_Guid + "' " +
 				        "AND no like 'XR%' " +
 				        " order by payment_time desc ";
 	
