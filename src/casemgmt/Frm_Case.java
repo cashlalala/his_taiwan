@@ -47,7 +47,8 @@ import common.Tools;
 import diagnosis.Frm_DiagnosisPrescription;
 import errormessage.StoredErrorMessage;
 
-public class Frm_Case extends javax.swing.JFrame implements DateInterface {
+public class Frm_Case extends javax.swing.JFrame implements DateInterface,
+		ISaveable {
 
 	/**
 	 * 
@@ -194,8 +195,6 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 			jTabbedPane1.remove(0);
 			this.setTitle("Medicine Education");
 		}
-		btn_Ddate_Save.setVisible(true);
-		btn_Ddate_Save.setEnabled(true);
 		showWhoUpdate(m_FinishState);
 		this.setExtendedState(Frm_Case.MAXIMIZED_BOTH); // 最大化
 		this.setLocationRelativeTo(this);
@@ -1015,7 +1014,6 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		pan_PatientInfo = new Tab_PatientInfoQuickCheck(m_Pno, m_RegGuid,
 				icdVersion);
 		pan_PatientInfo.setParent(this);
-		btn_Ddate_Save = new javax.swing.JButton();
 		jPanel4 = new javax.swing.JPanel();
 		mnb = new javax.swing.JMenuBar();
 		mn_Fiele = new javax.swing.JMenu();
@@ -1510,7 +1508,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		tabs.add(pan_AssComp);
 		tabs.add(pan_CompliComp);
 		tabs.add(pan_ConfEdu);
-		tabs.add(jPanelPrescription);
+		tabs.add(this);
 		tabs.add(pan_MedEdu);
 	}// </editor-fold>//GEN-END:initComponents
 
@@ -1546,8 +1544,13 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 				ps.close();
 
 				conn.commit();
+
+				JOptionPane.showMessageDialog(null, "Save Success!");
+				setFrmClose();
 			} catch (Exception e) {
 				e.printStackTrace();
+				JOptionPane.showMessageDialog(null,
+						"Save Failed: " + e.getMessage());
 				try {
 					conn.rollback();
 				} catch (SQLException e1) {
@@ -1579,10 +1582,6 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 			// } else if (caseType.equalsIgnoreCase("W")) {
 			// // To-Do : add wound
 			// }
-
-			// 關閉此視窗
-			// this.mnit_Close.doClick();
-			// this.dispose();
 		} else {
 			// 選擇 NO 時
 		}
@@ -1650,105 +1649,14 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 	private boolean xrayState = false;
 
 	private void btn_PreSaveActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_PreSaveActionPerformed
-		Connection conn = null;
-		PreparedStatement psBatch = null;
 		try {
-			prescriptionState = false; // 判斷是否有檢驗處置
-			xrayState = false; // 判斷是否有x光處置
-			// 存入處置
-			conn = DBC.getConnectionExternel();
-			conn.setAutoCommit(false);
-
-			String sqlDelete = "DELETE FROM prescription WHERE reg_guid = '"
-					+ m_RegGuid + "'";
-			logger.debug("[{}][{}] {}", UserInfo.getUserID(),
-					UserInfo.getUserName(), sqlDelete);
-			PreparedStatement ps = conn.prepareStatement(sqlDelete);
-			ps.executeUpdate();
-			ps.close();
-
-			String sql = "INSERT INTO prescription (guid, reg_guid, code, place, state) "
-					+ "VALUES (uuid() , ?, ? , ?, 1)";
-			logger.debug("[{}][{}] {}", UserInfo.getUserID(),
-					UserInfo.getUserName(), sql);
-			psBatch = conn.prepareStatement(sql);
-			for (int i = 0; i < this.tab_Prescription.getRowCount(); i++) {
-				if (this.tab_Prescription.getValueAt(i, 1) != null
-						&& !this.tab_Prescription.getValueAt(i, 1).toString()
-								.trim().equals("")) {
-					if (this.tab_Prescription.getValueAt(i, 4) != null
-							&& this.tab_Prescription.getValueAt(i, 4)
-									.toString().trim()
-									.equals(Constant.X_RAY_CODE)) {
-						xrayState = true;
-					} else {
-						prescriptionState = true;
-					}
-					if (this.tab_Prescription.getValueAt(i, 3) == null) {
-						this.tab_Prescription.setValueAt("", i, 3);
-					}
-
-					psBatch.setString(1, m_RegGuid);
-					psBatch.setString(2, this.tab_Prescription.getValueAt(i, 1)
-							.toString().trim());
-					psBatch.setString(3, this.tab_Prescription.getValueAt(i, 3)
-							.toString().trim());
-					psBatch.addBatch();
-				}
-			}
-			psBatch.executeBatch();
-			psBatch.close();
-
-			conn.commit();
-
-			new Thread(new Runnable() {
-				public void run() {
-					setPrint(prescriptionState, xrayState, m_RegGuid,
-							icdVersion);
-				}
-			}).run();
+			save();
 			JOptionPane.showMessageDialog(null, "Save Complete");
-
-			// 提示回診日 *************************************
-			// String packageSetAll = "";
-			// if (m_PackageSet != null) {
-			// dia_RevisitTime.setLocationRelativeTo(this);
-			// dia_RevisitTime.setVisible(true);
-			// String packageSet[] = m_PackageSet.split(",");
-			// String packageSetId[] = m_PackageSetId.split(",");
-			// for (int i = 0; i < packageSet.length; i++) {
-			// packageSetAll+= i+1 +". "+ packageSet[i] + " ";
-			// String sql =
-			// "SELECT days FROM package_item WHERE id = '"+packageSetId[i]+"'";
-			// ResultSet rs = DBC.executeQuery(sql);
-			// txt_PackageId.setText(packageSetId[i]);
-			// if (rs.next()) txt_ComeBackDays.setText(rs.getString ("days"));
-			// }
-			// txt_PackageType.setText(packageSetAll);
-			// this.setEnabled(false);
-			// }
-			// *************************************************
-			btn_PreSave.setEnabled(false);
-		} catch (SQLException ex) {
+		} catch (Exception ex) {
 			ex.printStackTrace();
-			try {
-				conn.rollback();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		} finally {
-			try {
-				if (psBatch != null)
-					psBatch.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			try {
-				if (conn != null)
-					conn.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+			JOptionPane.showMessageDialog(null,
+					"Save Failed: " + ex.getMessage());
+			btn_PreSave.setEnabled(true);
 		}
 	}// GEN-LAST:event_btn_PreSaveActionPerformed
 
@@ -1817,7 +1725,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 	}// GEN-LAST:event_mnit_HistoryActionPerformed
 
 	private void mnit_CloseActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnit_CloseActionPerformed
-
+		setFrmClose();
 	}// GEN-LAST:event_mnit_CloseActionPerformed
 
 	private void mn_FieleActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mn_FieleActionPerformed
@@ -1898,7 +1806,6 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 
 	private javax.swing.JButton btn_CaseClose;
 	private javax.swing.JButton btn_Close;
-	private javax.swing.JButton btn_Ddate_Save;
 	private javax.swing.JButton btn_PreSave;
 	private javax.swing.JDialog dia;
 	private javax.swing.JDialog dia_RevisitTime;
@@ -1940,6 +1847,122 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 	// End of variables declaration//GEN-END:variables
 	@Override
 	public void onDateChanged() {
+
+	}
+
+	@Override
+	public boolean isSaveable() {
+		return btn_PreSave.isEnabled();
+	}
+
+	@Override
+	public void save() throws Exception {
+		Connection conn = DBC.getConnectionExternel();
+		try {
+			conn.setAutoCommit(false);
+			save(conn);
+			conn.commit();
+		} catch (Exception e) {
+			conn.rollback();
+		} finally {
+			if (conn != null)
+				conn.close();
+		}
+	}
+
+	@Override
+	public void save(Connection conn) throws Exception {
+
+		PreparedStatement psBatch = null;
+		PreparedStatement ps = null;
+		try {
+			prescriptionState = false; // 判斷是否有檢驗處置
+			xrayState = false; // 判斷是否有x光處置
+			// 存入處置
+
+			String sqlDelete = "DELETE FROM prescription WHERE reg_guid = '"
+					+ m_RegGuid + "'";
+			logger.debug("[{}][{}] {}", UserInfo.getUserID(),
+					UserInfo.getUserName(), sqlDelete);
+			ps = conn.prepareStatement(sqlDelete);
+			ps.executeUpdate();
+			ps.close();
+
+			String sql = "INSERT INTO prescription (guid, reg_guid, code, place, state) "
+					+ "VALUES (uuid() , ?, ? , ?, 1)";
+			logger.debug("[{}][{}] {}", UserInfo.getUserID(),
+					UserInfo.getUserName(), sql);
+			psBatch = conn.prepareStatement(sql);
+			for (int i = 0; i < this.tab_Prescription.getRowCount(); i++) {
+				if (this.tab_Prescription.getValueAt(i, 1) != null
+						&& !this.tab_Prescription.getValueAt(i, 1).toString()
+								.trim().equals("")) {
+					if (this.tab_Prescription.getValueAt(i, 4) != null
+							&& this.tab_Prescription.getValueAt(i, 4)
+									.toString().trim()
+									.equals(Constant.X_RAY_CODE)) {
+						xrayState = true;
+					} else {
+						prescriptionState = true;
+					}
+					if (this.tab_Prescription.getValueAt(i, 3) == null) {
+						this.tab_Prescription.setValueAt("", i, 3);
+					}
+
+					psBatch.setString(1, m_RegGuid);
+					psBatch.setString(2, this.tab_Prescription.getValueAt(i, 1)
+							.toString().trim());
+					psBatch.setString(3, this.tab_Prescription.getValueAt(i, 3)
+							.toString().trim());
+					psBatch.addBatch();
+				}
+			}
+			psBatch.executeBatch();
+			psBatch.close();
+
+			new Thread(new Runnable() {
+				public void run() {
+					setPrint(prescriptionState, xrayState, m_RegGuid,
+							icdVersion);
+				}
+			}).run();
+
+			// 提示回診日 *************************************
+			// String packageSetAll = "";
+			// if (m_PackageSet != null) {
+			// dia_RevisitTime.setLocationRelativeTo(this);
+			// dia_RevisitTime.setVisible(true);
+			// String packageSet[] = m_PackageSet.split(",");
+			// String packageSetId[] = m_PackageSetId.split(",");
+			// for (int i = 0; i < packageSet.length; i++) {
+			// packageSetAll+= i+1 +". "+ packageSet[i] + " ";
+			// String sql =
+			// "SELECT days FROM package_item WHERE id = '"+packageSetId[i]+"'";
+			// ResultSet rs = DBC.executeQuery(sql);
+			// txt_PackageId.setText(packageSetId[i]);
+			// if (rs.next()) txt_ComeBackDays.setText(rs.getString ("days"));
+			// }
+			// txt_PackageType.setText(packageSetAll);
+			// this.setEnabled(false);
+			// }
+			// *************************************************
+			btn_PreSave.setEnabled(false);
+		} catch (Exception ex) {
+			throw ex;
+		} finally {
+			try {
+				if (psBatch != null)
+					psBatch.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			try {
+				if (ps != null)
+					ps.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 
 	}
 
