@@ -1585,9 +1585,10 @@ public class Frm_Main extends javax.swing.JFrame {
 	}
 
 	private void btn_TakeImageActionPerformed(java.awt.event.ActionEvent evt) {
-		new Camera.Frm_Wound().setVisible(true);
+		//new Camera.Frm_TakeImage(this, "c8611f99-083e-11e4-bfdc-000c29285422", "983507a5-41c3-11e4-8335-000c29ab3787", "wound").setVisible(true);
+		new Camera.Frm_TakeImage("c8611f99-083e-11e4-bfdc-000c29285422", "983507a5-41c3-11e4-8335-000c29ab3787", "wound").setVisible(true);
 		//this.setEnabled(false);
-		this.dispose();
+		//this.dispose();
 	}
 	private void btn_ImageManagementActionPerformed(java.awt.event.ActionEvent evt) {
 		//new worklist.Frm_WorkList(0, "lab").setVisible(true);
