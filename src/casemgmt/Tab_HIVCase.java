@@ -306,7 +306,7 @@ public class Tab_HIVCase extends JPanel implements ISaveable {
 		this.cbb_StaticsMethadone.addItem("U:Fail");
 
 		lbl_Vaccine = new JLabel("Vaccine:");
-		lbl_Vaccine.setBounds(10, 318, 60, 15);
+		lbl_Vaccine.setBounds(10, 318, 104, 15);
 		add(lbl_Vaccine);
 
 		scrollPane = new JScrollPane();
@@ -317,7 +317,7 @@ public class Tab_HIVCase extends JPanel implements ISaveable {
 		scrollPane.setViewportView(tab_Vaccine);
 
 		lbl_VenerealDisease = new JLabel("Venereal Disease:");
-		lbl_VenerealDisease.setBounds(10, 460, 93, 15);
+		lbl_VenerealDisease.setBounds(10, 460, 104, 15);
 		add(lbl_VenerealDisease);
 
 		scrollPane_1 = new JScrollPane();
@@ -337,8 +337,8 @@ public class Tab_HIVCase extends JPanel implements ISaveable {
 			}
 		});
 
-		btn_AddVaccine = new JButton("New button");
-		btn_AddVaccine.setBounds(57, 314, 87, 23);
+		btn_AddVaccine = new JButton(lang.getString("ADD"));
+		btn_AddVaccine.setBounds(124, 318, 87, 23);
 		add(btn_AddVaccine);
 		btn_AddVaccine.setEnabled(true);
 		btn_AddVaccine.addActionListener(new ActionListener() {
@@ -347,8 +347,8 @@ public class Tab_HIVCase extends JPanel implements ISaveable {
 			}
 		});
 
-		btn_AddVD = new JButton("New button");
-		btn_AddVD.setBounds(113, 456, 87, 23);
+		btn_AddVD = new JButton(lang.getString("ADD"));
+		btn_AddVD.setBounds(124, 460, 87, 23);
 		add(btn_AddVD);
 		btn_AddVD.setEnabled(true);
 		btn_AddVD.addActionListener(new ActionListener() {
@@ -778,7 +778,103 @@ public class Tab_HIVCase extends JPanel implements ISaveable {
 		}
 	}
 
-	private void writeVaccine() {
+	private void writeVaccine(Connection conn) throws Exception {
+		int i = 0;
+		if (tab_Vaccine.getColumnCount() > 1) {
+			for (i = 0; i < tab_Vaccine.getRowCount(); i++) {
+				String sql = "UPDATE vaccine_history SET ";
+				if ((Boolean) tab_Vaccine.getValueAt(i, 1) == true) {
+					sql = sql + "vaccine_history.HPVExam = 'Y' ";
+				} else {
+					sql = sql + "vaccine_history.HPVExam = 'N' ";
+				}
+				if (tab_Vaccine.getValueAt(i, 2) != null
+						&& !tab_Vaccine.getValueAt(i, 2).equals("")) {
+					sql = sql + ",vaccine_history.HPVExamDate = '"
+							+ tab_Vaccine.getValueAt(i, 2) + "' ";
+				}
+				if (tab_Vaccine.getValueAt(i, 3) != null
+						&& !tab_Vaccine.getValueAt(i, 3).equals("")) {
+					sql = sql + ",vaccine_history.VaccineType = '"
+							+ tab_Vaccine.getValueAt(i, 3) + "' ";
+				}
+				if (tab_Vaccine.getValueAt(i, 4) != null
+						&& !tab_Vaccine.getValueAt(i, 4).equals("")) {
+					sql = sql + ",vaccine_history.InjectionDate = '"
+							+ tab_Vaccine.getValueAt(i, 4) + "' ";
+				}
+				sql = sql + "WHERE vaccine_history.guid = '"
+						+ tab_Vaccine.getValueAt(i, 0) + "'";
+				System.out.print(sql);
+				PreparedStatement ps = conn.prepareStatement(sql);
+				try {
+					ps.executeUpdate();
+				} catch (Exception e) {
+					throw e;
+				} finally {
+					if (ps != null)
+						ps.close();
+				}
+			}
+		}
+	}
+
+	private void writeSD(Connection conn) throws Exception {
+		int i = 0;
+		if (tab_VenerealDisease.getColumnCount() > 1) {
+			for (i = 0; i < tab_VenerealDisease.getRowCount(); i++) {
+				String sql = "UPDATE sexsual_disease SET ";
+				if (tab_VenerealDisease.getValueAt(i, 1) != null
+						&& !tab_VenerealDisease.getValueAt(i, 1).equals("")) {
+					sql = sql + "sexsual_disease.happenDate = '"
+							+ tab_VenerealDisease.getValueAt(i, 1) + "', ";
+				}
+				if ((Boolean) tab_VenerealDisease.getValueAt(i, 2) == true) {
+					sql = sql + "sexsual_disease.Syphilis = 'Y', ";
+				} else {
+					sql = sql + "sexsual_disease.Syphilis = 'N', ";
+				}
+				if ((Boolean) tab_VenerealDisease.getValueAt(i, 3) == true) {
+					sql = sql + "sexsual_disease.Gonorrhea = 'Y', ";
+				} else {
+					sql = sql + "sexsual_disease.Gonorrhea = 'N', ";
+				}
+				if ((Boolean) tab_VenerealDisease.getValueAt(i, 4) == true) {
+					sql = sql
+							+ "sexsual_disease.NongonococcalUrethritis = 'Y', ";
+				} else {
+					sql = sql
+							+ "sexsual_disease.NongonococcalUrethritis = 'N', ";
+				}
+				if ((Boolean) tab_VenerealDisease.getValueAt(i, 5) == true) {
+					sql = sql + "sexsual_disease.wart = 'Y', ";
+				} else {
+					sql = sql + "sexsual_disease.wart = 'N', ";
+				}
+				if ((Boolean) tab_VenerealDisease.getValueAt(i, 6) == true) {
+					sql = sql + "sexsual_disease.Amebiasis = 'Y' ";
+				} else {
+					sql = sql + "sexsual_disease.Amebiasis = 'N' ";
+				}
+				if (tab_VenerealDisease.getValueAt(i, 7) != null
+						&& !tab_VenerealDisease.getValueAt(i, 7).equals("")) {
+					sql = sql + ",sexsual_disease.createdatetime = '"
+							+ tab_VenerealDisease.getValueAt(i, 7) + "' ";
+				}
+				sql = sql + "WHERE sexsual_disease.guid = '"
+						+ tab_VenerealDisease.getValueAt(i, 0) + "'";
+				System.out.print(sql);
+				PreparedStatement ps = conn.prepareStatement(sql);
+				try {
+					ps.executeUpdate();
+				} catch (Exception e) {
+					throw e;
+				} finally {
+					if (ps != null)
+						ps.close();
+				}
+			}
+		}
 	}
 
 	@Override
@@ -791,6 +887,8 @@ public class Tab_HIVCase extends JPanel implements ISaveable {
 		Connection conn = DBC.getConnectionExternel();
 		try {
 			save(conn);
+			writeVaccine(conn);
+			writeSD(conn);
 		} catch (Exception e) {
 			throw e;
 		} finally {
@@ -946,10 +1044,10 @@ public class Tab_HIVCase extends JPanel implements ISaveable {
 		} else {
 			sql = sql + " HIV_assessment.UsedMethadone = 'N', ";
 		}
-
-		sql = sql + " HIV_assessment.FirstMethadone = '"
-				+ txt_StartMethadone.getText() + "', ";
-
+		if (!txt_StartMethadone.getText().equals("")) {
+			sql = sql + " HIV_assessment.FirstMethadone = '"
+					+ txt_StartMethadone.getText() + "', ";
+		}
 		if (cbb_StaticsMethadone.getSelectedIndex() == 0) {
 			sql = sql + " HIV_assessment.MethadoneStatus = 'U', ";
 		} else {
@@ -976,8 +1074,8 @@ public class Tab_HIVCase extends JPanel implements ISaveable {
 		// btn_Save.setEnabled(false);
 
 	}
-	
-	private static Logger logger = LogManager
-			.getLogger(Tab_HIVCase.class.getName());
-	
+
+	private static Logger logger = LogManager.getLogger(Tab_HIVCase.class
+			.getName());
+
 }
