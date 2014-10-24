@@ -13,6 +13,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JButton;
@@ -33,6 +34,8 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class Frm_ReturnToMerchant extends JFrame {
 	private JPanel contentPane;
@@ -48,6 +51,12 @@ public class Frm_ReturnToMerchant extends JFrame {
 	 */
 	public Frm_ReturnToMerchant(Frm_Pharmacy Frm_Parent) {
 		this.Frm_Parent = Frm_Parent;
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent windowevent) {	
+				btn_CloseActionPerformed(null);
+			}
+		});
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 721, 692);
 		contentPane = new JPanel();
@@ -128,8 +137,9 @@ public class Frm_ReturnToMerchant extends JFrame {
 		gbc_scrollPane_MedList.gridx = 0;
 		gbc_scrollPane_MedList.gridy = 0;
 		panel_1.add(scrollPane_MedList, gbc_scrollPane_MedList);
-
-		
+		tab_MedicineList.setModel(new DefaultTableModel(
+				new String[][] { { "No Information." } },
+				new String[] { "Message" }));
 
 		JButton btn_Return = new JButton(
 				paragraph.getString("RETURNTOMERCHANT"));
@@ -170,21 +180,32 @@ public class Frm_ReturnToMerchant extends JFrame {
 	}
 
 	private void btn_CloseActionPerformed(java.awt.event.ActionEvent evt) {
-		this.Frm_Parent.setEnabled(true);
-		this.Frm_Parent.initWorkList();
+		System.out.print(System.identityHashCode(Frm_Parent)+"\n");
+		Frm_Parent.setEnabled(true);
+		Frm_Parent.initWorkList();
 		this.dispose();
 	}
 
 	private void btn_ReturnActionPerformed(java.awt.event.ActionEvent evt) {
-		// todo return
+		if (tab_MedicineList.getColumnCount() == 1) {
+			JOptionPane.showMessageDialog(null, "nothing returned");
+			return;
+		}
 		String sql = "";
 		Connection conn = null;
 		try {
 			conn = DriverManager.getConnection(DBC.s_ServerURL,
 					DBC.s_ServerName, DBC.s_ServerPasswd);
 			conn.setAutoCommit(false);
-			conn.prepareStatement(sql).executeUpdate();
-			conn.commit();
+			int i = 0;
+			for (i = 0; i < tab_MedicineList.getRowCount(); i++) {
+				if ((Boolean) tab_MedicineList.getValueAt(i, 0) == true) {
+					sql = "UPDATE medicine_stock SET medicine_stock.return_medicine_time=now() "
+							+ "WHERE medicine_stock.guid = '" + tab_MedicineList.getValueAt(i, 1) + "'";
+					conn.prepareStatement(sql).executeUpdate();
+					conn.commit();
+				}
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 			try {
@@ -200,39 +221,32 @@ public class Frm_ReturnToMerchant extends JFrame {
 			}
 		}
 		showMedicineList(txt_Search.getText());
-	}
-
-	private ArrayList<ArrayList<String>> ConvertToMatrix(ResultSet rs) {
-		ArrayList<ArrayList<String>> returnMatrix = new ArrayList<ArrayList<String>>();
-		try {
-			while (rs.next()) {
-				ArrayList<String> newRow = new ArrayList<String>();
-				int i = 0;
-				for (i = 0; i < 7; i++) {
-					newRow.add(rs.getString(i + 1));
-				}
-				returnMatrix.add(newRow);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return returnMatrix;
+		JOptionPane.showMessageDialog(null, "Save Complete");
 	}
 
 	private void showMedicineList(String reg_guid) {
 		String sqlMedicines = "SELECT "
-				+ "medicines.code, medicines.item, medicine_stock.dosage, medicines.unit, "
+				+ "medicine_stock.guid, medicines.code, medicines.item, medicine_stock.dosage, medicines.unit, "
 				+ "medicine_stock.usage, medicine_stock.unit_price, medicine_stock.price "
 				+ "FROM medicines, medicine_stock, registration_info "
-				+ "WHERE registration_info.guid = '" + txt_Search.getText() + "' "
+				+ "WHERE registration_info.guid = '" + txt_Search.getText()
+				+ "' "
 				+ "AND medicine_stock.reg_guid = registration_info.guid "
+				+ "AND medicine_stock.return_medicine_time IS NULL "
 				+ "AND medicines.code = medicine_stock.m_code";
 		ResultSet rsMedicines = null;
 		try {
-			String[] MedTitle = { "a", "", "", "", "", "", "", "" };
+			String[] MedTitle = { "", "",
+					paragraph.getString("COL_MEDICINE_CODE"),
+					paragraph.getString("COL_MEDICINE_NAME"),
+					paragraph.getString("COL_MEDICINE_DOSAGE"),
+					paragraph.getString("COL_MEDICINE_UNIT"),
+					paragraph.getString("COL_MEDICINE_USAGE"),
+					paragraph.getString("COL_MEDICINE_UNIT_PRICE"),
+					paragraph.getString("COL_MEDICINE_TOTAL_PRICE") };
 			rsMedicines = DBC.executeQuery(sqlMedicines);
 			rsMedicines.last();
-			Object[][] MedicineList = new Object[rsMedicines.getRow()][8];
+			Object[][] MedicineList = new Object[rsMedicines.getRow()][9];
 
 			rsMedicines.beforeFirst();
 
@@ -240,24 +254,19 @@ public class Frm_ReturnToMerchant extends JFrame {
 			while (rsMedicines.next()) {
 				MedicineList[i][0] = false;
 				MedicineList[i][1] = rsMedicines.getString(1);
-				System.out.print(rsMedicines.getString(2)+"\n");
 				MedicineList[i][2] = rsMedicines.getString(2);
 				MedicineList[i][3] = rsMedicines.getString(3);
 				MedicineList[i][4] = rsMedicines.getString(4);
 				MedicineList[i][5] = rsMedicines.getString(5);
 				MedicineList[i][6] = rsMedicines.getString(6);
 				MedicineList[i][7] = rsMedicines.getString(7);
+				MedicineList[i][7] = rsMedicines.getString(8);
 				i = i + 1;
 			}
 
 			tab_MedicineList.setModel(new DefaultTableModel(MedicineList,
 					MedTitle) {
-
-
-				/**
-						 * 
-						 */
-						private static final long serialVersionUID = 1379918560104957676L;
+				private static final long serialVersionUID = 1379918560104957676L;
 
 				@Override
 				public Class<?> getColumnClass(int columnIndex) {
@@ -277,6 +286,8 @@ public class Frm_ReturnToMerchant extends JFrame {
 					}
 				}
 			});
+			tab_MedicineList.getColumnModel().getColumn(1).setMinWidth(0);
+			tab_MedicineList.getColumnModel().getColumn(1).setMaxWidth(0);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
