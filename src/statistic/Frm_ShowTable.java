@@ -185,7 +185,21 @@ public class Frm_ShowTable extends javax.swing.JFrame {
                 col++;
 
 
+                label =new Label(col,2,"Address");
+                sheet.addCell(label);
+                col++;
 
+                label =new Label(col,2,"Town");
+                sheet.addCell(label);
+                col++;
+                
+				label =new Label(col,2,"State");
+                sheet.addCell(label);
+                col++;
+                
+				label =new Label(col,2,"Country");
+                sheet.addCell(label);
+                col++;
 
             // 欄位資料
             int x=0;//y值
@@ -217,6 +231,22 @@ public class Frm_ShowTable extends javax.swing.JFrame {
 
 
                 label =new Label(x,y,rsExcel.getString("Bloodtype"));
+                sheet.addCell(label);
+                x++;
+                
+				label =new Label(x,y,rsExcel.getString("address"));
+                sheet.addCell(label);
+                x++;
+                
+				label =new Label(x,y,rsExcel.getString("town"));
+                sheet.addCell(label);
+                x++;
+                
+				label =new Label(x,y,rsExcel.getString("state"));
+                sheet.addCell(label);
+                x++;
+				
+				label =new Label(x,y,rsExcel.getString("country"));
                 sheet.addCell(label);
                 x++;
                 
@@ -402,6 +432,7 @@ public class Frm_ShowTable extends javax.swing.JFrame {
     private void btn_ExcelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_ExcelActionPerformed
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setSelectedFile(new File("output.xls"));
+//        fileChooser.setSelectedFile(new File("output.csv"));
         int option = fileChooser.showSaveDialog(null);
 
         if(option == JFileChooser.OPEN_DIALOG) { // 按確定鍵

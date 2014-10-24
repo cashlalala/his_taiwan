@@ -1,8 +1,11 @@
 package casemgmt;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.UUID;
 
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
@@ -16,14 +19,14 @@ import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import cc.johnwu.date.DateComboBox;
 import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
 
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-
-public class Tab_Assessment extends JPanel {
+public class Tab_Assessment extends JPanel implements ISaveable {
 
 	/**
 	 * 
@@ -90,9 +93,14 @@ public class Tab_Assessment extends JPanel {
 	private JSpinner spi_bloodtest_aweek;
 	private JSpinner spi_urine_aweek;
 
+	private String guid;
+	@SuppressWarnings("unused")
 	private String regGuid;
 	private String caseGuid;
 	private String pNo;
+
+	private static Logger logger = LogManager.getLogger(Tab_Assessment.class
+			.getName());
 
 	private Frm_Case parent;
 
@@ -100,18 +108,9 @@ public class Tab_Assessment extends JPanel {
 		this.parent = parent;
 	}
 
-	/* delete this constructor when integrate code */
-	public Tab_Assessment(String pNo, String regGuid) {
-		super();
-		this.caseGuid = UUID.randomUUID().toString();
-		this.regGuid = regGuid;
-		this.pNo = pNo;
-		initComponents();
-		init();
-	}
-	
 	public Tab_Assessment(String caseGuid, String pNo, String regGuid) {
 		super();
+		this.guid = "";
 		this.caseGuid = caseGuid;
 		this.regGuid = regGuid;
 		this.pNo = pNo;
@@ -125,22 +124,22 @@ public class Tab_Assessment extends JPanel {
 			cbox_insulin_syear.addItem(i);
 		}
 		// 新病患第一次進入case management 所有資料帶入空值
-		String sqlas = "SELECT family_history, self_care, dm_type, dm_typeo, dm_year, oral_hypoglycemic, oral_syear, insulin, insulin_syear, "
+		String sqlas = "SELECT guid, family_history, self_care, dm_type, dm_typeo, dm_year, oral_hypoglycemic, oral_syear, insulin, insulin_syear, "
 				+ " gestation, gestation_count, abortions_count, education, sport, fundus_check, gestation_count, "
 				+ " abortions_count, smoke, drink, smoke_aday, drink_aweek, education, sport, bloodtest_aweek, urine_aweek, "
 				+ " dbp, sbp, bmi, eye_lvision, eye_rvision, fundus_check, light_coagulation, cataract, retinal_check, non_proliferative_retinopathy, pre_proliferative_retinopathy ,proliferative_retinopathy, macular_degeneration, advanced_dm_eyedisease, vibration, pulse, ulcer, acupuncture, ulcer_cured, bypass_surgery, u_sid, udate"
-				+ " FROM asscement , registration_info"
-				+ " WHERE registration_info.guid = asscement.reg_guid"
-				+ " AND registration_info.p_no = '"
-				+ pNo
-				+ "' ORDER BY udate DESC LIMIT 0, 1";
-		ResultSet as;
+				+ " FROM asscement"
+				+ " WHERE asscement.case_guid = '"
+				+ caseGuid + "' ORDER BY udate DESC LIMIT 0, 1";
+		ResultSet as = null;
 		try {
+			System.out.println(sqlas);
 			as = DBC.executeQuery(sqlas);
 
 			if (as.next()) {
 				if (as.getString("udate") != null) {
 					// 讀取asscement
+					this.guid = as.getString("guid");
 					com_family_history.setSelectedIndex(Integer.parseInt(as
 							.getString("family_history")));
 					com_self_care.setSelectedIndex(Integer.parseInt(as
@@ -361,6 +360,15 @@ public class Tab_Assessment extends JPanel {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			if (as != null) {
+				try {
+					DBC.closeConnection(as);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			btn_AssSave.setEnabled(false);
 		}
 	}
 
@@ -2412,6 +2420,38 @@ public class Tab_Assessment extends JPanel {
 	}
 
 	private void btn_AssSaveActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_AssSaveActionPerformed
+		try {
+			save();
+			JOptionPane.showMessageDialog(null, "Save Complete");
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			JOptionPane.showMessageDialog(null,
+					"Save Failed: " + ex.getMessage());
+			btn_AssSave.setEnabled(true);
+		}
+	}
+
+	@Override
+	public boolean isSaveable() {
+		return btn_AssSave.isEnabled();
+	}
+
+	@Override
+	public void save() throws Exception {
+		Connection conn = DBC.getConnectionExternel();
+		try {
+			save(conn);
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			if (conn != null)
+				conn.close();
+		}
+	}
+
+	@Override
+	public void save(Connection conn) throws Exception {
 		String smo, dri;
 
 		if (che_smoke.isSelected() == true) {
@@ -2663,7 +2703,7 @@ public class Tab_Assessment extends JPanel {
 		} catch (Exception ex) {
 			System.out.println("Bug");
 		}
-		
+
 		Double bmi = null;
 		try {
 			bmi = Double.valueOf(txt_bmi.getText());
@@ -2684,125 +2724,257 @@ public class Tab_Assessment extends JPanel {
 		} catch (Exception ex) {
 			System.out.println("Bug");
 		}
+		// String caseMgmtSql = String
+		// .format("INSERT into case_manage (guid, reg_guid, p_no, status, s_no, modify_count, isdiagnosis, finish_time) "
+		// + "VALUES ('%s','%s','%s','N', %s, %d, '1', NOW()) "
+		// + " ON DUPLICATE KEY UPDATE finish_time=NOW() ",
+		// caseGuid, regGuid, pNo, UserInfo.getUserNO(), 1);
+		// System.out.println(caseMgmtSql);
+		// DBC.executeUpdate(caseMgmtSql);
+		String sql = "INSERT INTO asscement (guid, case_guid, p_no, family_history, self_care, dm_type, dm_typeo, dm_year, "
+				+ " oral_hypoglycemic, oral_syear, insulin, insulin_syear, gestation, gestation_count, abortions_count, "
+				+ " smoke, smoke_aday, drink, drink_aweek, sport, education, bloodtest_aweek, urine_aweek, dbp, sbp, bmi, "
+				+ " eye_lvision, eye_rvision, fundus_check, light_coagulation, cataract, retinal_check, non_proliferative_retinopathy, "
+				+ " pre_proliferative_retinopathy, proliferative_retinopathy, macular_degeneration, advanced_dm_eyedisease, "
+				+ " vibration, pulse, ulcer, acupuncture, ulcer_cured, bypass_surgery, u_sid, udate) "
+				+ " VALUES ('"
+				+ this.guid
+				+ "', '"
+				// + this.regGuid + "', '"
+				+ this.caseGuid
+				+ "', '"
+				+ this.pNo
+				+ "', "
+				+ com_family_history.getSelectedIndex()
+				+ ", "
+				+ com_self_care.getSelectedIndex()
+				+ ", "
+				+ " "
+				+ com_dm_type.getSelectedIndex()
+				+ ", '"
+				+ txt_dm_typeo.getText()
+				+ "', "
+				+ dm_year
+				+ ", "
+				+ com_oral_hypoglycemic.getSelectedIndex()
+				+ ", "
+				+ " "
+				+ oral_syear
+				+ ", "
+				+ com_insulin.getSelectedIndex()
+				+ ", "
+				+ insulin_syear
+				+ ", "
+				+ com_gestation.getSelectedIndex()
+				+ ", "
+				+ " "
+				+ spi_gestation_count.getValue()
+				+ ", "
+				+ spi_abortions_count.getValue()
+				+ ", "
+				+ smo
+				+ ", "
+				+ spi_smoke_aday.getValue()
+				+ ", "
+				+ " "
+				+ dri
+				+ ", "
+				+ drink_aweek
+				+ ", "
+				+ com_sport.getSelectedIndex()
+				+ ", "
+				+ com_education.getSelectedIndex()
+				+ ", "
+				+ " "
+				+ spi_bloodtest_aweek.getValue()
+				+ ", "
+				+ spi_urine_aweek.getValue()
+				+ ", "
+				+ dbp
+				+ ", "
+				+ sbp
+				+ ", "
+				+ bmi
+				+ ", "
+				+ eye_l
+				+ ", "
+				+ " "
+				+ eye_r
+				+ ", "
+				+ com_fundus_check.getSelectedIndex()
+				+ ", "
+				+ lig
+				+ ", "
+				+ cat
+				+ ", "
+				+ ret
+				+ ", "
+				+ non
+				+ ", "
+				+ pre
+				+ ", "
+				+ pro
+				+ ", "
+				+ " "
+				+ mac
+				+ ", "
+				+ adv
+				+ ", "
+				+ vib
+				+ ", "
+				+ pul
+				+ ", "
+				+ ulc
+				+ ", "
+				+ acu
+				+ ", "
+				+ cur
+				+ ", "
+				+ byp
+				+ ", '"
+				+ UserInfo.getUserID()
+				+ "', NOW() ) "
+				+ " ON DUPLICATE KEY UPDATE case_guid = '"
+				+ this.caseGuid
+				+ "', "
+				+ "p_no = '"
+				+ this.pNo
+				+ "', "
+				+ "family_history = '"
+				+ com_family_history.getSelectedIndex()
+				+ "', "
+				+ "self_care = '"
+				+ com_self_care.getSelectedIndex()
+				+ "', "
+				+ "dm_type = '"
+				+ com_dm_type.getSelectedIndex()
+				+ "', "
+				+ "dm_typeo = '"
+				+ txt_dm_typeo.getText()
+				+ "', "
+				+ "dm_year = "
+				+ dm_year
+				+ ", "
+				+ "oral_hypoglycemic = '"
+				+ com_oral_hypoglycemic.getSelectedIndex()
+				+ "', "
+				+ "oral_syear = '"
+				+ oral_syear
+				+ "', "
+				+ "insulin = '"
+				+ com_insulin.getSelectedIndex()
+				+ "', "
+				+ "insulin_syear = '"
+				+ insulin_syear
+				+ "', "
+				+ "gestation = '"
+				+ com_gestation.getSelectedIndex()
+				+ "', "
+				+ "gestation_count = '"
+				+ spi_gestation_count.getValue()
+				+ "', "
+				+ "abortions_count = '"
+				+ spi_abortions_count.getValue()
+				+ "', "
+				+ "smoke = '"
+				+ smo
+				+ "', "
+				+ "smoke_aday = '"
+				+ spi_smoke_aday.getValue()
+				+ "', "
+				+ "drink = '"
+				+ dri
+				+ "', "
+				+ "drink_aweek = '"
+				+ ((drink_aweek == null) ? "0" : drink_aweek)
+				+ "', "
+				+ "sport = '"
+				+ com_sport.getSelectedIndex()
+				+ "', "
+				+ "education = '"
+				+ com_education.getSelectedIndex()
+				+ "', "
+				+ "bloodtest_aweek = '"
+				+ spi_bloodtest_aweek.getValue()
+				+ "', "
+				+ "urine_aweek = '"
+				+ spi_urine_aweek.getValue()
+				+ "', "
+				+ "dbp = '"
+				+ dbp
+				+ "', "
+				+ "sbp = '"
+				+ sbp
+				+ "', "
+				+ "bmi = '"
+				+ bmi
+				+ "', "
+				+ "eye_lvision = '"
+				+ eye_l
+				+ "', "
+				+ "eye_rvision = '"
+				+ eye_r
+				+ "', "
+				+ "fundus_check = '"
+				+ com_fundus_check.getSelectedIndex()
+				+ "', "
+				+ "light_coagulation = '"
+				+ lig
+				+ "', "
+				+ "cataract = '"
+				+ cat
+				+ "', "
+				+ "retinal_check = '"
+				+ ret
+				+ "', "
+				+ "non_proliferative_retinopathy = '"
+				+ non
+				+ "', "
+				+ "pre_proliferative_retinopathy = '"
+				+ pre
+				+ "', "
+				+ "proliferative_retinopathy = '"
+				+ pro
+				+ "', "
+				+ "macular_degeneration = '"
+				+ mac
+				+ "', "
+				+ "advanced_dm_eyedisease = '"
+				+ adv
+				+ "', "
+				+ "vibration = '"
+				+ vib
+				+ "', "
+				+ "pulse = '"
+				+ pul
+				+ "', "
+				+ "ulcer = '"
+				+ ulc
+				+ "', "
+				+ "acupuncture = '"
+				+ acu
+				+ "', "
+				+ "ulcer_cured = '"
+				+ cur
+				+ "', "
+				+ "bypass_surgery = '"
+				+ byp
+				+ "', "
+				+ "u_sid = '" + UserInfo.getUserID() + "', " + "udate = NOW() ";
 
+		logger.debug("[{}][{}] {}", UserInfo.getUserID(),
+				UserInfo.getUserName(), sql);
+		PreparedStatement ps = conn.prepareStatement(sql);
 		try {
-			String caseMgmtSql = String
-					.format("INSERT into case_manage (guid, reg_guid, p_no, status, s_no, modify_count, isdiagnosis, finish_time) "
-					+ "VALUES ('%s','%s','%s','N', %s, %d, '1', NOW()) "
-					+ " ON DUPLICATE KEY UPDATE finish_time=NOW() ",
-					caseGuid, regGuid, pNo, UserInfo.getUserNO(), 1);
-			System.out.println(caseMgmtSql);
-			DBC.executeUpdate(caseMgmtSql);
-			String sql = "INSERT INTO asscement (guid, reg_guid, case_guid, p_no, family_history, self_care, dm_type, dm_typeo, dm_year, "
-					+ " oral_hypoglycemic, oral_syear, insulin, insulin_syear, gestation, gestation_count, abortions_count, "
-					+ " smoke, smoke_aday, drink, drink_aweek, sport, education, bloodtest_aweek, urine_aweek, dbp, sbp, bmi, "
-					+ " eye_lvision, eye_rvision, fundus_check, light_coagulation, cataract, retinal_check, non_proliferative_retinopathy, "
-					+ " pre_proliferative_retinopathy, proliferative_retinopathy, macular_degeneration, advanced_dm_eyedisease, "
-					+ " vibration, pulse, ulcer, acupuncture, ulcer_cured, bypass_surgery, u_sid, udate) "
-					+ " VALUES (UUID(), '"
-					+ regGuid
-					+ "', '"
-					+ caseGuid
-					+ "', '"
-					+ pNo
-					+ "', "
-					+ com_family_history.getSelectedIndex()
-					+ ", "
-					+ com_self_care.getSelectedIndex()
-					+ ", "
-					+ " "
-					+ com_dm_type.getSelectedIndex()
-					+ ", '"
-					+ txt_dm_typeo.getText()
-					+ "', "
-					+ dm_year
-					+ ", "
-					+ com_oral_hypoglycemic.getSelectedIndex()
-					+ ", "
-					+ " "
-					+ oral_syear
-					+ ", "
-					+ com_insulin.getSelectedIndex()
-					+ ", "
-					+ insulin_syear
-					+ ", "
-					+ com_gestation.getSelectedIndex()
-					+ ", "
-					+ " "
-					+ spi_gestation_count.getValue()
-					+ ", "
-					+ spi_abortions_count.getValue()
-					+ ", "
-					+ smo
-					+ ", "
-					+ spi_smoke_aday.getValue()
-					+ ", "
-					+ " "
-					+ dri
-					+ ", "
-					+ drink_aweek
-					+ ", "
-					+ com_sport.getSelectedIndex()
-					+ ", "
-					+ com_education.getSelectedIndex()
-					+ ", "
-					+ " "
-					+ spi_bloodtest_aweek.getValue()
-					+ ", "
-					+ spi_urine_aweek.getValue()
-					+ ", "
-					+ dbp
-					+ ", "
-					+ sbp
-					+ ", "
-					+ bmi
-					+ ", "
-					+ eye_l
-					+ ", "
-					+ " "
-					+ eye_r
-					+ ", "
-					+ com_fundus_check.getSelectedIndex()
-					+ ", "
-					+ lig
-					+ ", "
-					+ cat
-					+ ", "
-					+ ret
-					+ ", "
-					+ non
-					+ ", "
-					+ pre
-					+ ", "
-					+ pro
-					+ ", "
-					+ " "
-					+ mac
-					+ ", "
-					+ adv
-					+ ", "
-					+ vib
-					+ ", "
-					+ pul
-					+ ", "
-					+ ulc
-					+ ", "
-					+ acu
-					+ ", "
-					+ cur
-					+ ", "
-					+ byp
-					+ ", '"
-					+ UserInfo.getUserID() + "', NOW() )";
-			System.out.println(sql);
-			DBC.executeUpdate(sql);
-			parent.setOverValue();
-			JOptionPane.showMessageDialog(null, "Save Complete");
-			btn_AssSave.setEnabled(false);
-		} catch (SQLException ex) {
-			ex.printStackTrace();
+			ps.executeUpdate();
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			if (ps != null)
+				ps.close();
 		}
-
+		parent.setOverValue();
+		btn_AssSave.setEnabled(false);
 	}
 
 }

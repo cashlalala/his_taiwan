@@ -1,6 +1,8 @@
 package casemgmt;
 
 import java.awt.event.ItemEvent;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
@@ -8,10 +10,13 @@ import java.util.UUID;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
 
-public class Tab_Complication extends JPanel {
+public class Tab_Complication extends JPanel implements ISaveable {
 
 	/**
 	 * 
@@ -175,6 +180,7 @@ public class Tab_Complication extends JPanel {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
+			btn_ComSave.setEnabled(false);
 		}
 	}
 
@@ -234,7 +240,6 @@ public class Tab_Complication extends JPanel {
 		btn_ComSave = new javax.swing.JButton();
 		Lab_record = new javax.swing.JLabel();
 		btn_ComSave.setText("Save");
-		btn_ComSave.setEnabled(false);
 		btn_ComSave.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				btn_ComSaveActionPerformed(evt);
@@ -988,6 +993,47 @@ public class Tab_Complication extends JPanel {
 	}
 
 	private void btn_ComSaveActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_ComSaveActionPerformed
+		try {
+			save();
+			JOptionPane.showMessageDialog(null, "Save Complete");
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			JOptionPane.showMessageDialog(null,
+					"Save Failed: " + ex.getMessage());
+			btn_ComSave.setEnabled(true);
+		}
+	}
+
+	private void KeyReleased_C(java.awt.event.KeyEvent evt) {
+		btn_ComSave.setEnabled(true);
+	}
+
+	private void ItemStateChanged_C(ItemEvent evt) {
+		btn_ComSave.setEnabled(true);
+	}
+
+	@Override
+	public boolean isSaveable() {
+		return btn_ComSave.isEnabled();
+	}
+
+	@Override
+	public void save() throws Exception {
+		Connection conn = DBC.getConnectionExternel();
+		try {
+			conn.setAutoCommit(false);
+			save(conn);
+			conn.commit();
+		} catch (Exception e) {
+			conn.rollback();
+		} finally {
+			if (conn != null)
+				conn.close();
+		}
+	}
+
+	@Override
+	public void save(Connection conn) throws Exception {
 		String bg1 = "0", bg2 = "0", bg3 = "0", bg4 = "0";
 
 		if (buttonGroup1.getSelection() == rad_postural_hypotension_yes
@@ -1027,78 +1073,88 @@ public class Tab_Complication extends JPanel {
 			bg4 = "3";
 		}
 
+		String caseMgmtSql = String
+				.format("INSERT into case_manage (guid, reg_guid, p_no, status, s_no, modify_count,isdiagnosis, finish_time) "
+						+ "VALUES ('%s','%s','%s','N', %s, %d, '1', NOW()) ON DUPLICATE KEY "
+						+ "UPDATE reg_guid='%s',p_no='%s', status='N', s_no=%s, modify_count=%d, isdiagnosis='1', finish_time=NOW() ",
+						caseGuid, regGuid, pNo, UserInfo.getUserNO(),
+						++modifyCount, regGuid, pNo, UserInfo.getUserNO(),
+						modifyCount);
+		logger.debug("[{}][{}] {}", UserInfo.getUserID(),
+				UserInfo.getUserName(), caseMgmtSql);
+		PreparedStatement psCaseUpate = conn.prepareStatement(caseMgmtSql);
 		try {
-			String caseMgmtSql = String
-					.format("INSERT into case_manage (guid, reg_guid, p_no, status, s_no, modify_count,isdiagnosis, finish_time) "
-							+ "VALUES ('%s','%s','%s','N', %s, %d, '1', NOW()) ON DUPLICATE KEY "
-							+ "UPDATE reg_guid='%s',p_no='%s', status='N', s_no=%s, modify_count=%d, isdiagnosis='1', finish_time=NOW() ",
-							caseGuid, regGuid, pNo, UserInfo.getUserNO(),
-							++modifyCount, regGuid, pNo, UserInfo.getUserNO(),
-							modifyCount);
-			DBC.executeUpdate(caseMgmtSql);
-
-			String sql = String
-					.format("INSERT INTO complication (guid, reg_guid, dka, hhs, hypoglycemia, stroke, "
-							+ " coronary_heart, paod, eye_lesions, neuropathy, kidney, waist, other, postural_hypotension, "
-							+ " peripheral_neuropathy, angina, claudication, u_sid, udate, case_guid, p_no ) "
-							+ "VALUES ( "
-							+ "'%s','%s', %d, %d, %d, %d, %d, %d, %d, %d, %d, "
-							+ "%s,'%s', %s, %s, %s, %s, '%s', NOW(), '%s', '%s')  ON DUPLICATE KEY "
-							+ "UPDATE "
-							+ "reg_guid='%s', dka=%d, hhs=%d, hypoglycemia=%d, stroke=%d, coronary_heart=%d, "
-							+ "paod=%d, eye_lesions=%d, neuropathy=%d, kidney=%d, "
-							+ "waist=%s,other='%s', postural_hypotension=%s, peripheral_neuropathy=%s, angina=%s, "
-							+ "claudication=%s, u_sid='%s', udate=NOW(), p_no='%s' ",
-							complicationId,
-							regGuid,
-							com_dka.getSelectedIndex(),
-							com_hhs.getSelectedIndex(),
-							com_hypoglycemia.getSelectedIndex(),
-							com_stroke.getSelectedIndex(),
-							com_coronary_heart.getSelectedIndex(),
-							com_paod.getSelectedIndex(),
-							com_eye_lesions.getSelectedIndex(),
-							com_neuropathy.getSelectedIndex(),
-							com_kidney.getSelectedIndex(),
-							(txt_waist.getText().equals("")) ? "NULL" : String
-									.format("'%s'", txt_waist.getText()),
-							txt_other.getText(),
-							bg1,
-							bg2,
-							bg3,
-							bg4,
-							UserInfo.getUserID(),
-							caseGuid,
-							pNo,
-							regGuid,
-							com_dka.getSelectedIndex(),
-							com_hhs.getSelectedIndex(),
-							com_hypoglycemia.getSelectedIndex(),
-							com_stroke.getSelectedIndex(),
-							com_coronary_heart.getSelectedIndex(),
-							com_paod.getSelectedIndex(),
-							com_eye_lesions.getSelectedIndex(),
-							com_neuropathy.getSelectedIndex(),
-							com_kidney.getSelectedIndex(),
-							(txt_waist.getText().equals("")) ? "NULL" : String
-									.format("'%s'", txt_waist.getText()),
-							txt_other.getText(), bg1, bg2, bg3, bg4, UserInfo
-									.getUserID(), pNo);
-
-			DBC.executeUpdate(sql);
-			parent.setOverValue();
-			JOptionPane.showMessageDialog(null, "Save Complete");
-			btn_ComSave.setEnabled(false);
-		} catch (SQLException ex) {
-			ex.printStackTrace();
+			psCaseUpate.executeUpdate();
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			if (psCaseUpate != null)
+				psCaseUpate.close();
 		}
+
+		String sql = String
+				.format("INSERT INTO complication (guid, reg_guid, dka, hhs, hypoglycemia, stroke, "
+						+ " coronary_heart, paod, eye_lesions, neuropathy, kidney, waist, other, postural_hypotension, "
+						+ " peripheral_neuropathy, angina, claudication, u_sid, udate, case_guid, p_no ) "
+						+ "VALUES ( "
+						+ "'%s','%s', %d, %d, %d, %d, %d, %d, %d, %d, %d, "
+						+ "%s,'%s', %s, %s, %s, %s, '%s', NOW(), '%s', '%s')  ON DUPLICATE KEY "
+						+ "UPDATE "
+						+ "reg_guid='%s', dka=%d, hhs=%d, hypoglycemia=%d, stroke=%d, coronary_heart=%d, "
+						+ "paod=%d, eye_lesions=%d, neuropathy=%d, kidney=%d, "
+						+ "waist=%s,other='%s', postural_hypotension=%s, peripheral_neuropathy=%s, angina=%s, "
+						+ "claudication=%s, u_sid='%s', udate=NOW(), p_no='%s' ",
+						complicationId,
+						regGuid,
+						com_dka.getSelectedIndex(),
+						com_hhs.getSelectedIndex(),
+						com_hypoglycemia.getSelectedIndex(),
+						com_stroke.getSelectedIndex(),
+						com_coronary_heart.getSelectedIndex(),
+						com_paod.getSelectedIndex(),
+						com_eye_lesions.getSelectedIndex(),
+						com_neuropathy.getSelectedIndex(),
+						com_kidney.getSelectedIndex(),
+						(txt_waist.getText().equals("")) ? "NULL" : String
+								.format("'%s'", txt_waist.getText()),
+						txt_other.getText(),
+						bg1,
+						bg2,
+						bg3,
+						bg4,
+						UserInfo.getUserID(),
+						caseGuid,
+						pNo,
+						regGuid,
+						com_dka.getSelectedIndex(),
+						com_hhs.getSelectedIndex(),
+						com_hypoglycemia.getSelectedIndex(),
+						com_stroke.getSelectedIndex(),
+						com_coronary_heart.getSelectedIndex(),
+						com_paod.getSelectedIndex(),
+						com_eye_lesions.getSelectedIndex(),
+						com_neuropathy.getSelectedIndex(),
+						com_kidney.getSelectedIndex(),
+						(txt_waist.getText().equals("")) ? "NULL" : String
+								.format("'%s'", txt_waist.getText()), txt_other
+								.getText(), bg1, bg2, bg3, bg4, UserInfo
+								.getUserID(), pNo);
+
+		logger.debug("[{}][{}] {}", UserInfo.getUserID(),
+				UserInfo.getUserName(), sql);
+		PreparedStatement ps = conn.prepareStatement(sql);
+		try {
+			ps.executeUpdate();
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			if (ps != null)
+				ps.close();
+		}
+		parent.setOverValue();
+		btn_ComSave.setEnabled(false);
 	}
 
-	private void KeyReleased_C(java.awt.event.KeyEvent evt) {
-		btn_ComSave.setEnabled(true);
-	}
-
-	private void ItemStateChanged_C(ItemEvent evt) {
-		btn_ComSave.setEnabled(true);
-	}
+	private static Logger logger = LogManager
+			.getLogger(Tab_Complication.class.getName());
 }

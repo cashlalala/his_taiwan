@@ -7,16 +7,18 @@ import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.UUID;
+import java.util.Map.Entry;
 import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,10 +32,12 @@ import javax.swing.table.TableColumn;
 
 import laboratory.Frm_LabDM;
 import multilingual.Language;
-import casemgmt.TableTriStateCell.TriStateCellEditor;
-import casemgmt.TableTriStateCell.TriStateCellRenderer;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.his.util.CustomLogger;
+
 import cc.johnwu.date.DateInterface;
-import cc.johnwu.date.DateMethod;
 import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
 import common.Constant;
@@ -43,7 +47,8 @@ import common.Tools;
 import diagnosis.Frm_DiagnosisPrescription;
 import errormessage.StoredErrorMessage;
 
-public class Frm_Case extends javax.swing.JFrame implements DateInterface {
+public class Frm_Case extends javax.swing.JFrame implements DateInterface,
+		ISaveable {
 
 	/**
 	 * 
@@ -80,6 +85,10 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 	private String m_RegGuid; // registration guid
 	private int m_ModifyCount = 0; // 修改次數
 	private String m_From;
+	private String caseGuid;
+
+	private static Logger logger = LogManager.getLogger(Frm_Case.class
+			.getName());
 
 	private static Language lang = Language.getInstance();
 
@@ -93,10 +102,69 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		}
 	}
 
-	public Frm_Case(String p_no, String regGuid, boolean finishState,
-			String from) {
+	private String caseType;
+
+	private String icdVersion;
+
+	private final static String DELIMITER = Character.toString((char) 1);
+
+	public static class Pair<K, V> implements Entry<K, V> {
+
+		public Pair(K key, V value) {
+			super();
+			this.key = key;
+			this.value = value;
+		}
+
+		private K key;
+		private V value;
+
+		@Override
+		public K getKey() {
+			return key;
+		}
+
+		@Override
+		public V getValue() {
+			return value;
+		}
+
+		@Override
+		public V setValue(V value) {
+			this.value = value;
+			return value;
+		}
+
+	}
+
+	private List<ISaveable> tabs;
+
+	public Frm_Case(String caseGuid, String type, String p_no, String regGuid,
+			boolean finishState, String from) {
+		this.caseGuid = caseGuid;
+		this.caseType = type;
 		m_RegGuid = regGuid;
 		m_Pno = p_no;
+		m_From = from;
+		m_FinishState = finishState;
+		tabs = new ArrayList<ISaveable>();
+
+		ResultSet rs = null;
+		try {
+			rs = DBC.executeQuery("Select ICDVersion from setting");
+			icdVersion = (rs.first()) ? rs.getString("ICDVersion") : "ICD-10";
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (rs != null) {
+				try {
+					DBC.closeConnection(rs);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
 		initComponents();
 
 		addWindowListener(new WindowAdapter() {
@@ -127,19 +195,14 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 			jTabbedPane1.remove(0);
 			this.setTitle("Medicine Education");
 		}
-		btn_Ddate_Save.setVisible(true);
-		btn_Ddate_Save.setEnabled(true);
-		m_From = from;
-		m_Pno = p_no;
-		m_RegGuid = regGuid;
-		m_FinishState = finishState;
 		showWhoUpdate(m_FinishState);
 		this.setExtendedState(Frm_Case.MAXIMIZED_BOTH); // 最大化
 		this.setLocationRelativeTo(this);
+		// setAlwaysOnTop(true);
 		init();
 		initTable();
-		if (finishState)
-			setHistoryPre();
+		// if (finishState)
+		setHistoryPre();
 		setOverValue();
 	}
 
@@ -153,36 +216,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 				// jButton11ActionPerformed(null);
 			}
 		});
-		try {
-			String sql = "SELECT * FROM patients_info WHERE p_no = '"
-					+ this.m_Pno + "'";
-			// 取出病患基本資料
-			ResultSet rs = DBC.executeQuery(sql);
-			rs.next();
-			m_Pno = rs.getString("p_no");
-			this.lab_Pno.setText(rs.getString("p_no"));
-			this.lab_Name.setText(rs.getString("firstname") + " "
-					+ rs.getString("lastname"));
-			this.lab_Gender.setText(rs.getString("gender"));
-			this.lab_Age.setText((rs.getDate("birth") == null) ? ""
-					: DateMethod.getAgeWithMonth(rs.getDate("birth")));
-			this.txt_Height.setText(rs.getString("height"));
-			this.txt_Weight.setText(rs.getString("weight"));
-			this.txt_AC.setText(Tools.getPrescriptionResult("BGAc", m_Pno));
-			this.txt_PC.setText(Tools.getPrescriptionResult("BGPc", m_Pno));
-			this.txt_ST.setText(Tools.getPrescriptionResult("St.", m_Pno));
-			if (rs.getString("education") != null)
-				this.com_edu.setSelectedIndex(rs.getInt("education"));
-		} catch (SQLException ex) {
-			Logger.getLogger(Frm_Case.class.getName()).log(Level.SEVERE, null,
-					ex);
-		}
-
-		// Save按鍵初始化
-		btn_Ddate_Save.setEnabled(true);
-		pan_ConfEdu.btn_ConSave.setEnabled(false);
 		btn_PreSave.setEnabled(false);
-		btn_DheSave.setEnabled(false);
 	}
 
 	private void setCloseRevisitTime() {
@@ -219,121 +253,65 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		prescriptionColumnPlace.setPreferredWidth(80);
 		prescriptionColumnCode.setCellEditor(new DefaultCellEditor(m_AutoTxt)); // textField加入table
 		TabTools.setHideColumn(tab_Prescription, 3);
-
-		// ---- tab_MedicineTeach 藥品衛教---------------------
-		Object[][] dataArray_MT = null;
-		ResultSet rs_MT = null;
-		try {
-			Object[] title_MT = { "", "Code", "Item", "s_id", "Uesr", "Check",
-					"ps" };
-			String sql_MT = "SELECT medicine_stock.m_code AS 'code', medicines.item AS 'item', medicine_stock.ps AS 'ps', medicine_stock.teach_complete AS 'teach_complete', concat(staff_info.firstname,'  ',staff_info.lastname) AS 'user', medicine_stock.s_id AS 'sid'"
-					+ " FROM  medicine_stock LEFT JOIN staff_info ON staff_info.s_id = medicine_stock.s_id , medicines, registration_info, outpatient_services "
-					+ " WHERE  medicines.code= medicine_stock.m_code "
-					+ " AND outpatient_services.reg_guid = registration_info.guid "
-					+ " AND registration_info.p_no = '"
-					+ m_Pno
-					+ "' "
-					+ " AND registration_info.guid = '" + m_RegGuid + "'";
-			System.out.println(sql_MT);
-			rs_MT = DBC.executeQuery(sql_MT);
-			rs_MT.last();
-			dataArray_MT = new Object[rs_MT.getRow()][7];
-			rs_MT.beforeFirst();
-
-			int i = 0;
-			while (rs_MT.next()) {
-				dataArray_MT[i][0] = i + 1;
-				dataArray_MT[i][1] = rs_MT.getString("code");
-				dataArray_MT[i][2] = rs_MT.getString("item");
-				dataArray_MT[i][3] = rs_MT.getString("sid");
-
-				if (rs_MT.getString("user") != null) {
-					dataArray_MT[i][4] = rs_MT.getString("user");
-				}
-
-				if (rs_MT.getString("teach_complete") != null
-						&& rs_MT.getString("teach_complete").equals("1")) {
-					dataArray_MT[i][5] = true;
-				} else {
-					dataArray_MT[i][5] = false;
-				}
-				if (rs_MT.getString("ps") != null) {
-					dataArray_MT[i][6] = rs_MT.getString("ps");
-				}
-				i++;
-			}
-
-			DefaultTableModel TableModel = new DefaultTableModel(dataArray_MT,
-					title_MT) {
-
-				/**
-						 * 
-						 */
-				private static final long serialVersionUID = -5596812643978453160L;
-
-				@Override
-				public boolean isCellEditable(int rowIndex, int columnIndex) {
-					if (columnIndex == 5 || columnIndex == 6) {
-						return true;
-					} else {
-						return false;
-					}
-				}
-			};
-			tab_MedicineTeach.setModel(TableModel);
-			TableColumn columnNumber = this.tab_MedicineTeach.getColumnModel()
-					.getColumn(0);
-			common.TabTools.setHideColumn(tab_MedicineTeach, 1);
-			TableColumn columnName = this.tab_MedicineTeach.getColumnModel()
-					.getColumn(2);
-			common.TabTools.setHideColumn(tab_MedicineTeach, 3);
-			TableColumn columnUser = this.tab_MedicineTeach.getColumnModel()
-					.getColumn(4);
-			TableColumn columnChoose = this.tab_MedicineTeach.getColumnModel()
-					.getColumn(5);
-			TableColumn columnPs = this.tab_MedicineTeach.getColumnModel()
-					.getColumn(6);
-			// set column width
-			columnNumber.setMaxWidth(30);
-			columnName.setPreferredWidth(200);
-			columnUser.setPreferredWidth(50);
-			columnChoose.setMaxWidth(40);
-			columnChoose.setCellRenderer(new TriStateCellRenderer());
-			columnChoose.setCellEditor(new TriStateCellEditor());
-			columnPs.setPreferredWidth(100);
-			tab_MedicineTeach.setRowHeight(30);
-		} catch (SQLException e) {
-			Logger.getLogger(Frm_Case.class.getName()).log(Level.SEVERE, null,
-					e);
-			ErrorMessage.setData(
-					"Case",
-					"Frm_Case",
-					"initTable()",
-					e.toString().substring(e.toString().lastIndexOf(".") + 1,
-							e.toString().length()));
-		} finally {
-			try {
-				DBC.closeConnection(rs_MT);
-			} catch (SQLException e) {
-				ErrorMessage
-						.setData(
-								"Diagnosis",
-								"Frm_DiagnosisTherapy",
-								"setModel(String condition, String state) - DBC.closeConnection",
-								e.toString().substring(
-										e.toString().lastIndexOf(".") + 1,
-										e.toString().length()));
-			}
-		}
 	}
 
 	public void setFrmClose() {
+		Connection conn = null;
+		if (m_From.equalsIgnoreCase("dia")) {
+			try {
+				conn = DBC.getConnectionExternel();
+				conn.setAutoCommit(false);
+
+				String sql = String.format(
+						"Delete from asscement where case_guid = '%s'",
+						caseGuid);
+				PreparedStatement stmt = conn.prepareStatement(sql);
+				stmt.executeUpdate();
+				stmt.close();
+				CustomLogger.debug(logger, sql);
+
+				sql = String.format(
+						"Delete from complication where case_guid = '%s'",
+						caseGuid);
+				PreparedStatement stmt2 = conn.prepareStatement(sql);
+				stmt2.executeUpdate();
+				stmt2.close();
+				CustomLogger.debug(logger, sql);
+
+				sql = String.format(
+						"Delete from case_manage where guid = '%s'", caseGuid);
+				PreparedStatement stmt3 = conn.prepareStatement(sql);
+				stmt3.executeUpdate();
+				stmt3.close();
+				CustomLogger.debug(logger, sql);
+
+				pan_PatientInfo.revertPrescription(conn);
+
+				conn.commit();
+			} catch (SQLException ex) {
+				ex.printStackTrace();
+				try {
+					if (conn != null)
+						conn.rollback();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			} finally {
+				try {
+					if (conn != null)
+						conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
 		if (m_From.equals("dia") || m_From.equals("medicine")) {
 			// 關閉此視窗
 			this.dispose();
 		} else {
 			// 開啟看診 視窗
-			new worklist.Frm_WorkList(0, "case").setVisible(true);
+			new Frm_WorkList(0, this.caseType).setVisible(true);
 			// 關閉此視窗
 			this.dispose();
 		}
@@ -348,7 +326,8 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 					+ "WHERE registration_info.guid = '"
 					+ m_RegGuid
 					+ "' "
-					+ "AND prescription_code.code = prescription.code ";
+					+ "AND prescription_code.code = prescription.code "
+					+ "AND prescription_code.icdVersion = '" + icdVersion + "'";
 
 			rs = DBC.executeQuery(sqlPrescription);
 			int rowPrescription = 0;
@@ -369,13 +348,12 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 				rowPrescription++;
 			}
 		} catch (SQLException ex) {
-			Logger.getLogger(Frm_Case.class.getName()).log(Level.SEVERE, null,
-					ex);
+			ex.printStackTrace();
 		} finally {
 			try {
 				DBC.closeConnection(rs);
 			} catch (SQLException e) {
-
+				e.printStackTrace();
 			}
 		}
 	}
@@ -400,8 +378,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 			}
 
 		} catch (SQLException ex) {
-			Logger.getLogger(Frm_Case.class.getName()).log(Level.SEVERE, null,
-					ex);
+			ex.printStackTrace();
 			return -1;
 		}
 	}
@@ -427,9 +404,9 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		}
 		// ----------------------------
 		if (!hdl.equals("")) {
-			if (lab_Gender.getText().equals("M")
+			if (pan_PatientInfo.lab_Gender.getText().equals("M")
 					&& Double.parseDouble(hdl) < 40
-					|| lab_Gender.getText().equals("F")
+					|| pan_PatientInfo.lab_Gender.getText().equals("F")
 					&& Double.parseDouble(hdl) < 50) {
 				pan_CompliComp.lab_hdl.setText("Yes");
 				check++;
@@ -461,10 +438,11 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		} else {
 			pan_CompliComp.lab_bgac.setText("");
 		}
-		if (!bgac.equals("") && lab_Gender.getText() != null && waist != null
-				&& !waist.trim().equals("")) {
-			if ((lab_Gender.getText().equals("M") && Double.parseDouble(waist) >= 90)
-					|| (lab_Gender.getText().equals("F") && Double
+		if (!bgac.equals("") && pan_PatientInfo.lab_Gender.getText() != null
+				&& waist != null && !waist.trim().equals("")) {
+			if ((pan_PatientInfo.lab_Gender.getText().equals("M") && Double
+					.parseDouble(waist) >= 90)
+					|| (pan_PatientInfo.lab_Gender.getText().equals("F") && Double
 							.parseDouble(waist) >= 80)) {
 
 				check++;
@@ -574,12 +552,12 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		// System.out.println("split 傳入陣列值 ");
 		switch (m_SelectTableNo) {
 		case 2: // tab_Prescription
-			m_AutoTxt.setText(value[0]);
-			tab_Prescription.setValueAt(value[0],
+			m_AutoTxt.setText(value[0].trim());
+			tab_Prescription.setValueAt(value[0].trim(),
 					tab_Prescription.getSelectedRow(), 1);
-			tab_Prescription.setValueAt(value[1],
+			tab_Prescription.setValueAt(value[1].trim(),
 					tab_Prescription.getSelectedRow(), 2);
-			tab_Prescription.setValueAt(value[2],
+			tab_Prescription.setValueAt(value[2].trim(),
 					tab_Prescription.getSelectedRow(), 4);
 			break;
 
@@ -619,7 +597,8 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 			String sql = null;
 			if (m_AutoTable.equals("prescription_code")) {
 				// System.out.println("搜尋用 處置 語法");
-				sql = "SELECT * FROM " + m_AutoTable + "  " + "WHERE LOWER("
+				sql = "SELECT * FROM " + m_AutoTable + "  " + "WHERE "
+						+ "ICDVersion = '" + icdVersion + "' and " + "LOWER("
 						+ m_AutoColumnName + ") LIKE LOWER('" + condition
 						+ "%') " + "AND effective = 1  ORDER BY "
 						+ m_AutoColumnName + "";
@@ -647,9 +626,11 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 						for (int i = 0; i < m_AutoColumn.length; i++) {
 							if (m_AutoColumn.length > 2 && i == 1
 									&& m_AutoTable.equals("medicines")) {
-								str += ("" + "       "); // Medicine hide
+								str += ("" + DELIMITER); // Medicine hide
 							} else {
-								str += (rs.getString(m_AutoColumn[i]).trim() + "       ");
+								str += ((rs.getString(m_AutoColumn[i])
+										.isEmpty() ? " " : rs.getString(
+										m_AutoColumn[i]).trim()) + DELIMITER);
 							}
 						}
 						list[index++] = str;
@@ -660,27 +641,12 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 				list_Menu.removeSelectionInterval(0,
 						Constant.AUTOCOMPLETE_SHOW_ROW + 1);
 			} catch (SQLException e) {
-				// Logger.getLogger(Frm_DiagnosisInfo.class.getName()).log(Level.SEVERE,
-				// null, e);
-				ErrorMessage.setData(
-						"Diagnosis",
-						"Frm_DiagnosisInfo",
-						"setAutoCompleteList(String condition)",
-						e.toString().substring(
-								e.toString().lastIndexOf(".") + 1,
-								e.toString().length()));
+				e.printStackTrace();
 			} finally {
 				try {
 					DBC.closeConnection(rs);
 				} catch (SQLException e) {
-					ErrorMessage
-							.setData(
-									"Diagnosis",
-									"Frm_DiagnosisInfo",
-									"setAutoCompleteList(String condition) - DBC.closeConnection(rs)",
-									e.toString().substring(
-											e.toString().lastIndexOf(".") + 1,
-											e.toString().length()));
+					e.printStackTrace();
 				}
 			}
 		}
@@ -690,7 +656,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 	public void getSplitValue() {
 		if (list_Menu.getSelectedValue() != null) {
 			m_AutoListValue = list_Menu.getSelectedValue().toString()
-					.split("       ");
+					.split(DELIMITER);
 			// 回傳table autoCompleteList表單值切割的陣列
 			if (m_AutoListValue.length > 1) {
 				setTableValue(m_AutoListValue);
@@ -821,11 +787,13 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 	}
 
 	public void showWhoUpdate(boolean m_finsh) {
+		ResultSet rs = null;
 		try {
 			if (m_finsh) {
-				ResultSet rs = DBC
-						.executeQuery("SELECT * FROM case_manage , staff_info WHERE reg_guid = '"
-								+ m_RegGuid + "'");
+				rs = DBC.executeQuery("SELECT * FROM case_manage , staff_info WHERE case_manage.guid = '"
+						+ caseGuid
+						+ "' "
+						+ "and case_manage.s_no = staff_info.s_no ");
 				while (rs.next()) {
 					// 跳出Lable"顯示資訊"
 					this.pan_CompliComp.Lab_record
@@ -841,8 +809,13 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 				this.pan_CompliComp.Lab_record.setText("No Modify the message");
 			}
 		} catch (SQLException ex) {
-			Logger.getLogger(Frm_Case.class.getName()).log(Level.SEVERE, null,
-					ex);
+			ex.printStackTrace();
+		} finally {
+			try {
+				DBC.closeConnection(rs);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -895,17 +868,19 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 	}
 
 	// 儲存X-Ray照射部位與列印
-	private void setPrint(boolean prescriptionState, boolean xrayState) {
+	private void setPrint(boolean prescriptionState, boolean xrayState,
+			String regGuid, String icdVersion2) {
 
 		if (prescriptionState) {
-			new PrintTools().DoPrint(12, this.m_RegGuid);
+			new PrintTools().DoPrintCase(12, regGuid, icdVersion2);
 		}
 
-		// if (xrayState) {
-		// new PrintTools().DoPrint(4, this.m_RegGuid);
-		// }
+		if (xrayState) {
+			new PrintTools().DoPrintCase(4, regGuid, icdVersion2);
+		}
 	}
 
+	@SuppressWarnings("unused")
 	private void showEnterClinic() {
 		try {
 			String sql1 = "", sql2 = "";
@@ -1008,8 +983,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 				this.dispose();
 			}
 		} catch (SQLException ex) {
-			Logger.getLogger(Frm_Case.class.getName()).log(Level.SEVERE, null,
-					ex);
+			ex.printStackTrace();
 		}
 	}
 
@@ -1032,56 +1006,23 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		jLabel31 = new javax.swing.JLabel();
 		txt_ComeBackDays = new javax.swing.JTextField();
 		jTabbedPane1 = new javax.swing.JTabbedPane();
-		pan_AssComp = new Tab_Assessment(m_Pno, m_RegGuid);
+		pan_AssComp = new Tab_Assessment(caseGuid, m_Pno, m_RegGuid);
 		pan_AssComp.setParent(this);
-		pan_CompliComp = new Tab_Complication(UUID.randomUUID().toString(),
-				m_Pno, m_RegGuid);
+		pan_CompliComp = new Tab_Complication(caseGuid, m_Pno, m_RegGuid);
 		pan_CompliComp.setParent(this);
-		new javax.swing.JPanel();
-		new javax.swing.JScrollPane();
-		jPanel12 = new javax.swing.JPanel();
+		jPanelPrescription = new Tab_Prescription();
 		pan_Prescription = new javax.swing.JPanel();
 		span_Prescription = new javax.swing.JScrollPane();
 		tab_Prescription = new javax.swing.JTable();
 		btn_PreSave = new javax.swing.JButton();
 		pan_MedEdu = new Tab_MedicineEducation(m_Pno, m_RegGuid);
-		jPanelFoot = new Tab_FootCase();
-		pan_HIVComp = new Tab_HIVCase();
-		pan_HIVComp.setParent(this);
 		pan_ConfEdu = new Tab_ConfirmEducation(m_Pno, m_RegGuid);
 		pan_ConfEdu.setParent(this);
-		jScrollPane2 = new javax.swing.JScrollPane();
-		tab_MedicineTeach = new javax.swing.JTable();
-		btn_DheSave = new javax.swing.JButton();
 		btn_CaseClose = new javax.swing.JButton();
-		jPanel11 = new javax.swing.JPanel();
-		jLabel60 = new javax.swing.JLabel();
-		lab_Pno = new javax.swing.JLabel();
-		btn_Ddate_Save = new javax.swing.JButton();
-		jLabel85 = new javax.swing.JLabel();
-		lab_Age = new javax.swing.JLabel();
-		jLabel88 = new javax.swing.JLabel();
-		lab_Gender = new javax.swing.JLabel();
-		jLabel90 = new javax.swing.JLabel();
-		lab_Name = new javax.swing.JLabel();
+		pan_PatientInfo = new Tab_PatientInfoQuickCheck(m_Pno, m_RegGuid,
+				icdVersion);
+		pan_PatientInfo.setParent(this);
 		jPanel4 = new javax.swing.JPanel();
-		jLabel23 = new javax.swing.JLabel();
-		jLabel15 = new javax.swing.JLabel();
-		txt_PC = new javax.swing.JTextField();
-		txt_AC = new javax.swing.JTextField();
-		jLabel24 = new javax.swing.JLabel();
-		jLabel25 = new javax.swing.JLabel();
-		jLabel26 = new javax.swing.JLabel();
-		txt_ST = new javax.swing.JTextField();
-		jLabel7 = new javax.swing.JLabel();
-		jLabel62 = new javax.swing.JLabel();
-		txt_Height = new javax.swing.JTextField();
-		jLabel63 = new javax.swing.JLabel();
-		txt_Weight = new javax.swing.JTextField();
-		jLabel71 = new javax.swing.JLabel();
-		com_edu = new javax.swing.JComboBox();
-		jLabel18 = new javax.swing.JLabel();
-		jLabel20 = new javax.swing.JLabel();
 		mnb = new javax.swing.JMenuBar();
 		mn_Fiele = new javax.swing.JMenu();
 		mnit_Lab = new javax.swing.JMenuItem();
@@ -1092,6 +1033,21 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		mnit_V1 = new javax.swing.JMenuItem();
 		mnit_V2 = new javax.swing.JMenuItem();
 		mnit_V3 = new javax.swing.JMenuItem();
+
+		tabs.add(pan_PatientInfo);
+		if (caseType.equalsIgnoreCase("W")) {
+		} else {
+			jTabbedPane1.addTab("Assessment", pan_AssComp);
+			jTabbedPane1.addTab("Complication", pan_CompliComp);
+			tabs.add(pan_AssComp);
+			tabs.add(pan_CompliComp);
+		}
+		tabs.add(pan_ConfEdu);
+		tabs.add(this);
+		tabs.add(pan_MedEdu);
+
+		pan_PatientInfo.setBorder(javax.swing.BorderFactory
+				.createTitledBorder("Demographic data"));
 
 		btn_Close.setText("Close");
 		btn_Close.addActionListener(new java.awt.event.ActionListener() {
@@ -1303,8 +1259,6 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 		setTitle("Case Management");
 
-		jTabbedPane1.addTab("Assessment", pan_AssComp);
-		jTabbedPane1.addTab("Complication", pan_CompliComp);
 		jTabbedPane1.addTab("Confirm the completion of health education",
 				pan_ConfEdu);
 
@@ -1364,8 +1318,8 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		});
 
 		javax.swing.GroupLayout jPanel12Layout = new javax.swing.GroupLayout(
-				jPanel12);
-		jPanel12.setLayout(jPanel12Layout);
+				jPanelPrescription);
+		jPanelPrescription.setLayout(jPanel12Layout);
 		jPanel12Layout
 				.setHorizontalGroup(jPanel12Layout
 						.createParallelGroup(
@@ -1409,501 +1363,30 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 										.addComponent(btn_PreSave)
 										.addContainerGap()));
 
-		jTabbedPane1.addTab("Laboratory", jPanel12);
-
-		tab_MedicineTeach.setModel(new javax.swing.table.DefaultTableModel(
-				new Object[][] { {}, {}, {}, {} }, new String[] {
-
-				}));
-		tab_MedicineTeach.addMouseListener(new java.awt.event.MouseAdapter() {
-			public void mouseClicked(java.awt.event.MouseEvent evt) {
-				tab_MedicineTeachMouseClicked(evt);
-			}
-		});
-		jScrollPane2.setViewportView(tab_MedicineTeach);
-
-		btn_DheSave.setText("Save");
-		btn_DheSave.setEnabled(false);
-		btn_DheSave.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				btn_DheSaveActionPerformed(evt);
-			}
-		});
-
-		
-		
-
+		jTabbedPane1.addTab("Laboratory", jPanelPrescription);
 
 		jTabbedPane1.addTab("Medicine Education", pan_MedEdu);
 
-		jTabbedPane1.addTab(lang.getString("FOOT_EXAM"), jPanelFoot);
-		jTabbedPane1.addTab(lang.getString("HIV_TAB"), pan_HIVComp);
+		if (caseType.equalsIgnoreCase("D")) {
+			pan_Diabetes = new Tab_FootCase(caseGuid, this.m_Pno,
+					this.m_RegGuid, m_FinishState);
+			jTabbedPane1.addTab(lang.getString("FOOT_EXAM"), pan_Diabetes);
+			tabs.add(pan_Diabetes);
+		} else if (caseType.equalsIgnoreCase("H")) {
+			pan_HIVComp = new Tab_HIVCase(caseGuid);
+			pan_HIVComp.setParent(this);
+			jTabbedPane1.addTab(lang.getString("HIV_TAB"), pan_HIVComp);
+			tabs.add(pan_HIVComp);
+		} else if (caseType.equalsIgnoreCase("W")) {
+			// To-Do : add wound
+		}
 
-		btn_CaseClose.setText("Send");
+		btn_CaseClose.setText("Close case");
 		btn_CaseClose.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				btn_CaseCloseActionPerformed(evt);
 			}
 		});
-
-		jPanel11.setBorder(javax.swing.BorderFactory
-				.createTitledBorder("Demographic data"));
-
-		jLabel60.setText("Patient No：");
-
-		lab_Pno.setText("0");
-
-		btn_Ddate_Save.setText("Save");
-		btn_Ddate_Save.setEnabled(false);
-		btn_Ddate_Save.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				btn_Ddate_SaveActionPerformed(evt);
-			}
-		});
-
-		jLabel85.setText("Age：");
-
-		lab_Age.setText("30");
-
-		jLabel88.setText("Gender：");
-
-		lab_Gender.setText("M");
-
-		jLabel90.setText("Name：");
-
-		lab_Name.setText("Steven Chung");
-
-		jPanel4.setBorder(javax.swing.BorderFactory
-				.createTitledBorder("One Touch"));
-
-		jLabel23.setText("BGPc： ");
-
-		jLabel15.setText("BGAc：");
-
-		txt_PC.addKeyListener(new java.awt.event.KeyAdapter() {
-			public void keyReleased(java.awt.event.KeyEvent evt) {
-				KeyReleased_D(evt);
-			}
-		});
-
-		txt_AC.addKeyListener(new java.awt.event.KeyAdapter() {
-			public void keyReleased(java.awt.event.KeyEvent evt) {
-				KeyReleased_D(evt);
-			}
-		});
-
-		jLabel24.setText("mg/dl");
-
-		jLabel25.setText("mg/dl");
-
-		jLabel26.setText("BG(st)：");
-
-		txt_ST.addKeyListener(new java.awt.event.KeyAdapter() {
-			public void keyReleased(java.awt.event.KeyEvent evt) {
-				KeyReleased_D(evt);
-			}
-		});
-
-		jLabel7.setText("mg/dl");
-
-		javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(
-				jPanel4);
-		jPanel4.setLayout(jPanel4Layout);
-		jPanel4Layout
-				.setHorizontalGroup(jPanel4Layout
-						.createParallelGroup(
-								javax.swing.GroupLayout.Alignment.LEADING)
-						.addGroup(
-								jPanel4Layout
-										.createSequentialGroup()
-										.addGap(7, 7, 7)
-										.addComponent(jLabel15)
-										.addGap(18, 18, 18)
-										.addComponent(
-												txt_AC,
-												javax.swing.GroupLayout.PREFERRED_SIZE,
-												74,
-												javax.swing.GroupLayout.PREFERRED_SIZE)
-										.addGap(6, 6, 6)
-										.addComponent(jLabel24)
-										.addGap(32, 32, 32)
-										.addComponent(jLabel23)
-										.addPreferredGap(
-												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-										.addComponent(
-												txt_PC,
-												javax.swing.GroupLayout.PREFERRED_SIZE,
-												73,
-												javax.swing.GroupLayout.PREFERRED_SIZE)
-										.addPreferredGap(
-												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-										.addComponent(jLabel25)
-										.addGap(42, 42, 42)
-										.addComponent(jLabel26)
-										.addGap(12, 12, 12)
-										.addComponent(
-												txt_ST,
-												javax.swing.GroupLayout.PREFERRED_SIZE,
-												73,
-												javax.swing.GroupLayout.PREFERRED_SIZE)
-										.addPreferredGap(
-												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-										.addComponent(jLabel7)
-										.addContainerGap(121, Short.MAX_VALUE)));
-		jPanel4Layout
-				.setVerticalGroup(jPanel4Layout
-						.createParallelGroup(
-								javax.swing.GroupLayout.Alignment.LEADING)
-						.addGroup(
-								javax.swing.GroupLayout.Alignment.TRAILING,
-								jPanel4Layout
-										.createSequentialGroup()
-										.addContainerGap()
-										.addGroup(
-												jPanel4Layout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.BASELINE)
-														.addComponent(jLabel15)
-														.addComponent(jLabel24)
-														.addComponent(jLabel23)
-														.addComponent(
-																txt_AC,
-																javax.swing.GroupLayout.PREFERRED_SIZE,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																javax.swing.GroupLayout.PREFERRED_SIZE)
-														.addComponent(
-																txt_PC,
-																javax.swing.GroupLayout.PREFERRED_SIZE,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																javax.swing.GroupLayout.PREFERRED_SIZE)
-														.addComponent(jLabel25)
-														.addComponent(
-																txt_ST,
-																javax.swing.GroupLayout.PREFERRED_SIZE,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																javax.swing.GroupLayout.PREFERRED_SIZE)
-														.addComponent(jLabel26)
-														.addComponent(jLabel7))
-										.addContainerGap(
-												javax.swing.GroupLayout.DEFAULT_SIZE,
-												Short.MAX_VALUE)));
-
-		jLabel62.setText("Height：");
-
-		txt_Height.setText("165");
-		txt_Height.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				txt_HeightActionPerformed(evt);
-			}
-		});
-		txt_Height.addFocusListener(new java.awt.event.FocusAdapter() {
-			public void focusGained(java.awt.event.FocusEvent evt) {
-				txt_HeightFocusGained(evt);
-			}
-
-			public void focusLost(java.awt.event.FocusEvent evt) {
-				txt_HeightFocusLost(evt);
-			}
-		});
-		txt_Height.addKeyListener(new java.awt.event.KeyAdapter() {
-			public void keyReleased(java.awt.event.KeyEvent evt) {
-				KeyReleased_D(evt);
-			}
-		});
-
-		jLabel63.setText("Weight：");
-
-		txt_Weight.setText("60");
-		txt_Weight.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				txt_WeightActionPerformed(evt);
-			}
-		});
-		txt_Weight.addFocusListener(new java.awt.event.FocusAdapter() {
-			public void focusLost(java.awt.event.FocusEvent evt) {
-				txt_WeightFocusLost(evt);
-			}
-		});
-		txt_Weight.addKeyListener(new java.awt.event.KeyAdapter() {
-			public void keyReleased(java.awt.event.KeyEvent evt) {
-				KeyReleased_D(evt);
-			}
-		});
-
-		jLabel71.setText("Education：");
-
-		com_edu.setModel(new javax.swing.DefaultComboBoxModel(new String[] {
-				"　", "Illiterate", "Digital knowledge", "Literacy",
-				"Elementary School", "Middle S. ", "High S. ",
-				"College or above" }));
-		com_edu.addItemListener(new java.awt.event.ItemListener() {
-			public void itemStateChanged(java.awt.event.ItemEvent evt) {
-				ItemStateChanged_D(evt);
-			}
-		});
-
-		jLabel18.setText("cm");
-
-		jLabel20.setText("kg");
-
-		javax.swing.GroupLayout jPanel11Layout = new javax.swing.GroupLayout(
-				jPanel11);
-		jPanel11.setLayout(jPanel11Layout);
-		jPanel11Layout
-				.setHorizontalGroup(jPanel11Layout
-						.createParallelGroup(
-								javax.swing.GroupLayout.Alignment.LEADING)
-						.addGroup(
-								jPanel11Layout
-										.createSequentialGroup()
-										.addGroup(
-												jPanel11Layout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.LEADING)
-														.addGroup(
-																javax.swing.GroupLayout.Alignment.TRAILING,
-																jPanel11Layout
-																		.createSequentialGroup()
-																		.addContainerGap()
-																		.addComponent(
-																				jPanel4,
-																				javax.swing.GroupLayout.PREFERRED_SIZE,
-																				javax.swing.GroupLayout.DEFAULT_SIZE,
-																				javax.swing.GroupLayout.PREFERRED_SIZE)
-																		.addPreferredGap(
-																				javax.swing.LayoutStyle.ComponentPlacement.RELATED,
-																				25,
-																				Short.MAX_VALUE)
-																		.addComponent(
-																				btn_Ddate_Save,
-																				javax.swing.GroupLayout.PREFERRED_SIZE,
-																				80,
-																				javax.swing.GroupLayout.PREFERRED_SIZE))
-														.addGroup(
-																jPanel11Layout
-																		.createSequentialGroup()
-																		.addGroup(
-																				jPanel11Layout
-																						.createParallelGroup(
-																								javax.swing.GroupLayout.Alignment.LEADING)
-																						.addGroup(
-																								jPanel11Layout
-																										.createSequentialGroup()
-																										.addGap(12,
-																												12,
-																												12)
-																										.addGroup(
-																												jPanel11Layout
-																														.createParallelGroup(
-																																javax.swing.GroupLayout.Alignment.TRAILING)
-																														.addComponent(
-																																jLabel63)
-																														.addGroup(
-																																jPanel11Layout
-																																		.createSequentialGroup()
-																																		.addGroup(
-																																				jPanel11Layout
-																																						.createParallelGroup(
-																																								javax.swing.GroupLayout.Alignment.LEADING)
-																																						.addGroup(
-																																								jPanel11Layout
-																																										.createSequentialGroup()
-																																										.addGap(87,
-																																												87,
-																																												87)
-																																										.addComponent(
-																																												lab_Pno,
-																																												javax.swing.GroupLayout.PREFERRED_SIZE,
-																																												105,
-																																												javax.swing.GroupLayout.PREFERRED_SIZE))
-																																						.addComponent(
-																																								jLabel60))
-																																		.addPreferredGap(
-																																				javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-																																		.addComponent(
-																																				jLabel90)))
-																										.addPreferredGap(
-																												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-																										.addGroup(
-																												jPanel11Layout
-																														.createParallelGroup(
-																																javax.swing.GroupLayout.Alignment.LEADING)
-																														.addGroup(
-																																jPanel11Layout
-																																		.createSequentialGroup()
-																																		.addComponent(
-																																				txt_Weight,
-																																				javax.swing.GroupLayout.PREFERRED_SIZE,
-																																				73,
-																																				javax.swing.GroupLayout.PREFERRED_SIZE)
-																																		.addPreferredGap(
-																																				javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-																																		.addComponent(
-																																				jLabel20))
-																														.addComponent(
-																																lab_Name,
-																																javax.swing.GroupLayout.PREFERRED_SIZE,
-																																127,
-																																javax.swing.GroupLayout.PREFERRED_SIZE)))
-																						.addGroup(
-																								jPanel11Layout
-																										.createSequentialGroup()
-																										.addContainerGap()
-																										.addComponent(
-																												jLabel62)
-																										.addPreferredGap(
-																												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-																										.addComponent(
-																												txt_Height,
-																												javax.swing.GroupLayout.PREFERRED_SIZE,
-																												71,
-																												javax.swing.GroupLayout.PREFERRED_SIZE)
-																										.addGap(6,
-																												6,
-																												6)
-																										.addComponent(
-																												jLabel18)))
-																		.addGap(18,
-																				18,
-																				18)
-																		.addGroup(
-																				jPanel11Layout
-																						.createParallelGroup(
-																								javax.swing.GroupLayout.Alignment.LEADING)
-																						.addComponent(
-																								jLabel71)
-																						.addGroup(
-																								javax.swing.GroupLayout.Alignment.TRAILING,
-																								jPanel11Layout
-																										.createSequentialGroup()
-																										.addGap(28,
-																												28,
-																												28)
-																										.addComponent(
-																												jLabel85)))
-																		.addPreferredGap(
-																				javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-																		.addGroup(
-																				jPanel11Layout
-																						.createParallelGroup(
-																								javax.swing.GroupLayout.Alignment.LEADING,
-																								false)
-																						.addGroup(
-																								jPanel11Layout
-																										.createSequentialGroup()
-																										.addComponent(
-																												lab_Age)
-																										.addGap(46,
-																												46,
-																												46)
-																										.addComponent(
-																												jLabel88)
-																										.addPreferredGap(
-																												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-																										.addComponent(
-																												lab_Gender))
-																						.addComponent(
-																								com_edu,
-																								javax.swing.GroupLayout.PREFERRED_SIZE,
-																								javax.swing.GroupLayout.DEFAULT_SIZE,
-																								javax.swing.GroupLayout.PREFERRED_SIZE))))
-										.addContainerGap()));
-		jPanel11Layout
-				.setVerticalGroup(jPanel11Layout
-						.createParallelGroup(
-								javax.swing.GroupLayout.Alignment.LEADING)
-						.addGroup(
-								jPanel11Layout
-										.createSequentialGroup()
-										.addGroup(
-												jPanel11Layout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.TRAILING)
-														.addComponent(
-																btn_Ddate_Save)
-														.addGroup(
-																jPanel11Layout
-																		.createSequentialGroup()
-																		.addGroup(
-																				jPanel11Layout
-																						.createParallelGroup(
-																								javax.swing.GroupLayout.Alignment.LEADING)
-																						.addGroup(
-																								jPanel11Layout
-																										.createSequentialGroup()
-																										.addGroup(
-																												jPanel11Layout
-																														.createParallelGroup(
-																																javax.swing.GroupLayout.Alignment.BASELINE)
-																														.addComponent(
-																																jLabel60)
-																														.addComponent(
-																																lab_Pno)
-																														.addComponent(
-																																jLabel90)
-																														.addComponent(
-																																lab_Name))
-																										.addPreferredGap(
-																												javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-																										.addGroup(
-																												jPanel11Layout
-																														.createParallelGroup(
-																																javax.swing.GroupLayout.Alignment.BASELINE)
-																														.addComponent(
-																																jLabel62)
-																														.addComponent(
-																																txt_Height,
-																																javax.swing.GroupLayout.PREFERRED_SIZE,
-																																javax.swing.GroupLayout.DEFAULT_SIZE,
-																																javax.swing.GroupLayout.PREFERRED_SIZE)
-																														.addComponent(
-																																jLabel18)
-																														.addComponent(
-																																jLabel63)
-																														.addComponent(
-																																txt_Weight,
-																																javax.swing.GroupLayout.PREFERRED_SIZE,
-																																javax.swing.GroupLayout.DEFAULT_SIZE,
-																																javax.swing.GroupLayout.PREFERRED_SIZE)
-																														.addComponent(
-																																jLabel20)))
-																						.addGroup(
-																								jPanel11Layout
-																										.createSequentialGroup()
-																										.addGroup(
-																												jPanel11Layout
-																														.createParallelGroup(
-																																javax.swing.GroupLayout.Alignment.BASELINE)
-																														.addComponent(
-																																jLabel85)
-																														.addComponent(
-																																lab_Age)
-																														.addComponent(
-																																jLabel88)
-																														.addComponent(
-																																lab_Gender))
-																										.addPreferredGap(
-																												javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-																										.addGroup(
-																												jPanel11Layout
-																														.createParallelGroup(
-																																javax.swing.GroupLayout.Alignment.BASELINE)
-																														.addComponent(
-																																jLabel71)
-																														.addComponent(
-																																com_edu,
-																																javax.swing.GroupLayout.PREFERRED_SIZE,
-																																javax.swing.GroupLayout.DEFAULT_SIZE,
-																																javax.swing.GroupLayout.PREFERRED_SIZE))))
-																		.addGap(14,
-																				14,
-																				14)
-																		.addComponent(
-																				jPanel4,
-																				javax.swing.GroupLayout.PREFERRED_SIZE,
-																				javax.swing.GroupLayout.DEFAULT_SIZE,
-																				javax.swing.GroupLayout.PREFERRED_SIZE)))
-										.addContainerGap(14, Short.MAX_VALUE)));
 
 		mn_Fiele.setText("File");
 		mn_Fiele.addActionListener(new java.awt.event.ActionListener() {
@@ -1995,7 +1478,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 										layout.createParallelGroup(
 												javax.swing.GroupLayout.Alignment.LEADING)
 												.addComponent(
-														jPanel11,
+														pan_PatientInfo,
 														javax.swing.GroupLayout.DEFAULT_SIZE,
 														javax.swing.GroupLayout.DEFAULT_SIZE,
 														Short.MAX_VALUE)
@@ -2015,7 +1498,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 																						btn_CaseClose,
 																						javax.swing.GroupLayout.Alignment.TRAILING,
 																						javax.swing.GroupLayout.PREFERRED_SIZE,
-																						85,
+																						120,
 																						javax.swing.GroupLayout.PREFERRED_SIZE))))
 								.addContainerGap()));
 		layout.setVerticalGroup(layout
@@ -2023,7 +1506,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 				.addGroup(
 						layout.createSequentialGroup()
 								.addContainerGap()
-								.addComponent(jPanel11,
+								.addComponent(pan_PatientInfo,
 										javax.swing.GroupLayout.PREFERRED_SIZE,
 										javax.swing.GroupLayout.DEFAULT_SIZE,
 										javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -2047,152 +1530,115 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 	}// GEN-LAST:event_jCheckBox142ActionPerformed
 
 	private void btn_CaseCloseActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_CaseCloseActionPerformed
+		Object[] options = { "YES", "NO" };
+		int dialog = JOptionPane.showOptionDialog(new Frame(),
+				"Save all modifications and close case?", "Message",
+				JOptionPane.YES_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+				options, options[0]);
+		if (dialog == 0) {
+			Connection conn = DBC.getConnectionExternel();
+			PreparedStatement ps = null;
+			try {
+				conn.setAutoCommit(false);
 
-		if (m_From.equals("dia") || m_From.equals("medicine")) {
-			if (m_From.equals("dia")) {
-				if (this.pan_CompliComp.btn_ComSave.isEnabled() == true) {
-					Object[] options = { "YES", "NO" };
-					int dialog = JOptionPane.showOptionDialog(new Frame(),
-							"Not saved to continue ?", "Message",
-							JOptionPane.YES_OPTION,
-							JOptionPane.QUESTION_MESSAGE, null, options,
-							options[0]);
-					if (dialog == 0) {
-						// 選擇 YES 時
-						// 關閉此視窗
-						this.dispose();
-					} else {
-						// 選擇 NO 時
+				for (ISaveable tab : tabs) {
+					if (tab.isSaveable()) {
+						tab.save(conn);
 					}
 				}
+				String sql = "UPDATE case_manage SET " + "status  = 'C',"
+						+ "close_time = NOW()" + "WHERE guid = '" + caseGuid
+						+ "' ";
+				logger.debug("[{}][{}] {}", UserInfo.getUserID(),
+						UserInfo.getUserName(), sql);
+				ps = conn.prepareStatement(sql);
+				ps.executeUpdate();
+				ps.close();
 
-				// 關閉此視窗
-				this.dispose();
-			} else if (m_From.equals("medicine")) {
-				if (btn_DheSave.isEnabled() == true) {
-					Object[] options = { "YES", "NO" };
-					int dialog = JOptionPane.showOptionDialog(new Frame(),
-							"Not saved to continue ?", "Message",
-							JOptionPane.YES_OPTION,
-							JOptionPane.QUESTION_MESSAGE, null, options,
-							options[0]);
-					if (dialog == 0) {
-						// 選擇 YES 時
-						// 關閉此視窗
-						this.dispose();
-					} else {
-						// 選擇 NO 時
-					}
+				conn.commit();
+
+				JOptionPane.showMessageDialog(null, "Save Success!");
+				setFrmClose();
+			} catch (Exception e) {
+				e.printStackTrace();
+				JOptionPane.showMessageDialog(null,
+						"Save Failed: " + e.getMessage());
+				try {
+					conn.rollback();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
 				}
-				// 關閉此視窗
-				this.dispose();
+			} finally {
+				try {
+					if (ps != null)
+						ps.close();
+					if (conn != null)
+						conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
+
+			// this.pan_AssComp.btn_AssSave.doClick();
+			// this.pan_CompliComp.btn_ComSave.doClick();
+			// this.pan_ConfEdu.btn_ConSave.doClick();
+			// this.pan_MedEdu.btn_ConSave.doClick();
+			// this.btn_PreSave.doClick();
+			// this.pan_HIVComp.btn_Save.doClick();
+			// ;
+			// // this.btn_DheSave.doClick();
+			// if (caseType.equalsIgnoreCase("D")) {
+			// this.pan_Diabetes.btnSave.doClick();
+			// } else if (caseType.equalsIgnoreCase("H")) {
+			// // this.pan_HIVComp
+			// } else if (caseType.equalsIgnoreCase("W")) {
+			// // To-Do : add wound
+			// }
 		} else {
-			// 判斷哪些表格還沒存檔
-			String tab_name = "";
-
-			if (btn_Ddate_Save.isEnabled()) {
-				tab_name += "Demographic data \n";
-			}
-
-			if (this.pan_AssComp.btn_AssSave.isEnabled()) {
-				tab_name += "Asscement \n";
-			}
-
-			if (this.pan_CompliComp.btn_ComSave.isEnabled()) {
-				tab_name += "Complication \n";
-			}
-
-			if (pan_ConfEdu.btn_ConSave.isEnabled()) {
-				tab_name += "Confirm the completion of health education \n";
-			}
-
-			if (btn_PreSave.isEnabled()) {
-				tab_name += "Laboratory \n";
-			}
-
-			if (btn_DheSave.isEnabled()) {
-				tab_name += "Drug health education \n";
-			}
-
-			if (!tab_name.equals("")) {
-				Object[] options_con = { "YES", "NO" };
-				int dialog_con = JOptionPane.showOptionDialog(new Frame(),
-						"Not saved to continue ?\n" + tab_name + "\n",
-						"Message", JOptionPane.YES_OPTION,
-						JOptionPane.QUESTION_MESSAGE, null, options_con,
-						options_con[0]);
-				if (dialog_con == 0)
-					showEnterClinic();
-			} else
-				showEnterClinic();
+			// 選擇 NO 時
 		}
+
+		/*
+		 * if (m_From.equals("dia") || m_From.equals("medicine")) { if
+		 * (m_From.equals("dia")) { if
+		 * (this.pan_CompliComp.btn_ComSave.isEnabled() == true) { Object[]
+		 * options = { "YES", "NO" }; int dialog =
+		 * JOptionPane.showOptionDialog(new Frame(), "Not saved to continue ?",
+		 * "Message", JOptionPane.YES_OPTION, JOptionPane.QUESTION_MESSAGE,
+		 * null, options, options[0]); if (dialog == 0) { // 選擇 YES 時 // 關閉此視窗
+		 * this.dispose(); } else { // 選擇 NO 時 } }
+		 * 
+		 * // 關閉此視窗 this.dispose(); } else if (m_From.equals("medicine")) {
+		 * Object[] options = { "YES", "NO" }; int dialog =
+		 * JOptionPane.showOptionDialog(new Frame(), "Not saved to continue ?",
+		 * "Message", JOptionPane.YES_OPTION, JOptionPane.QUESTION_MESSAGE,
+		 * null, options, options[0]); if (dialog == 0) { // 選擇 YES 時 // 關閉此視窗
+		 * this.dispose(); } else { // 選擇 NO 時 } // 關閉此視窗 this.dispose(); } }
+		 * else { // 判斷哪些表格還沒存檔 String tab_name = "";
+		 * 
+		 * if (btn_Ddate_Save.isEnabled()) { tab_name += "Demographic data \n";
+		 * }
+		 * 
+		 * if (this.pan_AssComp.btn_AssSave.isEnabled()) { tab_name +=
+		 * "Asscement \n"; }
+		 * 
+		 * if (this.pan_CompliComp.btn_ComSave.isEnabled()) { tab_name +=
+		 * "Complication \n"; }
+		 * 
+		 * if (pan_ConfEdu.btn_ConSave.isEnabled()) { tab_name +=
+		 * "Confirm the completion of health education \n"; }
+		 * 
+		 * if (btn_PreSave.isEnabled()) { tab_name += "Laboratory \n"; }
+		 * 
+		 * if (!tab_name.equals("")) { Object[] options_con = { "YES", "NO" };
+		 * int dialog_con = JOptionPane.showOptionDialog(new Frame(),
+		 * "Not saved to continue ?\n" + tab_name + "\n", "Message",
+		 * JOptionPane.YES_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+		 * options_con, options_con[0]); if (dialog_con == 0) showEnterClinic();
+		 * } else showEnterClinic(); }
+		 */
 
 	}// GEN-LAST:event_btn_CaseCloseActionPerformed
-
-	private void txt_HeightFocusLost(java.awt.event.FocusEvent evt) {// GEN-FIRST:event_txt_HeightFocusLost
-	}// GEN-LAST:event_txt_HeightFocusLost
-
-	private void txt_HeightFocusGained(java.awt.event.FocusEvent evt) {// GEN-FIRST:event_txt_HeightFocusGained
-
-	}// GEN-LAST:event_txt_HeightFocusGained
-
-	private void txt_HeightActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_txt_HeightActionPerformed
-
-	}// GEN-LAST:event_txt_HeightActionPerformed
-
-	private void txt_WeightFocusLost(java.awt.event.FocusEvent evt) {// GEN-FIRST:event_txt_WeightFocusLost
-	}// GEN-LAST:event_txt_WeightFocusLost
-
-	private void txt_WeightActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_txt_WeightActionPerformed
-
-	}// GEN-LAST:event_txt_WeightActionPerformed
-
-	private void btn_Ddate_SaveActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_Ddate_SaveActionPerformed
-
-		try {
-			String sql = "UPDATE patients_info  SET height = '"
-					+ txt_Height.getText() + "',  weight = '"
-					+ txt_Weight.getText() + "', education = '"
-					+ com_edu.getSelectedIndex() + "' WHERE p_no = '" + m_Pno
-					+ "'";
-			System.out.println(sql);
-			DBC.executeUpdate(sql);
-
-			String sqlBgac = "INSERT INTO prescription (guid, code, case_guid, date_test, date_results, result, isnormal, cost, finish, state) "
-					+ "SELECT UUID(), prescription_code.code,'"
-					+ m_RegGuid
-					+ "', NOW(), NOW(), '"
-					+ txt_AC.getText()
-					+ "', 0,0,'F',1  FROM prescription_code WHERE prescription_code.name = 'BGAc'";
-			DBC.executeUpdate(sqlBgac);
-
-			String sqlBgpc = "INSERT INTO prescription (guid, code, case_guid, date_test, date_results, result, isnormal, cost, finish, state) "
-					+ "SELECT UUID(), prescription_code.code,'"
-					+ m_RegGuid
-					+ "', NOW(), NOW(), '"
-					+ txt_PC.getText()
-					+ "', 0,0,'F',1  FROM prescription_code WHERE prescription_code.name = 'BGPc'";
-			DBC.executeUpdate(sqlBgpc);
-
-			String sqlSt = "INSERT INTO prescription (guid, code, case_guid, date_test, date_results, result, isnormal, cost, finish, state) "
-					+ "SELECT UUID(), prescription_code.code,'"
-					+ m_RegGuid
-					+ "', NOW(), NOW(), '"
-					+ txt_ST.getText()
-					+ "', 0,0,'F',1  FROM prescription_code WHERE prescription_code.name = 'St.'";
-			DBC.executeUpdate(sqlSt);
-
-			JOptionPane.showMessageDialog(null, "Save Complete");
-			pan_AssComp.txt_bmi.setText(Tools.getBmi(txt_Height.getText(),
-					txt_Weight.getText()));
-			btn_Ddate_Save.setEnabled(false);
-		} catch (SQLException ex) {
-			Logger.getLogger(Frm_Case.class.getName()).log(Level.SEVERE, null,
-					ex);
-		}
-
-	}// GEN-LAST:event_btn_Ddate_SaveActionPerformed
 
 	private void btn_CloseActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_CloseActionPerformed
 		setLostAutoCompleteEdit();
@@ -2211,90 +1657,18 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 		dia.setVisible(false);
 	}// GEN-LAST:event_btn_CloseActionPerformed
 
-	private void tab_MedicineTeachMouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_tab_MedicineTeachMouseClicked
-
-		if (tab_MedicineTeach.getSelectedColumn() == 5
-				|| tab_MedicineTeach.getSelectedColumn() == 6) {
-			btn_DheSave.setEnabled(true);
-		}
-
-		if (tab_MedicineTeach.getValueAt(tab_MedicineTeach.getSelectedRow(), 5)
-				.toString().equals("true")) {
-			tab_MedicineTeach.setValueAt(UserInfo.getUserID(),
-					tab_MedicineTeach.getSelectedRow(), 3);
-			tab_MedicineTeach.setValueAt(UserInfo.getUserName(),
-					tab_MedicineTeach.getSelectedRow(), 4);
-		} else {
-			tab_MedicineTeach.setValueAt("",
-					tab_MedicineTeach.getSelectedRow(), 3);
-			tab_MedicineTeach.setValueAt("",
-					tab_MedicineTeach.getSelectedRow(), 4);
-		}
-
-	}// GEN-LAST:event_tab_MedicineTeachMouseClicked
+	private boolean prescriptionState = false;
+	private boolean xrayState = false;
 
 	private void btn_PreSaveActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_PreSaveActionPerformed
-
 		try {
-			boolean prescriptionState = false; // 判斷是否有檢驗處置
-			boolean xrayState = false; // 判斷是否有x光處置
-			// 存入處置
-			String sqlDelete = "DELETE FROM prescription WHERE case_guid = '"
-					+ m_RegGuid + "'";
-			DBC.executeUpdate(sqlDelete);
-			for (int i = 0; i < this.tab_Prescription.getRowCount(); i++) {
-				if (this.tab_Prescription.getValueAt(i, 1) != null
-						&& !this.tab_Prescription.getValueAt(i, 1).toString()
-								.trim().equals("")) {
-					if (this.tab_Prescription.getValueAt(i, 4) != null
-							&& this.tab_Prescription.getValueAt(i, 4)
-									.toString().trim()
-									.equals(Constant.X_RAY_CODE)) {
-						xrayState = true;
-					} else {
-						prescriptionState = true;
-					}
-					if (this.tab_Prescription.getValueAt(i, 3) == null) {
-						this.tab_Prescription.setValueAt("", i, 3);
-					}
-					String sql = "INSERT INTO prescription (guid, case_guid, code, place, state) "
-							+ "VALUES (uuid(), '"
-							+ m_RegGuid
-							+ "', '"
-							+ this.tab_Prescription.getValueAt(i, 1).toString()
-									.trim()
-							+ "', '"
-							+ this.tab_Prescription.getValueAt(i, 3).toString()
-									.trim() + "', 1)";
-					DBC.executeUpdate(sql);
-				}
-			}
-			setPrint(prescriptionState, xrayState);
+			save();
 			JOptionPane.showMessageDialog(null, "Save Complete");
-
-			// 提示回診日 *************************************
-			// String packageSetAll = "";
-			// if (m_PackageSet != null) {
-			// dia_RevisitTime.setLocationRelativeTo(this);
-			// dia_RevisitTime.setVisible(true);
-			// String packageSet[] = m_PackageSet.split(",");
-			// String packageSetId[] = m_PackageSetId.split(",");
-			// for (int i = 0; i < packageSet.length; i++) {
-			// packageSetAll+= i+1 +". "+ packageSet[i] + " ";
-			// String sql =
-			// "SELECT days FROM package_item WHERE id = '"+packageSetId[i]+"'";
-			// ResultSet rs = DBC.executeQuery(sql);
-			// txt_PackageId.setText(packageSetId[i]);
-			// if (rs.next()) txt_ComeBackDays.setText(rs.getString ("days"));
-			// }
-			// txt_PackageType.setText(packageSetAll);
-			// this.setEnabled(false);
-			// }
-			// *************************************************
-			btn_PreSave.setEnabled(false);
-		} catch (SQLException ex) {
-			Logger.getLogger(Frm_Case.class.getName()).log(Level.SEVERE, null,
-					ex);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			JOptionPane.showMessageDialog(null,
+					"Save Failed: " + ex.getMessage());
+			btn_PreSave.setEnabled(true);
 		}
 	}// GEN-LAST:event_btn_PreSaveActionPerformed
 
@@ -2363,67 +1737,12 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 	}// GEN-LAST:event_mnit_HistoryActionPerformed
 
 	private void mnit_CloseActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnit_CloseActionPerformed
-
+		setFrmClose();
 	}// GEN-LAST:event_mnit_CloseActionPerformed
 
 	private void mn_FieleActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mn_FieleActionPerformed
 
 	}// GEN-LAST:event_mn_FieleActionPerformed
-
-	private void btn_DheSaveActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_DheSaveActionPerformed
-
-		for (int i = 0; i < tab_MedicineTeach.getRowCount(); i++) {
-			if (tab_MedicineTeach.getValueAt(i, 5).toString().equals("true")) {
-				try {
-
-					String check = "0";
-					if (tab_MedicineTeach.getValueAt(i, 5).toString()
-							.equals("true")) {
-						check = "1";
-					}
-
-					String sql = "UPDATE medicine_stock SET ";
-
-					if (tab_MedicineTeach.getValueAt(i, 3) == null) {
-						sql += "s_id = NULL, ";
-					} else {
-						sql += "s_id = '" + tab_MedicineTeach.getValueAt(i, 3)
-								+ "', ";
-					}
-
-					sql += "teach_complete = '" + check + "', ";
-
-					if (tab_MedicineTeach.getValueAt(i, 6) == null) {
-						sql += " ps = NULL ";
-					} else {
-						sql += " ps = '" + tab_MedicineTeach.getValueAt(i, 6)
-								+ "' ";
-					}
-					sql += " WHERE os_guid = (SELECT outpatient_services.guid  FROM outpatient_services, registration_info WHERE registration_info.guid = outpatient_services.reg_guid AND registration_info.guid = '"
-							+ m_RegGuid
-							+ "' AND m_code = '"
-							+ tab_MedicineTeach.getValueAt(i, 1) + "')";
-					System.out.println(sql);
-					DBC.executeUpdate(sql);
-				} catch (SQLException ex) {
-					Logger.getLogger(Frm_Case.class.getName()).log(
-							Level.SEVERE, null, ex);
-				}
-			}
-		}
-		JOptionPane.showMessageDialog(null, "Save Complete");
-		btn_DheSave.setEnabled(false);
-	}// GEN-LAST:event_btn_DheSaveActionPerformed
-
-	private void ItemStateChanged_D(java.awt.event.ItemEvent evt) {// GEN-FIRST:event_ItemStateChanged_D
-
-		btn_Ddate_Save.setEnabled(true);
-	}// GEN-LAST:event_ItemStateChanged_D
-
-	private void KeyReleased_D(java.awt.event.KeyEvent evt) {// GEN-FIRST:event_KeyReleased_D
-
-		btn_Ddate_Save.setEnabled(true);
-	}// GEN-LAST:event_KeyReleased_D
 
 	private void mnit_V1ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnit_V1ActionPerformed
 		setV("V1");
@@ -2493,51 +1812,27 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 				JOptionPane.showMessageDialog(null, "Please Check Days");
 			}
 		} catch (SQLException ex) {
-			Logger.getLogger(Frm_Case.class.getName()).log(Level.SEVERE, null,
-					ex);
+			ex.printStackTrace();
 		}
 	}// GEN-LAST:event_jButton2ActionPerformed
 
 	private javax.swing.JButton btn_CaseClose;
 	private javax.swing.JButton btn_Close;
-	private javax.swing.JButton btn_Ddate_Save;
-	private javax.swing.JButton btn_DheSave;
 	private javax.swing.JButton btn_PreSave;
-	private javax.swing.JComboBox com_edu;
 	private javax.swing.JDialog dia;
 	private javax.swing.JDialog dia_RevisitTime;
 	private javax.swing.JButton jButton2;
-	private javax.swing.JLabel jLabel15;
-	private javax.swing.JLabel jLabel18;
-	private javax.swing.JLabel jLabel20;
-	private javax.swing.JLabel jLabel23;
-	private javax.swing.JLabel jLabel24;
-	private javax.swing.JLabel jLabel25;
-	private javax.swing.JLabel jLabel26;
 	private javax.swing.JLabel jLabel27;
 	private javax.swing.JLabel jLabel28;
 	private javax.swing.JLabel jLabel29;
 	private javax.swing.JLabel jLabel31;
-	private javax.swing.JLabel jLabel60;
-	private javax.swing.JLabel jLabel62;
-	private javax.swing.JLabel jLabel63;
-	private javax.swing.JLabel jLabel7;
-	private javax.swing.JLabel jLabel71;
-	private javax.swing.JLabel jLabel85;
-	private javax.swing.JLabel jLabel88;
-	private javax.swing.JLabel jLabel90;
 	private javax.swing.JMenu jMenu1;
-	private javax.swing.JPanel jPanel11;
-	private javax.swing.JPanel jPanel12;
+	private Tab_PatientInfoQuickCheck pan_PatientInfo;
+	private Tab_Prescription jPanelPrescription;
 	private javax.swing.JPanel jPanel13;
 	private javax.swing.JPanel jPanel4;
-	private javax.swing.JPanel jPanelFoot;
-	private javax.swing.JScrollPane jScrollPane2;
+	private Tab_FootCase pan_Diabetes;
 	private javax.swing.JTabbedPane jTabbedPane1;
-	private javax.swing.JLabel lab_Age;
-	private javax.swing.JLabel lab_Gender;
-	private javax.swing.JLabel lab_Name;
-	private javax.swing.JLabel lab_Pno;
 	private javax.swing.JList list_Menu;
 	private javax.swing.JMenu menu_SetDM;
 	private javax.swing.JMenu mn_Fiele;
@@ -2548,7 +1843,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 	private javax.swing.JMenuItem mnit_V1;
 	private javax.swing.JMenuItem mnit_V2;
 	private javax.swing.JMenuItem mnit_V3;
-	private Tab_Assessment pan_AssComp;
+	public Tab_Assessment pan_AssComp;
 	private Tab_Complication pan_CompliComp;
 	private Tab_HIVCase pan_HIVComp;
 	private Tab_ConfirmEducation pan_ConfEdu;
@@ -2556,20 +1851,130 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface {
 	private javax.swing.JPanel pan_Prescription;
 	private javax.swing.JScrollPane span_ListMenu;
 	private javax.swing.JScrollPane span_Prescription;
-	private javax.swing.JTable tab_MedicineTeach;
 	private javax.swing.JTable tab_Prescription;
-	private javax.swing.JTextField txt_AC;
 	private javax.swing.JTextField txt_ComeBackDays;
-	private javax.swing.JTextField txt_Height;
-	private javax.swing.JTextField txt_PC;
 	private javax.swing.JTextField txt_PackageId;
 	private javax.swing.JTextField txt_PackageType;
-	private javax.swing.JTextField txt_ST;
-	private javax.swing.JTextField txt_Weight;
 
 	// End of variables declaration//GEN-END:variables
 	@Override
 	public void onDateChanged() {
+
+	}
+
+	@Override
+	public boolean isSaveable() {
+		return btn_PreSave.isEnabled();
+	}
+
+	@Override
+	public void save() throws Exception {
+		Connection conn = DBC.getConnectionExternel();
+		try {
+			conn.setAutoCommit(false);
+			save(conn);
+			conn.commit();
+		} catch (Exception e) {
+			conn.rollback();
+		} finally {
+			if (conn != null)
+				conn.close();
+		}
+	}
+
+	@Override
+	public void save(Connection conn) throws Exception {
+
+		PreparedStatement psBatch = null;
+		PreparedStatement ps = null;
+		try {
+			prescriptionState = false; // 判斷是否有檢驗處置
+			xrayState = false; // 判斷是否有x光處置
+			// 存入處置
+
+			String sqlDelete = "DELETE FROM prescription WHERE reg_guid = '"
+					+ m_RegGuid + "'";
+			logger.debug("[{}][{}] {}", UserInfo.getUserID(),
+					UserInfo.getUserName(), sqlDelete);
+			ps = conn.prepareStatement(sqlDelete);
+			ps.executeUpdate();
+			ps.close();
+
+			String sql = "INSERT INTO prescription (guid, reg_guid, code, place, state) "
+					+ "VALUES (uuid() , ?, ? , ?, 1)";
+			logger.debug("[{}][{}] {}", UserInfo.getUserID(),
+					UserInfo.getUserName(), sql);
+			psBatch = conn.prepareStatement(sql);
+			for (int i = 0; i < this.tab_Prescription.getRowCount(); i++) {
+				if (this.tab_Prescription.getValueAt(i, 1) != null
+						&& !this.tab_Prescription.getValueAt(i, 1).toString()
+								.trim().equals("")) {
+					if (this.tab_Prescription.getValueAt(i, 4) != null
+							&& this.tab_Prescription.getValueAt(i, 4)
+									.toString().trim()
+									.equals(Constant.X_RAY_CODE)) {
+						xrayState = true;
+					} else {
+						prescriptionState = true;
+					}
+					if (this.tab_Prescription.getValueAt(i, 3) == null) {
+						this.tab_Prescription.setValueAt("", i, 3);
+					}
+
+					psBatch.setString(1, m_RegGuid);
+					psBatch.setString(2, this.tab_Prescription.getValueAt(i, 1)
+							.toString().trim());
+					psBatch.setString(3, this.tab_Prescription.getValueAt(i, 3)
+							.toString().trim());
+					psBatch.addBatch();
+				}
+			}
+			psBatch.executeBatch();
+			psBatch.close();
+
+			new Thread(new Runnable() {
+				public void run() {
+					setPrint(prescriptionState, xrayState, m_RegGuid,
+							icdVersion);
+				}
+			}).run();
+
+			// 提示回診日 *************************************
+			// String packageSetAll = "";
+			// if (m_PackageSet != null) {
+			// dia_RevisitTime.setLocationRelativeTo(this);
+			// dia_RevisitTime.setVisible(true);
+			// String packageSet[] = m_PackageSet.split(",");
+			// String packageSetId[] = m_PackageSetId.split(",");
+			// for (int i = 0; i < packageSet.length; i++) {
+			// packageSetAll+= i+1 +". "+ packageSet[i] + " ";
+			// String sql =
+			// "SELECT days FROM package_item WHERE id = '"+packageSetId[i]+"'";
+			// ResultSet rs = DBC.executeQuery(sql);
+			// txt_PackageId.setText(packageSetId[i]);
+			// if (rs.next()) txt_ComeBackDays.setText(rs.getString ("days"));
+			// }
+			// txt_PackageType.setText(packageSetAll);
+			// this.setEnabled(false);
+			// }
+			// *************************************************
+			btn_PreSave.setEnabled(false);
+		} catch (Exception ex) {
+			throw ex;
+		} finally {
+			try {
+				if (psBatch != null)
+					psBatch.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			try {
+				if (ps != null)
+					ps.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 
 	}
 
