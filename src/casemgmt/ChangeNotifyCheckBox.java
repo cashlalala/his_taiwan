@@ -1,9 +1,12 @@
 package casemgmt;
 
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class ChangeNotifyCheckBox extends JCheckBox {
 
@@ -17,8 +20,8 @@ public class ChangeNotifyCheckBox extends JCheckBox {
 	public ChangeNotifyCheckBox(String text, JComponent targetCtrl) {
 		super(text);
 		this.comp = targetCtrl;
-		addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent e) {
+		addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
 				comp.setEnabled(true);
 			}
 		});

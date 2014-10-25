@@ -1,26 +1,25 @@
 package casemgmt;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JLabel;
-import javax.swing.JCheckBox;
-import javax.swing.JButton;
 import javax.swing.JTextField;
+
+import multilingual.Language;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import multilingual.Language;
 import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
-
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 public class Tab_WoundAssessment extends JPanel implements ISaveable {
 	/**
@@ -35,19 +34,19 @@ public class Tab_WoundAssessment extends JPanel implements ISaveable {
 	private JLabel lbl_WoundAssessment;
 	private JPanel panel;
 
-	private JCheckBox chckbx_PHHD;
-	private JCheckBox chckbx_PHCD;
-	private JCheckBox chckbx_PHHC;
-	private JCheckBox chckbx_PHDM;
-	private JCheckBox chckbx_TypeA;
-	private JCheckBox chckbx_TypeB;
-	private JCheckBox chckbx_TypeC;
-	private JCheckBox chckbx_Malignancies;
-	private JCheckBox chckbx_HD;
-	private JCheckBox chckbx_PHNS;
-	private JCheckBox chckbx_Smoke;
-	private JCheckBox chckbx_Alcoholism;
-	private JCheckBox chckbx_OW;
+	private ChangeNotifyCheckBox chckbx_PHHD;
+	private ChangeNotifyCheckBox chckbx_PHCD;
+	private ChangeNotifyCheckBox chckbx_PHHC;
+	private ChangeNotifyCheckBox chckbx_PHDM;
+	private ChangeNotifyCheckBox chckbx_TypeA;
+	private ChangeNotifyCheckBox chckbx_TypeB;
+	private ChangeNotifyCheckBox chckbx_TypeC;
+	private ChangeNotifyCheckBox chckbx_Malignancies;
+	private ChangeNotifyCheckBox chckbx_HD;
+	private ChangeNotifyCheckBox chckbx_PHNS;
+	private ChangeNotifyCheckBox chckbx_Smoke;
+	private ChangeNotifyCheckBox chckbx_Alcoholism;
+	private ChangeNotifyCheckBox chckbx_OW;
 
 	private JLabel lbl_CreateDate;
 	private JTextField txt_CreateDate;
@@ -69,60 +68,67 @@ public class Tab_WoundAssessment extends JPanel implements ISaveable {
 		panel.setBounds(12, 30, 426, 258);
 		add(panel);
 		panel.setLayout(null);
+		
+		btn_Save = new JButton(lang.getString("SAVE"));
 
-		chckbx_PHHD = new JCheckBox(lang.getString("PHHD"));
+		chckbx_PHHD = new ChangeNotifyCheckBox(lang.getString("PHHD"), btn_Save);
 		chckbx_PHHD.setBounds(0, 0, 206, 23);
 		panel.add(chckbx_PHHD);
 
-		chckbx_PHCD = new JCheckBox(lang.getString("PHCD"));
+		chckbx_PHCD = new ChangeNotifyCheckBox(lang.getString("PHCD"), btn_Save);
 		chckbx_PHCD.setBounds(0, 27, 206, 23);
 		panel.add(chckbx_PHCD);
 
-		chckbx_PHHC = new JCheckBox(lang.getString("PHHC"));
+		chckbx_PHHC = new ChangeNotifyCheckBox(lang.getString("PHHC"), btn_Save);
 		chckbx_PHHC.setBounds(0, 54, 206, 23);
 		panel.add(chckbx_PHHC);
 
-		chckbx_PHDM = new JCheckBox(lang.getString("PHDM"));
+		chckbx_PHDM = new ChangeNotifyCheckBox(lang.getString("PHDM"), btn_Save);
 		chckbx_PHDM.setBounds(0, 81, 206, 23);
 		panel.add(chckbx_PHDM);
 
-		chckbx_TypeA = new JCheckBox(lang.getString("PHTYPEA"));
+		chckbx_TypeA = new ChangeNotifyCheckBox(lang.getString("PHTYPEA"),
+				btn_Save);
 		chckbx_TypeA.setBounds(0, 108, 206, 23);
 		panel.add(chckbx_TypeA);
 
-		chckbx_TypeB = new JCheckBox(lang.getString("PHTYPEB"));
+		chckbx_TypeB = new ChangeNotifyCheckBox(lang.getString("PHTYPEB"),
+				btn_Save);
 		chckbx_TypeB.setBounds(0, 135, 206, 23);
 		panel.add(chckbx_TypeB);
 
-		chckbx_TypeC = new JCheckBox(lang.getString("PHTYPEC"));
+		chckbx_TypeC = new ChangeNotifyCheckBox(lang.getString("PHTYPEC"),
+				btn_Save);
 		chckbx_TypeC.setBounds(0, 162, 206, 23);
 		panel.add(chckbx_TypeC);
 
-		chckbx_Malignancies = new JCheckBox(lang.getString("PHMALIG"));
+		chckbx_Malignancies = new ChangeNotifyCheckBox(
+				lang.getString("PHMALIG"), btn_Save);
 		chckbx_Malignancies.setBounds(210, 0, 204, 23);
 		panel.add(chckbx_Malignancies);
 
-		chckbx_HD = new JCheckBox(lang.getString("HD"));
+		chckbx_HD = new ChangeNotifyCheckBox(lang.getString("HD"), btn_Save);
 		chckbx_HD.setBounds(210, 27, 204, 23);
 		panel.add(chckbx_HD);
 
-		chckbx_PHNS = new JCheckBox(lang.getString("PHNS"));
+		chckbx_PHNS = new ChangeNotifyCheckBox(lang.getString("PHNS"), btn_Save);
 		chckbx_PHNS.setBounds(210, 54, 204, 23);
 		panel.add(chckbx_PHNS);
 
-		chckbx_Smoke = new JCheckBox(lang.getString("PHSMOKE"));
+		chckbx_Smoke = new ChangeNotifyCheckBox(lang.getString("PHSMOKE"),
+				btn_Save);
 		chckbx_Smoke.setBounds(210, 81, 204, 23);
 		panel.add(chckbx_Smoke);
 
-		chckbx_Alcoholism = new JCheckBox(lang.getString("PHALCOHOLISM"));
+		chckbx_Alcoholism = new ChangeNotifyCheckBox(
+				lang.getString("PHALCOHOLISM"), btn_Save);
 		chckbx_Alcoholism.setBounds(210, 108, 204, 23);
 		panel.add(chckbx_Alcoholism);
 
-		chckbx_OW = new JCheckBox(lang.getString("PHOW"));
+		chckbx_OW = new ChangeNotifyCheckBox(lang.getString("PHOW"), btn_Save);
 		chckbx_OW.setBounds(210, 135, 204, 23);
 		panel.add(chckbx_OW);
 
-		btn_Save = new JButton(lang.getString("SAVE"));
 		btn_Save.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				btn_SaveactionPerformed();
@@ -149,7 +155,8 @@ public class Tab_WoundAssessment extends JPanel implements ISaveable {
 		panel.add(txt_Other);
 		txt_Other.setColumns(10);
 
-		RefreshData();
+		refreshData();
+		btn_Save.setEnabled(false);
 	}
 
 	private void btn_SaveactionPerformed() {
@@ -164,7 +171,7 @@ public class Tab_WoundAssessment extends JPanel implements ISaveable {
 		}
 	}
 
-	private void RefreshData() {
+	private void refreshData() {
 		String sqlPateint = "SELECT case_manage.p_no FROM case_manage WHERE case_manage.guid='"
 				+ CaseGuid + "'";
 
@@ -370,15 +377,15 @@ public class Tab_WoundAssessment extends JPanel implements ISaveable {
 		} else {
 			sql = sql + " wound_accessment.OverWeight = 'N', ";
 		}
-		if(!txt_CreateDate.getText().equals("")){
+		if (!txt_CreateDate.getText().equals("")) {
 			sql = sql + " wound_accessment.createdatetime = '"
 					+ txt_CreateDate.getText() + "', ";
 		}
 		sql = sql + " wound_accessment.OtherDiseaseHistory = '"
 				+ txt_Other.getText() + "', ";
-		
+
 		sql = sql + " wound_accessment.s_no = '" + UserInfo.getUserNO() + "'";
-		
+
 		logger.debug("[{}][{}] {}", UserInfo.getUserID(),
 				UserInfo.getUserName(), sql);
 		PreparedStatement ps = conn.prepareStatement(sql);
@@ -391,5 +398,7 @@ public class Tab_WoundAssessment extends JPanel implements ISaveable {
 				ps.close();
 			}
 		}
+
+		btn_Save.setEnabled(false);
 	}
 }

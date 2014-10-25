@@ -1077,8 +1077,6 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface,
 		pan_PatientInfo = new Tab_PatientInfoQuickCheck(m_Pno, m_RegGuid,
 				icdVersion);
 		pan_PatientInfo.setParent(this);
-		pan_WoundComplication = new Tab_WoundComplication(m_Pno, caseGuid,
-				m_RegGuid);
 		jPanel4 = new javax.swing.JPanel();
 		mnb = new javax.swing.JMenuBar();
 		mn_Fiele = new javax.swing.JMenu();
@@ -1093,8 +1091,13 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface,
 
 		tabs.add(pan_PatientInfo);
 		if (caseType.equalsIgnoreCase("W")) {
+			pan_WoundAssessment = new Tab_WoundAssessment(caseGuid);
+			pan_WoundComplication = new Tab_WoundComplication(m_Pno, caseGuid,
+					m_RegGuid);
+			jTabbedPane1.addTab(lang.getString("WOUND_ASSESSMENT"),
+					pan_WoundAssessment);
 			jTabbedPane1.addTab("Complication", pan_WoundComplication);
-			tabs.add(pan_Wound);
+			tabs.add(pan_WoundAssessment);
 			tabs.add(pan_WoundComplication);
 		} else {
 			jTabbedPane1.addTab("Assessment", pan_AssComp);
@@ -1438,10 +1441,8 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface,
 			jTabbedPane1.addTab(lang.getString("HIV_TAB"), pan_HIVComp);
 			tabs.add(pan_HIVComp);
 		} else if (caseType.equalsIgnoreCase("W")) {
-			pan_WoundAssessment = new Tab_WoundAssessment(caseGuid);
 			jTabbedPane1.addTab(lang.getString("WOUND_TAKE_IMAGE"), pan_Wound);
-			jTabbedPane1.addTab(lang.getString("WOUND_ASSESSMENT"),
-					pan_WoundAssessment);
+			tabs.add(pan_Wound);
 		}
 
 		btn_CaseClose.setText("Close case");
