@@ -2441,8 +2441,11 @@ public class Tab_Assessment extends JPanel implements ISaveable {
 	public void save() throws Exception {
 		Connection conn = DBC.getConnectionExternel();
 		try {
+			conn.setAutoCommit(false);
 			save(conn);
+			conn.commit();
 		} catch (Exception e) {
+			conn.rollback();
 			throw e;
 		} finally {
 			if (conn != null)

@@ -212,6 +212,7 @@ public class Tab_MedicineEducation extends JPanel implements ISaveable {
 			conn.commit();
 		} catch (Exception e) {
 			conn.rollback();
+			throw e;
 		} finally {
 			if (conn != null)
 				conn.close();

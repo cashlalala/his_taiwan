@@ -11,6 +11,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 public class Tab_Wound extends JPanel implements ISaveable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6373888539986688558L;
 	private static final Language lang = Language.getInstance();
 	private JButton btn_TakeImage;
 	private String case_guid;
@@ -31,7 +35,7 @@ public class Tab_Wound extends JPanel implements ISaveable {
 	}
 
 	public void btn_TakeImageactionPerformed() {
-		new Camera.Frm_TakeImage(p_no, case_guid, "wound").setVisible(true);
+		new camera.Frm_TakeImage(p_no, case_guid, "wound").setVisible(true);
 	}
 
 	@Override
