@@ -1438,7 +1438,10 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface,
 			jTabbedPane1.addTab(lang.getString("HIV_TAB"), pan_HIVComp);
 			tabs.add(pan_HIVComp);
 		} else if (caseType.equalsIgnoreCase("W")) {
+			pan_WoundAssessment = new Tab_WoundAssessment(caseGuid);
 			jTabbedPane1.addTab(lang.getString("WOUND_TAKE_IMAGE"), pan_Wound);
+			jTabbedPane1.addTab(lang.getString("WOUND_ASSESSMENT"),
+					pan_WoundAssessment);
 		}
 
 		btn_CaseClose.setText("Close case");
@@ -1947,6 +1950,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface,
 	public Tab_Wound pan_Wound;
 	private Tab_Complication pan_CompliComp;
 	private Tab_HIVCase pan_HIVComp;
+	private Tab_WoundAssessment pan_WoundAssessment;
 	private Tab_ConfirmEducation pan_ConfEdu;
 	private Tab_MedicineEducation pan_MedEdu;
 	private javax.swing.JPanel pan_Prescription;
