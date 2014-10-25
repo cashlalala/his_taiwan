@@ -4040,7 +4040,7 @@ public class Frm_InpatientInfo extends javax.swing.JFrame implements
 	}// GEN-LAST:event_mnit_XRayHistoryActionPerformed
 
 	private void mnit_ComplicationActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnit_ComplicationActionPerformed
-		new Dlg_CaseMgmtType(this, m_Pno, m_RegistrationGuid, true, "dia")
+		new Dlg_CaseMgmtType(this, m_Pno, m_RegistrationGuid, false, "dia")
 				.setVisible(true);
 	}// GEN-LAST:event_mnit_ComplicationActionPerformed
 
@@ -4050,7 +4050,7 @@ public class Frm_InpatientInfo extends javax.swing.JFrame implements
 
 	private void btn_CaseManagementActionPerformed(
 			java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_CaseManagementActionPerformed
-		new Dlg_CaseMgmtType(this, m_Pno, m_RegistrationGuid, true, "dia")
+		new Dlg_CaseMgmtType(this, m_Pno, m_RegistrationGuid, false, "dia")
 				.setVisible(true);
 	}// GEN-LAST:event_btn_CaseManagementActionPerformed
 

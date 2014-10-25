@@ -4,7 +4,8 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Frame;
 import java.awt.Point;
-import java.awt.event.ComponentEvent;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -24,10 +25,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.DefaultCellEditor;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
@@ -41,20 +46,14 @@ import org.his.util.CustomLogger;
 import cc.johnwu.date.DateInterface;
 import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
+
 import common.Constant;
 import common.PrintTools;
 import common.TabTools;
 import common.Tools;
+
 import diagnosis.Frm_DiagnosisPrescription;
 import errormessage.StoredErrorMessage;
-
-import javax.swing.JButton;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.GroupLayout;
-import javax.swing.LayoutStyle.ComponentPlacement;
-
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 public class Frm_Case extends javax.swing.JFrame implements DateInterface,
 		ISaveable {

@@ -91,6 +91,11 @@ public class Dlg_CaseMgmtType extends JDialog {
 			} catch (SQLException e1) {
 				e1.printStackTrace();
 			}
+
+			btnHIVCase.setEnabled(!mapCaseGuid.containsKey(HIVCASE)
+					|| mapCaseGuid.get(HIVCASE).isEmpty());
+			btnDiabetesCase.setEnabled(!mapCaseGuid.containsKey(DIABETESCASE)
+					|| mapCaseGuid.get(DIABETESCASE).isEmpty());
 		}
 	}
 

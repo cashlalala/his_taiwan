@@ -70,8 +70,8 @@ public class RefrashWorkList extends Thread {
 				+ "case_manage.status AS '"
 				+ paragraph.getString("STATUS")
 				+ "', "
-				+ "A.reg_time AS '"
-				+ paragraph.getString("COL_REGTIME")
+				+ "case_manage.finish_time AS '"
+				+ paragraph.getString("CASE_MANAGEMENT_FINISH_TIME")
 				+ "', A.guid AS '"
 				+ paragraph.getString("COL_REGISTER")
 				+ "', "
@@ -97,7 +97,7 @@ public class RefrashWorkList extends Thread {
 				+ "AND case_manage.p_no = patients_info.p_no "
 				+ "AND case_manage.status = '" + finished + "' "
 				+ "AND case_manage.type = '" + type + "' "
-				+ "ORDER BY A.visits_no";
+				+ "ORDER BY  case_manage.finish_time desc";
 
 		this.m_Tab = tab;
 		this.m_Time = time;
@@ -239,8 +239,8 @@ public class RefrashWorkList extends Thread {
 				+ paragraph.getLanguage(line, "COL_FIRST")
 				+ "', "
 				+ "case_manage.status AS 'Status', "
-				+ "A.reg_time AS '"
-				+ paragraph.getLanguage(line, "COL_REGTIME")
+				+ "case_manage.finish_time AS '"
+				+ paragraph.getLanguage(line, "CASE_MANAGEMENT_FINISH_TIME")
 				+ "', A.guid AS '"
 				+ paragraph.getLanguage(line, "COL_REGISTER")
 				+ "', "
@@ -268,7 +268,7 @@ public class RefrashWorkList extends Thread {
 				+ "AND A.reg_time LIKE '" + date + "%' "
 				+ "AND case_manage.type = '" + caseType + "' "
 				+ "AND case_manage.status = '" + finished + "' "
-				+ "ORDER BY A.visits_no";
+				+ "ORDER BY case_manage.finish_time desc";
 		try {
 			rs = DBC.executeQuery(sql);
 			((DefaultTableModel) this.m_Tab.getModel()).setRowCount(0);
