@@ -151,7 +151,9 @@ public class Frm_WorkList extends javax.swing.JFrame {
 		getSelectedTable();
 
 		m_RefrashWorkList.interrupt(); // 終止重複讀取掛號表單
+		m_RefrashWorkList.stopRunning();
 		m_RefrashWorkList2.interrupt();
+		m_RefrashWorkList2.stopRunning();
 		m_Clock.interrupt();
 		m_Pno = (String) this.tab_WorkListInterface.getValueAt(
 				tab_WorkListInterface.getSelectedRow(), 1);
@@ -473,7 +475,7 @@ public class Frm_WorkList extends javax.swing.JFrame {
 		lab_Date = new javax.swing.JLabel();
 		lab_Date.setHorizontalAlignment(SwingConstants.LEFT);
 
-		lab_Date.setText("Date:");
+		lab_Date.setText(paragraph.getString("CASE_REG_TIME"));
 		pan_Top.add(lab_Date);
 		dateComboBox = new cc.johnwu.date.DateComboBox();
 		pan_Top.add(dateComboBox);
@@ -567,14 +569,10 @@ public class Frm_WorkList extends javax.swing.JFrame {
 					JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 
 			if (dialog == 0) {
-				m_RefrashWorkList.interrupt(); // 終止重複讀取掛號表單
-				m_RefrashWorkList2.interrupt(); // 終止重複讀取掛號表單
 				setEnter(finishStatus);
 			}
 		} else if (finishStatus == null
 				|| finishStatus.trim().equalsIgnoreCase("N")) {
-			m_RefrashWorkList.interrupt(); // 終止重複讀取掛號表單
-			m_RefrashWorkList2.interrupt(); // 終止重複讀取掛號表單
 			setEnter(finishStatus);
 		}
 
@@ -610,7 +608,6 @@ public class Frm_WorkList extends javax.swing.JFrame {
 			this.m_RefrashWorkList2.start();
 			this.m_Clock = new Thread() { // Clock
 				@Override
-				@SuppressWarnings("static-access")
 				public void run() {
 					try {
 						while (true) {
@@ -618,16 +615,10 @@ public class Frm_WorkList extends javax.swing.JFrame {
 									"yyyy/MM/dd HH:mm:ss").format(Calendar
 									.getInstance().getTime()));
 							showVisitsCount();
-							this.sleep(500);
+							Thread.sleep(500);
 						}
 					} catch (InterruptedException e) {
-						ErrorMessage.setData(
-								"Diagnosis",
-								"Frm_DiagnosisWorkList",
-								"initWorkList() - run()",
-								e.toString().substring(
-										e.toString().lastIndexOf(".") + 1,
-										e.toString().length()));
+						e.printStackTrace();
 					}
 				}
 			};
@@ -636,8 +627,10 @@ public class Frm_WorkList extends javax.swing.JFrame {
 			dateComboBox.setEnabled(false);
 			btn_Search.setText("Cancels Search");
 			m_RefrashWorkList.interrupt(); // 終止重複讀取掛號表單
+			m_RefrashWorkList.stopRunning();
 			m_RefrashWorkList.getSelectDate(dateComboBox.getValue(), "N");
 			m_RefrashWorkList2.interrupt(); // 終止重複讀取掛號表單
+			m_RefrashWorkList2.stopRunning();
 			m_RefrashWorkList2.getSelectDate(dateComboBox.getValue(), "C");
 		}
 	}// GEN-LAST:event_btn_SearchActionPerformed

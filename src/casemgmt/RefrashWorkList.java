@@ -64,11 +64,7 @@ public class RefrashWorkList extends Thread {
 				+ "A.p_no AS '"
 				+ paragraph.getString("COL_PATIENTNO")
 				+ "', "
-				+ "(SELECT CASE COUNT(registration_info.guid) "
-				+ "WHEN 0 THEN '*' "
-				+ "END  "
-				+ "FROM outpatient_services, registration_info "
-				+ "WHERE registration_info.guid = outpatient_services.reg_guid AND p_no = A.p_no ) AS '"
+				+ "'*' AS '"
 				+ paragraph.getString("COL_FIRST")
 				+ "', "
 				+ "case_manage.status AS '"
@@ -239,11 +235,7 @@ public class RefrashWorkList extends Thread {
 				+ "A.p_no AS '"
 				+ paragraph.getLanguage(line, "COL_PATIENTNO")
 				+ "', "
-				+ "(SELECT CASE COUNT(registration_info.guid) "
-				+ "WHEN 0 THEN '*' "
-				+ "END  "
-				+ "FROM outpatient_services, registration_info "
-				+ "WHERE registration_info.guid = outpatient_services.reg_guid AND p_no = A.p_no ) AS '"
+				+ "'*' AS '"
 				+ paragraph.getLanguage(line, "COL_FIRST")
 				+ "', "
 				+ "case_manage.status AS 'Status', "
@@ -272,8 +264,10 @@ public class RefrashWorkList extends Thread {
 				+ "WHERE " + "case_manage.reg_guid = A.guid "
 				+ "AND case_manage.p_no = patients_info.p_no "
 				+ "AND case_manage.s_no = staff_info.s_no "
-				+ "AND A.p_no = patients_info.p_no " + "AND A.reg_time LIKE '"
-				+ date + "%' " + "AND case_manage.type = '" + caseType + "' "
+				+ "AND A.p_no = patients_info.p_no "
+				+ "AND A.reg_time LIKE '" + date + "%' "
+				+ "AND case_manage.type = '" + caseType + "' "
+				+ "AND case_manage.status = '" + finished + "' "
 				+ "ORDER BY A.visits_no";
 		try {
 			rs = DBC.executeQuery(sql);

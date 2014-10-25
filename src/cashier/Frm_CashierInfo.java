@@ -6,6 +6,7 @@ import cc.johnwu.sql.DBC;
 import java.awt.Frame;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,6 +31,10 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
     private String m_Guid;
     private String m_Pno;
     private Frm_CashierList m_Frm;
+    Double gPhaTotal = 0.0;
+    Double gXrayTotal = 0.0;
+    Double gLabTotal = 0.0;
+    Double gBedTotal = 0.0;
 
 
     public Frm_CashierInfo(Frm_CashierList frm, String guid, String sysname, String pno) {
@@ -77,153 +82,49 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
         Object[][] dataArray = null;
         Object[][] paidDataArray = null;
         String[] titlePaid = {" ", "Paid Money", "time", "Staff no"};
-        try {
-            if (m_Sysname.equals("pha")) {
-
-                    String[] title = {"guid", " ", "Code", "Item", "Quantity", "Urgent", "Cost"}; // table表頭
-                    sql = "SELECT medicine_stock.guid, medicines.code AS 'Code', " +
-                            "medicines.item AS 'Item', " +
-                            "medicine_stock.quantity AS 'Quantity', " +
-                            "medicine_stock.urgent AS 'Urgent', " +
-                            "IFNULL(medicine_stock.price,medicine_stock.quantity * medical_stock.default_unit_price) AS 'Price' " +
-                            //"medicine_stock.price AS 'Price' " +
-                            "FROM medicines, medicine_stock, registration_info, medical_stock " +
-                            "WHERE registration_info.guid = '" + m_Guid + "' " +
-                            "AND medicine_stock.reg_guid = registration_info.guid " +
-                            "AND medicines.code = medicine_stock.m_code " +
-                            " AND medical_stock.type = 'P' AND medical_stock.item_guid = medicine_stock.m_code " +
-                            " ORDER BY registration_info.reg_time ASC";
-                    System.out.println(sql);
-                    rs = DBC.executeQuery(sql);
-                    rs.last();
-                    dataArray = new Object[rs.getRow()][8];
-                    rs.beforeFirst();
-                    int i = 0;
-                    while (rs.next()) {
-                        dataArray[i][0] = rs.getString("guid");
-                        dataArray[i][1] = i + 1;
-                        dataArray[i][2] = rs.getString("Code");
-                        dataArray[i][3] = rs.getString("Item");
-                        dataArray[i][4] = rs.getString("Quantity");
-                        dataArray[i][6] = rs.getString("Price");
-                        i++;
-                    }
-                    tabModel = new DefaultTableModel(dataArray, title) {
-
-                        @Override
-                        public boolean isCellEditable(int rowIndex, int columnIndex) {
-              
-                            if (columnIndex == 6) {
-                                return true;
-                            } else {
-                                return false;
-                            }
-                        }
-                    };
-
-                    sqlPaid = "SELECT * FROM cashier WHERE p_no = '" + m_Pno + "' " +
-                            "AND no like 'PH%' " +
-                            " order by payment_time desc ";
-
-            } else if (m_Sysname.equals("lab")) {
-                String[] title = {"guid"," ", "Code","Name", "Urgent","Cost"};   // table表頭
-                sql = "SELECT prescription.guid, " +
-                        "prescription.code AS 'Code', " +
-                        "prescription_code.name AS 'Name', " +
-                        "prescription.cost AS 'Cost' " +
-                        "FROM prescription, registration_info, " +
-                             "prescription_code, shift_table, policlinic,poli_room,staff_info " +
-                        "WHERE registration_info.guid = '"+m_Guid+"' " +
-                            "AND registration_info.shift_guid = shift_table.guid " +
-                            "AND shift_table.room_guid = poli_room.guid " +
-                            "AND poli_room.poli_guid = policlinic.guid " +
-                            "AND staff_info.s_id = shift_table.s_id " +
-                            "AND prescription.reg_guid = registration_info.guid " +
-                            "AND prescription_code.code = prescription.code " +
-                            "AND prescription_code.type <> '"+Constant.X_RAY_CODE+"' " +
-                            " ORDER BY registration_info.reg_time ASC";
-                    rs = DBC.executeQuery(sql);
-                    rs.last();
-                    dataArray = new Object[rs.getRow()][6];
-                    rs.beforeFirst();
-                    int i = 0;
-                    while (rs.next()) {
-                        dataArray[i][0] = rs.getString("guid");
-                        dataArray[i][1] = i + 1;
-                        dataArray[i][2] = rs.getString("Code");
-                        dataArray[i][3] = rs.getString("Name");
-                        dataArray[i][5] = rs.getString("Cost");
-                        i++;
-                    }
-                    tabModel = new DefaultTableModel(dataArray, title) {
-
-                        @Override
-                        public boolean isCellEditable(int rowIndex, int columnIndex) {
-                            if (columnIndex == 5) {
-                                return true;
-                            } else {
-                                return false;
-                            }
-                        }
-                    };
-                    
-                    sqlPaid = "SELECT * FROM cashier WHERE p_no = '" + m_Pno + "' " +
-                            "AND no like 'LA%' " +
-                            " order by payment_time desc ";
-    
-            } else if (m_Sysname.equals("reg")) {
-                String[] title = {"guid"," ", "Registration Time","Name", "Dept.","Clinic","Cost" };   // table表頭
-              
-              sql = "SELECT registration_info.guid, " +
-                    "registration_info.reg_time AS 'Registration Time',"+
-                    "CONCAT(patients_info.firstname, ' ' ,patients_info.lastname) AS 'Name', " +
-                    "policlinic.name AS 'Dept.', " +
-                    "poli_room.name AS 'Clinic', "+
-                    "registration_info.reg_cost AS 'Cost' "+
-                    "FROM registration_info, shift_table,policlinic , poli_room ,patients_info "+
-                    "WHERE registration_payment IS NULL "+
-                    "AND shift_table.guid = registration_info.shift_guid "+
-                    "AND policlinic.guid = poli_room.poli_guid "+
-                    "AND poli_room.guid = shift_table.room_guid  "+
-                    "AND registration_info.guid = '"+m_Guid+"' "+
-                    //" AND registration_info.p_no = '" + m_Pno + "' " +
-                    "AND registration_info.p_no = patients_info.p_no ORDER BY registration_info.reg_time ASC";
-
-              rs = DBC.executeQuery(sql);
-                    rs.last();
-                    dataArray = new Object[rs.getRow()][7];
-                    rs.beforeFirst();
-                    int i = 0;
-                    while (rs.next()) {
-                        dataArray[i][0] = rs.getString("guid");
-                        dataArray[i][1] = i + 1;
-                        dataArray[i][2] = rs.getString("Registration Time");
-                        dataArray[i][3] = rs.getString("Name");
-                        dataArray[i][4] = rs.getString("Dept.");
-                        dataArray[i][5] = rs.getString("Clinic");
-                        dataArray[i][6] = rs.getString("Cost");
-                        i++;
-                    }
-                    tabModel = new DefaultTableModel(dataArray, title) {
-
-                        @Override
-                        public boolean isCellEditable(int rowIndex, int columnIndex) {
-                            if (columnIndex == 6) {
-                                return true;
-                            } else {
-                                return false;
-                            }
-                        }
-                    };
-                    
-                    sqlPaid = "SELECT * FROM cashier WHERE p_no = '" + m_Pno + "' " +
-                            "AND no like 'RE%' " +
-                            " order by payment_time desc ";
-
-            } else if (m_Sysname.equals("xray")) {
-                String[] title = {"guid"," ", "Code","Name", "Urgent","Cost"};   // table表頭
-           
-              sql = "SELECT prescription.guid, " +
+        String sqlPha = "SELECT medicine_stock.guid, medicines.code AS 'Code', " +
+                "medicines.item AS 'Item', " +
+                "medicine_stock.quantity AS 'Quantity', " +
+                "medicine_stock.urgent AS 'Urgent', " +
+                "IFNULL(medicine_stock.price,medicine_stock.quantity * medical_stock.default_unit_price) AS 'Price' " +
+                //"medicine_stock.price AS 'Price' " +
+                "FROM medicines, medicine_stock, registration_info, medical_stock " +
+                "WHERE registration_info.guid = '" + m_Guid + "' " +
+                " AND medicine_stock.return_medicine_time is null " +
+                " AND medicine_stock.reg_guid = registration_info.guid " +
+                " AND medicines.code = medicine_stock.m_code " +
+                " AND medical_stock.type = 'P' AND medical_stock.item_guid = medicine_stock.m_code " +
+                " ORDER BY registration_info.reg_time ASC";
+        String sqlLab = "SELECT prescription.guid, " +
+                "prescription.code AS 'Code', " +
+                "prescription_code.name AS 'Name', " +
+                "prescription.cost AS 'Cost' " +
+                "FROM prescription, registration_info, " +
+                     "prescription_code, shift_table, policlinic,poli_room,staff_info " +
+                "WHERE registration_info.guid = '"+m_Guid+"' " +
+                    "AND registration_info.shift_guid = shift_table.guid " +
+                    "AND shift_table.room_guid = poli_room.guid " +
+                    "AND poli_room.poli_guid = policlinic.guid " +
+                    "AND staff_info.s_id = shift_table.s_id " +
+                    "AND prescription.reg_guid = registration_info.guid " +
+                    "AND prescription_code.code = prescription.code " +
+                    "AND prescription_code.type <> '"+Constant.X_RAY_CODE+"' " +
+                    " ORDER BY registration_info.reg_time ASC";
+        String sqlReg = "SELECT registration_info.guid, " +
+                "registration_info.reg_time AS 'Registration Time',"+
+                "CONCAT(patients_info.firstname, ' ' ,patients_info.lastname) AS 'Name', " +
+                "policlinic.name AS 'Dept.', " +
+                "poli_room.name AS 'Clinic', "+
+                "registration_info.reg_cost AS 'Cost' "+
+                "FROM registration_info, shift_table,policlinic , poli_room ,patients_info "+
+                "WHERE registration_payment IS NULL "+
+                "AND shift_table.guid = registration_info.shift_guid "+
+                "AND policlinic.guid = poli_room.poli_guid "+
+                "AND poli_room.guid = shift_table.room_guid  "+
+                "AND registration_info.guid = '"+m_Guid+"' "+
+                //" AND registration_info.p_no = '" + m_Pno + "' " +
+                "AND registration_info.p_no = patients_info.p_no ORDER BY registration_info.reg_time ASC";
+        String sqlXray = "SELECT prescription.guid, " +
                 "prescription.code AS 'Code', " +
                 "prescription_code.name AS 'Name', " +
                 "prescription.cost AS 'Cost' " +
@@ -238,8 +139,113 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
                     "AND prescription_code.code = prescription.code " +
                     "AND prescription_code.type = '"+Constant.X_RAY_CODE+"' " +
                     " ORDER BY registration_info.reg_time ASC ";
+        
+        try {
+            if (m_Sysname.equals("pha")) {
 
-              rs = DBC.executeQuery(sql);
+                String[] title = {"guid", " ", "Code", "Item", "Quantity", "Urgent", "Cost"}; // table表頭
+                //sql = sqlPha;
+                System.out.println(sqlPha);
+                rs = DBC.executeQuery(sqlPha);
+                rs.last();
+                dataArray = new Object[rs.getRow()][8];
+                rs.beforeFirst();
+                int i = 0;
+                while (rs.next()) {
+                    dataArray[i][0] = rs.getString("guid");
+                    dataArray[i][1] = i + 1;
+                    dataArray[i][2] = rs.getString("Code");
+                    dataArray[i][3] = rs.getString("Item");
+                    dataArray[i][4] = rs.getString("Quantity");
+                    dataArray[i][6] = rs.getString("Price");
+                    i++;
+                }
+                tabModel = new DefaultTableModel(dataArray, title) {
+
+                    @Override
+                    public boolean isCellEditable(int rowIndex, int columnIndex) {
+          
+                        if (columnIndex == 6) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+                };
+
+                sqlPaid = "SELECT * FROM cashier WHERE reg_guid = '" + m_Guid + "' " +
+                        "AND no like 'PH%' " +
+                        " order by payment_time desc ";
+
+            } else if (m_Sysname.equals("lab")) {
+                String[] title = {"guid"," ", "Code","Name", "Urgent","Cost"};   // table表頭
+                rs = DBC.executeQuery(sqlLab);
+                rs.last();
+                dataArray = new Object[rs.getRow()][6];
+                rs.beforeFirst();
+                int i = 0;
+                while (rs.next()) {
+                    dataArray[i][0] = rs.getString("guid");
+                    dataArray[i][1] = i + 1;
+                    dataArray[i][2] = rs.getString("Code");
+                    dataArray[i][3] = rs.getString("Name");
+                    dataArray[i][5] = rs.getString("Cost");
+                    i++;
+                }
+                tabModel = new DefaultTableModel(dataArray, title) {
+
+                    @Override
+                    public boolean isCellEditable(int rowIndex, int columnIndex) {
+                        if (columnIndex == 5) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+                };
+                
+                sqlPaid = "SELECT * FROM cashier WHERE reg_guid = '" + m_Guid + "' " +
+                        "AND no like 'LA%' " +
+                        " order by payment_time desc ";
+    
+            } else if (m_Sysname.equals("reg")) {
+                String[] title = {"guid"," ", "Registration Time","Name", "Dept.","Clinic","Cost" };   // table表頭
+              
+                rs = DBC.executeQuery(sqlReg);
+                rs.last();
+                dataArray = new Object[rs.getRow()][7];
+                rs.beforeFirst();
+                int i = 0;
+                while (rs.next()) {
+                    dataArray[i][0] = rs.getString("guid");
+                    dataArray[i][1] = i + 1;
+                    dataArray[i][2] = rs.getString("Registration Time");
+                    dataArray[i][3] = rs.getString("Name");
+                    dataArray[i][4] = rs.getString("Dept.");
+                    dataArray[i][5] = rs.getString("Clinic");
+                    dataArray[i][6] = rs.getString("Cost");
+                    i++;
+                }
+                tabModel = new DefaultTableModel(dataArray, title) {
+
+                    @Override
+                    public boolean isCellEditable(int rowIndex, int columnIndex) {
+                        if (columnIndex == 6) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+                };
+                
+                sqlPaid = "SELECT * FROM cashier WHERE reg_guid = '" + m_Guid + "' " +
+                        "AND no like 'RE%' " +
+                        " order by payment_time desc ";
+
+            } else if (m_Sysname.equals("xray")) {
+                String[] title = {"guid"," ", "Code","Name", "Urgent","Cost"};   // table表頭
+                
+                rs = DBC.executeQuery(sqlXray);
 				rs.last();
 				dataArray = new Object[rs.getRow()][6];
 				rs.beforeFirst();
@@ -264,11 +270,127 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
 				        }
 				    }
 				};
-				sqlPaid = "SELECT * FROM cashier WHERE p_no = '" + m_Pno + "' " +
+				sqlPaid = "SELECT * FROM cashier WHERE reg_guid = '" + m_Guid + "' " +
 				        "AND no like 'XR%' " +
 				        " order by payment_time desc ";
 	
-	        }
+	        } else if (m_Sysname.equals("bed")) {
+	        	Integer itemCount=0;
+	        	Vector<String> title = new Vector<String>();
+	        	Vector<Vector> rowData = new Vector<Vector>();
+	        	title.addElement("guid");
+	        	title.addElement("");
+	        	title.addElement("type");
+	        	title.addElement("Code");
+	        	title.addElement("Name");
+	        	title.addElement("Quantity");
+	        	title.addElement("Check in");
+	        	title.addElement("Check out");
+	        	title.addElement("Price");
+	        	
+	        	sql = " SELECT registration_info.guid, registration_info.bed_guid, "
+	        			+ " registration_info.p_no, registration_info.reg_time, "
+	        			+ " registration_info.reg_cost, registration_info.dia_cost, "
+	        			+ " bed_record.checkinTime, bed_record.checkoutTime, "
+	        			+ " IFNULL(bed_record.cost,DATEDIFF(bed_record.checkoutTime, "
+	        			+ " bed_record.checkinTime) * setting.bed_price) as 'Price' "
+	        			+ " FROM registration_info, bed_record, setting "
+	        			+ " WHERE registration_info.bed_guid = bed_record.guid "
+		        		+ " AND registration_info.guid = '" + m_Guid + "' "
+		        		+ " ORDER by registration_info.reg_time ASC ";
+	        	
+	        	rs = DBC.executeQuery(sql);
+	        	Vector<String> rowItem = null;
+
+				while (rs.next()) {
+					itemCount++;
+					rowItem = new Vector<String>();
+                	rowItem.addElement(rs.getString("guid"));
+                	rowItem.addElement(itemCount.toString());
+                	rowItem.addElement("Bed");
+                	rowItem.addElement(rs.getString("bed_guid"));
+                	rowItem.addElement("");
+                	rowItem.addElement("");
+                	rowItem.addElement(rs.getString("checkinTime"));
+                	rowItem.addElement(rs.getString("checkoutTime"));
+                	rowItem.addElement(rs.getString("Price"));
+                	
+                	rowData.addElement(rowItem);
+                    gBedTotal += Double.parseDouble(rs.getString("Price"));
+				}
+				
+				//String[] title = {"guid", " ", "Code", "Item", "Quantity", "Urgent", "Cost"}; // table表頭
+                rs = DBC.executeQuery(sqlPha);
+                while (rs.next()) {
+                	itemCount++;
+					rowItem = new Vector<String>();
+                	rowItem.addElement(rs.getString("guid"));
+                	rowItem.addElement(itemCount.toString());
+                	rowItem.addElement("Pharmacy");
+                	rowItem.addElement(rs.getString("Code"));
+                	rowItem.addElement(rs.getString("Item"));
+                	rowItem.addElement(rs.getString("Quantity"));
+                	rowItem.addElement("");
+                	rowItem.addElement("");
+                	rowItem.addElement(rs.getString("Price"));
+                	
+                	rowData.addElement(rowItem);
+                	gPhaTotal += Double.parseDouble(rs.getString("Price"));
+                }
+                
+                rs = DBC.executeQuery(sqlLab);
+
+                while (rs.next()) {
+                	itemCount++;
+					rowItem = new Vector<String>();
+                	rowItem.addElement(rs.getString("guid"));
+                	rowItem.addElement(itemCount.toString());
+                	rowItem.addElement("Laboratory");
+                	rowItem.addElement(rs.getString("Code"));
+                	rowItem.addElement(rs.getString("Name"));
+                	rowItem.addElement("");
+                	rowItem.addElement("");
+                	rowItem.addElement("");
+                	rowItem.addElement(rs.getString("Cost"));
+                	
+                	rowData.addElement(rowItem);
+                    gLabTotal += Double.parseDouble(rs.getString("Price"));
+                }
+				rs = DBC.executeQuery(sqlXray);
+				while (rs.next()) {
+					itemCount++;
+					rowItem = new Vector<String>();
+                	rowItem.addElement(rs.getString("guid"));
+                	rowItem.addElement(itemCount.toString());
+                	rowItem.addElement("Radiology");
+                	rowItem.addElement(rs.getString("Code"));
+                	rowItem.addElement(rs.getString("Name"));
+                	rowItem.addElement("");
+                	rowItem.addElement("");
+                	rowItem.addElement("");
+                	rowItem.addElement(rs.getString("Cost"));
+                	
+                	rowData.addElement(rowItem);
+                	gXrayTotal += Double.parseDouble(rs.getString("Price"));
+				}
+				
+				tabModel = new DefaultTableModel(rowData, title) {
+				
+				    @Override
+				    public boolean isCellEditable(int rowIndex, int columnIndex) {
+				        if (columnIndex == 8) {
+				            return true;
+				        } else {
+				            return false;
+				        }
+				    }
+				};
+				sqlPaid = "SELECT * FROM cashier WHERE reg_guid = '" + m_Guid + "' " +
+				        "AND no REGEXP 'BE|XR|PH|LA' " +
+				        " order by payment_time desc ";
+	        	
+	        	
+            }
 
             rsPaid = DBC.executeQuery(sqlPaid);
             rsPaid.last();
@@ -436,7 +558,7 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Cashier Information");
-        setResizable(false);
+        setResizable(true);
 
         pan_Top.setBackground(new java.awt.Color(228, 228, 228));
         pan_Top.setFont(new java.awt.Font("Bitstream Vera Sans", 1, 18));
@@ -681,6 +803,23 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private String getSqlPrefix(String sysname) {
+    	if (sysname.equals("pha")) return "PH";
+    	else if (sysname.equals("lab")) return "LA";
+        else if (sysname.equals("reg")) return "RE";
+        else if (sysname.equals("xray")) return "XR";
+        else if (sysname.equals("bed")) return "BE"; 
+        else return "";
+    }
+    private String getPaymentType(String sysname) {
+    	if (sysname.equals("pha")) return "P";
+    	else if (sysname.equals("lab")) return "L";
+        else if (sysname.equals("reg")) return "R";
+        else if (sysname.equals("xray")) return "X";
+        else if (sysname.equals("bed")) return "B"; 
+        else return "";
+    }
+    
     private void savePayment() {
     	if (txt_PaidAmount.getText().trim().equals("") || txt_AmountReceivable.getText().trim().equals("")) {
     		JOptionPane.showMessageDialog(null, "Save error");
@@ -693,26 +832,6 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
 	    	Double remainingMoney = paidMoney;
 	    	Double costOfItem = 0.0;
 	    	Double arrearOfItem = 0.0;
-	    	
-	    	String sqlStr = "";
-	    	String paymentType = "";
-	    	if (m_Sysname.equals("pha")) {
-	            paymentType = "P";
-	            sqlStr = "PH";
-	            //sql = "UPDATE registration_info SET payment = '"+finish+"'";
-	        } else if (m_Sysname.equals("lab")) {
-	            paymentType = "L";
-	            sqlStr = "LA";
-	            //sql = "UPDATE registration_info SET lab_payment = '"+finish+"'";
-	        } else if (m_Sysname.equals("reg")) {
-	            paymentType = "R";
-	            sqlStr = "RE";
-	            //sql = "UPDATE registration_info SET registration_payment = '"+finish+"'";
-	        }else if (m_Sysname.equals("xray")) {
-	            sqlStr = "XR";
-	            paymentType = "X";
-	            //sql = "UPDATE registration_info SET radiology_payment = '"+finish+"'";
-	        }
 	    	
 	        // 判斷資料不是數值先把格子清空
 	        for (int i = 0; i < tab_Payment.getRowCount() ; i++) {
@@ -736,15 +855,15 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
                         	remainingMoney = 0.0;
                         }
                     	sql = "INSERT INTO cashier(no, reg_guid, p_no, type, payment_time, amount_receivable, paid_amount, arrears, s_no) " +
-                                "SELECT CASE  WHEN  MAX(`no`)  IS  NULL THEN '"+sqlStr+"00000001' ELSE "+
+                                "SELECT CASE  WHEN  MAX(`no`)  IS  NULL THEN '"+ getSqlPrefix(m_Sysname) +"00000001' ELSE "+
                                 " INSERT (MAX(`no`), "+
                                 "LENGTH(MAX(`no`)) - LENGTH(SUBSTRING(MAX(`no`),3)+1) + 1, "+
                                 "LENGTH(SUBSTRING(MAX(`no`),3)+1), "+
                                 "SUBSTRING(MAX(`no`),3)+1) END  "+
-                                ",'"+guid+"', '"+m_Pno+"', '"+paymentType+"', " +
+                                ",'"+ m_Guid +"', '"+m_Pno+"', '"+ getPaymentType(m_Sysname) +"', " +
                                 "NOW(), "+costOfItem+", "+(costOfItem - arrearOfItem)+", " +
                                 ""+arrearOfItem+", '"+UserInfo.getUserNO()+"' " +
-                                "FROM cashier WHERE no LIKE '"+sqlStr+"%'  " ;
+                                "FROM cashier WHERE no LIKE '"+ getSqlPrefix(m_Sysname) +"%'  " ;
                     	//System.out.println(sql);
                     	DBC.executeUpdate(sql);
                     	
@@ -780,22 +899,19 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
                         	remainingMoney = 0.0;
                         }
                     	sql = "INSERT INTO cashier(no, reg_guid, p_no, type, payment_time, amount_receivable, paid_amount, arrears, s_no) " +
-                                "SELECT CASE  WHEN  MAX(`no`)  IS  NULL THEN '"+sqlStr+"00000001' ELSE "+
+                                "SELECT CASE  WHEN  MAX(`no`)  IS  NULL THEN '"+ getSqlPrefix(m_Sysname) +"00000001' ELSE "+
                                 " INSERT (MAX(`no`), "+
                                 "LENGTH(MAX(`no`)) - LENGTH(SUBSTRING(MAX(`no`),3)+1) + 1, "+
                                 "LENGTH(SUBSTRING(MAX(`no`),3)+1), "+
                                 "SUBSTRING(MAX(`no`),3)+1) END  "+
-                                ",'"+guid+"', '"+m_Pno+"', '"+paymentType+"', " +
+                                ",'"+ m_Guid +"', '"+m_Pno+"', '"+ getPaymentType(m_Sysname) +"', " +
                                 "NOW(), "+costOfItem+", "+(costOfItem - arrearOfItem)+", " +
                                 ""+arrearOfItem+", '"+UserInfo.getUserNO()+"' " +
-                                "FROM cashier WHERE no LIKE '"+sqlStr+"%'  " ;
+                                "FROM cashier WHERE no LIKE '"+ getSqlPrefix(m_Sysname) +"%'  " ;
                     	//System.out.println(sql);
                     	DBC.executeUpdate(sql);
                     	
-                    	if(arrearOfItem.compareTo(0.0) != 0) {
-                    		sql = "UPDATE registration_info SET reg_cost = " + arrearOfItem 
-                    				+ " WHERE guid = '" + guid + "'";
-                    	}
+                    	sql = "UPDATE registration_info SET reg_cost = " + arrearOfItem + " WHERE guid = '" + guid + "'";
                     	//System.out.println(sql);
                     	DBC.executeUpdate(sql);
                     	
@@ -827,24 +943,19 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
                         	remainingMoney = 0.0;
                         }
                     	sql = "INSERT INTO cashier(no, reg_guid, p_no, type, payment_time, amount_receivable, paid_amount, arrears, s_no) " +
-                                "SELECT CASE  WHEN  MAX(`no`)  IS  NULL THEN '"+sqlStr+"00000001' ELSE "+
+                                "SELECT CASE  WHEN  MAX(`no`)  IS  NULL THEN '"+ getSqlPrefix(m_Sysname) +"00000001' ELSE "+
                                 " INSERT (MAX(`no`), "+
                                 "LENGTH(MAX(`no`)) - LENGTH(SUBSTRING(MAX(`no`),3)+1) + 1, "+
                                 "LENGTH(SUBSTRING(MAX(`no`),3)+1), "+
                                 "SUBSTRING(MAX(`no`),3)+1) END  "+
-                                ",'"+guid+"', '"+m_Pno+"', '"+paymentType+"', " +
+                                ",'"+ m_Guid +"', '"+m_Pno+"', '"+ getPaymentType(m_Sysname) +"', " +
                                 "NOW(), "+costOfItem+", "+(costOfItem - arrearOfItem)+", " +
                                 ""+arrearOfItem+", '"+UserInfo.getUserNO()+"' " +
-                                "FROM cashier WHERE no LIKE '"+sqlStr+"%'  " ;
+                                "FROM cashier WHERE no LIKE '"+ getSqlPrefix(m_Sysname) +"%'  " ;
                     	//System.out.println(sql);
                     	DBC.executeUpdate(sql);
                     	
-                    	if(arrearOfItem.compareTo(0.0) == 0) {
-	                    	sql = "UPDATE prescription SET cost = 0 WHERE guid = '" + guid + "'";
-	                    } else {
-                    		sql = "UPDATE prescription SET cost = " + arrearOfItem 
-                    				+ " WHERE guid = '" + guid + "'";
-                    	}
+                    	sql = "UPDATE prescription SET cost = " + arrearOfItem + " WHERE guid = '" + guid + "'";
                     	DBC.executeUpdate(sql);
                     	
                     	if(remainingMoney.compareTo(0.0) == 0) break;
@@ -861,6 +972,182 @@ public class Frm_CashierInfo extends javax.swing.JFrame {
                             + "concat(DATE_FORMAT(now(),'%Y%m%d%H%i%S'),'%')),20,'000000')   WHERE guid = '" + m_Guid + "'";
                 	//System.out.println(sql);
                 	DBC.executeUpdate(sql);
+                }
+            } else if (m_Sysname.equals("lab")) {
+            	for (int i = 0; i < tab_Payment.getRowCount() ; i++) {
+                    if (common.Tools.isNumber(tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1).toString())) {
+                    	costOfItem = Double.parseDouble(tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1).toString());
+                    	if(costOfItem.compareTo(0.0) == 0) continue;
+                    	String guid = tab_Payment.getValueAt(i, 0).toString();
+                    	if(remainingMoney >= costOfItem ) {
+                        	remainingMoney -= costOfItem;
+                        	arrearOfItem = 0.0;
+                        } else {
+                        	arrearOfItem = costOfItem - remainingMoney;
+                        	remainingMoney = 0.0;
+                        }
+                    	sql = "INSERT INTO cashier(no, reg_guid, p_no, type, payment_time, amount_receivable, paid_amount, arrears, s_no) " +
+                                "SELECT CASE  WHEN  MAX(`no`)  IS  NULL THEN '"+ getSqlPrefix(m_Sysname) +"00000001' ELSE "+
+                                " INSERT (MAX(`no`), "+
+                                "LENGTH(MAX(`no`)) - LENGTH(SUBSTRING(MAX(`no`),3)+1) + 1, "+
+                                "LENGTH(SUBSTRING(MAX(`no`),3)+1), "+
+                                "SUBSTRING(MAX(`no`),3)+1) END  "+
+                                ",'"+ m_Guid +"', '"+m_Pno+"', '"+ getPaymentType(m_Sysname) +"', " +
+                                "NOW(), "+costOfItem+", "+(costOfItem - arrearOfItem)+", " +
+                                ""+arrearOfItem+", '"+UserInfo.getUserNO()+"' " +
+                                "FROM cashier WHERE no LIKE '"+ getSqlPrefix(m_Sysname) +"%'  " ;
+                    	//System.out.println(sql);
+                    	DBC.executeUpdate(sql);
+                    	
+                    	sql = "UPDATE prescription SET cost = " + arrearOfItem + " WHERE guid = '" + guid + "'";
+                    	DBC.executeUpdate(sql);
+                    	
+                    	if(remainingMoney.compareTo(0.0) == 0) break;
+                    	//else System.out.println(remainingMoney);
+                    }
+                }
+                if(totalCost.compareTo(paidMoney) == 0) {
+                	sql = "UPDATE registration_info SET lab_payment = 'F'"
+                    		//+ ", reg_cost = 0.0 "
+                        	+ ",touchtime = RPAD((SELECT CASE WHEN MAX(B.touchtime) >= DATE_FORMAT(now(),'%Y%m%d%H%i%S') " 
+                            + "THEN concat(DATE_FORMAT(now(),'%Y%m%d%H%i%S'), COUNT(B.touchtime)) " 
+                            + "ELSE DATE_FORMAT(now(),'%Y%m%d%H%i%S') " 
+                            + "END touchtime FROM (SELECT touchtime FROM registration_info) AS B WHERE B.touchtime LIKE " 
+                            + "concat(DATE_FORMAT(now(),'%Y%m%d%H%i%S'),'%')),20,'000000')   WHERE guid = '" + m_Guid + "'";
+                	//System.out.println(sql);
+                	DBC.executeUpdate(sql);
+                }
+            }else if (m_Sysname.equals("bed")) {
+            	for (int i = 0; i < tab_Payment.getRowCount() ; i++) {
+                    if (common.Tools.isNumber(tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1).toString())) {
+                    	costOfItem = Double.parseDouble(tab_Payment.getValueAt(i, tab_Payment.getColumnCount()-1).toString());
+                    	if(costOfItem.compareTo(0.0) == 0) continue;
+                    	String guid = tab_Payment.getValueAt(i, 0).toString();
+                    	if(remainingMoney >= costOfItem ) {
+                        	remainingMoney -= costOfItem;
+                        	arrearOfItem = 0.0;
+                        } else {
+                        	arrearOfItem = costOfItem - remainingMoney;
+                        	remainingMoney = 0.0;
+                        }
+                    	if (tab_Payment.getValueAt(i, 2).toString().compareTo("Bed") == 0) {
+                    		sql = "INSERT INTO cashier(no, reg_guid, p_no, type, payment_time, amount_receivable, paid_amount, arrears, s_no) " +
+                                    "SELECT CASE  WHEN  MAX(`no`)  IS  NULL THEN '"+ getSqlPrefix("bed") +"00000001' ELSE "+
+                                    " INSERT (MAX(`no`), "+
+                                    "LENGTH(MAX(`no`)) - LENGTH(SUBSTRING(MAX(`no`),3)+1) + 1, "+
+                                    "LENGTH(SUBSTRING(MAX(`no`),3)+1), "+
+                                    "SUBSTRING(MAX(`no`),3)+1) END  "+
+                                    ",'"+ m_Guid +"', '"+m_Pno+"', '"+ getPaymentType("bed") +"', " +
+                                    "NOW(), "+costOfItem+", "+(costOfItem - arrearOfItem)+", " +
+                                    ""+arrearOfItem+", '"+UserInfo.getUserNO()+"' " +
+                                    "FROM cashier WHERE no LIKE '"+ getSqlPrefix("bed") +"%'  " ;
+                        	//System.out.println(sql);
+                        	DBC.executeUpdate(sql);
+                        	
+                        	sql = "UPDATE bed_record SET cost = " + arrearOfItem + " WHERE guid = '" + tab_Payment.getValueAt(i, 3).toString() + "'";
+                        	DBC.executeUpdate(sql);
+                        	gBedTotal -= (costOfItem - arrearOfItem);
+                        	
+                        	if(gBedTotal.compareTo(0.0) == 0) {
+                            	sql = "UPDATE registration_info SET bed_payment = 'F'"
+                                		//+ ", reg_cost = 0.0 "
+                                    	+ ",touchtime = RPAD((SELECT CASE WHEN MAX(B.touchtime) >= DATE_FORMAT(now(),'%Y%m%d%H%i%S') " 
+                                        + "THEN concat(DATE_FORMAT(now(),'%Y%m%d%H%i%S'), COUNT(B.touchtime)) " 
+                                        + "ELSE DATE_FORMAT(now(),'%Y%m%d%H%i%S') " 
+                                        + "END touchtime FROM (SELECT touchtime FROM registration_info) AS B WHERE B.touchtime LIKE " 
+                                        + "concat(DATE_FORMAT(now(),'%Y%m%d%H%i%S'),'%')),20,'000000')   WHERE guid = '" + m_Guid + "'";
+                            	//System.out.println(sql);
+                            	DBC.executeUpdate(sql);
+                            }
+                    	} else if (tab_Payment.getValueAt(i, 2).toString().compareTo("Pharmacy") == 0) {
+                    		sql = "INSERT INTO cashier(no, reg_guid, p_no, type, payment_time, amount_receivable, paid_amount, arrears, s_no) " +
+                                    "SELECT CASE  WHEN  MAX(`no`)  IS  NULL THEN '"+ getSqlPrefix("pha") +"00000001' ELSE "+
+                                    " INSERT (MAX(`no`), "+
+                                    "LENGTH(MAX(`no`)) - LENGTH(SUBSTRING(MAX(`no`),3)+1) + 1, "+
+                                    "LENGTH(SUBSTRING(MAX(`no`),3)+1), "+
+                                    "SUBSTRING(MAX(`no`),3)+1) END  "+
+                                    ",'"+ m_Guid +"', '"+m_Pno+"', '"+ getPaymentType("pha") +"', " +
+                                    "NOW(), "+costOfItem+", "+(costOfItem - arrearOfItem)+", " +
+                                    ""+arrearOfItem+", '"+UserInfo.getUserNO()+"' " +
+                                    "FROM cashier WHERE no LIKE '"+ getSqlPrefix("pha") +"%'  " ;
+                        	//System.out.println(sql);
+                        	DBC.executeUpdate(sql);
+                        	
+                       		sql = "UPDATE medicine_stock SET price = " + arrearOfItem + " WHERE guid = '" + guid + "'";
+                        	DBC.executeUpdate(sql);
+                        	gPhaTotal -= (costOfItem - arrearOfItem);
+                        	if(gPhaTotal.compareTo(0.0) == 0) {
+            	            	sql = "UPDATE registration_info SET pharmacy_payment = 'F'"
+            	                		//+ ", reg_cost = 0.0 "
+            	                    	+ ",touchtime = RPAD((SELECT CASE WHEN MAX(B.touchtime) >= DATE_FORMAT(now(),'%Y%m%d%H%i%S') " 
+            	                        + "THEN concat(DATE_FORMAT(now(),'%Y%m%d%H%i%S'), COUNT(B.touchtime)) " 
+            	                        + "ELSE DATE_FORMAT(now(),'%Y%m%d%H%i%S') " 
+            	                        + "END touchtime FROM (SELECT touchtime FROM registration_info) AS B WHERE B.touchtime LIKE " 
+            	                        + "concat(DATE_FORMAT(now(),'%Y%m%d%H%i%S'),'%')),20,'000000')   WHERE guid = '" + m_Guid + "'";
+            	                DBC.executeUpdate(sql);
+                            }
+                        	
+                    	} else if (tab_Payment.getValueAt(i, 2).toString().compareTo("Laboratory") == 0) {
+                    		sql = "INSERT INTO cashier(no, reg_guid, p_no, type, payment_time, amount_receivable, paid_amount, arrears, s_no) " +
+                                    "SELECT CASE  WHEN  MAX(`no`)  IS  NULL THEN '"+ getSqlPrefix("lab") +"00000001' ELSE "+
+                                    " INSERT (MAX(`no`), "+
+                                    "LENGTH(MAX(`no`)) - LENGTH(SUBSTRING(MAX(`no`),3)+1) + 1, "+
+                                    "LENGTH(SUBSTRING(MAX(`no`),3)+1), "+
+                                    "SUBSTRING(MAX(`no`),3)+1) END  "+
+                                    ",'"+ m_Guid +"', '"+m_Pno+"', '"+ getPaymentType("lab") +"', " +
+                                    "NOW(), "+costOfItem+", "+(costOfItem - arrearOfItem)+", " +
+                                    ""+arrearOfItem+", '"+UserInfo.getUserNO()+"' " +
+                                    "FROM cashier WHERE no LIKE '"+ getSqlPrefix("lab") +"%'  " ;
+                        	//System.out.println(sql);
+                        	DBC.executeUpdate(sql);
+                        	
+                        	sql = "UPDATE prescription SET cost = " + arrearOfItem + " WHERE guid = '" + guid + "'";
+                        	DBC.executeUpdate(sql);
+                        	gLabTotal -= (costOfItem - arrearOfItem);
+                        	
+                        	if(gLabTotal.compareTo(0.0) == 0) {
+                            	sql = "UPDATE registration_info SET lab_payment = 'F'"
+                                		//+ ", reg_cost = 0.0 "
+                                    	+ ",touchtime = RPAD((SELECT CASE WHEN MAX(B.touchtime) >= DATE_FORMAT(now(),'%Y%m%d%H%i%S') " 
+                                        + "THEN concat(DATE_FORMAT(now(),'%Y%m%d%H%i%S'), COUNT(B.touchtime)) " 
+                                        + "ELSE DATE_FORMAT(now(),'%Y%m%d%H%i%S') " 
+                                        + "END touchtime FROM (SELECT touchtime FROM registration_info) AS B WHERE B.touchtime LIKE " 
+                                        + "concat(DATE_FORMAT(now(),'%Y%m%d%H%i%S'),'%')),20,'000000')   WHERE guid = '" + m_Guid + "'";
+                            	//System.out.println(sql);
+                            	DBC.executeUpdate(sql);
+                            }
+                    	} else if (tab_Payment.getValueAt(i, 2).toString().compareTo("Radiology") == 0) {
+                    		sql = "INSERT INTO cashier(no, reg_guid, p_no, type, payment_time, amount_receivable, paid_amount, arrears, s_no) " +
+                                    "SELECT CASE  WHEN  MAX(`no`)  IS  NULL THEN '"+ getSqlPrefix("xray") +"00000001' ELSE "+
+                                    " INSERT (MAX(`no`), "+
+                                    "LENGTH(MAX(`no`)) - LENGTH(SUBSTRING(MAX(`no`),3)+1) + 1, "+
+                                    "LENGTH(SUBSTRING(MAX(`no`),3)+1), "+
+                                    "SUBSTRING(MAX(`no`),3)+1) END  "+
+                                    ",'"+ m_Guid +"', '"+m_Pno+"', '"+ getPaymentType("xray") +"', " +
+                                    "NOW(), "+costOfItem+", "+(costOfItem - arrearOfItem)+", " +
+                                    ""+arrearOfItem+", '"+UserInfo.getUserNO()+"' " +
+                                    "FROM cashier WHERE no LIKE '"+ getSqlPrefix("xray") +"%'  " ;
+                        	//System.out.println(sql);
+                        	DBC.executeUpdate(sql);
+                        	
+                        	sql = "UPDATE prescription SET cost = " + arrearOfItem + " WHERE guid = '" + guid + "'";
+                        	DBC.executeUpdate(sql);
+                        	gXrayTotal -= (costOfItem - arrearOfItem);
+                        	
+                        	if(gXrayTotal.compareTo(0.0) == 0) {
+                            	sql = "UPDATE registration_info SET radiology_payment = 'F'"
+                                		//+ ", reg_cost = 0.0 "
+                                    	+ ",touchtime = RPAD((SELECT CASE WHEN MAX(B.touchtime) >= DATE_FORMAT(now(),'%Y%m%d%H%i%S') " 
+                                        + "THEN concat(DATE_FORMAT(now(),'%Y%m%d%H%i%S'), COUNT(B.touchtime)) " 
+                                        + "ELSE DATE_FORMAT(now(),'%Y%m%d%H%i%S') " 
+                                        + "END touchtime FROM (SELECT touchtime FROM registration_info) AS B WHERE B.touchtime LIKE " 
+                                        + "concat(DATE_FORMAT(now(),'%Y%m%d%H%i%S'),'%')),20,'000000')   WHERE guid = '" + m_Guid + "'";
+                            	//System.out.println(sql);
+                            	DBC.executeUpdate(sql);
+                            }
+                    	}
+                    	if(remainingMoney.compareTo(0.0) == 0) break;
+                    }
                 }
             }
             JOptionPane.showMessageDialog(null, "Saved successfully.");
