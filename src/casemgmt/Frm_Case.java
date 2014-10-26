@@ -271,6 +271,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface,
 			PreparedStatement stmt3 = null;
 			PreparedStatement stmt4 = null;
 			PreparedStatement stmt5 = null;
+			PreparedStatement stmt6 = null;
 			try {
 				conn = DBC.getConnectionExternel();
 				conn.setAutoCommit(false);
@@ -289,19 +290,29 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface,
 				stmt2.executeUpdate();
 				CustomLogger.debug(logger, sql);
 
-				sql = String
-						.format("Delete from wound_complication where case_guid = '%s'",
-								caseGuid);
-				stmt4 = conn.prepareStatement(sql);
-				stmt4.executeUpdate();
-				CustomLogger.debug(logger, sql);
+				if (caseType.equalsIgnoreCase("W")) {
+					sql = String
+							.format("Delete from wound_complication where case_guid = '%s'",
+									caseGuid);
+					stmt4 = conn.prepareStatement(sql);
+					stmt4.executeUpdate();
+					CustomLogger.debug(logger, sql);
 
-				sql = String.format(
-						"Delete from wound_accessment where case_guid = '%s'",
-						caseGuid);
-				stmt5 = conn.prepareStatement(sql);
-				stmt5.executeUpdate();
-				CustomLogger.debug(logger, sql);
+					sql = String
+							.format("Delete from wound_accessment where case_guid = '%s'",
+									caseGuid);
+					stmt5 = conn.prepareStatement(sql);
+					stmt5.executeUpdate();
+					CustomLogger.debug(logger, sql);
+
+					sql = String
+							.format("delete from image_meta where item_guid = '%s' and type = 'wound'",
+									caseGuid);
+					stmt6 = conn.prepareStatement(sql);
+					stmt6.executeUpdate();
+					logger.debug("[{}][{}] {}", UserInfo.getUserID(),
+							UserInfo.getUserName(), sql);
+				}
 
 				sql = String.format(
 						"Delete from case_manage where guid = '%s'", caseGuid);
@@ -357,6 +368,13 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface,
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
+			}
+		}
+
+		if (caseType.equalsIgnoreCase("W")) {
+			if (pan_Wound.updateImgThread != null) {
+				pan_Wound.updateImgThread.stopRunning();
+				pan_Wound.updateImgThread.interrupt();
 			}
 		}
 
@@ -1697,6 +1715,12 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface,
 			// }
 		} else {
 			// 選擇 NO 時
+		}
+		if (caseType.equalsIgnoreCase("W")) {
+			if (pan_Wound.updateImgThread != null) {
+				pan_Wound.updateImgThread.stopRunning();
+				pan_Wound.updateImgThread.interrupt();
+			}
 		}
 	}
 
