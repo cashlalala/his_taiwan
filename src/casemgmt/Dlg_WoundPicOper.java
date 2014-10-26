@@ -20,6 +20,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
+import multilingual.Language;
 import cc.johnwu.sql.DBC;
 
 public class Dlg_WoundPicOper extends JDialog {
@@ -29,6 +30,8 @@ public class Dlg_WoundPicOper extends JDialog {
 	 */
 	private static final long serialVersionUID = 7724889412620480028L;
 	protected String wondPicGuid;
+
+	private static Language lang = Language.getInstance();
 
 	public Dlg_WoundPicOper(String guid) {
 		wondPicGuid = guid;
@@ -82,14 +85,14 @@ public class Dlg_WoundPicOper extends JDialog {
 		panel_1.revalidate();
 		panel_1.repaint();
 
-		btnDelete = new JButton("Delete");
+		btnDelete = new JButton(lang.getString("DELETE"));
 		btnDelete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				onBtnDelClicked(e);
 			}
 		});
 
-		btnClose = new JButton("Close");
+		btnClose = new JButton(lang.getString("CLOSE"));
 		btnClose.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				onBtnCloseClicked(e);
@@ -148,12 +151,15 @@ public class Dlg_WoundPicOper extends JDialog {
 		String sql = String.format(
 				"update image_meta set status = 'D' where guid = '%s'",
 				wondPicGuid);
-		int reply = JOptionPane.showConfirmDialog(this, "Delete ?", "Info",
+		int reply = JOptionPane.showConfirmDialog(this,
+				lang.getString("WOUND_CASE_CONFIRM_DELETE"),
+				lang.getString("WOUND_CASE_CONFIRM_TITLE"),
 				JOptionPane.YES_NO_OPTION);
 		if (reply == JOptionPane.YES_OPTION) {
 			try {
 				DBC.executeUpdate(sql);
-				JOptionPane.showMessageDialog(this, "Delete Success!");
+				JOptionPane.showMessageDialog(this,
+						lang.getString("WOUND_CASE_CONFIRM_DEL_SUCC"));
 				onBtnCloseClicked(e);
 			} catch (SQLException e1) {
 				e1.printStackTrace();
