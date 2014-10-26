@@ -113,7 +113,7 @@ public class DBC {
 			else
 				host = s_LocalRS.getString("host").trim();
 			
-			s_ServerHost = host;
+			s_ServerHost = s_LocalRS.getString("host").trim();
 			s_ServerDBName = s_LocalRS.getString("database").trim();
 			
 			s_ServerURL = "jdbc:mysql://" + host
@@ -315,7 +315,7 @@ public class DBC {
 		Runtime rt = Runtime.getRuntime();
 		String cmd = "mk-table-sync --execute --database " 
 				+ s_ServerDBName + " h=localhost,u="
-				+ s_ServerHost + ",p="
+				+ s_ServerName + ",p="
 				+ s_ServerPasswd + " h="
 				+ s_ServerHost + ",u=" 
 				+ s_ServerName + ",p="
@@ -327,20 +327,28 @@ public class DBC {
 	
 	public static void dumpDBtoLocalServer() throws IOException, InterruptedException{
 		Runtime rt = Runtime.getRuntime();
-		String cmd1 = "mysqldump -h " + s_ServerHost 
+		/*String cmd1 = "mysqldump -h " + s_ServerHost 
 				+ " --opt --user=" 
 				+ s_ServerName 
 				+ " --password=" 
 				+ s_ServerPasswd + " "
-				+ s_ServerDBName + " > hospital.sql";
+				+ s_ServerDBName + " > ~/hospital.sql";
 		System.out.println(cmd1);
 		
 		String cmd2 = "mysql --user="
 				+ s_ServerName + " --password="
 				+ s_ServerPasswd + " "
-				+ s_ServerDBName + " < hospital.sql";
-		System.out.println(cmd2);
-		Process pr = rt.exec(cmd1 + ";" + cmd2);
+				+ s_ServerDBName + " < ~/1hospital.sql";
+		System.out.println(cmd2);*/
+		String cmd = "mk-table-sync --execute --database " 
+				+ s_ServerDBName + " h="
+				+ s_ServerHost + ",u="
+				+ s_ServerName + ",p="
+				+ s_ServerPasswd + " h=localhost,u=" 
+				+ s_ServerName + ",p="
+				+ s_ServerPasswd;
+		System.out.println(cmd);
+		Process pr = rt.exec(cmd);
 		pr.waitFor();
 	}
 	
