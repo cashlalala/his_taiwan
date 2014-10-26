@@ -1,6 +1,7 @@
 package cc.johnwu.sql;
 
 import java.awt.Frame;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -25,6 +26,9 @@ public class DBC {
 	public final static String LOCALNAME;
 	public final static String LOCALPASSWD;
 
+	public static boolean isMobile;
+	public static String s_ServerHost;
+	public static String s_ServerDBName;
 	public static String s_ServerURL;
 	public static String s_ServerName;
 	public static String s_ServerPasswd;
@@ -91,8 +95,9 @@ public class DBC {
 			}
 	}
 
-	protected static boolean getConnection() {
+	public static boolean getConnection() {
 		try {
+			String host;
 			s_LocalConn = DriverManager.getConnection(LOCALURL, LOCALNAME,
 					LOCALPASSWD);
 			s_LocalStmt = s_LocalConn
@@ -100,7 +105,18 @@ public class DBC {
 							ResultSet.CONCUR_READ_ONLY);
 			s_LocalRS = s_LocalStmt.executeQuery("SELECT * FROM conn_info");
 			s_LocalRS.next();
-			s_ServerURL = "jdbc:mysql://" + s_LocalRS.getString("host").trim()
+			
+			System.out.println(s_LocalRS.getString("isMobile"));
+			isMobile = s_LocalRS.getString("isMobile").compareTo("Y") == 0 ? true : false;
+			if(isMobile)
+				host = "localhost";
+			else
+				host = s_LocalRS.getString("host").trim();
+			
+			s_ServerHost = host;
+			s_ServerDBName = s_LocalRS.getString("database").trim();
+			
+			s_ServerURL = "jdbc:mysql://" + host
 					+ ":" + s_LocalRS.getString("port").trim() + "/"
 					+ s_LocalRS.getString("database").trim();
 			s_ServerURL += "?characterEncoding=utf8";
@@ -140,7 +156,8 @@ public class DBC {
 				s_LocalStmt.execute("CREATE TABLE conn_info ("
 						+ "host char(40) PRIMARY KEY, " + "port char(5), "
 						+ "database char(40), " + "user char(32), "
-						+ "passwd char(32)" + ")");
+						+ "passwd char(32)"
+						+ ", isMobile char(1)" + ")");
 			} catch (SQLException ex1) {
 			}
 			Object[] options = { "Yes", "No" };
@@ -284,6 +301,58 @@ public class DBC {
 	 */
 	public static int localExecuteUpdate(String sql) throws SQLException {
 		int count = 0;
+		Connection conn = DriverManager.getConnection(LOCALURL, LOCALNAME,
+				LOCALPASSWD);
+		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+				ResultSet.CONCUR_READ_ONLY);
+		count = stmt.executeUpdate(sql);
+		closeConnection(stmt);
+		CustomLogger.debug(logger, "[LocalDB] {}", sql);
+		return count;
+	}
+	
+	public static void SyncDBtoServer() throws IOException{
+		Runtime rt = Runtime.getRuntime();
+		String cmd = "mk-table-sync --execute --database " 
+				+ s_ServerDBName + " h=localhost,u="
+				+ s_ServerHost + ",p="
+				+ s_ServerPasswd + " h="
+				+ s_ServerHost + ",u=" 
+				+ s_ServerName + ",p="
+				+ s_ServerPasswd;
+		System.out.println(cmd);
+		Process pr = rt.exec(cmd);
+	}
+	
+	public static void dumpDBtoLocalServer() throws IOException{
+		Runtime rt = Runtime.getRuntime();
+		String cmd = "mysqldump -h " + s_ServerHost 
+				+ " --opt --user=" 
+				+ s_ServerName 
+				+ " --password " 
+				+ s_ServerPasswd + " "
+				+ s_ServerDBName + " > hospital.sql";
+		System.out.println(cmd);
+		rt.exec(cmd);
+		cmd = "mysql -u "
+				+ s_ServerName + " -p "
+				+ s_ServerPasswd + " "
+				+ s_ServerDBName + " < hospital.sql";
+		System.out.println(cmd);
+		rt.exec(cmd);
+	}
+	
+	public static void localEnableMobileHealth() throws SQLException {
+		localSetMobileHealth("Y");
+	}
+	
+	public static void localDisableMobileHealth() throws SQLException {
+		localSetMobileHealth("N");
+	}
+	
+	public static int localSetMobileHealth(String mark) throws SQLException {
+		int count = 0;
+		String sql = "UPDATE conn_info SET isMobile='" + mark + "'";
 		Connection conn = DriverManager.getConnection(LOCALURL, LOCALNAME,
 				LOCALPASSWD);
 		Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,

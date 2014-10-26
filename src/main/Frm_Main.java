@@ -18,7 +18,6 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
-import mobilehealth.Frm_MobileHealth;
 import multilingual.Language;
 
 import org.his.JPAUtil;
@@ -29,6 +28,7 @@ import cashier.Frm_CashierList;
 import cc.johnwu.loading.Frm_Loading;
 import cc.johnwu.login.Frm_Login;
 import cc.johnwu.login.UserInfo;
+import cc.johnwu.sql.DBC;
 import codemaintenance.Frm_TableChooser;
 import errormessage.StoredErrorMessage;
 
@@ -131,8 +131,11 @@ public class Frm_Main extends javax.swing.JFrame {
 				.getString("DIABETES_CASE_MANAGEMENT"));
 		btn_WoundCase.setText(paragraph.getString("WOUND_CASE_MANAGEMENT"));
 
-		btn_Sms.setText(paragraph.getString("MOBILE_HEALTH"));
-
+		if(DBC.isMobile)
+			btn_MobileHealth.setText(paragraph.getString("RETURN_FROM_MH"));
+		else 
+			btn_MobileHealth.setText(paragraph.getString("GO_MOBILE_HEALTH"));
+		
 		jMenu1.setText(paragraph.getString("FILE"));
 
 		mnit_Logout.setText(paragraph.getString("LOGOUT"));
@@ -215,7 +218,7 @@ public class Frm_Main extends javax.swing.JFrame {
 		btn_Radiology.setEnabled(UserInfo.getSelectPow("Radiology"));
 		btn_System.setEnabled(UserInfo.getSelectPow("System"));
 		btn_Statistic.setEnabled(UserInfo.getSelectPow("Statistic"));
-		btn_Sms.setEnabled(UserInfo.getSelectPow("Mobile Health"));
+		btn_MobileHealth.setEnabled(UserInfo.getSelectPow("Mobile Health"));
 		btn_HIVCase.setEnabled(UserInfo.getSelectPow("Case Management"));
 		btn_WoundCase.setEnabled(UserInfo.getSelectPow("Case Management"));
 		btn_DiabetesCase.setEnabled(UserInfo.getSelectPow("Case Management"));
@@ -273,7 +276,7 @@ public class Frm_Main extends javax.swing.JFrame {
 		btn_Inpatient = new javax.swing.JButton();
 		pan_Case = new javax.swing.JPanel();
 		btn_HIVCase = new javax.swing.JButton();
-		btn_Sms = new javax.swing.JButton();
+		btn_MobileHealth = new javax.swing.JButton();
 		mbar = new javax.swing.JMenuBar();
 		jMenu1 = new javax.swing.JMenu();
 		mnit_Logout = new javax.swing.JMenuItem();
@@ -1068,10 +1071,10 @@ public class Frm_Main extends javax.swing.JFrame {
 			}
 		});
 
-		btn_Sms.setText(paragraph.getString("MOBILE_HEALTH"));
-		btn_Sms.addActionListener(new java.awt.event.ActionListener() {
+		//btn_MobileHealth.setText(paragraph.getString("MOBILE_HEALTH"));
+		btn_MobileHealth.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				btn_SmsActionPerformed(evt);
+				btn_MobileHealthActionPerformed(evt);
 			}
 		});
 
@@ -1113,7 +1116,7 @@ public class Frm_Main extends javax.swing.JFrame {
 												javax.swing.GroupLayout.PREFERRED_SIZE,
 												200,
 												javax.swing.GroupLayout.PREFERRED_SIZE)
-										.addComponent(btn_Sms,
+										.addComponent(btn_MobileHealth,
 												javax.swing.GroupLayout.PREFERRED_SIZE,
 												200,
 												javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -1134,7 +1137,7 @@ public class Frm_Main extends javax.swing.JFrame {
 								GroupLayout.PREFERRED_SIZE, 60,
 								GroupLayout.PREFERRED_SIZE)
 						.addPreferredGap(ComponentPlacement.UNRELATED)
-						.addComponent(btn_Sms, GroupLayout.PREFERRED_SIZE, 60,
+						.addComponent(btn_MobileHealth, GroupLayout.PREFERRED_SIZE, 60,
 								GroupLayout.PREFERRED_SIZE)
 						.addContainerGap(GroupLayout.DEFAULT_SIZE,
 								Short.MAX_VALUE)));
@@ -1590,9 +1593,30 @@ public class Frm_Main extends javax.swing.JFrame {
 		this.dispose();
 	}// GEN-LAST:event_btn_SystemActionPerformed
 
-	private void btn_SmsActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_SmsActionPerformed
-		new Frm_MobileHealth().setVisible(true);
-		this.dispose();
+	private void btn_MobileHealthActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_SmsActionPerformed
+		
+		//new Frm_MobileHealth().setVisible(true);	// the original mobile health
+		//this.dispose();
+		System.out.println(DBC.isMobile);
+		try {
+			if(DBC.isMobile) {
+				// sync local db back to db server
+				DBC.SyncDBtoServer();
+				btn_MobileHealth.setText(paragraph.getString("GO_MOBILE_HEALTH"));
+				DBC.localDisableMobileHealth();
+				DBC.getConnection();
+			} else {
+				// dump server db to local db server
+				DBC.dumpDBtoLocalServer();
+				btn_MobileHealth.setText(paragraph.getString("RETURN_FROM_MH"));
+				DBC.localEnableMobileHealth();
+				DBC.getConnection();
+			}
+		} catch(Exception ex) {
+			ex.printStackTrace();
+		}
+		
+		
 	}// GEN-LAST:event_btn_SmsActionPerformed
 
 	private void btn_StatisticActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_StatisticActionPerformed
@@ -1662,7 +1686,7 @@ public class Frm_Main extends javax.swing.JFrame {
 	private javax.swing.JButton btn_Radiology;
 	private javax.swing.JButton btn_Register;
 	private javax.swing.JButton btn_ShiftManagement;
-	private javax.swing.JButton btn_Sms;
+	private javax.swing.JButton btn_MobileHealth;
 	private javax.swing.JButton btn_StaffManagement;
 	private javax.swing.JButton btn_Statistic;
 	private javax.swing.JButton btn_System;
