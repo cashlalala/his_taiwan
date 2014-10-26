@@ -4,6 +4,8 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Frame;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -23,10 +25,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.DefaultCellEditor;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
@@ -40,10 +46,12 @@ import org.his.util.CustomLogger;
 import cc.johnwu.date.DateInterface;
 import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
+
 import common.Constant;
 import common.PrintTools;
 import common.TabTools;
 import common.Tools;
+
 import diagnosis.Frm_DiagnosisPrescription;
 import errormessage.StoredErrorMessage;
 
@@ -195,6 +203,11 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface,
 			jTabbedPane1.remove(0);
 			this.setTitle("Medicine Education");
 		}
+		if (m_FinishState) {
+			btnSave.setEnabled(false);
+			btnSave.setVisible(false);
+		}
+
 		showWhoUpdate(m_FinishState);
 		this.setExtendedState(Frm_Case.MAXIMIZED_BOTH); // 最大化
 		this.setLocationRelativeTo(this);
@@ -258,6 +271,12 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface,
 	public void setFrmClose() {
 		Connection conn = null;
 		if (m_From.equalsIgnoreCase("dia")) {
+			PreparedStatement stmt = null;
+			PreparedStatement stmt2 = null;
+			PreparedStatement stmt3 = null;
+			PreparedStatement stmt4 = null;
+			PreparedStatement stmt5 = null;
+			PreparedStatement stmt6 = null;
 			try {
 				conn = DBC.getConnectionExternel();
 				conn.setAutoCommit(false);
@@ -265,24 +284,45 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface,
 				String sql = String.format(
 						"Delete from asscement where case_guid = '%s'",
 						caseGuid);
-				PreparedStatement stmt = conn.prepareStatement(sql);
+				stmt = conn.prepareStatement(sql);
 				stmt.executeUpdate();
-				stmt.close();
 				CustomLogger.debug(logger, sql);
 
 				sql = String.format(
 						"Delete from complication where case_guid = '%s'",
 						caseGuid);
-				PreparedStatement stmt2 = conn.prepareStatement(sql);
+				stmt2 = conn.prepareStatement(sql);
 				stmt2.executeUpdate();
-				stmt2.close();
 				CustomLogger.debug(logger, sql);
+
+				if (caseType.equalsIgnoreCase("W")) {
+					sql = String
+							.format("Delete from wound_complication where case_guid = '%s'",
+									caseGuid);
+					stmt4 = conn.prepareStatement(sql);
+					stmt4.executeUpdate();
+					CustomLogger.debug(logger, sql);
+
+					sql = String
+							.format("Delete from wound_accessment where case_guid = '%s'",
+									caseGuid);
+					stmt5 = conn.prepareStatement(sql);
+					stmt5.executeUpdate();
+					CustomLogger.debug(logger, sql);
+
+					sql = String
+							.format("delete from image_meta where item_guid = '%s' and type = 'wound'",
+									caseGuid);
+					stmt6 = conn.prepareStatement(sql);
+					stmt6.executeUpdate();
+					logger.debug("[{}][{}] {}", UserInfo.getUserID(),
+							UserInfo.getUserName(), sql);
+				}
 
 				sql = String.format(
 						"Delete from case_manage where guid = '%s'", caseGuid);
-				PreparedStatement stmt3 = conn.prepareStatement(sql);
+				stmt3 = conn.prepareStatement(sql);
 				stmt3.executeUpdate();
-				stmt3.close();
 				CustomLogger.debug(logger, sql);
 
 				pan_PatientInfo.revertPrescription(conn);
@@ -298,11 +338,48 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface,
 				}
 			} finally {
 				try {
+					if (stmt != null)
+						stmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+				try {
+					if (stmt2 != null)
+						stmt2.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+				try {
+					if (stmt3 != null)
+						stmt3.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+				try {
+					if (stmt4 != null)
+						stmt4.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+				try {
+					if (stmt5 != null)
+						stmt5.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+				try {
 					if (conn != null)
 						conn.close();
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
+			}
+		}
+
+		if (caseType.equalsIgnoreCase("W")) {
+			if (pan_Wound.updateImgThread != null) {
+				pan_Wound.updateImgThread.stopRunning();
+				pan_Wound.updateImgThread.interrupt();
 			}
 		}
 
@@ -1008,7 +1085,6 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface,
 		jTabbedPane1 = new javax.swing.JTabbedPane();
 		pan_AssComp = new Tab_Assessment(caseGuid, m_Pno, m_RegGuid);
 		pan_AssComp.setParent(this);
-		pan_Wound=new Tab_Wound(m_Pno,caseGuid, caseType);
 		pan_CompliComp = new Tab_Complication(caseGuid, m_Pno, m_RegGuid);
 		pan_CompliComp.setParent(this);
 		jPanelPrescription = new Tab_Prescription();
@@ -1037,7 +1113,14 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface,
 
 		tabs.add(pan_PatientInfo);
 		if (caseType.equalsIgnoreCase("W")) {
-			jTabbedPane1.addTab("Wound", pan_Wound);
+			pan_WoundAssessment = new Tab_WoundAssessment(caseGuid);
+			pan_WoundComplication = new Tab_WoundComplication(m_Pno, caseGuid,
+					m_RegGuid);
+			jTabbedPane1.addTab(lang.getString("WOUND_ASSESSMENT"),
+					pan_WoundAssessment);
+			jTabbedPane1.addTab("Complication", pan_WoundComplication);
+			tabs.add(pan_WoundAssessment);
+			tabs.add(pan_WoundComplication);
 		} else {
 			jTabbedPane1.addTab("Assessment", pan_AssComp);
 			jTabbedPane1.addTab("Complication", pan_CompliComp);
@@ -1045,7 +1128,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface,
 			tabs.add(pan_CompliComp);
 		}
 		tabs.add(pan_ConfEdu);
-		tabs.add(this);
+		tabs.add(this); // prescription
 		tabs.add(pan_MedEdu);
 
 		pan_PatientInfo.setBorder(javax.swing.BorderFactory
@@ -1380,7 +1463,9 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface,
 			jTabbedPane1.addTab(lang.getString("HIV_TAB"), pan_HIVComp);
 			tabs.add(pan_HIVComp);
 		} else if (caseType.equalsIgnoreCase("W")) {
-			// To-Do : add wound
+			pan_Wound = new Tab_Wound(m_Pno, caseGuid, caseType);
+			jTabbedPane1.addTab(lang.getString("WOUND_TAKE_IMAGE"), pan_Wound);
+			tabs.add(pan_Wound);
 		}
 
 		btn_CaseClose.setText("Close case");
@@ -1468,58 +1553,89 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface,
 
 		setJMenuBar(mnb);
 
+		btnCancel = new JButton("Cancel");
+		btnCancel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				setFrmClose();
+			}
+		});
+
+		btnSave = new JButton("Save");
+		btnSave.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				saveCase("N");
+			}
+		});
+
 		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(
 				getContentPane());
-		getContentPane().setLayout(layout);
 		layout.setHorizontalGroup(layout
-				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				.createParallelGroup(Alignment.LEADING)
 				.addGroup(
 						layout.createSequentialGroup()
 								.addContainerGap()
 								.addGroup(
 										layout.createParallelGroup(
-												javax.swing.GroupLayout.Alignment.LEADING)
+												Alignment.LEADING)
 												.addComponent(
 														pan_PatientInfo,
-														javax.swing.GroupLayout.DEFAULT_SIZE,
-														javax.swing.GroupLayout.DEFAULT_SIZE,
+														GroupLayout.DEFAULT_SIZE,
+														GroupLayout.DEFAULT_SIZE,
 														Short.MAX_VALUE)
 												.addGroup(
 														layout.createSequentialGroup()
-																.addGap(10, 10,
-																		10)
+																.addGap(10)
 																.addGroup(
 																		layout.createParallelGroup(
-																				javax.swing.GroupLayout.Alignment.LEADING)
+																				Alignment.TRAILING)
 																				.addComponent(
 																						jTabbedPane1,
 																						0,
 																						0,
 																						Short.MAX_VALUE)
-																				.addComponent(
-																						btn_CaseClose,
-																						javax.swing.GroupLayout.Alignment.TRAILING,
-																						javax.swing.GroupLayout.PREFERRED_SIZE,
-																						120,
-																						javax.swing.GroupLayout.PREFERRED_SIZE))))
+																				.addGroup(
+																						layout.createSequentialGroup()
+																								.addComponent(
+																										btn_CaseClose,
+																										GroupLayout.PREFERRED_SIZE,
+																										120,
+																										GroupLayout.PREFERRED_SIZE)
+																								.addPreferredGap(
+																										ComponentPlacement.RELATED)
+																								.addComponent(
+																										btnSave,
+																										GroupLayout.PREFERRED_SIZE,
+																										104,
+																										GroupLayout.PREFERRED_SIZE)
+																								.addPreferredGap(
+																										ComponentPlacement.RELATED)
+																								.addComponent(
+																										btnCancel,
+																										GroupLayout.PREFERRED_SIZE,
+																										111,
+																										GroupLayout.PREFERRED_SIZE)))))
 								.addContainerGap()));
-		layout.setVerticalGroup(layout
-				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+		layout.setVerticalGroup(layout.createParallelGroup(Alignment.LEADING)
 				.addGroup(
 						layout.createSequentialGroup()
 								.addContainerGap()
 								.addComponent(pan_PatientInfo,
-										javax.swing.GroupLayout.PREFERRED_SIZE,
-										javax.swing.GroupLayout.DEFAULT_SIZE,
-										javax.swing.GroupLayout.PREFERRED_SIZE)
-								.addPreferredGap(
-										javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+										GroupLayout.PREFERRED_SIZE,
+										GroupLayout.DEFAULT_SIZE,
+										GroupLayout.PREFERRED_SIZE)
+								.addPreferredGap(ComponentPlacement.RELATED)
 								.addComponent(jTabbedPane1,
-										javax.swing.GroupLayout.DEFAULT_SIZE,
-										357, Short.MAX_VALUE)
-								.addPreferredGap(
-										javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-								.addComponent(btn_CaseClose).addContainerGap()));
+										GroupLayout.DEFAULT_SIZE, 357,
+										Short.MAX_VALUE)
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addGroup(
+										layout.createParallelGroup(
+												Alignment.BASELINE)
+												.addComponent(btnCancel)
+												.addComponent(btnSave)
+												.addComponent(btn_CaseClose))
+								.addContainerGap()));
+		getContentPane().setLayout(layout);
 
 		jTabbedPane1.getAccessibleContext().setAccessibleName("Assess");
 
@@ -1531,7 +1647,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface,
 
 	}// GEN-LAST:event_jCheckBox142ActionPerformed
 
-	private void btn_CaseCloseActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_CaseCloseActionPerformed
+	private void saveCase(String finished) {
 		Object[] options = { "YES", "NO" };
 		int dialog = JOptionPane.showOptionDialog(new Frame(),
 				"Save all modifications and close case?", "Message",
@@ -1548,9 +1664,9 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface,
 						tab.save(conn);
 					}
 				}
-				String sql = "UPDATE case_manage SET " + "status  = 'C',"
-						+ "close_time = NOW()" + "WHERE guid = '" + caseGuid
-						+ "' ";
+				String sql = "UPDATE case_manage SET " + "status  = '"
+						+ finished + "'," + "close_time = NOW()"
+						+ "WHERE guid = '" + caseGuid + "' ";
 				logger.debug("[{}][{}] {}", UserInfo.getUserID(),
 						UserInfo.getUserName(), sql);
 				ps = conn.prepareStatement(sql);
@@ -1560,7 +1676,13 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface,
 				conn.commit();
 
 				JOptionPane.showMessageDialog(null, "Save Success!");
-				setFrmClose();
+
+				if (m_From.equals("dia") || m_From.equals("medicine")) {
+					this.dispose();
+				} else {
+					new Frm_WorkList(0, this.caseType).setVisible(true);
+					this.dispose();
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 				JOptionPane.showMessageDialog(null,
@@ -1599,7 +1721,16 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface,
 		} else {
 			// 選擇 NO 時
 		}
+		if (caseType.equalsIgnoreCase("W")) {
+			if (pan_Wound.updateImgThread != null) {
+				pan_Wound.updateImgThread.stopRunning();
+				pan_Wound.updateImgThread.interrupt();
+			}
+		}
+	}
 
+	private void btn_CaseCloseActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_CaseCloseActionPerformed
+		saveCase("C");
 		/*
 		 * if (m_From.equals("dia") || m_From.equals("medicine")) { if
 		 * (m_From.equals("dia")) { if
@@ -1849,6 +1980,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface,
 	public Tab_Wound pan_Wound;
 	private Tab_Complication pan_CompliComp;
 	private Tab_HIVCase pan_HIVComp;
+	private Tab_WoundAssessment pan_WoundAssessment;
 	private Tab_ConfirmEducation pan_ConfEdu;
 	private Tab_MedicineEducation pan_MedEdu;
 	private javax.swing.JPanel pan_Prescription;
@@ -1858,6 +1990,9 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface,
 	private javax.swing.JTextField txt_ComeBackDays;
 	private javax.swing.JTextField txt_PackageId;
 	private javax.swing.JTextField txt_PackageType;
+	private JButton btnCancel;
+	private Tab_WoundComplication pan_WoundComplication;
+	private JButton btnSave;
 
 	// End of variables declaration//GEN-END:variables
 	@Override
@@ -1879,6 +2014,7 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface,
 			conn.commit();
 		} catch (Exception e) {
 			conn.rollback();
+			throw e;
 		} finally {
 			if (conn != null)
 				conn.close();

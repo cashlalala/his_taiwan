@@ -150,8 +150,8 @@ public class Tab_FootCase extends JPanel implements ISaveable {
 
 	protected void showList() {
 		String sqlCase = String
-				.format("select * from case_manage where p_no = '%s' and status = '%s'",
-						pNo, finished);
+				.format("select * from case_manage where p_no = '%s' and status = '%s' and type = '%s'",
+						pNo, finished, "D");
 		List<String> varList = new ArrayList<String>(Arrays.asList(colName));
 
 		String searchKeyWord = textSearch.getText().trim();
@@ -687,8 +687,11 @@ public class Tab_FootCase extends JPanel implements ISaveable {
 	public void save() throws Exception {
 		Connection conn = DBC.getConnectionExternel();
 		try {
+			conn.setAutoCommit(false);
 			save(conn);
+			conn.commit();
 		} catch (Exception e) {
+			conn.rollback();
 			throw e;
 		} finally {
 			if (conn != null)
