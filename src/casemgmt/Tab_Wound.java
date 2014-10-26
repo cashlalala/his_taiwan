@@ -16,11 +16,16 @@ import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
 import multilingual.Language;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import cc.johnwu.sql.DBC;
 
 public class Tab_Wound extends JPanel implements ISaveable {
@@ -39,6 +44,10 @@ public class Tab_Wound extends JPanel implements ISaveable {
 
 	private Map<String, JButton> imgs;
 	public UpdateImage updateImgThread;
+	private boolean isUIChanged;
+
+	// private static Logger logger = LogManager.getLogger(Tab_Wound.class
+	// .getName());
 
 	public static class UpdateImage extends Thread {
 
@@ -70,8 +79,11 @@ public class Tab_Wound extends JPanel implements ISaveable {
 		this.pNo = p_no;
 		this.caseGuid = case_guid;
 		imgs = new HashMap<String, JButton>();
+		isUIChanged = false;
 
 		initComponents();
+		init();
+		btnSave.setEnabled(false);
 
 		updateImgThread = new UpdateImage(this);
 		updateImgThread.start();
@@ -79,11 +91,12 @@ public class Tab_Wound extends JPanel implements ISaveable {
 
 	protected void init() {
 
-		String sql = String.format("select * from image_meta "
-				+ "where item_guid = '%s' and type = 'wound' order by create_time desc", caseGuid);
+		String sql = String
+				.format("select * from image_meta "
+						+ "where item_guid = '%s' and type = 'wound' order by create_time desc",
+						caseGuid);
 
 		ResultSet rs = null;
-		boolean isUIChanged = false;
 		try {
 			rs = DBC.executeQuery(sql);
 			while (rs.next()) {
@@ -119,6 +132,7 @@ public class Tab_Wound extends JPanel implements ISaveable {
 						imgs.put(guid, button);
 						panel.add(button);
 						isUIChanged = true;
+						btnSave.setEnabled(true);
 					}
 
 				} else if (status.equalsIgnoreCase("D")) {
@@ -126,6 +140,7 @@ public class Tab_Wound extends JPanel implements ISaveable {
 						JButton btn = imgs.remove(guid);
 						panel.remove(btn);
 						isUIChanged = true;
+						btnSave.setEnabled(true);
 					}
 				}
 
@@ -143,6 +158,8 @@ public class Tab_Wound extends JPanel implements ISaveable {
 		if (isUIChanged) {
 			scrollPane.revalidate();
 			panel.revalidate();
+			isUIChanged = false;
+			btnSave.setEnabled(true);
 		}
 	}
 
@@ -164,6 +181,7 @@ public class Tab_Wound extends JPanel implements ISaveable {
 		btnSave = new JButton("Save");
 		btnSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				onBtnSaveClicked(e);
 			}
 		});
 
@@ -221,25 +239,34 @@ public class Tab_Wound extends JPanel implements ISaveable {
 
 	}
 
+	protected void onBtnSaveClicked(ActionEvent e) {
+		try {
+			save();
+			JOptionPane.showMessageDialog(null, "Save Complete");
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			JOptionPane.showMessageDialog(null,
+					"Save Failed: " + ex.getMessage());
+			btnSave.setEnabled(true);
+		}
+	}
+
 	public void btn_TakeImageactionPerformed() {
 		new camera.Frm_TakeImage(pNo, caseGuid, "wound").setVisible(true);
 	}
 
 	@Override
 	public boolean isSaveable() {
-		// TODO Auto-generated method stub
-		return false;
+		return btnSave.isEnabled();
 	}
 
 	@Override
 	public void save() throws Exception {
-		// TODO Auto-generated method stub
-
+		save(null);
 	}
 
 	@Override
 	public void save(Connection conn) throws Exception {
-		// TODO Auto-generated method stub
-
+		this.btnSave.setEnabled(false);
 	}
 }
