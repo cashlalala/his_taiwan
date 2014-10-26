@@ -360,6 +360,13 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface,
 			}
 		}
 
+		if (caseType.equalsIgnoreCase("W")) {
+			if (pan_Wound.updateImgThread != null) {
+				pan_Wound.updateImgThread.stopRunning();
+				pan_Wound.updateImgThread.interrupt();
+			}
+		}
+
 		if (m_From.equals("dia") || m_From.equals("medicine")) {
 			// 關閉此視窗
 			this.dispose();
@@ -1697,6 +1704,12 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface,
 			// }
 		} else {
 			// 選擇 NO 時
+		}
+		if (caseType.equalsIgnoreCase("W")) {
+			if (pan_Wound.updateImgThread != null) {
+				pan_Wound.updateImgThread.stopRunning();
+				pan_Wound.updateImgThread.interrupt();
+			}
 		}
 	}
 
