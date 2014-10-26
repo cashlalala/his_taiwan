@@ -22,10 +22,6 @@ import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
 import multilingual.Language;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import cc.johnwu.sql.DBC;
 
 public class Tab_Wound extends JPanel implements ISaveable {
@@ -45,9 +41,6 @@ public class Tab_Wound extends JPanel implements ISaveable {
 	private Map<String, JButton> imgs;
 	public UpdateImage updateImgThread;
 	private boolean isUIChanged;
-
-	// private static Logger logger = LogManager.getLogger(Tab_Wound.class
-	// .getName());
 
 	public static class UpdateImage extends Thread {
 
