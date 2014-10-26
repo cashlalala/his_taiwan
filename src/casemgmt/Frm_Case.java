@@ -203,6 +203,11 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface,
 			jTabbedPane1.remove(0);
 			this.setTitle("Medicine Education");
 		}
+		if (m_FinishState) {
+			btnSave.setEnabled(false);
+			btnSave.setVisible(false);
+		}
+
 		showWhoUpdate(m_FinishState);
 		this.setExtendedState(Frm_Case.MAXIMIZED_BOTH); // 最大化
 		this.setLocationRelativeTo(this);
