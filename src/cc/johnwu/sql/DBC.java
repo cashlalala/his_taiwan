@@ -311,7 +311,7 @@ public class DBC {
 		return count;
 	}
 	
-	public static void SyncDBtoServer() throws IOException{
+	public static void SyncDBtoServer() throws IOException, InterruptedException{
 		Runtime rt = Runtime.getRuntime();
 		String cmd = "mk-table-sync --execute --database " 
 				+ s_ServerDBName + " h=localhost,u="
@@ -322,24 +322,26 @@ public class DBC {
 				+ s_ServerPasswd;
 		System.out.println(cmd);
 		Process pr = rt.exec(cmd);
+		pr.waitFor();
 	}
 	
-	public static void dumpDBtoLocalServer() throws IOException{
+	public static void dumpDBtoLocalServer() throws IOException, InterruptedException{
 		Runtime rt = Runtime.getRuntime();
-		String cmd = "mysqldump -h " + s_ServerHost 
+		String cmd1 = "mysqldump -h " + s_ServerHost 
 				+ " --opt --user=" 
 				+ s_ServerName 
-				+ " --password " 
+				+ " --password=" 
 				+ s_ServerPasswd + " "
 				+ s_ServerDBName + " > hospital.sql";
-		System.out.println(cmd);
-		rt.exec(cmd);
-		cmd = "mysql -u "
-				+ s_ServerName + " -p "
+		System.out.println(cmd1);
+		
+		String cmd2 = "mysql --user="
+				+ s_ServerName + " --password="
 				+ s_ServerPasswd + " "
 				+ s_ServerDBName + " < hospital.sql";
-		System.out.println(cmd);
-		rt.exec(cmd);
+		System.out.println(cmd2);
+		Process pr = rt.exec(cmd1 + ";" + cmd2);
+		pr.waitFor();
 	}
 	
 	public static void localEnableMobileHealth() throws SQLException {
