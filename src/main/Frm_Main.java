@@ -1571,7 +1571,7 @@ public class Frm_Main extends javax.swing.JFrame {
 	}// GEN-LAST:event_btn_RadiologyActionPerformed
 
 	private void btn_BedManagementActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_LaboratoryActionPerformed
-		new bedMgmt.Frm_BedList(0).setVisible(true);
+		new bedmgmt.Frm_BedList(0).setVisible(true);
 		this.dispose();
 	}
 
