@@ -39,9 +39,7 @@ import org.his.bind.PatientsInfoJPATable;
 import org.his.dao.PatientsInfoDao;
 import org.his.model.PatientsInfo;
 
-import barcode.PrintBarcode;
 import patients.Frm_PatientMod;
-import patients.LabelSticker;
 import patients.PatientsInterface;
 import system.Setting;
 import cc.johnwu.date.DateInterface;
@@ -49,7 +47,6 @@ import cc.johnwu.date.DateMethod;
 import cc.johnwu.finger.FingerPrintScanner;
 import cc.johnwu.finger.FingerPrintViewerInterface;
 import cc.johnwu.sql.DBC;
-import common.PrintTools;
 
 public class Frm_RegAndInpatient extends JFrame implements
 		FingerPrintViewerInterface, DateInterface, PatientsInterface {
@@ -69,7 +66,6 @@ public class Frm_RegAndInpatient extends JFrame implements
 	private JLabel lbl_Height;
 	private JLabel lbl_Weight;
 	private cc.johnwu.finger.FingerPrintViewer Frm_FingerPrintViewer;
-	private JPanel pan_Code;
 	private JButton btn_AddPatient;
 	private JButton btn_EditPatient;
 	// GUI for right top patient search
@@ -355,8 +351,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 		gbc_Frm_FingerPrintViewer.gridheight = 2;
 		gbc_Frm_FingerPrintViewer.gridx = 0;
 		gbc_Frm_FingerPrintViewer.gridy = 11;
-		pan_PatientInfo.add(Frm_FingerPrintViewer,
-		gbc_Frm_FingerPrintViewer);
+		pan_PatientInfo.add(Frm_FingerPrintViewer, gbc_Frm_FingerPrintViewer);
 
 		btn_AddPatient = new JButton(paragraph.getString("NEWPATIENT"));
 		btn_AddPatient.setMnemonic(java.awt.event.KeyEvent.VK_N);
@@ -996,16 +991,30 @@ public class Frm_RegAndInpatient extends JFrame implements
 		pan_ClinicOrInpatient
 				.addChangeListener(new javax.swing.event.ChangeListener() {
 					public void stateChanged(ChangeEvent arg0) {
-						initClinicInfo();
-						initInpatientInfo();
-						initHistory();
+
+						new Thread(new Runnable() {
+							@Override
+							public void run() {
+								initClinicInfo();
+								initInpatientInfo();
+								initHistory();
+							}
+						}).start();
 					}
 				});
 		// End of init GUI
-		initClinicInfo();
-		initInpatientInfo();
-		initHistory();
-		reLoad();
+
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				initClinicInfo();
+				initInpatientInfo();
+				initHistory();
+				reLoad();
+			}
+		}).start();
+
 	}
 
 	private void initHistory() {
@@ -1257,6 +1266,11 @@ public class Frm_RegAndInpatient extends JFrame implements
 				tab_HistoryList.setModel(new DefaultTableModel(
 						new String[][] { { "No Information." } },
 						new String[] { "Message" }) {
+
+					/**
+							 * 
+							 */
+					private static final long serialVersionUID = 3852489926998119919L;
 				});
 			} else {
 				ResultSetMetaData rsMetaData = rs.getMetaData();
@@ -1276,7 +1290,6 @@ public class Frm_RegAndInpatient extends JFrame implements
 				rs.beforeFirst();
 				for (i = 0; i < rowCount; i++) {
 					rs.next();
-					String strShift;
 					for (j = 0; j < rsMetaData.getColumnCount(); j++) {
 						HistoryMatrix[i][j] = rs.getString(j + 1);
 					}
@@ -1290,6 +1303,11 @@ public class Frm_RegAndInpatient extends JFrame implements
 				}
 				tab_HistoryList.setModel(new DefaultTableModel(HistoryMatrix,
 						historyHeader) {
+
+					/**
+							 * 
+							 */
+					private static final long serialVersionUID = -1149443021733251964L;
 				});
 			}
 
@@ -1311,11 +1329,11 @@ public class Frm_RegAndInpatient extends JFrame implements
 	private void btn_HistoryCancelactionPerformed(ActionEvent evt) {
 		String sql = "UPDATE registration_info SET registration_info.finish='C' "
 				+ "WHERE registration_info.guid='" + selectedRegGUID + "'";
-		try{
+		try {
 			DBC.executeUpdate(sql);
-		}catch(Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
-		}finally{
+		} finally {
 			refreshHistory();
 		}
 	}
@@ -1511,10 +1529,9 @@ public class Frm_RegAndInpatient extends JFrame implements
 					+ "AND touchtime LIKE concat(DATE_FORMAT(now(),'%Y%m%d%H%i'),'%') ";
 			ResultSet rs = DBC.executeQuery(sql);
 
-			String m_Guid = "";
 			if (rs.next()) {
 				m_Number = rs.getInt(1);
-				m_Guid = rs.getString("guid");
+				rs.getString("guid");
 			}
 
 			String html = "<html><font size='6'>";
