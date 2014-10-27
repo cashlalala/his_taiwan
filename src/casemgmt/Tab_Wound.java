@@ -123,7 +123,7 @@ public class Tab_Wound extends JPanel implements ISaveable {
 						button.setIcon(new ImageIcon(newimg));
 						button.setSize(150, 150);
 						imgs.put(guid, button);
-						panel.add(button);
+						panel.add(button, 0);
 						isUIChanged = true;
 						btnSave.setEnabled(true);
 					}

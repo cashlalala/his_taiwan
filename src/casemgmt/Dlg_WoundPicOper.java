@@ -22,6 +22,9 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 
 import multilingual.Language;
 import cc.johnwu.sql.DBC;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.WindowStateListener;
 
 public class Dlg_WoundPicOper extends JDialog {
 
@@ -34,6 +37,17 @@ public class Dlg_WoundPicOper extends JDialog {
 	private static Language lang = Language.getInstance();
 
 	public Dlg_WoundPicOper(String guid) {
+		addWindowStateListener(new WindowStateListener() {
+			public void windowStateChanged(WindowEvent e) {
+				refrashPic();
+			}
+		});
+		addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusGained(FocusEvent e) {
+				refrashPic();
+			}
+		});
 		wondPicGuid = guid;
 		initComponents();
 
@@ -42,9 +56,22 @@ public class Dlg_WoundPicOper extends JDialog {
 			public void windowClosing(WindowEvent e) {
 				onBtnCloseClicked(null);
 			}
+
+			 @Override
+			 public void windowActivated(WindowEvent e) {
+			 refrashPic();
+			 }
+
+			@Override
+			public void windowOpened(WindowEvent e) {
+				refrashPic();
+			}
 		});
+		setFocusable(true);
 		setResizable(true);
+		setAlwaysOnTop(true);
 		setSize(800, 700);
+		refrashPic();
 	}
 
 	private JScrollPane scrollPane;
@@ -82,8 +109,6 @@ public class Dlg_WoundPicOper extends JDialog {
 			}
 		}
 		panel_1 = new ImagePanel(img, 550, 550);
-		panel_1.revalidate();
-		panel_1.repaint();
 
 		btnDelete = new JButton(lang.getString("DELETE"));
 		btnDelete.addActionListener(new ActionListener() {
@@ -167,5 +192,10 @@ public class Dlg_WoundPicOper extends JDialog {
 						"Delete Fail: " + e1.getMessage());
 			}
 		}
+	}
+
+	protected void refrashPic() {
+		panel_1.invalidate();
+		panel_1.repaint();
 	}
 }
