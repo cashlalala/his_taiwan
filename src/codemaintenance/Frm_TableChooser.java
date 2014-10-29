@@ -20,6 +20,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
+import main.Frm_Main;
 import multilingual.Language;
 import common.PrintTools;
 import cc.johnwu.date.DateMethod;
@@ -34,34 +35,39 @@ public class Frm_TableChooser extends JDialog {
 	 */
 	private static final long serialVersionUID = 1L;
 	private Language paragraph = Language.getInstance();
+	private Frm_Main mParent;
 
 	//private StoredErrorMessage ErrorMessage = new StoredErrorMessage();
 
 	private void btnMaterialActionPerformed(java.awt.event.ActionEvent evt) {
 		new codemaintenance.Frm_Material().setVisible(true);
+		mParent.dispose();
 		this.dispose();
 	}
 	
 	private void btnMedicineActionPerformed(java.awt.event.ActionEvent evt) {
 		new codemaintenance.Frm_Pharmacy().setVisible(true);
+		mParent.dispose();
 		this.dispose();
 	}
 	
 	private void btnPrescriptionActionPerformed(java.awt.event.ActionEvent evt) {
 		new codemaintenance.Frm_Prescription().setVisible(true);
+		mParent.dispose();
 		this.dispose();
 	}
 	
 	private void btnDiagnosisActionPerformed(java.awt.event.ActionEvent evt) {
 		new codemaintenance.Frm_Diagnosis().setVisible(true);
+		mParent.dispose();
 		this.dispose();
 	}
 	
 	/**
 	 * Create the dialog.
 	 */
-	public Frm_TableChooser() {
-		
+	public Frm_TableChooser(Frm_Main parent) {
+		mParent = parent;
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
 		setModal(true);

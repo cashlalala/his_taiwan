@@ -195,6 +195,7 @@ public class Frm_SettingMySQL extends javax.swing.JFrame {
                     "'"+this.txt_Database.getText()+"',"+
                     "'"+HISPassword.enCode(this.txt_User.getText())+"',"+
                     "'"+HISPassword.enCode(new String(this.txt_Passwd.getPassword()))+"'"+
+                    ", 'N'" +
                     ")");
             DBC.localExecute("SHUTDOWN");
             if(DBC.getConnection()){

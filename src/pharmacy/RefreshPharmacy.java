@@ -61,10 +61,12 @@ public class RefreshPharmacy extends Thread {
 			+ "AND shift_table.room_guid = poli_room.guid "
 			+ "AND poli_room.poli_guid = policlinic.guid "
 			+ "AND shift_table.s_id = staff_info.s_id "
+			+ "AND medicine_stock.get_medicine_time IS NULL "
 			+ "AND registration_info.p_no = patients_info.p_no "
 			+ "AND shift_table.shift_date = '" + DateMethod.getTodayYMD()
 			+ "' " + "AND shift_table.shift = '" + DateMethod.getNowShiftNum()
 			+ "' " + "AND registration_info.finish = 'F' "
+			+ "AND registration_info.pharmacy_payment = 'F' "
 			+ "AND medicine_stock.reg_guid =  registration_info.guid "
 			+"GROUP BY registration_info.guid " + "ORDER BY 'No.' ";
 	private String touchTimeSql = // 最新更新時間
@@ -133,6 +135,10 @@ public class RefreshPharmacy extends Thread {
 		this.isRunning = false;
 	}
 
+	public void restartRunning(){
+		this.isRunning = true;
+	}
+	
 	@Override
 	public void run() {
 		try {
@@ -210,8 +216,6 @@ public class RefreshPharmacy extends Thread {
 							Level.SEVERE, null, e);
 				} finally {
 					try {
-						DBC.closeConnection(rs);
-						DBC.closeConnection(rsTouchTime);
 						DBC.closeConnection(rsCheck);
 					} catch (SQLException e) {
 						ErrorMessage.setData(
@@ -234,6 +238,7 @@ public class RefreshPharmacy extends Thread {
 		} finally {
 			try {
 				DBC.closeConnection(rs);
+				DBC.closeConnection(rsTouchTime);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}

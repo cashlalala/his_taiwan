@@ -6,6 +6,9 @@ import java.awt.Point;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.awt.print.PageFormat;
+import java.awt.print.Paper;
+import java.awt.print.PrinterJob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -1040,8 +1043,8 @@ public class Frm_PatientMod extends javax.swing.JFrame implements
 		try {
 			ResultSet rs = DBC.executeQuery(sql);
 			rs.next();
-			this.check_Deal.setText(paragraph.getLanguage(line, "DEATHTIME")
-					+ "\n" + rs.getString("date_of_death").substring(0, 16));
+			this.check_Deal.setText(paragraph.getString("DEATHTIME") + "\n"
+					+ rs.getString("date_of_death").substring(0, 16));
 		} catch (SQLException e) {
 			ErrorMessage.setData(
 					"Patients",
@@ -1068,7 +1071,6 @@ public class Frm_PatientMod extends javax.swing.JFrame implements
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	// <editor-fold defaultstate="collapsed"
 	// desc="Generated Code">//GEN-BEGIN:initComponents
 	private void initComponents() {
@@ -2975,7 +2977,16 @@ public class Frm_PatientMod extends javax.swing.JFrame implements
 			etx.commit();
 			// ***********************列印barcode
 			if (this.m_Status.equals("NEW")) {
-				PrintBarcode.PrintBarcode(txt_No.getText());
+				PrintBarcode.printBarcode(txt_No.getText());
+
+				PrinterJob pj = PrinterJob.getPrinterJob();
+				PageFormat pf = pj.defaultPage();
+				Paper paper = new Paper();
+				paper.setSize(600, 800);
+				paper.setImageableArea(0, 0, 600, 800);
+				pf.setPaper(paper);
+				pj.setPrintable(new LabelSticker(patientInfo), pf);
+				pj.print();
 			}
 
 			// ************************
