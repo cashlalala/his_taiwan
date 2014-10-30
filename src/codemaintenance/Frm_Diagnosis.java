@@ -11,11 +11,13 @@ import java.util.logging.Logger;
 
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.GroupLayout;
+import javax.swing.JFileChooser;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListSelectionModel;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
 import main.Frm_Main;
@@ -68,6 +70,7 @@ public class Frm_Diagnosis extends JFrame {
 	@SuppressWarnings("deprecation")
 	private void initLanguage() {
 		//this.lab_poli.setText(paragraph.getString("POLI"));
+		this.btn_Import.setText(paragraph.getString("IMPORTCSV"));
 		this.btn_Close.setText(paragraph.getString("CLOSE"));
 		this.btn_Save.setText(paragraph.getString("SAVE"));
 		this.btn_Add.setText(paragraph.getString("ADD"));
@@ -82,6 +85,7 @@ public class Frm_Diagnosis extends JFrame {
 		
 		pan_Center = new javax.swing.JPanel();
 		pan_Right = new javax.swing.JPanel();
+		btn_Import = new javax.swing.JButton();
 		btn_Close = new javax.swing.JButton();
 		btn_Save = new javax.swing.JButton();
 		btn_Add = new javax.swing.JButton();
@@ -150,6 +154,12 @@ public class Frm_Diagnosis extends JFrame {
 			}
 		});
 		
+		btn_Import.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				btn_ImportActionPerformed(evt);
+			}
+		});
+		
 		btn_Save.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				btn_SaveActionPerformed(evt);
@@ -178,7 +188,9 @@ public class Frm_Diagnosis extends JFrame {
 						.addComponent(btn_Add, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
 						.addComponent(btn_Save, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
 						.addComponent(btn_Delete, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
-						.addComponent(btn_Close, GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE))
+						.addComponent(btn_Import, GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
+						.addComponent(btn_Close, GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
+						)
 					.addContainerGap())
 		);
 		pan_RightLayout.setVerticalGroup(
@@ -190,6 +202,8 @@ public class Frm_Diagnosis extends JFrame {
 					.addComponent(btn_Save)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btn_Delete)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btn_Import)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btn_Close)
 					.addContainerGap(335, Short.MAX_VALUE))
@@ -368,12 +382,35 @@ public class Frm_Diagnosis extends JFrame {
 	private void btn_CloseActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_CloseActionPerformed
 		mnit_CloseActionPerformed(null);
 	}// GEN-LAST:event_btn_CloseActionPerformed
+	
+	private void btn_ImportActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_CloseActionPerformed
+		//mnit_CloseActionPerformed(null);
+		String filePath;
+		JFileChooser jFileChooser1 = new javax.swing.JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("csv files", "csv");
+        jFileChooser1.setFileFilter(filter);
+		int returnVal = jFileChooser1.showOpenDialog(null);
+		if(returnVal == JFileChooser.APPROVE_OPTION) {
+			filePath = jFileChooser1.getSelectedFile().getAbsolutePath();
+			try {
+				String sql = "LOAD DATA LOCAL INFILE '" + filePath
+						+ "' INTO TABLE diagnosis_code FIELDS TERMINATED BY ',' ENCLOSED BY '\"' LINES TERMINATED BY '\n' IGNORE 1 LINES";
+				DBC.executeUpdate(sql);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				JOptionPane.showMessageDialog(null, paragraph.getString("WOUND_CASE_CONFIRM_SAVE_FAIL"));
+			}
+			JOptionPane.showMessageDialog(null, paragraph.getString("WOUND_CASE_CONFIRM_SAVE_SUCC"));
+		}
+	}// GEN-LAST:event_btn_CloseActionPerformed
 
 	// Variables declaration - do not modify//GEN-BEGIN:variables
 	private javax.swing.JButton btn_Close;
 	private javax.swing.JButton btn_Save;
 	private javax.swing.JButton btn_Add;
 	private javax.swing.JButton btn_Delete;
+	private javax.swing.JButton btn_Import;
 	private javax.swing.JPanel pan_Center;
 	private javax.swing.JPanel pan_Right;
 	private javax.swing.JScrollPane span_List;

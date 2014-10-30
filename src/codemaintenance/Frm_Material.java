@@ -11,11 +11,13 @@ import java.util.logging.Logger;
 
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.GroupLayout;
+import javax.swing.JFileChooser;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListSelectionModel;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
 import main.Frm_Main;
@@ -175,6 +177,7 @@ public class Frm_Material extends JFrame {
 		this.btn_Save.setText(paragraph.getString("SAVE"));
 		this.btn_Add.setText(paragraph.getString("ADD"));
 		this.btn_Delete.setText(paragraph.getString("DELETE"));
+		this.btn_Import.setText(paragraph.getString("IMPORTCSV"));
 	}
 	
 	public void init() {
@@ -197,6 +200,7 @@ public class Frm_Material extends JFrame {
 		btn_Save = new javax.swing.JButton();
 		btn_Add = new javax.swing.JButton();
 		btn_Delete = new javax.swing.JButton();
+		btn_Import = new javax.swing.JButton();
 
 		//this.lab_Name.setText("Staff");
 		//this.txt_Name.setText(UserInfo.getUserName());
@@ -362,6 +366,12 @@ public class Frm_Material extends JFrame {
 				btn_DeleteActionPerformed(evt);
 			}
 		});
+		
+		btn_Import.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				btn_ImportActionPerformed(evt);
+			}
+		});
 
 		javax.swing.GroupLayout pan_RightLayout = new javax.swing.GroupLayout(
 				pan_Right);
@@ -373,6 +383,7 @@ public class Frm_Material extends JFrame {
 						.addComponent(btn_Add, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
 						.addComponent(btn_Save, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
 						.addComponent(btn_Delete, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
+						.addComponent(btn_Import, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
 						.addComponent(btn_Close, GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE))
 					.addContainerGap())
 		);
@@ -385,6 +396,8 @@ public class Frm_Material extends JFrame {
 					.addComponent(btn_Save)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btn_Delete)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btn_Import)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btn_Close)
 					.addContainerGap(335, Short.MAX_VALUE))
@@ -580,6 +593,28 @@ public class Frm_Material extends JFrame {
     	JOptionPane.showMessageDialog(null, paragraph.getString("DELETECOMPLETE"));
 	}
 	
+	private void btn_ImportActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_CloseActionPerformed
+		//mnit_CloseActionPerformed(null);
+		String filePath;
+		JFileChooser jFileChooser1 = new javax.swing.JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("csv files", "csv");
+        jFileChooser1.setFileFilter(filter);
+		int returnVal = jFileChooser1.showOpenDialog(null);
+		if(returnVal == JFileChooser.APPROVE_OPTION) {
+			filePath = jFileChooser1.getSelectedFile().getAbsolutePath();
+			try {
+				String sql = "LOAD DATA LOCAL INFILE '" + filePath
+						+ "' INTO TABLE material_code FIELDS TERMINATED BY ',' ENCLOSED BY '\"' LINES TERMINATED BY '\n' IGNORE 1 LINES";
+				DBC.executeUpdate(sql);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				JOptionPane.showMessageDialog(null, paragraph.getString("WOUND_CASE_CONFIRM_SAVE_FAIL"));
+			}
+			JOptionPane.showMessageDialog(null, paragraph.getString("WOUND_CASE_CONFIRM_SAVE_SUCC"));
+		}
+	}// GEN-LAST:event_btn_CloseActionPerformed
+	
 	private void btn_SaveActionPerformed(java.awt.event.ActionEvent evt) {
 		DefaultTableModel dtm =(DefaultTableModel) tab_List.getModel();
     	for ( int i = 0 ;i < dtm.getRowCount(); i++){
@@ -632,6 +667,7 @@ public class Frm_Material extends JFrame {
 	private javax.swing.JButton btn_Save;
 	private javax.swing.JButton btn_Add;
 	private javax.swing.JButton btn_Delete;
+	private javax.swing.JButton btn_Import;
 	//private cc.johnwu.date.DateComboBox dateComboBox;
 	//private javax.swing.JLabel lab_Date;
 	//private javax.swing.JLabel lab_Name;
