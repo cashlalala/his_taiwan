@@ -35,7 +35,7 @@ public class Frm_QRcode extends JFrame implements Runnable, ThreadFactory {
 	//private JTextArea textarea = null;
 
 	// invoke this by 
-	// new Frm_QRcode(txtField).setVisible(true);
+	// new Frm_QRcode(this, txtField).setVisible(true);
 	// it will set txtField for you if it got anything
 	// it will set txtField with "N/A" if it is closed before it got anything
 	public Frm_QRcode(JFrame parent, javax.swing.JTextField txtField) {
