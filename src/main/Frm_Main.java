@@ -1,6 +1,8 @@
 package main;
 
 import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.SQLException;
@@ -16,7 +18,6 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
-import mobilehealth.Frm_MobileHealth;
 import multilingual.Language;
 
 import org.his.JPAUtil;
@@ -27,11 +28,9 @@ import cashier.Frm_CashierList;
 import cc.johnwu.loading.Frm_Loading;
 import cc.johnwu.login.Frm_Login;
 import cc.johnwu.login.UserInfo;
+import cc.johnwu.sql.DBC;
 import codemaintenance.Frm_TableChooser;
 import errormessage.StoredErrorMessage;
-
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 public class Frm_Main extends javax.swing.JFrame {
 	/**
@@ -72,8 +71,6 @@ public class Frm_Main extends javax.swing.JFrame {
 		btn_MaterialStock.setVisible(true);
 		btn_BedManagement.setVisible(true);
 		btn_CodeMaintenance.setVisible(true);
-		btn_ImageManagement.setVisible(true);
-		btn_TakeImage.setVisible(true);
 		btn_DepartmentManagement.setVisible(true);
 		btn_PositionManagement.setVisible(true);
 
@@ -110,6 +107,8 @@ public class Frm_Main extends javax.swing.JFrame {
 		btn_Statistic.setText(paragraph.getString("STATISTIC"));
 
 		btn_Cashier.setText(paragraph.getString("CASHIER"));
+		
+		btn_BedCashier.setText(paragraph.getString("BED") + " " + paragraph.getString("CASHIER"));
 
 		pan_Investgations.setBorder(javax.swing.BorderFactory
 				.createTitledBorder(paragraph.getString("INVESTGATIONS")));
@@ -132,8 +131,11 @@ public class Frm_Main extends javax.swing.JFrame {
 				.getString("DIABETES_CASE_MANAGEMENT"));
 		btn_WoundCase.setText(paragraph.getString("WOUND_CASE_MANAGEMENT"));
 
-		btn_Sms.setText(paragraph.getString("MOBILE_HEALTH"));
-
+		if(DBC.isMobile)
+			btn_MobileHealth.setText(paragraph.getString("RETURN_FROM_MH"));
+		else 
+			btn_MobileHealth.setText(paragraph.getString("GO_MOBILE_HEALTH"));
+		
 		jMenu1.setText(paragraph.getString("FILE"));
 
 		mnit_Logout.setText(paragraph.getString("LOGOUT"));
@@ -146,8 +148,6 @@ public class Frm_Main extends javax.swing.JFrame {
 		this.btn_BedManagement.setText(paragraph.getString("BEDMANAGEMENT"));
 		this.btn_CodeMaintenance
 				.setText(paragraph.getString("CODEMAINTENANCE"));
-		this.btn_ImageManagement.setText(paragraph.getString("IMAGEMANAGEMENT"));
-		this.btn_TakeImage.setText(paragraph.getString("TAKEIMAGE"));
 		this.btn_Pharmacy.setText(paragraph.getString("PHARMACY"));
 		this.btn_PositionManagement.setText(paragraph
 				.getString("POSITION_MANAGEMENT"));
@@ -175,6 +175,8 @@ public class Frm_Main extends javax.swing.JFrame {
 				.createTitledBorder(paragraph.getString("PHARMACY")));
 		this.pan_SystemManagement.setBorder(javax.swing.BorderFactory
 				.createTitledBorder(paragraph.getString("MANAGEMENT")));
+		this.pan_Cashier.setBorder(javax.swing.BorderFactory
+				.createTitledBorder(paragraph.getString("CASHIER")));
 		this.btn_Laboratory.setText(paragraph.getString("LABORATORY"));
 		this.pan_Investgations.setBorder(javax.swing.BorderFactory
 				.createTitledBorder(paragraph.getString("INVESTGATIONS")));
@@ -192,8 +194,6 @@ public class Frm_Main extends javax.swing.JFrame {
 				.createTitledBorder(paragraph.getString("BEDMANAGEMENT")));
 		this.pan_CodeMaintenance.setBorder(javax.swing.BorderFactory
 				.createTitledBorder(paragraph.getString("CODEMAINTENANCE")));
-		this.pan_ImageManagement.setBorder(javax.swing.BorderFactory
-				.createTitledBorder(paragraph.getString("IMAGEMANAGEMENT")));
 	}
 
 	public void initPermission() {
@@ -218,16 +218,15 @@ public class Frm_Main extends javax.swing.JFrame {
 		btn_Radiology.setEnabled(UserInfo.getSelectPow("Radiology"));
 		btn_System.setEnabled(UserInfo.getSelectPow("System"));
 		btn_Statistic.setEnabled(UserInfo.getSelectPow("Statistic"));
-		btn_Sms.setEnabled(UserInfo.getSelectPow("Mobile Health"));
+		btn_MobileHealth.setEnabled(UserInfo.getSelectPow("Mobile Health"));
 		btn_HIVCase.setEnabled(UserInfo.getSelectPow("Case Management"));
 		btn_WoundCase.setEnabled(UserInfo.getSelectPow("Case Management"));
 		btn_DiabetesCase.setEnabled(UserInfo.getSelectPow("Case Management"));
 		btn_Cashier.setEnabled(UserInfo.getSelectPow("Cashier"));
+		btn_BedCashier.setEnabled(UserInfo.getSelectPow("Cashier"));
 		btn_BedManagement.setEnabled(UserInfo.getSelectPow("Bed Management"));
 		btn_CodeMaintenance.setEnabled(UserInfo
 				.getSelectPow("Code Maintenance"));
-		//btn_ImageManagement.setEnabled(UserInfo.getSelectPow("Code Maintenance"));
-		//btn_TakeImage.setEnabled(UserInfo.getSelectPow("Code Maintenance"));
 		btn_Inpatient.setEnabled(UserInfo.getSelectPow("InPatient"));
 
 		// btn_Inpatient.setEnabled(true);
@@ -259,10 +258,12 @@ public class Frm_Main extends javax.swing.JFrame {
 		pan_Pharmacy = new javax.swing.JPanel();
 		btn_Pharmacy = new javax.swing.JButton();
 		pan_SystemManagement = new javax.swing.JPanel();
+		pan_Cashier = new javax.swing.JPanel();
 		btn_Premission = new javax.swing.JButton();
 		btn_System = new javax.swing.JButton();
 		btn_Statistic = new javax.swing.JButton();
 		btn_Cashier = new javax.swing.JButton();
+		btn_BedCashier = new javax.swing.JButton();
 		pan_Investgations = new javax.swing.JPanel();
 		btn_Laboratory = new javax.swing.JButton();
 		btn_Radiology = new javax.swing.JButton();
@@ -272,12 +273,10 @@ public class Frm_Main extends javax.swing.JFrame {
 		btn_MaterialStock = new javax.swing.JButton();
 		btn_BedManagement = new javax.swing.JButton();
 		btn_CodeMaintenance = new javax.swing.JButton();
-		btn_ImageManagement  = new javax.swing.JButton();
-		btn_TakeImage  = new javax.swing.JButton();
 		btn_Inpatient = new javax.swing.JButton();
 		pan_Case = new javax.swing.JPanel();
 		btn_HIVCase = new javax.swing.JButton();
-		btn_Sms = new javax.swing.JButton();
+		btn_MobileHealth = new javax.swing.JButton();
 		mbar = new javax.swing.JMenuBar();
 		jMenu1 = new javax.swing.JMenu();
 		mnit_Logout = new javax.swing.JMenuItem();
@@ -285,12 +284,11 @@ public class Frm_Main extends javax.swing.JFrame {
 		pan_StockManagement = new javax.swing.JPanel();
 		pan_BedManagement = new javax.swing.JPanel();
 		pan_CodeMaintenance = new javax.swing.JPanel();
-		pan_ImageManagement = new javax.swing.JPanel();
 
 		setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 		setTitle("Main");
 		setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-		setMinimumSize(new java.awt.Dimension(800, 600));
+		setMinimumSize(new java.awt.Dimension(800, 620));
 		setResizable(false);
 
 		pan_PersonalManagement.setBackground(new java.awt.Color(240, 246, 255));
@@ -612,58 +610,6 @@ public class Frm_Main extends javax.swing.JFrame {
 										javax.swing.GroupLayout.PREFERRED_SIZE)
 								.addContainerGap()));
 
-		pan_ImageManagement.setBackground(new java.awt.Color(240, 246, 255));
-		javax.swing.GroupLayout pan_ImageManagementLayout = new javax.swing.GroupLayout(
-				pan_ImageManagement);
-		pan_ImageManagement.setLayout(pan_ImageManagementLayout);
-		pan_ImageManagementLayout
-				.setHorizontalGroup(pan_ImageManagementLayout
-						.createParallelGroup(
-								javax.swing.GroupLayout.Alignment.LEADING)
-						.addGroup(
-								pan_ImageManagementLayout
-										.createSequentialGroup()
-										.addContainerGap()
-										.addGroup(
-												pan_ImageManagementLayout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.LEADING)
-														.addComponent(
-																btn_TakeImage,
-																javax.swing.GroupLayout.Alignment.LEADING,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																200,
-																Short.MAX_VALUE)
-														.addComponent(
-																btn_ImageManagement,
-																javax.swing.GroupLayout.Alignment.LEADING,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																200,
-																Short.MAX_VALUE)
-										)
-										.addContainerGap(
-												javax.swing.GroupLayout.DEFAULT_SIZE,
-												Short.MAX_VALUE)));
-		pan_ImageManagementLayout.setVerticalGroup(pan_ImageManagementLayout
-				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(
-						javax.swing.GroupLayout.Alignment.TRAILING,
-						pan_ImageManagementLayout
-								.createSequentialGroup()
-								.addContainerGap()
-								.addComponent(btn_TakeImage,
-										javax.swing.GroupLayout.PREFERRED_SIZE,
-										55,
-										javax.swing.GroupLayout.PREFERRED_SIZE)
-								.addGap(10,10,10)
-								.addComponent(btn_ImageManagement,
-										javax.swing.GroupLayout.PREFERRED_SIZE,
-										55,
-										javax.swing.GroupLayout.PREFERRED_SIZE)
-								.addContainerGap(
-										javax.swing.GroupLayout.DEFAULT_SIZE,
-										Short.MAX_VALUE)));
-		
 		pan_CodeMaintenance.setBackground(new java.awt.Color(240, 246, 255));
 		javax.swing.GroupLayout pan_CodeMaintenanceLayout = new javax.swing.GroupLayout(
 				pan_CodeMaintenance);
@@ -831,8 +777,65 @@ public class Frm_Main extends javax.swing.JFrame {
 												javax.swing.GroupLayout.DEFAULT_SIZE,
 												Short.MAX_VALUE)));
 
-		pan_SystemManagement.setBackground(new java.awt.Color(240, 246, 255));
+		pan_Cashier.setBackground(new java.awt.Color(240, 246, 255));
+		javax.swing.GroupLayout pan_CashierLayout = new javax.swing.GroupLayout(
+				pan_Cashier);
+		pan_Cashier.setLayout(pan_CashierLayout);
+		pan_CashierLayout
+				.setHorizontalGroup(pan_CashierLayout
+						.createParallelGroup(
+								javax.swing.GroupLayout.Alignment.LEADING)
+						.addGroup(
+								pan_CashierLayout
+										.createSequentialGroup()
+										.addContainerGap()
+										.addGroup(
+												pan_CashierLayout
+														.createParallelGroup(
+																javax.swing.GroupLayout.Alignment.LEADING)
+														.addComponent(
+																btn_Cashier,
+																javax.swing.GroupLayout.PREFERRED_SIZE,
+																200,
+																javax.swing.GroupLayout.PREFERRED_SIZE)
+														.addComponent(
+																btn_BedCashier,
+																javax.swing.GroupLayout.PREFERRED_SIZE,
+																200,
+																javax.swing.GroupLayout.PREFERRED_SIZE)
+															)
+										.addContainerGap(
+												javax.swing.GroupLayout.DEFAULT_SIZE,
+												Short.MAX_VALUE)
+								));
+		pan_CashierLayout
+				.setVerticalGroup(pan_CashierLayout
+						.createParallelGroup(
+								javax.swing.GroupLayout.Alignment.LEADING)
+						.addGroup(
+								pan_CashierLayout
+										.createSequentialGroup()
+										.addContainerGap()
+										.addComponent(
+												btn_Cashier,
+												javax.swing.GroupLayout.PREFERRED_SIZE,
+												60,
+												javax.swing.GroupLayout.PREFERRED_SIZE)
+										.addPreferredGap(
+												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+										.addComponent(
+												btn_BedCashier,
+												javax.swing.GroupLayout.PREFERRED_SIZE,
+												60,
+												javax.swing.GroupLayout.PREFERRED_SIZE)
+										.addPreferredGap(
+												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+										.addContainerGap(
+												16,
+												Short.MAX_VALUE)
 
+						));
+		
 		btn_Premission.setText(paragraph.getString("PERMISSION"));
 		btn_Premission.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -854,13 +857,19 @@ public class Frm_Main extends javax.swing.JFrame {
 			}
 		});
 
-		btn_Cashier.setText(paragraph.getString("CASHIER"));
 		btn_Cashier.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				btn_CashierActionPerformed(evt);
 			}
 		});
+		
+		btn_BedCashier.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				btn_BedCashierActionPerformed(evt);
+			}
+		});
 
+		pan_SystemManagement.setBackground(new java.awt.Color(240, 246, 255));
 		javax.swing.GroupLayout pan_SystemManagementLayout = new javax.swing.GroupLayout(
 				pan_SystemManagement);
 		pan_SystemManagement.setLayout(pan_SystemManagementLayout);
@@ -876,11 +885,6 @@ public class Frm_Main extends javax.swing.JFrame {
 												pan_SystemManagementLayout
 														.createParallelGroup(
 																javax.swing.GroupLayout.Alignment.LEADING)
-														.addComponent(
-																btn_Cashier,
-																javax.swing.GroupLayout.PREFERRED_SIZE,
-																200,
-																javax.swing.GroupLayout.PREFERRED_SIZE)
 														.addGroup(
 																pan_SystemManagementLayout
 																		.createParallelGroup(
@@ -915,13 +919,6 @@ public class Frm_Main extends javax.swing.JFrame {
 								pan_SystemManagementLayout
 										.createSequentialGroup()
 										.addContainerGap()
-										.addComponent(
-												btn_Cashier,
-												javax.swing.GroupLayout.PREFERRED_SIZE,
-												60,
-												javax.swing.GroupLayout.PREFERRED_SIZE)
-										.addPreferredGap(
-												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 										.addComponent(
 												btn_Premission,
 												javax.swing.GroupLayout.PREFERRED_SIZE,
@@ -1056,16 +1053,6 @@ public class Frm_Main extends javax.swing.JFrame {
 						btn_BedManagementActionPerformed(evt);
 					}
 				});
-		btn_TakeImage.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				btn_TakeImageActionPerformed(evt);
-			}
-		});
-		btn_ImageManagement.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				btn_ImageManagementActionPerformed(evt);
-			}
-		});
 		btn_CodeMaintenance
 				.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1084,10 +1071,10 @@ public class Frm_Main extends javax.swing.JFrame {
 			}
 		});
 
-		btn_Sms.setText(paragraph.getString("MOBILE_HEALTH"));
-		btn_Sms.addActionListener(new java.awt.event.ActionListener() {
+		//btn_MobileHealth.setText(paragraph.getString("MOBILE_HEALTH"));
+		btn_MobileHealth.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				btn_SmsActionPerformed(evt);
+				btn_MobileHealthActionPerformed(evt);
 			}
 		});
 
@@ -1118,17 +1105,21 @@ public class Frm_Main extends javax.swing.JFrame {
 								pan_CaseLayout
 										.createParallelGroup(Alignment.LEADING)
 										.addComponent(btn_DiabetesCase,
-												GroupLayout.DEFAULT_SIZE, 200,
-												Short.MAX_VALUE)
+												javax.swing.GroupLayout.PREFERRED_SIZE,
+												200,
+												javax.swing.GroupLayout.PREFERRED_SIZE)
 										.addComponent(btn_WoundCase,
-												GroupLayout.DEFAULT_SIZE, 200,
-												Short.MAX_VALUE)
+												javax.swing.GroupLayout.PREFERRED_SIZE,
+												200,
+												javax.swing.GroupLayout.PREFERRED_SIZE)
 										.addComponent(btn_HIVCase,
-												GroupLayout.DEFAULT_SIZE, 200,
-												Short.MAX_VALUE)
-										.addComponent(btn_Sms,
-												GroupLayout.DEFAULT_SIZE, 200,
-												Short.MAX_VALUE))
+												javax.swing.GroupLayout.PREFERRED_SIZE,
+												200,
+												javax.swing.GroupLayout.PREFERRED_SIZE)
+										.addComponent(btn_MobileHealth,
+												javax.swing.GroupLayout.PREFERRED_SIZE,
+												200,
+												javax.swing.GroupLayout.PREFERRED_SIZE))
 						.addContainerGap()));
 		pan_CaseLayout.setVerticalGroup(pan_CaseLayout.createParallelGroup(
 				Alignment.LEADING).addGroup(
@@ -1146,7 +1137,7 @@ public class Frm_Main extends javax.swing.JFrame {
 								GroupLayout.PREFERRED_SIZE, 60,
 								GroupLayout.PREFERRED_SIZE)
 						.addPreferredGap(ComponentPlacement.UNRELATED)
-						.addComponent(btn_Sms, GroupLayout.PREFERRED_SIZE, 60,
+						.addComponent(btn_MobileHealth, GroupLayout.PREFERRED_SIZE, 60,
 								GroupLayout.PREFERRED_SIZE)
 						.addContainerGap(GroupLayout.DEFAULT_SIZE,
 								Short.MAX_VALUE)));
@@ -1208,12 +1199,12 @@ public class Frm_Main extends javax.swing.JFrame {
 												.addComponent(
 														pan_Pharmacy,
 														javax.swing.GroupLayout.PREFERRED_SIZE,
-														230,
+														javax.swing.GroupLayout.DEFAULT_SIZE,
 														javax.swing.GroupLayout.PREFERRED_SIZE)
 												.addComponent(
 														pan_Investgations,
 														javax.swing.GroupLayout.PREFERRED_SIZE,
-														230,
+														javax.swing.GroupLayout.DEFAULT_SIZE,
 														javax.swing.GroupLayout.PREFERRED_SIZE)
 												.addGroup(
 														layout.createSequentialGroup()
@@ -1235,14 +1226,19 @@ public class Frm_Main extends javax.swing.JFrame {
 										layout.createParallelGroup(
 												javax.swing.GroupLayout.Alignment.LEADING)
 												.addComponent(
-														pan_SystemManagement,
+														pan_Cashier,
+														javax.swing.GroupLayout.PREFERRED_SIZE,
+														javax.swing.GroupLayout.DEFAULT_SIZE,
+														javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addComponent(
+														pan_StockManagement,
 														javax.swing.GroupLayout.PREFERRED_SIZE,
 														javax.swing.GroupLayout.DEFAULT_SIZE,
 														javax.swing.GroupLayout.PREFERRED_SIZE)
 												.addComponent(
 														pan_PersonalManagement,
 														javax.swing.GroupLayout.PREFERRED_SIZE,
-														230,
+														javax.swing.GroupLayout.DEFAULT_SIZE,
 														javax.swing.GroupLayout.PREFERRED_SIZE))
 								.addPreferredGap(
 										javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1250,17 +1246,12 @@ public class Frm_Main extends javax.swing.JFrame {
 										layout.createParallelGroup(
 												javax.swing.GroupLayout.Alignment.LEADING)
 												.addComponent(
-														pan_StockManagement,
+														pan_SystemManagement,
 														javax.swing.GroupLayout.PREFERRED_SIZE,
 														javax.swing.GroupLayout.DEFAULT_SIZE,
 														javax.swing.GroupLayout.PREFERRED_SIZE)
 												.addComponent(
 														pan_BedManagement,
-														javax.swing.GroupLayout.PREFERRED_SIZE,
-														javax.swing.GroupLayout.DEFAULT_SIZE,
-														javax.swing.GroupLayout.PREFERRED_SIZE)
-												.addComponent(
-														pan_ImageManagement,
 														javax.swing.GroupLayout.PREFERRED_SIZE,
 														javax.swing.GroupLayout.DEFAULT_SIZE,
 														javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1367,7 +1358,14 @@ public class Frm_Main extends javax.swing.JFrame {
 																.addPreferredGap(
 																		javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 																.addComponent(
-																		pan_SystemManagement,
+																		pan_Cashier,
+																		javax.swing.GroupLayout.PREFERRED_SIZE,
+																		javax.swing.GroupLayout.DEFAULT_SIZE,
+																		javax.swing.GroupLayout.PREFERRED_SIZE)
+																.addPreferredGap(
+																		javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+																.addComponent(
+																		pan_StockManagement,
 																		javax.swing.GroupLayout.PREFERRED_SIZE,
 																		javax.swing.GroupLayout.DEFAULT_SIZE,
 																		javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1376,7 +1374,7 @@ public class Frm_Main extends javax.swing.JFrame {
 												.addGroup(
 														layout.createSequentialGroup()
 																.addComponent(
-																		pan_StockManagement,
+																		pan_SystemManagement,
 																		javax.swing.GroupLayout.PREFERRED_SIZE,
 																		javax.swing.GroupLayout.DEFAULT_SIZE,
 																		javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1384,13 +1382,6 @@ public class Frm_Main extends javax.swing.JFrame {
 																		javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 																.addComponent(
 																		pan_BedManagement,
-																		javax.swing.GroupLayout.PREFERRED_SIZE,
-																		javax.swing.GroupLayout.DEFAULT_SIZE,
-																		javax.swing.GroupLayout.PREFERRED_SIZE)
-																.addPreferredGap(
-																		javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-																.addComponent(
-																		pan_ImageManagement,
 																		javax.swing.GroupLayout.PREFERRED_SIZE,
 																		javax.swing.GroupLayout.DEFAULT_SIZE,
 																		javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1580,27 +1571,16 @@ public class Frm_Main extends javax.swing.JFrame {
 	}// GEN-LAST:event_btn_RadiologyActionPerformed
 
 	private void btn_BedManagementActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_LaboratoryActionPerformed
-		new bedMgmt.Frm_BedList(0).setVisible(true);
+		new bedmgmt.Frm_BedList(0).setVisible(true);
 		this.dispose();
 	}
 
-	private void btn_TakeImageActionPerformed(java.awt.event.ActionEvent evt) {
-		//new Camera.Frm_TakeImage(this, "c8611f99-083e-11e4-bfdc-000c29285422", "983507a5-41c3-11e4-8335-000c29ab3787", "wound").setVisible(true);
-		new Camera.Frm_TakeImage("c8611f99-083e-11e4-bfdc-000c29285422", "983507a5-41c3-11e4-8335-000c29ab3787", "wound").setVisible(true);
-		//this.setEnabled(false);
-		//this.dispose();
-	}
-	private void btn_ImageManagementActionPerformed(java.awt.event.ActionEvent evt) {
-		//new worklist.Frm_WorkList(0, "lab").setVisible(true);
-		//this.dispose();
-	}
-	
 	private void btn_CodeMaintenanceActionPerformed(
 			java.awt.event.ActionEvent evt) {
 		Frm_TableChooser chooser = new Frm_TableChooser(this);
 		chooser.setLocationRelativeTo(this);
 		chooser.setVisible(true);
-		this.dispose();
+		//this.dispose();
 	}
 
 	private void btn_LaboratoryActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_LaboratoryActionPerformed
@@ -1613,9 +1593,30 @@ public class Frm_Main extends javax.swing.JFrame {
 		this.dispose();
 	}// GEN-LAST:event_btn_SystemActionPerformed
 
-	private void btn_SmsActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_SmsActionPerformed
-		new Frm_MobileHealth().setVisible(true);
-		this.dispose();
+	private void btn_MobileHealthActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_SmsActionPerformed
+		
+		//new Frm_MobileHealth().setVisible(true);	// the original mobile health
+		//this.dispose();
+		System.out.println(DBC.isMobile);
+		try {
+			if(DBC.isMobile) {
+				// sync local db back to db server
+				DBC.SyncDBtoServer();
+				btn_MobileHealth.setText(paragraph.getString("GO_MOBILE_HEALTH"));
+				DBC.localDisableMobileHealth();
+				DBC.getConnection();
+			} else {
+				// dump server db to local db server
+				DBC.dumpDBtoLocalServer();
+				btn_MobileHealth.setText(paragraph.getString("RETURN_FROM_MH"));
+				DBC.localEnableMobileHealth();
+				DBC.getConnection();
+			}
+		} catch(Exception ex) {
+			ex.printStackTrace();
+		}
+		
+		
 	}// GEN-LAST:event_btn_SmsActionPerformed
 
 	private void btn_StatisticActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_StatisticActionPerformed
@@ -1627,6 +1628,11 @@ public class Frm_Main extends javax.swing.JFrame {
 		new Frm_CashierList().setVisible(true);
 		this.dispose();
 	}// GEN-LAST:event_btn_CashierActionPerformed
+	
+	private void btn_BedCashierActionPerformed(java.awt.event.ActionEvent evt) {
+		new Frm_CashierList("bed").setVisible(true);
+		this.dispose();
+	}
 
 	private void mnit_ExitActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mnit_ExitActionPerformed
 		cc.johnwu.login.OnlineState.LogOut();
@@ -1665,6 +1671,7 @@ public class Frm_Main extends javax.swing.JFrame {
 	private JButton btn_DiabetesCase;
 	private JButton btn_WoundCase;
 	private javax.swing.JButton btn_Cashier;
+	private javax.swing.JButton btn_BedCashier;
 	private javax.swing.JButton btn_DepartmentManagement;
 	private javax.swing.JButton btn_Diagnosis;
 	private javax.swing.JButton btn_Laboratory;
@@ -1679,13 +1686,11 @@ public class Frm_Main extends javax.swing.JFrame {
 	private javax.swing.JButton btn_Radiology;
 	private javax.swing.JButton btn_Register;
 	private javax.swing.JButton btn_ShiftManagement;
-	private javax.swing.JButton btn_Sms;
+	private javax.swing.JButton btn_MobileHealth;
 	private javax.swing.JButton btn_StaffManagement;
 	private javax.swing.JButton btn_Statistic;
 	private javax.swing.JButton btn_System;
 	private javax.swing.JButton btn_CodeMaintenance;
-	private javax.swing.JButton btn_ImageManagement;
-	private javax.swing.JButton btn_TakeImage;
 	private javax.swing.JMenu jMenu1;
 	private javax.swing.JMenuBar mbar;
 	private javax.swing.JMenuItem mnit_Exit;
@@ -1698,8 +1703,8 @@ public class Frm_Main extends javax.swing.JFrame {
 	private javax.swing.JPanel pan_Pharmacy;
 	private javax.swing.JPanel pan_Registration;
 	private javax.swing.JPanel pan_SystemManagement;
+	private javax.swing.JPanel pan_Cashier;
 	private javax.swing.JPanel pan_StockManagement;
 	private javax.swing.JPanel pan_BedManagement;
 	private javax.swing.JPanel pan_CodeMaintenance;
-	private javax.swing.JPanel pan_ImageManagement;
 }

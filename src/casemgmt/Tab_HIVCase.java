@@ -28,12 +28,16 @@ import org.apache.logging.log4j.Logger;
 
 import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
+import javax.swing.ScrollPaneConstants;
 
 public class Tab_HIVCase extends JPanel implements ISaveable {
 	private Frm_Case parent;
 	private static final long serialVersionUID = 1L;
 	private static final Language lang = Language.getInstance();
 
+	private JScrollPane jScrollPane_Frame;
+	private JPanel pan_Frame;
+	
 	private JLabel lbl_Risk;
 	private JPanel pan_Risk;
 	private JCheckBox chckbx_PHHD;
@@ -105,86 +109,90 @@ public class Tab_HIVCase extends JPanel implements ISaveable {
 	public Tab_HIVCase(String caseGuid) {
 		this.caseGuid = caseGuid;
 		setLayout(null);
+		
+		pan_Frame = new JPanel();
+		pan_Frame.setLayout(null);
+		pan_Frame.setBounds(0, 0, 1000, 1000);
 
 		lbl_Risk = new JLabel("Risk:");
-		lbl_Risk.setBounds(10, 10, 60, 15);
-		add(lbl_Risk);
+		lbl_Risk.setBounds(12, 5, 34, 15);
+		pan_Frame.add(lbl_Risk);
 
 		pan_Risk = new JPanel();
 		pan_Risk.setBorder(new LineBorder(new Color(0, 0, 0)));
-		pan_Risk.setBounds(10, 35, 280, 273);
-		add(pan_Risk);
+		pan_Risk.setBounds(12, 23, 392, 253);
+		pan_Frame.add(pan_Risk);
 		pan_Risk.setLayout(null);
 
 		chckbx_PHHD = new JCheckBox(lang.getString("PHHD"));
-		chckbx_PHHD.setBounds(6, 6, 144, 23);
+		chckbx_PHHD.setBounds(6, 6, 201, 23);
 		pan_Risk.add(chckbx_PHHD);
 
 		chckbx_PHCD = new JCheckBox(lang.getString("PHCD"));
-		chckbx_PHCD.setBounds(6, 29, 144, 23);
+		chckbx_PHCD.setBounds(6, 29, 201, 23);
 		pan_Risk.add(chckbx_PHCD);
 
 		chckbx_PHHC = new JCheckBox(lang.getString("PHHC"));
-		chckbx_PHHC.setBounds(6, 54, 144, 23);
+		chckbx_PHHC.setBounds(6, 54, 201, 23);
 		pan_Risk.add(chckbx_PHHC);
 
 		chckbx_PHDM = new JCheckBox(lang.getString("PHDM"));
-		chckbx_PHDM.setBounds(6, 79, 144, 23);
+		chckbx_PHDM.setBounds(6, 79, 201, 23);
 		pan_Risk.add(chckbx_PHDM);
 
 		chckbx_TypeA = new JCheckBox(lang.getString("PHTYPEA"));
-		chckbx_TypeA.setBounds(6, 104, 144, 23);
+		chckbx_TypeA.setBounds(6, 104, 201, 23);
 		pan_Risk.add(chckbx_TypeA);
 
 		chckbx_TypeB = new JCheckBox(lang.getString("PHTYPEB"));
-		chckbx_TypeB.setBounds(6, 129, 144, 23);
+		chckbx_TypeB.setBounds(6, 129, 201, 23);
 		pan_Risk.add(chckbx_TypeB);
 
 		chckbx_TypeC = new JCheckBox(lang.getString("PHTYPEC"));
-		chckbx_TypeC.setBounds(6, 154, 144, 23);
+		chckbx_TypeC.setBounds(6, 154, 201, 23);
 		pan_Risk.add(chckbx_TypeC);
 
 		chckbx_Malignancies = new JCheckBox(lang.getString("PHMALIG"));
-		chckbx_Malignancies.setBounds(152, 6, 97, 23);
+		chckbx_Malignancies.setBounds(211, 6, 168, 23);
 		pan_Risk.add(chckbx_Malignancies);
 
 		chckbx_HD = new JCheckBox(lang.getString("HD"));
-		chckbx_HD.setBounds(152, 29, 97, 23);
+		chckbx_HD.setBounds(211, 29, 168, 23);
 		pan_Risk.add(chckbx_HD);
 
 		chckbx_PHNS = new JCheckBox(lang.getString("PHNS"));
-		chckbx_PHNS.setBounds(152, 54, 122, 23);
+		chckbx_PHNS.setBounds(211, 54, 168, 23);
 		pan_Risk.add(chckbx_PHNS);
 
 		chckbx_Smoke = new JCheckBox(lang.getString("PHSMOKE"));
-		chckbx_Smoke.setBounds(152, 79, 122, 23);
+		chckbx_Smoke.setBounds(211, 79, 168, 23);
 		pan_Risk.add(chckbx_Smoke);
 
 		chckbx_Alcoholism = new JCheckBox(lang.getString("PHALCOHOLISM"));
-		chckbx_Alcoholism.setBounds(152, 104, 122, 23);
+		chckbx_Alcoholism.setBounds(211, 104, 168, 23);
 		pan_Risk.add(chckbx_Alcoholism);
 
 		chckbx_OW = new JCheckBox(lang.getString("PHOW"));
-		chckbx_OW.setBounds(152, 129, 122, 23);
+		chckbx_OW.setBounds(211, 129, 168, 23);
 		pan_Risk.add(chckbx_OW);
 
 		lbl_Other = new JLabel(lang.getString("PHOTHER"));
-		lbl_Other.setBounds(6, 183, 46, 15);
+		lbl_Other.setBounds(6, 183, 61, 15);
 		pan_Risk.add(lbl_Other);
 
 		txt_Other = new JTextField();
-		txt_Other.setBounds(62, 180, 187, 21);
+		txt_Other.setBounds(62, 180, 303, 21);
 		pan_Risk.add(txt_Other);
 		txt_Other.setColumns(10);
 
 		lbl_HBP = new JLabel("High Blood Pressure:");
-		lbl_HBP.setBounds(300, 10, 104, 15);
-		add(lbl_HBP);
+		lbl_HBP.setBounds(417, 5, 149, 15);
+		pan_Frame.add(lbl_HBP);
 
 		pan_HBP = new JPanel();
 		pan_HBP.setBorder(new LineBorder(new Color(0, 0, 0)));
-		pan_HBP.setBounds(300, 35, 380, 165);
-		add(pan_HBP);
+		pan_HBP.setBounds(415, 23, 680, 155);
+		pan_Frame.add(pan_HBP);
 		pan_HBP.setLayout(null);
 
 		chckbx_IHHC = new JCheckBox(lang.getString("IHHC"));
@@ -196,51 +204,51 @@ public class Tab_HIVCase extends JPanel implements ISaveable {
 		pan_HBP.add(chckbx_IHDM);
 
 		chckbx_IHEBP = new JCheckBox(lang.getString("IHEBP"));
-		chckbx_IHEBP.setBounds(6, 56, 368, 23);
+		chckbx_IHEBP.setBounds(6, 56, 562, 23);
 		pan_HBP.add(chckbx_IHEBP);
 
 		chckbx_FMHHC = new JCheckBox(lang.getString("FMHHC"));
-		chckbx_FMHHC.setBounds(6, 81, 368, 23);
+		chckbx_FMHHC.setBounds(6, 81, 562, 23);
 		pan_HBP.add(chckbx_FMHHC);
 
 		chckbx_FMHDM = new JCheckBox(lang.getString("FMHDM"));
-		chckbx_FMHDM.setBounds(6, 106, 368, 23);
+		chckbx_FMHDM.setBounds(6, 106, 562, 23);
 		pan_HBP.add(chckbx_FMHDM);
 
 		chckbx_FMHEBP = new JCheckBox(lang.getString("FMHEBP"));
-		chckbx_FMHEBP.setBounds(6, 131, 368, 23);
+		chckbx_FMHEBP.setBounds(6, 131, 666, 23);
 		pan_HBP.add(chckbx_FMHEBP);
 
 		lbl_SB = new JLabel("Sexual Behavior:");
-		lbl_SB.setBounds(300, 210, 83, 15);
-		add(lbl_SB);
+		lbl_SB.setBounds(417, 180, 118, 15);
+		pan_Frame.add(lbl_SB);
 
 		pan_SB = new JPanel();
 		pan_SB.setBorder(new LineBorder(new Color(0, 0, 0)));
-		pan_SB.setBounds(300, 235, 380, 73);
-		add(pan_SB);
+		pan_SB.setBounds(416, 203, 679, 73);
+		pan_Frame.add(pan_SB);
 		pan_SB.setLayout(null);
 
 		chckbx_WSVD = new JCheckBox(lang.getString("WSVD"));
-		chckbx_WSVD.setBounds(6, 6, 368, 23);
+		chckbx_WSVD.setBounds(6, 6, 299, 23);
 		pan_SB.add(chckbx_WSVD);
 
 		chckbx_10SP = new JCheckBox(lang.getString("10SP"));
-		chckbx_10SP.setBounds(6, 25, 368, 23);
+		chckbx_10SP.setBounds(6, 25, 299, 23);
 		pan_SB.add(chckbx_10SP);
 
 		chckbx_HSIWS = new JCheckBox(lang.getString("HSIWS"));
-		chckbx_HSIWS.setBounds(6, 44, 368, 23);
+		chckbx_HSIWS.setBounds(6, 44, 299, 23);
 		pan_SB.add(chckbx_HSIWS);
 
 		lbl_IDU = new JLabel("IDU:");
-		lbl_IDU.setBounds(690, 10, 60, 15);
-		add(lbl_IDU);
+		lbl_IDU.setBounds(616, 288, 29, 15);
+		pan_Frame.add(lbl_IDU);
 
 		pan_IDU = new JPanel();
 		pan_IDU.setBorder(new LineBorder(new Color(0, 0, 0)));
-		pan_IDU.setBounds(690, 35, 258, 273);
-		add(pan_IDU);
+		pan_IDU.setBounds(616, 306, 479, 281);
+		pan_Frame.add(pan_IDU);
 		pan_IDU.setLayout(null);
 
 		lbl_IDUAge = new JLabel(lang.getString("IDUAGE"));
@@ -248,7 +256,7 @@ public class Tab_HIVCase extends JPanel implements ISaveable {
 		pan_IDU.add(lbl_IDUAge);
 
 		txt_IDUAge = new JTextField();
-		txt_IDUAge.setBounds(155, 10, 97, 21);
+		txt_IDUAge.setBounds(248, 10, 139, 21);
 		pan_IDU.add(txt_IDUAge);
 		txt_IDUAge.setColumns(10);
 
@@ -257,7 +265,7 @@ public class Tab_HIVCase extends JPanel implements ISaveable {
 		pan_IDU.add(lbl_IDUDuration);
 
 		txt_IDUDuration = new JTextField();
-		txt_IDUDuration.setBounds(156, 41, 96, 21);
+		txt_IDUDuration.setBounds(248, 41, 139, 21);
 		pan_IDU.add(txt_IDUDuration);
 		txt_IDUDuration.setColumns(10);
 
@@ -286,50 +294,50 @@ public class Tab_HIVCase extends JPanel implements ISaveable {
 		pan_IDU.add(chckbx_Methadone);
 
 		lbl_StartMethadone = new JLabel(lang.getString("STARTMETHADONE"));
-		lbl_StartMethadone.setBounds(6, 224, 140, 15);
+		lbl_StartMethadone.setBounds(6, 224, 224, 15);
 		pan_IDU.add(lbl_StartMethadone);
 
 		txt_StartMethadone = new JTextField();
-		txt_StartMethadone.setBounds(156, 221, 96, 21);
+		txt_StartMethadone.setBounds(248, 221, 139, 21);
 		pan_IDU.add(txt_StartMethadone);
 		txt_StartMethadone.setColumns(10);
 
 		lbl_StaticsMethadone = new JLabel(lang.getString("STATICSMETHADONE"));
-		lbl_StaticsMethadone.setBounds(6, 249, 139, 15);
+		lbl_StaticsMethadone.setBounds(6, 249, 230, 15);
 		pan_IDU.add(lbl_StaticsMethadone);
 
 		cbb_StaticsMethadone = new JComboBox();
-		cbb_StaticsMethadone.setBounds(156, 246, 96, 21);
+		cbb_StaticsMethadone.setBounds(248, 246, 139, 21);
 		pan_IDU.add(cbb_StaticsMethadone);
 		cbb_StaticsMethadone.removeAllItems();
 		this.cbb_StaticsMethadone.addItem("Q:Success");
 		this.cbb_StaticsMethadone.addItem("U:Fail");
 
 		lbl_Vaccine = new JLabel("Vaccine:");
-		lbl_Vaccine.setBounds(10, 318, 60, 15);
-		add(lbl_Vaccine);
+		lbl_Vaccine.setBounds(12, 288, 59, 15);
+		pan_Frame.add(lbl_Vaccine);
 
 		scrollPane = new JScrollPane();
-		scrollPane.setBounds(10, 343, 841, 107);
-		add(scrollPane);
+		scrollPane.setBounds(12, 309, 592, 165);
+		pan_Frame.add(scrollPane);
 
 		tab_Vaccine = new JTable();
 		scrollPane.setViewportView(tab_Vaccine);
 
 		lbl_VenerealDisease = new JLabel("Venereal Disease:");
-		lbl_VenerealDisease.setBounds(10, 460, 93, 15);
-		add(lbl_VenerealDisease);
+		lbl_VenerealDisease.setBounds(12, 482, 130, 15);
+		pan_Frame.add(lbl_VenerealDisease);
 
 		scrollPane_1 = new JScrollPane();
-		scrollPane_1.setBounds(10, 485, 841, 112);
-		add(scrollPane_1);
+		scrollPane_1.setBounds(12, 504, 592, 127);
+		pan_Frame.add(scrollPane_1);
 
 		tab_VenerealDisease = new JTable();
 		scrollPane_1.setViewportView(tab_VenerealDisease);
 
 		btn_Save = new JButton(lang.getString("SAVE"));
-		btn_Save.setBounds(861, 574, 87, 23);
-		add(btn_Save);
+		btn_Save.setBounds(616, 599, 262, 32);
+		pan_Frame.add(btn_Save);
 		btn_Save.setEnabled(true);
 		btn_Save.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -337,9 +345,9 @@ public class Tab_HIVCase extends JPanel implements ISaveable {
 			}
 		});
 
-		btn_AddVaccine = new JButton("New button");
-		btn_AddVaccine.setBounds(57, 314, 87, 23);
-		add(btn_AddVaccine);
+		btn_AddVaccine = new JButton(lang.getString("ADD"));
+		btn_AddVaccine.setBounds(81, 283, 61, 25);
+		pan_Frame.add(btn_AddVaccine);
 		btn_AddVaccine.setEnabled(true);
 		btn_AddVaccine.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -347,15 +355,24 @@ public class Tab_HIVCase extends JPanel implements ISaveable {
 			}
 		});
 
-		btn_AddVD = new JButton("New button");
-		btn_AddVD.setBounds(113, 456, 87, 23);
-		add(btn_AddVD);
+		btn_AddVD = new JButton(lang.getString("ADD"));
+		btn_AddVD.setBounds(144, 477, 61, 25);
+		pan_Frame.add(btn_AddVD);
 		btn_AddVD.setEnabled(true);
 		btn_AddVD.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				btn_AddVDactionPerformed(evt);
 			}
 		});
+		
+		
+		jScrollPane_Frame = new JScrollPane();
+		jScrollPane_Frame.setLocation(0, 0);
+		jScrollPane_Frame.setSize(1120, 650);
+		jScrollPane_Frame.setViewportView(pan_Frame);
+		
+		add(jScrollPane_Frame);
+		
 		refreshHIV();
 		refreshVaccine();
 		refreshSD();
@@ -580,170 +597,214 @@ public class Tab_HIVCase extends JPanel implements ISaveable {
 				System.out.print(sqlInsert + "\n");
 				DBC.executeUpdate(sqlInsert);
 			} else {
-				if (((String) rs.getString("HIV_assessment.Hypertension"))
-						.equals("Y")) {
+				if (rs.getString("HIV_assessment.Hypertension") != null
+						&& ((String) rs
+								.getString("HIV_assessment.Hypertension"))
+								.equals("Y")) {
 					chckbx_PHHD.setSelected(true);
 				} else {
 					chckbx_PHHD.setSelected(false);
 				}
-				if (((String) rs.getString("HIV_assessment.BrainVessel"))
-						.equals("Y")) {
+				if (rs.getString("HIV_assessment.BrainVessel") != null
+						&& ((String) rs.getString("HIV_assessment.BrainVessel"))
+								.equals("Y")) {
 					chckbx_PHCD.setSelected(true);
 				} else {
 					chckbx_PHCD.setSelected(false);
 				}
-				if (((String) rs.getString("HIV_assessment.Hyperlipidemia"))
-						.equals("Y")) {
+				if (rs.getString("HIV_assessment.Hyperlipidemia") != null
+						&& ((String) rs
+								.getString("HIV_assessment.Hyperlipidemia"))
+								.equals("Y")) {
 					chckbx_PHHC.setSelected(true);
 				} else {
 					chckbx_PHHC.setSelected(false);
 				}
-				if (((String) rs.getString("HIV_assessment.Diabetes"))
-						.equals("Y")) {
+				if (rs.getString("HIV_assessment.Diabetes") != null
+						&& ((String) rs.getString("HIV_assessment.Diabetes"))
+								.equals("Y")) {
 					chckbx_PHDM.setSelected(true);
 				} else {
 					chckbx_PHDM.setSelected(false);
 				}
-				if (((String) rs.getString("HIV_assessment.HepatitisA"))
-						.equals("Y")) {
+				if (rs.getString("HIV_assessment.HepatitisA") != null
+						&& ((String) rs.getString("HIV_assessment.HepatitisA"))
+								.equals("Y")) {
 					chckbx_TypeA.setSelected(true);
 				} else {
 					chckbx_TypeA.setSelected(false);
 				}
-				if (((String) rs.getString("HIV_assessment.HepatitisB"))
-						.equals("Y")) {
+				if (rs.getString("HIV_assessment.HepatitisB") != null
+						&& ((String) rs.getString("HIV_assessment.HepatitisB"))
+								.equals("Y")) {
 					chckbx_TypeB.setSelected(true);
 				} else {
 					chckbx_TypeB.setSelected(false);
 				}
-				if (((String) rs.getString("HIV_assessment.HepatitisC"))
-						.equals("Y")) {
+				if (rs.getString("HIV_assessment.HepatitisC") != null
+						&& ((String) rs.getString("HIV_assessment.HepatitisC"))
+								.equals("Y")) {
 					chckbx_TypeC.setSelected(true);
 				} else {
 					chckbx_TypeC.setSelected(false);
 				}
-				if (((String) rs.getString("HIV_assessment.Cancer"))
-						.equals("Y")) {
+				if (rs.getString("HIV_assessment.Cancer") != null
+						&& ((String) rs.getString("HIV_assessment.Cancer"))
+								.equals("Y")) {
 					chckbx_Malignancies.setSelected(true);
 				} else {
 					chckbx_Malignancies.setSelected(false);
 				}
-				if (((String) rs.getString("HIV_assessment.HeartDisease"))
-						.equals("Y")) {
+				if (rs.getString("HIV_assessment.HeartDisease") != null
+						&& ((String) rs
+								.getString("HIV_assessment.HeartDisease"))
+								.equals("Y")) {
 					chckbx_HD.setSelected(true);
 				} else {
 					chckbx_HD.setSelected(false);
 				}
-				if (((String) rs.getString("HIV_assessment.NephroticSyndrome"))
-						.equals("Y")) {
+				if (rs.getString("HIV_assessment.NephroticSyndrome") != null
+						&& ((String) rs
+								.getString("HIV_assessment.NephroticSyndrome"))
+								.equals("Y")) {
 					chckbx_PHNS.setSelected(true);
 				} else {
 					chckbx_PHNS.setSelected(false);
 				}
-				if (((String) rs.getString("HIV_assessment.Smoking"))
-						.equals("Y")) {
+				if (rs.getString("HIV_assessment.Smoking") != null
+						&& ((String) rs.getString("HIV_assessment.Smoking"))
+								.equals("Y")) {
 					chckbx_Smoke.setSelected(true);
 				} else {
 					chckbx_Smoke.setSelected(false);
 				}
-				if (((String) rs.getString("HIV_assessment.Drinking"))
-						.equals("Y")) {
+				if (rs.getString("HIV_assessment.Drinking") != null
+						&& ((String) rs.getString("HIV_assessment.Drinking"))
+								.equals("Y")) {
 					chckbx_Alcoholism.setSelected(true);
 				} else {
 					chckbx_Alcoholism.setSelected(false);
 				}
-				if (((String) rs.getString("HIV_assessment.OverWeight"))
-						.equals("Y")) {
+				if (rs.getString("HIV_assessment.OverWeight") != null
+						&& ((String) rs.getString("HIV_assessment.OverWeight"))
+								.equals("Y")) {
 					chckbx_OW.setSelected(true);
 				} else {
 					chckbx_OW.setSelected(false);
 				}
-				txt_Other.setText((String) rs
-						.getString("HIV_assessment.OtherDiseaseHistory"));
-				if (((String) rs.getString("HIV_assessment.SelfHPL"))
-						.equals("Y")) {
+				if (rs.getString("HIV_assessment.OtherDiseaseHistory") != null) {
+					txt_Other.setText((String) rs
+							.getString("HIV_assessment.OtherDiseaseHistory"));
+				}
+				if (rs.getString("HIV_assessment.SelfHPL") != null
+						&& ((String) rs.getString("HIV_assessment.SelfHPL"))
+								.equals("Y")) {
 					chckbx_IHHC.setSelected(true);
 				} else {
 					chckbx_IHHC.setSelected(false);
 				}
-				if (((String) rs.getString("HIV_assessment.SelfDiabetes"))
-						.equals("Y")) {
+				if (rs.getString("HIV_assessment.SelfDiabetes") != null
+						&& ((String) rs
+								.getString("HIV_assessment.SelfDiabetes"))
+								.equals("Y")) {
 					chckbx_IHDM.setSelected(true);
 				} else {
 					chckbx_IHDM.setSelected(false);
 				}
-				if (((String) rs.getString("HIV_assessment.SelfHTN"))
-						.equals("Y")) {
+				if (rs.getString("HIV_assessment.SelfHTN") != null
+						&& ((String) rs.getString("HIV_assessment.SelfHTN"))
+								.equals("Y")) {
 					chckbx_IHEBP.setSelected(true);
 				} else {
 					chckbx_IHEBP.setSelected(false);
 				}
-				if (((String) rs.getString("HIV_assessment.DirectHPL"))
-						.equals("Y")) {
+				if (rs.getString("HIV_assessment.DirectHPL") != null
+						&& ((String) rs.getString("HIV_assessment.DirectHPL"))
+								.equals("Y")) {
 					chckbx_FMHHC.setSelected(true);
 				} else {
 					chckbx_FMHHC.setSelected(false);
 				}
-				if (((String) rs.getString("HIV_assessment.DirectDiabetes"))
-						.equals("Y")) {
+				if (rs.getString("HIV_assessment.DirectDiabetes") != null
+						&& ((String) rs
+								.getString("HIV_assessment.DirectDiabetes"))
+								.equals("Y")) {
 					chckbx_FMHDM.setSelected(true);
 				} else {
 					chckbx_FMHDM.setSelected(false);
 				}
-				if (((String) rs.getString("HIV_assessment.DirectHTN"))
-						.equals("Y")) {
+				if (rs.getString("HIV_assessment.DirectHTN") != null
+						&& ((String) rs.getString("HIV_assessment.DirectHTN"))
+								.equals("Y")) {
 					chckbx_FMHEBP.setSelected(true);
 				} else {
 					chckbx_FMHEBP.setSelected(false);
 				}
-				if (((String) rs.getString("HIV_assessment.HasSTD"))
-						.equals("Y")) {
+				if (rs.getString("HIV_assessment.HasSTD") != null
+						&& ((String) rs.getString("HIV_assessment.HasSTD"))
+								.equals("Y")) {
 					chckbx_WSVD.setSelected(true);
 				} else {
 					chckbx_WSVD.setSelected(false);
 				}
-				if (((String) rs.getString("HIV_assessment.Has10ST"))
-						.equals("Y")) {
+				if (rs.getString("HIV_assessment.Has10ST") != null
+						&& ((String) rs.getString("HIV_assessment.Has10ST"))
+								.equals("Y")) {
 					chckbx_10SP.setSelected(true);
 				} else {
 					chckbx_10SP.setSelected(false);
 				}
-				if (((String) rs.getString("HIV_assessment.HasOTS"))
-						.equals("Y")) {
+				if (rs.getString("HIV_assessment.HasOTS") != null
+						&& ((String) rs.getString("HIV_assessment.HasOTS"))
+								.equals("Y")) {
 					chckbx_HSIWS.setSelected(true);
 				} else {
 					chckbx_HSIWS.setSelected(false);
 				}
-				txt_IDUAge.setText((String) rs
-						.getString("HIV_assessment.IDUAge"));
-				txt_IDUDuration.setText((String) rs
-						.getString("HIV_assessment.IDUDuration"));
-				if (((String) rs.getString("HIV_assessment.UsedDrugs"))
-						.equals("Y")) {
+				if (rs.getString("HIV_assessment.IDUAge") != null) {
+					txt_IDUAge.setText((String) rs
+							.getString("HIV_assessment.IDUAge"));
+				}
+				if (rs.getString("HIV_assessment.IDUDuration") != null) {
+					txt_IDUDuration.setText((String) rs
+							.getString("HIV_assessment.IDUDuration"));
+				}
+				if (rs.getString("HIV_assessment.UsedDrugs") != null
+						&& ((String) rs.getString("HIV_assessment.UsedDrugs"))
+								.equals("Y")) {
 					chckbx_WTD.setSelected(true);
 				} else {
 					chckbx_WTD.setSelected(false);
 				}
-				if (((String) rs.getString("HIV_assessment.UsedInjectionDrugs"))
-						.equals("Y")) {
+				if (rs.getString("HIV_assessment.UsedInjectionDrugs") != null
+						&& ((String) rs
+								.getString("HIV_assessment.UsedInjectionDrugs"))
+								.equals("Y")) {
 					chckbx_HUID.setSelected(true);
 				} else {
 					chckbx_HUID.setSelected(false);
 				}
-				if (((String) rs.getString("HIV_assessment.SharingNeedle"))
-						.equals("Y")) {
+				if (rs.getString("HIV_assessment.SharingNeedle") != null
+						&& ((String) rs
+								.getString("HIV_assessment.SharingNeedle"))
+								.equals("Y")) {
 					chckbx_SN.setSelected(true);
 				} else {
 					chckbx_SN.setSelected(false);
 				}
-				if (((String) rs.getString("HIV_assessment.SharingWater"))
-						.equals("Y")) {
+				if (rs.getString("HIV_assessment.SharingWater") != null
+						&& ((String) rs
+								.getString("HIV_assessment.SharingWater"))
+								.equals("Y")) {
 					chckbx_SW.setSelected(true);
 				} else {
 					chckbx_SW.setSelected(false);
 				}
-				if (((String) rs.getString("HIV_assessment.SharingNeedle"))
-						.equals("Y")
+				if (rs.getString("HIV_assessment.SharingNeedle") != null
+						&& rs.getString("HIV_assessment.SharingWater") != null
+						&& ((String) rs
+								.getString("HIV_assessment.SharingNeedle"))
+								.equals("Y")
 						&& ((String) rs
 								.getString("HIV_assessment.SharingWater"))
 								.equals("Y")) {
@@ -751,16 +812,22 @@ public class Tab_HIVCase extends JPanel implements ISaveable {
 				} else {
 					chckbx_SNW.setSelected(false);
 				}
-				if (((String) rs.getString("HIV_assessment.UsedMethadone"))
-						.equals("Y")) {
+				if (rs.getString("HIV_assessment.UsedMethadone") != null
+						&& ((String) rs
+								.getString("HIV_assessment.UsedMethadone"))
+								.equals("Y")) {
 					chckbx_Methadone.setSelected(true);
 				} else {
 					chckbx_Methadone.setSelected(false);
 				}
-				txt_StartMethadone.setText((String) rs
-						.getString("HIV_assessment.FirstMethadone"));
-				if (((String) rs.getString("HIV_assessment.MethadoneStatus"))
-						.equals("U")) {
+				if (rs.getString("HIV_assessment.FirstMethadone") != null) {
+					txt_StartMethadone.setText((String) rs
+							.getString("HIV_assessment.FirstMethadone"));
+				}
+				if (rs.getString("HIV_assessment.MethadoneStatus") != null
+						&& ((String) rs
+								.getString("HIV_assessment.MethadoneStatus"))
+								.equals("U")) {
 					cbb_StaticsMethadone.setSelectedItem(0);
 				} else {
 					cbb_StaticsMethadone.setSelectedItem(1);
@@ -778,7 +845,103 @@ public class Tab_HIVCase extends JPanel implements ISaveable {
 		}
 	}
 
-	private void writeVaccine() {
+	private void writeVaccine(Connection conn) throws Exception {
+		int i = 0;
+		if (tab_Vaccine.getColumnCount() > 1) {
+			for (i = 0; i < tab_Vaccine.getRowCount(); i++) {
+				String sql = "UPDATE vaccine_history SET ";
+				if ((Boolean) tab_Vaccine.getValueAt(i, 1) == true) {
+					sql = sql + "vaccine_history.HPVExam = 'Y' ";
+				} else {
+					sql = sql + "vaccine_history.HPVExam = 'N' ";
+				}
+				if (tab_Vaccine.getValueAt(i, 2) != null
+						&& !tab_Vaccine.getValueAt(i, 2).equals("")) {
+					sql = sql + ",vaccine_history.HPVExamDate = '"
+							+ tab_Vaccine.getValueAt(i, 2) + "' ";
+				}
+				if (tab_Vaccine.getValueAt(i, 3) != null
+						&& !tab_Vaccine.getValueAt(i, 3).equals("")) {
+					sql = sql + ",vaccine_history.VaccineType = '"
+							+ tab_Vaccine.getValueAt(i, 3) + "' ";
+				}
+				if (tab_Vaccine.getValueAt(i, 4) != null
+						&& !tab_Vaccine.getValueAt(i, 4).equals("")) {
+					sql = sql + ",vaccine_history.InjectionDate = '"
+							+ tab_Vaccine.getValueAt(i, 4) + "' ";
+				}
+				sql = sql + "WHERE vaccine_history.guid = '"
+						+ tab_Vaccine.getValueAt(i, 0) + "'";
+				System.out.print(sql);
+				PreparedStatement ps = conn.prepareStatement(sql);
+				try {
+					ps.executeUpdate();
+				} catch (Exception e) {
+					throw e;
+				} finally {
+					if (ps != null)
+						ps.close();
+				}
+			}
+		}
+	}
+
+	private void writeSD(Connection conn) throws Exception {
+		int i = 0;
+		if (tab_VenerealDisease.getColumnCount() > 1) {
+			for (i = 0; i < tab_VenerealDisease.getRowCount(); i++) {
+				String sql = "UPDATE sexsual_disease SET ";
+				if (tab_VenerealDisease.getValueAt(i, 1) != null
+						&& !tab_VenerealDisease.getValueAt(i, 1).equals("")) {
+					sql = sql + "sexsual_disease.happenDate = '"
+							+ tab_VenerealDisease.getValueAt(i, 1) + "', ";
+				}
+				if ((Boolean) tab_VenerealDisease.getValueAt(i, 2) == true) {
+					sql = sql + "sexsual_disease.Syphilis = 'Y', ";
+				} else {
+					sql = sql + "sexsual_disease.Syphilis = 'N', ";
+				}
+				if ((Boolean) tab_VenerealDisease.getValueAt(i, 3) == true) {
+					sql = sql + "sexsual_disease.Gonorrhea = 'Y', ";
+				} else {
+					sql = sql + "sexsual_disease.Gonorrhea = 'N', ";
+				}
+				if ((Boolean) tab_VenerealDisease.getValueAt(i, 4) == true) {
+					sql = sql
+							+ "sexsual_disease.NongonococcalUrethritis = 'Y', ";
+				} else {
+					sql = sql
+							+ "sexsual_disease.NongonococcalUrethritis = 'N', ";
+				}
+				if ((Boolean) tab_VenerealDisease.getValueAt(i, 5) == true) {
+					sql = sql + "sexsual_disease.wart = 'Y', ";
+				} else {
+					sql = sql + "sexsual_disease.wart = 'N', ";
+				}
+				if ((Boolean) tab_VenerealDisease.getValueAt(i, 6) == true) {
+					sql = sql + "sexsual_disease.Amebiasis = 'Y' ";
+				} else {
+					sql = sql + "sexsual_disease.Amebiasis = 'N' ";
+				}
+				if (tab_VenerealDisease.getValueAt(i, 7) != null
+						&& !tab_VenerealDisease.getValueAt(i, 7).equals("")) {
+					sql = sql + ",sexsual_disease.createdatetime = '"
+							+ tab_VenerealDisease.getValueAt(i, 7) + "' ";
+				}
+				sql = sql + "WHERE sexsual_disease.guid = '"
+						+ tab_VenerealDisease.getValueAt(i, 0) + "'";
+				System.out.print(sql);
+				PreparedStatement ps = conn.prepareStatement(sql);
+				try {
+					ps.executeUpdate();
+				} catch (Exception e) {
+					throw e;
+				} finally {
+					if (ps != null)
+						ps.close();
+				}
+			}
+		}
 	}
 
 	@Override
@@ -791,6 +954,8 @@ public class Tab_HIVCase extends JPanel implements ISaveable {
 		Connection conn = DBC.getConnectionExternel();
 		try {
 			save(conn);
+			writeVaccine(conn);
+			writeSD(conn);
 		} catch (Exception e) {
 			throw e;
 		} finally {
@@ -946,10 +1111,10 @@ public class Tab_HIVCase extends JPanel implements ISaveable {
 		} else {
 			sql = sql + " HIV_assessment.UsedMethadone = 'N', ";
 		}
-
-		sql = sql + " HIV_assessment.FirstMethadone = '"
-				+ txt_StartMethadone.getText() + "', ";
-
+		if (!txt_StartMethadone.getText().equals("")) {
+			sql = sql + " HIV_assessment.FirstMethadone = '"
+					+ txt_StartMethadone.getText() + "', ";
+		}
 		if (cbb_StaticsMethadone.getSelectedIndex() == 0) {
 			sql = sql + " HIV_assessment.MethadoneStatus = 'U', ";
 		} else {
@@ -976,8 +1141,7 @@ public class Tab_HIVCase extends JPanel implements ISaveable {
 		// btn_Save.setEnabled(false);
 
 	}
-	
-	private static Logger logger = LogManager
-			.getLogger(Tab_HIVCase.class.getName());
-	
+
+	private static Logger logger = LogManager.getLogger(Tab_HIVCase.class
+			.getName());
 }
