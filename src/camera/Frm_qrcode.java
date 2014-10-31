@@ -8,24 +8,56 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
 import javax.swing.JFrame;
-import javax.swing.JTextArea;
 
-public class Frm_qrcode extends JFrame implements Runnable, ThreadFactory {
+import com.github.sarxos.webcam.Webcam;
+import com.github.sarxos.webcam.WebcamPanel;
+import com.github.sarxos.webcam.WebcamResolution;
+import com.google.zxing.BinaryBitmap;
+import com.google.zxing.LuminanceSource;
+import com.google.zxing.MultiFormatReader;
+import com.google.zxing.NotFoundException;
+import com.google.zxing.Result;
+import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
+import com.google.zxing.common.HybridBinarizer;
+//import javax.swing.JTextArea;
+
+public class Frm_QRcode extends JFrame implements Runnable, ThreadFactory {
 
 	private static final long serialVersionUID = 6441489157408381878L;
+	private javax.swing.JTextField mTxtField;
+	private JFrame mFrmParent;
 
 	private Executor executor = Executors.newSingleThreadExecutor(this);
 
 	private Webcam webcam = null;
 	private WebcamPanel panel = null;
-	private JTextArea textarea = null;
+	private boolean isRunning = true;
+	//private JTextArea textarea = null;
 
-	public Frm_qrcode() {
+	// invoke this by 
+	// new Frm_QRcode(txtField).setVisible(true);
+	// it will set txtField for you if it got anything
+	// it will set txtField with "N/A" if it is closed before it got anything
+	public Frm_QRcode(JFrame parent, javax.swing.JTextField txtField) {
 		super();
-
+		mTxtField = txtField;
+		mFrmParent = parent;
+		mTxtField.setText("");
+			
+		addWindowListener(new java.awt.event.WindowAdapter() {
+		    @Override
+		    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+		    	System.out.println("wtf");
+		    	if(mTxtField.getText().length() == 0) 
+		    		{
+		    		mTxtField.setText("N/A");
+		    		onClose();
+		    		}
+		    }
+		});
+				
 		setLayout(new FlowLayout());
-		setTitle("Read QR / Bar Code With Webcam");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setTitle("Reading QRcode");
 
 		Dimension size = WebcamResolution.QVGA.getSize();
 
@@ -35,12 +67,12 @@ public class Frm_qrcode extends JFrame implements Runnable, ThreadFactory {
 		panel = new WebcamPanel(webcam);
 		panel.setPreferredSize(size);
 
-		textarea = new JTextArea();
-		textarea.setEditable(false);
-		textarea.setPreferredSize(size);
+		//textarea = new JTextArea();
+		//textarea.setEditable(false);
+		//textarea.setPreferredSize(size);
 
 		add(panel);
-		add(textarea);
+		//add(textarea);
 
 		pack();
 		setVisible(true);
@@ -50,49 +82,55 @@ public class Frm_qrcode extends JFrame implements Runnable, ThreadFactory {
 
 	@Override
 	public void run() {
-
-		do {
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-
-			Result result = null;
-			BufferedImage image = null;
-
-			if (webcam.isOpen()) {
-
-				if ((image = webcam.getImage()) == null) {
-					continue;
-				}
-
-				LuminanceSource source = new BufferedImageLuminanceSource(image);
-				BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
-
+		if(isRunning) {
+			do {
 				try {
-					result = new MultiFormatReader().decode(bitmap);
-				} catch (NotFoundException e) {
-					// fall thru, it means there is no QR code in image
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
 				}
-			}
-
-			if (result != null) {
-				textarea.setText(result.getText());
-			}
-
-		} while (true);
+	
+				Result result = null;
+				BufferedImage image = null;
+	
+				if (webcam.isOpen()) {
+	
+					if ((image = webcam.getImage()) == null) {
+						continue;
+					}
+	
+					LuminanceSource source = new BufferedImageLuminanceSource(image);
+					BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
+	
+					try {
+						result = new MultiFormatReader().decode(bitmap);
+					} catch (NotFoundException e) {
+						// fall thru, it means there is no QR code in image
+					}
+				}
+	
+				if (result != null) {
+					//textarea.setText(result.getText());
+					mTxtField.setText(result.getText());
+					onClose();
+				}
+	
+			} while (true);
+		}
+	}
+	
+	private void onClose () {
+		isRunning = false;
+		webcam.close();
+		mFrmParent.setEnabled(true);
+		this.dispose();
 	}
 
 	@Override
 	public Thread newThread(Runnable r) {
-		Thread t = new Thread(r, "example-runner");
+		Thread t = new Thread(r, "qrcode-runner");
 		t.setDaemon(true);
 		return t;
-	}
-
-	public static void main(String[] args) {
-		new WebcamQRCodeExample();
 	}
 
 }
