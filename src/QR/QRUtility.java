@@ -25,26 +25,27 @@ import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
 public class QRUtility {
 	private String Folder = "";
-
+		
 	public static void main(String[] args) throws WriterException, IOException,
 			NotFoundException {
 		String qrCodeData = "Hello World!";
 		String filePath = "QRCode.png";
 		String charset = "UTF-8"; // or "ISO-8859-1"
-		Map hintMap = new HashMap();
-		hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
 
-		createQRCode(qrCodeData, filePath, charset, hintMap, 200, 200);
-		System.out.println("QR Code image created successfully!");
 
-		System.out.println("Data read from QR Code: "
-				+ readQRCode(filePath, charset, hintMap));
+		//createQRCode(qrCodeData, filePath, charset, hintMap, 200, 200);
+		//System.out.println("QR Code image created successfully!");
+
+		//System.out.println("Data read from QR Code: "
+				//+ readQRCode(filePath, charset, hintMap));
 
 	}
 
 	public static void createQRCode(String qrCodeData, String filePath,
-			String charset, Map hintMap, int qrCodeheight, int qrCodewidth)
+			String charset, int qrCodeheight, int qrCodewidth)
 			throws WriterException, IOException {
+		Map hintMap = new HashMap();
+		hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
 		BitMatrix matrix = new MultiFormatWriter().encode(
 				new String(qrCodeData.getBytes(charset), charset),
 				BarcodeFormat.QR_CODE, qrCodewidth, qrCodeheight, hintMap);
@@ -52,11 +53,13 @@ public class QRUtility {
 				.lastIndexOf('.') + 1), new File(filePath));
 	}
 
-	public static String readQRCode(String filePath, String charset, Map hintMap)
+	public static String readQRCode(String filePath, String charset)
 			throws FileNotFoundException, IOException, NotFoundException {
 		BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(
 				new BufferedImageLuminanceSource(
 						ImageIO.read(new FileInputStream(filePath)))));
+		Map hintMap = new HashMap();
+		hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
 		Result qrCodeResult = new MultiFormatReader().decode(binaryBitmap,
 				hintMap);
 		return qrCodeResult.getText();
