@@ -68,7 +68,7 @@ public class Tab_WoundAssessment extends JPanel implements ISaveable {
 		panel.setBounds(12, 30, 426, 258);
 		add(panel);
 		panel.setLayout(null);
-		
+
 		btn_Save = new JButton(lang.getString("SAVE"));
 
 		chckbx_PHHD = new ChangeNotifyCheckBox(lang.getString("PHHD"), btn_Save);
@@ -195,89 +195,114 @@ public class Tab_WoundAssessment extends JPanel implements ISaveable {
 				System.out.print(sqlInsert + "\n");
 				DBC.executeUpdate(sqlInsert);
 			} else {
-				if (((String) rs.getString("wound_accessment.Hypertension"))
-						.equals("Y")) {
+				if (rs.getString("wound_accessment.Hypertension") != null
+						&& ((String) rs
+								.getString("wound_accessment.Hypertension"))
+								.equals("Y")) {
 					chckbx_PHHD.setSelected(true);
 				} else {
 					chckbx_PHHD.setSelected(false);
 				}
-				if (((String) rs.getString("wound_accessment.BrainVessel"))
-						.equals("Y")) {
+				if (rs.getString("wound_accessment.BrainVessel") != null
+						&& ((String) rs
+								.getString("wound_accessment.BrainVessel"))
+								.equals("Y")) {
 					chckbx_PHCD.setSelected(true);
 				} else {
 					chckbx_PHCD.setSelected(false);
 				}
-				if (((String) rs.getString("wound_accessment.Hyperlipidemia"))
-						.equals("Y")) {
+				if (rs.getString("wound_accessment.Hyperlipidemia") != null
+						&& ((String) rs
+								.getString("wound_accessment.Hyperlipidemia"))
+								.equals("Y")) {
 					chckbx_PHHC.setSelected(true);
 				} else {
 					chckbx_PHHC.setSelected(false);
 				}
-				if (((String) rs.getString("wound_accessment.Diabetes"))
-						.equals("Y")) {
+				if (rs.getString("wound_accessment.Diabetes") != null
+						&& ((String) rs.getString("wound_accessment.Diabetes"))
+								.equals("Y")) {
 					chckbx_PHDM.setSelected(true);
 				} else {
 					chckbx_PHDM.setSelected(false);
 				}
-				if (((String) rs.getString("wound_accessment.HepatitisA"))
-						.equals("Y")) {
+				if (rs.getString("wound_accessment.HepatitisA") != null
+						&& ((String) rs
+								.getString("wound_accessment.HepatitisA"))
+								.equals("Y")) {
 					chckbx_TypeA.setSelected(true);
 				} else {
 					chckbx_TypeA.setSelected(false);
 				}
-				if (((String) rs.getString("wound_accessment.HepatitisB"))
-						.equals("Y")) {
+				if (rs.getString("wound_accessment.HepatitisB") != null
+						&& ((String) rs
+								.getString("wound_accessment.HepatitisB"))
+								.equals("Y")) {
 					chckbx_TypeB.setSelected(true);
 				} else {
 					chckbx_TypeB.setSelected(false);
 				}
-				if (((String) rs.getString("wound_accessment.HepatitisC"))
-						.equals("Y")) {
+				if (rs.getString("wound_accessment.HepatitisC") != null
+						&& ((String) rs
+								.getString("wound_accessment.HepatitisC"))
+								.equals("Y")) {
 					chckbx_TypeC.setSelected(true);
 				} else {
 					chckbx_TypeC.setSelected(false);
 				}
-				if (((String) rs.getString("wound_accessment.Cancer"))
-						.equals("Y")) {
+				if (rs.getString("wound_accessment.Cancer") != null
+						&& ((String) rs.getString("wound_accessment.Cancer"))
+								.equals("Y")) {
 					chckbx_Malignancies.setSelected(true);
 				} else {
 					chckbx_Malignancies.setSelected(false);
 				}
-				if (((String) rs.getString("wound_accessment.HeartDisease"))
-						.equals("Y")) {
+				if (rs.getString("wound_accessment.HeartDisease") != null
+						&& ((String) rs
+								.getString("wound_accessment.HeartDisease"))
+								.equals("Y")) {
 					chckbx_HD.setSelected(true);
 				} else {
 					chckbx_HD.setSelected(false);
 				}
-				if (((String) rs
-						.getString("wound_accessment.NephroticSyndrome"))
-						.equals("Y")) {
+				if (rs.getString("wound_accessment.NephroticSyndrome") != null
+						&& ((String) rs
+								.getString("wound_accessment.NephroticSyndrome"))
+								.equals("Y")) {
 					chckbx_PHNS.setSelected(true);
 				} else {
 					chckbx_PHNS.setSelected(false);
 				}
-				if (((String) rs.getString("wound_accessment.Smoking"))
-						.equals("Y")) {
+				if (rs.getString("wound_accessment.Smoking") != null
+						&& ((String) rs.getString("wound_accessment.Smoking"))
+								.equals("Y")) {
 					chckbx_Smoke.setSelected(true);
 				} else {
 					chckbx_Smoke.setSelected(false);
 				}
-				if (((String) rs.getString("wound_accessment.Drinking"))
-						.equals("Y")) {
+				if (rs.getString("wound_accessment.Drinking") != null
+						&& ((String) rs.getString("wound_accessment.Drinking"))
+								.equals("Y")) {
 					chckbx_Alcoholism.setSelected(true);
 				} else {
 					chckbx_Alcoholism.setSelected(false);
 				}
-				if (((String) rs.getString("wound_accessment.OverWeight"))
-						.equals("Y")) {
+				if (rs.getString("wound_accessment.OverWeight") != null
+						&& ((String) rs
+								.getString("wound_accessment.OverWeight"))
+								.equals("Y")) {
 					chckbx_OW.setSelected(true);
 				} else {
 					chckbx_OW.setSelected(false);
 				}
-				txt_CreateDate.setText((String) rs
-						.getString("wound_accessment.createdatetime"));
-				txt_Other.setText((String) rs
-						.getString("wound_accessment.OtherDiseaseHistory"));
+				if (rs.getString("wound_accessment.createdatetime") != null) {
+					txt_CreateDate.setText((String) rs
+							.getString("wound_accessment.createdatetime"));
+				}
+				if (rs.getString("wound_accessment.OtherDiseaseHistory") != null) {
+					txt_Other.setText((String) rs
+							.getString("wound_accessment.OtherDiseaseHistory"));
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

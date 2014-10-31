@@ -111,6 +111,7 @@ public class RefrashWorkList extends Thread {
 			Object[][] array = { { "F", Constant.FINISH_COLOR } };
 			TabTools.setTabColor(m_Tab, 3, array);
 			TabTools.setHideColumn(m_Tab, 0);
+			TabTools.setHideColumn(m_Tab, 2);
 			TabTools.setHideColumn(m_Tab, 11);
 
 			DBC.closeConnection(rs);
@@ -264,9 +265,8 @@ public class RefrashWorkList extends Thread {
 				+ "WHERE " + "case_manage.reg_guid = A.guid "
 				+ "AND case_manage.p_no = patients_info.p_no "
 				+ "AND case_manage.s_no = staff_info.s_no "
-				+ "AND A.p_no = patients_info.p_no "
-				+ "AND A.reg_time LIKE '" + date + "%' "
-				+ "AND case_manage.type = '" + caseType + "' "
+				+ "AND A.p_no = patients_info.p_no " + "AND A.reg_time LIKE '"
+				+ date + "%' " + "AND case_manage.type = '" + caseType + "' "
 				+ "AND case_manage.status = '" + finished + "' "
 				+ "ORDER BY case_manage.finish_time desc";
 		try {
