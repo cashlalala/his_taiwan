@@ -7,11 +7,13 @@ import javax.swing.JCheckBox;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import diagnosis.*;
-
 public class TableTriStateCell {
     static class TriStateCellRenderer extends DefaultTableCellRenderer {
-        private JCheckBox checkBox;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = -9216226290382571511L;
+		private JCheckBox checkBox;
 
         public TriStateCellRenderer() {
             this.checkBox = new JCheckBox();
@@ -31,7 +33,11 @@ public class TableTriStateCell {
     }
 
     static class TriStateCellEditor extends DefaultCellEditor {
-        public TriStateCellEditor() {
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = -7689515408496449216L;
+		public TriStateCellEditor() {
             super(new JCheckBox());
         }
         @Override
