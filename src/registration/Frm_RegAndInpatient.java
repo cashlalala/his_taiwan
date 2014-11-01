@@ -12,10 +12,14 @@ import java.awt.image.BufferedImage;
 import java.awt.print.PageFormat;
 import java.awt.print.Paper;
 import java.awt.print.PrinterJob;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.swing.JButton;
@@ -39,6 +43,9 @@ import org.his.bind.PatientsInfoJPATable;
 import org.his.dao.PatientsInfoDao;
 import org.his.model.PatientsInfo;
 
+import com.google.zxing.NotFoundException;
+import com.google.zxing.WriterException;
+
 import barcode.PrintBarcode;
 import patients.Frm_PatientMod;
 import patients.LabelSticker;
@@ -50,6 +57,7 @@ import cc.johnwu.finger.FingerPrintScanner;
 import cc.johnwu.finger.FingerPrintViewerInterface;
 import cc.johnwu.sql.DBC;
 import common.PrintTools;
+import QR.QRUtility;
 
 public class Frm_RegAndInpatient extends JFrame implements
 		FingerPrintViewerInterface, DateInterface, PatientsInterface {
@@ -160,6 +168,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 	 * Create the frame.
 	 */
 	public Frm_RegAndInpatient() {
+
 		this.parentFrame = null;
 		// Init GUI
 		this.setExtendedState(Frm_Registration.MAXIMIZED_BOTH);
