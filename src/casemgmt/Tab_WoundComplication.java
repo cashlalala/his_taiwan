@@ -32,6 +32,7 @@ public class Tab_WoundComplication extends JPanel implements ISaveable {
 
 	private String pNo;
 	private String caseGuid;
+	@SuppressWarnings("unused")
 	private String regGuid;
 	private String guid;
 	private static Language lang = Language.getInstance();
@@ -318,6 +319,7 @@ public class Tab_WoundComplication extends JPanel implements ISaveable {
 		return value ? "1" : "0";
 	}
 
+	@SuppressWarnings("unused")
 	private boolean boolean2StringConvertor(String value) {
 		return value.equals("1");
 	}

@@ -20,7 +20,6 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
-import radiology.Frm_Radiology;
 import multilingual.Language;
 import cc.johnwu.sql.DBC;
 
@@ -46,7 +45,9 @@ public class Frm_ConfirmImage extends JFrame {
 	//private JFrame mParent;
 	
     private void btn_CloseActionPerformed(java.awt.event.ActionEvent evt) {
-        new main.Frm_Main().setVisible(true);
+    	if (!mType.equalsIgnoreCase("wound")) {
+    		new main.Frm_Main().setVisible(true);	
+    	}
         this.dispose();
     }
 
@@ -67,6 +68,7 @@ public class Frm_ConfirmImage extends JFrame {
         });
 		
 		initComponents();
+		setLocationRelativeTo(this);
 		//JFrame window = new JFrame("Test webcam panel");
 		//window.add(panel);
 		//window.setResizable(false);
@@ -97,7 +99,7 @@ public class Frm_ConfirmImage extends JFrame {
 		}*/
 		
 		try {
-		String sql = "INSERT INTO image_meta(guid, p_no, item_guid, type, image_data) VALUES(?, ? ,?, ?, ?)";
+		String sql = "INSERT INTO image_meta(guid, p_no, item_guid, type, image_data, create_time) VALUES(?, ? ,?, ?, ?, now())";
 		Connection conn = DBC.getConnectionExternel();
 		PreparedStatement prestate =  conn.prepareStatement(sql); //先建立一個 SQL 語句並回傳一個 PreparedStatement 物件
 		prestate.setString(1, UUID.randomUUID().toString()); 
