@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1478,13 +1480,11 @@ public class Frm_RegAndInpatient extends JFrame implements
 					+ selectedPatientGUID
 					+ "')=0 "
 					+ "THEN 'Y' "
-					+ "ELSE 'N' END),"
-					+ // first visit end
-					"NULL,"
-					+ "'"
-					+ type
-					+ "',"
-					+ // type
+					+ "ELSE 'N' END), "
+					// first visit end
+					+ "'" + pan_ClinicDate.getValue()+" 00:00:00'," //reserved date
+					+ "'" + type	+ "'," // type
+					+ 
 					"NULL,"
 					+ "'W',"
 					+ // finish
@@ -1528,7 +1528,32 @@ public class Frm_RegAndInpatient extends JFrame implements
 					"NULL," + "NULL;";
 
 			DBC.executeUpdate(sql);
-
+			
+			
+			Date date = new Date();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String strReservedDate = pan_ClinicDate.getValue()+" 00:00:00";
+			if( sdf.parse(strReservedDate).after(date)){
+				int dialogButton = JOptionPane.YES_NO_OPTION;
+				int dialogResult = JOptionPane.showConfirmDialog (null, "Send SMS?","Warning",dialogButton);
+				if (dialogResult == JOptionPane.YES_OPTION){
+					String sqlSMS = "INSERT INTO package_set SELECT uuid(), '"
+							+ newRegUUID
+							+ "', "
+							+ "'V1', "
+							+ "'" + pan_ClinicDate.getValue() + "', "
+							+ "'10', "
+							+ "NULL, "
+							+ "NULL, "
+							+ "'0', "
+							+ "NULL, "
+							+ "NULL, "
+							+ "NULL;";
+					DBC.executeUpdate(sqlSMS);
+				}
+			}
+			
+			
 			sql = "SELECT visits_no, guid FROM registration_info "
 					+ "WHERE shift_guid = '"
 					+ tab_ClinicList.getValueAt(
@@ -1623,7 +1648,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 					return false;
 				}
 			});
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		printRegClinic(newRegUUID);
@@ -2009,6 +2034,25 @@ public class Frm_RegAndInpatient extends JFrame implements
 			}
 
 			if (selectedType == "R") {
+				if( cbb_InpatientType.getSelectedIndex() == 1){
+					int dialogButton = JOptionPane.YES_NO_OPTION;
+					int dialogResult = JOptionPane.showConfirmDialog (null, "Send SMS?","Warning",dialogButton);
+					if (dialogResult == JOptionPane.YES_OPTION){
+						String sqlSMS = "INSERT INTO package_set SELECT uuid(), '"
+								+ newRegUUID
+								+ "', "
+								+ "'V1', "
+								+ "'" +  pan_CheckInDate.getValue() + "', "
+								+ "'10', "
+								+ "NULL, "
+								+ "NULL, "
+								+ "'0', "
+								+ "NULL, "
+								+ "NULL, "
+								+ "NULL;";
+						DBC.executeUpdate(sqlSMS);
+					}
+				}
 				return;
 			}
 
@@ -2072,8 +2116,9 @@ public class Frm_RegAndInpatient extends JFrame implements
 					+
 					// touchtime end
 					"NULL," + "NULL";
-			DBC.executeUpdate(sql);
-		} catch (SQLException e) {
+			DBC.executeUpdate(sql);		
+			
+		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			try {
@@ -2082,6 +2127,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 				e.printStackTrace();
 			}
 		}
+
 		printRegInpatient(newRegUUID);
 	}
 
