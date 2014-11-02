@@ -51,20 +51,30 @@ public class Frm_MobileRecord extends javax.swing.JFrame {
 
     private void setSendList(String pno) {
         try {
-         Object[] title = {"","Patient No.","Name","Registration Date", "Back Date" ,"Advance Notice", "Sent Date","Cell Phone","Content" ,"guid"};
-            String sql = "SELECT registration_info.guid, patients_info.p_no AS 'Patient No.', package_set.cell_phone AS 'Cell Phone', " +
+         Object[] title = {"","Name","Sent Date","Cell Phone","Content","Status"};
+            /*String sql = "SELECT registration_info.guid, patients_info.p_no AS 'Patient No.', package_set.cell_phone AS 'Cell Phone', " +
                     "concat(patients_info.firstname,'  ',patients_info.lastname) AS 'Name', " +
                     "package_set.use_date AS 'Registration Date' ,package_set.content AS 'Content', " +
                     "(DATE_ADD(package_set.use_date, INTERVAL package_set.days DAY)) AS 'Back Days', "+
-                    "(DATE_SUB((DATE_ADD(package_set.use_date, INTERVAL package_set.days DAY)), INTERVAL sys_info.remind_days DAY)) AS 'Advance Notice', " +
+                    "(DATE_SUB((DATE_ADD(package_set.use_date, INTERVAL package_set.days DAY)), INTERVAL setting.sms_remind_days DAY)) AS 'Advance Notice', " +
                     "package_set.send_time AS 'Sent Date' " +
-                    "FROM package_set, patients_info LEFT JOIN contactperson_info ON  contactperson_info.guid = patients_info.cp_guid, registration_info, sys_info " +
+                    "FROM package_set, patients_info LEFT JOIN contactperson_info ON  contactperson_info.guid = patients_info.cp_guid, registration_info, setting " +
                     "WHERE package_set.reg_guid = registration_info.guid  " +
                     "AND registration_info.p_no = patients_info.p_no  " +
     
                     //"AND sms_state = '"+cbox_SendStatus.getSelectedIndex()+"'  " +
-                    "AND sms_state = '1'  " +
-                    "AND  date_format(package_set.send_time,'%Y-%m-%d') = '"+date_Com.getValue()+"' AND patients_info.p_no LIKE '%"+pno+"%'  ";
+                    "AND (sms_state = '1' OR sms_state = '2') " +
+                    "AND  date_format(package_set.send_time,'%Y-%m-%d') = '"+date_Com.getValue()+"' AND patients_info.p_no LIKE '%"+pno+"%'  ";*/
+            String sql = "SELECT concat(patients_info.firstname,'  ',patients_info.lastname) AS 'Name', " + 
+                         "package_set.send_time AS 'Sent Date', " +  
+                         "package_set.cell_phone AS 'Cell Phone', " +  
+                         "package_set.content AS 'Content', " +
+                         "CASE package_set.sms_state WHEN '1' THEN 'OUT' ELSE 'IN' END 'State' " + 
+            		     "FROM `package_set`, `patients_info` " + 
+                         "WHERE `package_set`.`cell_phone`=`patients_info`.`cell_phone` AND " + 
+            		     "date_format(package_set.send_time,'%Y-%m-%d') = '"+date_Com.getValue()+"' AND " + 
+                         "(sms_state = '1' OR sms_state = '2') " +
+                         "ORDER BY `package_set`.`cell_phone`, `package_set`.`send_time` DESC";
             System.out.println(sql);
             ResultSet rs = DBC.executeQuery(sql);
 
@@ -77,15 +87,16 @@ public class Frm_MobileRecord extends javax.swing.JFrame {
             while (rs.next()) {
 
                  dataArray[i][0] = i+1;
-                 dataArray[i][1] = rs.getString("Patient No.");
-                 dataArray[i][2] = rs.getString("Name");
-                 dataArray[i][3] = rs.getString("Registration Date");
-                 dataArray[i][4] = rs.getString("Back Days");
-                 dataArray[i][5] = rs.getString("Advance Notice");
-                 dataArray[i][6] = rs.getString("Sent Date");
-                 dataArray[i][7] = rs.getString("Cell Phone");
-                 dataArray[i][8] = rs.getString("Content");
-                 dataArray[i][9] = rs.getString("guid");
+                 dataArray[i][1] = rs.getString("Name");
+                 dataArray[i][2] = rs.getString("Sent Date");
+                 dataArray[i][3] = rs.getString("Cell Phone");
+                 dataArray[i][4] = rs.getString("Content");
+                 dataArray[i][5] = rs.getString("State");
+                 /*if (rs.getString("State")=="1") {
+                	 dataArray[i][5] = "OUT";
+                 } else {
+                	 dataArray[i][5] = "IN";
+                 }*/
 
                  i++;
              }
