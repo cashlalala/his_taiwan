@@ -181,7 +181,7 @@ public class Frm_Setting extends javax.swing.JFrame {
     private void init() {
     	initLanguage() ;
     	cob_Language.setModel(new javax.swing.DefaultComboBoxModel(
-	                new String[] { "en", "fr", "es", "tw"}
+	                new String[] { "en", "fr", "es", "zh"}
 	            )
 	    );
     	cob_ICDVersion.setModel(new javax.swing.DefaultComboBoxModel(
