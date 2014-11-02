@@ -27,7 +27,7 @@ is divided into following sections:
             </not>
         </condition>
     </fail>
-    <target depends="jar,javadoc,post-build" description="Build and test whole project." name="default"/>
+    <target depends="jar,post-build" description="Build and test whole project." name="default"/>
 	
 	<target name="post-build">
 	</target>

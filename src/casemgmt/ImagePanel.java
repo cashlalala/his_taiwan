@@ -7,6 +7,8 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
 public class ImagePanel extends JPanel {
 
@@ -22,6 +24,12 @@ public class ImagePanel extends JPanel {
 	private int high;
 
 	public ImagePanel() {
+		addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusGained(FocusEvent e) {
+				onFocusGained(e);
+			}
+		});
 		try {
 			image = ImageIO.read(new File("img/diabetes-foot-exam.jpg"));
 			this.wid = 300;
@@ -29,6 +37,11 @@ public class ImagePanel extends JPanel {
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
+	}
+
+	protected void onFocusGained(FocusEvent e) {
+		revalidate();
+		repaint();
 	}
 
 	public ImagePanel(Image img, int i, int j) {
@@ -40,8 +53,7 @@ public class ImagePanel extends JPanel {
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		if (image != null)
-			g.drawImage(image, 0, 0, wid, high, null);
+		g.drawImage(image, 0, 0, wid, high, null);
 	}
 
 }

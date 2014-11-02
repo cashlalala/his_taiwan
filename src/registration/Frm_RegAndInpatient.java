@@ -12,10 +12,16 @@ import java.awt.image.BufferedImage;
 import java.awt.print.PageFormat;
 import java.awt.print.Paper;
 import java.awt.print.PrinterJob;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.swing.JButton;
@@ -39,6 +45,9 @@ import org.his.bind.PatientsInfoJPATable;
 import org.his.dao.PatientsInfoDao;
 import org.his.model.PatientsInfo;
 
+import com.google.zxing.NotFoundException;
+import com.google.zxing.WriterException;
+
 import barcode.PrintBarcode;
 import patients.Frm_PatientMod;
 import patients.LabelSticker;
@@ -50,6 +59,7 @@ import cc.johnwu.finger.FingerPrintScanner;
 import cc.johnwu.finger.FingerPrintViewerInterface;
 import cc.johnwu.sql.DBC;
 import common.PrintTools;
+import QR.QRUtility;
 
 public class Frm_RegAndInpatient extends JFrame implements
 		FingerPrintViewerInterface, DateInterface, PatientsInterface {
@@ -69,7 +79,6 @@ public class Frm_RegAndInpatient extends JFrame implements
 	private JLabel lbl_Height;
 	private JLabel lbl_Weight;
 	private cc.johnwu.finger.FingerPrintViewer Frm_FingerPrintViewer;
-	private JPanel pan_Code;
 	private JButton btn_AddPatient;
 	private JButton btn_EditPatient;
 	// GUI for right top patient search
@@ -160,6 +169,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 	 * Create the frame.
 	 */
 	public Frm_RegAndInpatient() {
+
 		this.parentFrame = null;
 		// Init GUI
 		this.setExtendedState(Frm_Registration.MAXIMIZED_BOTH);
@@ -355,8 +365,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 		gbc_Frm_FingerPrintViewer.gridheight = 2;
 		gbc_Frm_FingerPrintViewer.gridx = 0;
 		gbc_Frm_FingerPrintViewer.gridy = 11;
-		pan_PatientInfo.add(Frm_FingerPrintViewer,
-		gbc_Frm_FingerPrintViewer);
+		pan_PatientInfo.add(Frm_FingerPrintViewer, gbc_Frm_FingerPrintViewer);
 
 		btn_AddPatient = new JButton(paragraph.getString("NEWPATIENT"));
 		btn_AddPatient.setMnemonic(java.awt.event.KeyEvent.VK_N);
@@ -996,16 +1005,30 @@ public class Frm_RegAndInpatient extends JFrame implements
 		pan_ClinicOrInpatient
 				.addChangeListener(new javax.swing.event.ChangeListener() {
 					public void stateChanged(ChangeEvent arg0) {
-						initClinicInfo();
-						initInpatientInfo();
-						initHistory();
+
+						new Thread(new Runnable() {
+							@Override
+							public void run() {
+								initClinicInfo();
+								initInpatientInfo();
+								initHistory();
+							}
+						}).start();
 					}
 				});
 		// End of init GUI
-		initClinicInfo();
-		initInpatientInfo();
-		initHistory();
-		reLoad();
+
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				initClinicInfo();
+				initInpatientInfo();
+				initHistory();
+				reLoad();
+			}
+		}).start();
+
 	}
 
 	private void initHistory() {
@@ -1257,6 +1280,11 @@ public class Frm_RegAndInpatient extends JFrame implements
 				tab_HistoryList.setModel(new DefaultTableModel(
 						new String[][] { { "No Information." } },
 						new String[] { "Message" }) {
+
+					/**
+							 * 
+							 */
+					private static final long serialVersionUID = 3852489926998119919L;
 				});
 			} else {
 				ResultSetMetaData rsMetaData = rs.getMetaData();
@@ -1276,7 +1304,6 @@ public class Frm_RegAndInpatient extends JFrame implements
 				rs.beforeFirst();
 				for (i = 0; i < rowCount; i++) {
 					rs.next();
-					String strShift;
 					for (j = 0; j < rsMetaData.getColumnCount(); j++) {
 						HistoryMatrix[i][j] = rs.getString(j + 1);
 					}
@@ -1290,6 +1317,11 @@ public class Frm_RegAndInpatient extends JFrame implements
 				}
 				tab_HistoryList.setModel(new DefaultTableModel(HistoryMatrix,
 						historyHeader) {
+
+					/**
+							 * 
+							 */
+					private static final long serialVersionUID = -1149443021733251964L;
 				});
 			}
 
@@ -1311,11 +1343,11 @@ public class Frm_RegAndInpatient extends JFrame implements
 	private void btn_HistoryCancelactionPerformed(ActionEvent evt) {
 		String sql = "UPDATE registration_info SET registration_info.finish='C' "
 				+ "WHERE registration_info.guid='" + selectedRegGUID + "'";
-		try{
+		try {
 			DBC.executeUpdate(sql);
-		}catch(Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
-		}finally{
+		} finally {
 			refreshHistory();
 		}
 	}
@@ -1448,13 +1480,11 @@ public class Frm_RegAndInpatient extends JFrame implements
 					+ selectedPatientGUID
 					+ "')=0 "
 					+ "THEN 'Y' "
-					+ "ELSE 'N' END),"
-					+ // first visit end
-					"NULL,"
-					+ "'"
-					+ type
-					+ "',"
-					+ // type
+					+ "ELSE 'N' END), "
+					// first visit end
+					+ "'" + pan_ClinicDate.getValue()+" 00:00:00'," //reserved date
+					+ "'" + type	+ "'," // type
+					+ 
 					"NULL,"
 					+ "'W',"
 					+ // finish
@@ -1498,7 +1528,32 @@ public class Frm_RegAndInpatient extends JFrame implements
 					"NULL," + "NULL;";
 
 			DBC.executeUpdate(sql);
-
+			
+			
+			Date date = new Date();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String strReservedDate = pan_ClinicDate.getValue()+" 00:00:00";
+			if( sdf.parse(strReservedDate).after(date)){
+				int dialogButton = JOptionPane.YES_NO_OPTION;
+				int dialogResult = JOptionPane.showConfirmDialog (null, "Send SMS?","Warning",dialogButton);
+				if (dialogResult == JOptionPane.YES_OPTION){
+					String sqlSMS = "INSERT INTO package_set SELECT uuid(), '"
+							+ newRegUUID
+							+ "', "
+							+ "'V1', "
+							+ "'" + pan_ClinicDate.getValue() + "', "
+							+ "'10', "
+							+ "NULL, "
+							+ "NULL, "
+							+ "'0', "
+							+ "NULL, "
+							+ "NULL, "
+							+ "NULL;";
+					DBC.executeUpdate(sqlSMS);
+				}
+			}
+			
+			
 			sql = "SELECT visits_no, guid FROM registration_info "
 					+ "WHERE shift_guid = '"
 					+ tab_ClinicList.getValueAt(
@@ -1511,10 +1566,9 @@ public class Frm_RegAndInpatient extends JFrame implements
 					+ "AND touchtime LIKE concat(DATE_FORMAT(now(),'%Y%m%d%H%i'),'%') ";
 			ResultSet rs = DBC.executeQuery(sql);
 
-			String m_Guid = "";
 			if (rs.next()) {
 				m_Number = rs.getInt(1);
-				m_Guid = rs.getString("guid");
+				rs.getString("guid");
 			}
 
 			String html = "<html><font size='6'>";
@@ -1594,7 +1648,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 					return false;
 				}
 			});
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		printRegClinic(newRegUUID);
@@ -1980,6 +2034,25 @@ public class Frm_RegAndInpatient extends JFrame implements
 			}
 
 			if (selectedType == "R") {
+				if( cbb_InpatientType.getSelectedIndex() == 1){
+					int dialogButton = JOptionPane.YES_NO_OPTION;
+					int dialogResult = JOptionPane.showConfirmDialog (null, "Send SMS?","Warning",dialogButton);
+					if (dialogResult == JOptionPane.YES_OPTION){
+						String sqlSMS = "INSERT INTO package_set SELECT uuid(), '"
+								+ newRegUUID
+								+ "', "
+								+ "'V1', "
+								+ "'" +  pan_CheckInDate.getValue() + "', "
+								+ "'10', "
+								+ "NULL, "
+								+ "NULL, "
+								+ "'0', "
+								+ "NULL, "
+								+ "NULL, "
+								+ "NULL;";
+						DBC.executeUpdate(sqlSMS);
+					}
+				}
 				return;
 			}
 
@@ -2043,8 +2116,9 @@ public class Frm_RegAndInpatient extends JFrame implements
 					+
 					// touchtime end
 					"NULL," + "NULL";
-			DBC.executeUpdate(sql);
-		} catch (SQLException e) {
+			DBC.executeUpdate(sql);		
+			
+		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			try {
@@ -2053,6 +2127,7 @@ public class Frm_RegAndInpatient extends JFrame implements
 				e.printStackTrace();
 			}
 		}
+
 		printRegInpatient(newRegUUID);
 	}
 

@@ -5,6 +5,8 @@ import cc.johnwu.sql.*;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.net.*;
 import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.util.logging.Level;
@@ -50,14 +52,14 @@ public class Frm_MobileHealth extends javax.swing.JFrame implements DateInterfac
                     "concat(patients_info.firstname,'  ',patients_info.lastname) AS 'Name', " +
                     "package_set.use_date AS 'Date' ,package_set.id AS 'Set Type', " +
                     "(DATE_ADD(package_set.use_date, INTERVAL package_set.days DAY)) AS 'Back Days', "+
-                    "(DATE_SUB((DATE_ADD(package_set.use_date, INTERVAL package_set.days DAY)), INTERVAL sys_info.remind_days DAY)) AS 'Advance Notice', " +
+                    "(DATE_SUB((DATE_ADD(package_set.use_date, INTERVAL package_set.days DAY)), INTERVAL setting.sms_remind_days DAY)) AS 'Advance Notice', " +
                     "contactperson_info.cell_phone AS 'Contactperson' " +
-                    "FROM package_set, patients_info LEFT JOIN contactperson_info ON  contactperson_info.guid = patients_info.cp_guid, registration_info, sys_info " +
+                    "FROM package_set, patients_info LEFT JOIN contactperson_info ON  contactperson_info.guid = patients_info.cp_guid, registration_info, setting " +
                     "WHERE package_set.reg_guid = registration_info.guid  " +
                     "AND registration_info.p_no = patients_info.p_no  " +
             
                     "AND sms_state = '0'  " +
-                    "AND '"+date_Com.getValue()+"' >=(DATE_SUB((DATE_ADD(package_set.use_date, INTERVAL package_set.days DAY)), INTERVAL sys_info.remind_days DAY)) AND patients_info.p_no LIKE '%"+pno+"%'  ";
+                    "AND '"+date_Com.getValue()+"' >=(DATE_SUB((DATE_ADD(package_set.use_date, INTERVAL package_set.days DAY)), INTERVAL setting.sms_remind_days DAY)) AND patients_info.p_no LIKE '%"+pno+"%'  ";
             System.out.println(sql);
             ResultSet rs = DBC.executeQuery(sql);
 
@@ -394,33 +396,59 @@ public class Frm_MobileHealth extends javax.swing.JFrame implements DateInterfac
     private void btn_SendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_SendActionPerformed
         String sql = null;
          try {
+            int n = 0;
             for(int i = 0; i < tab_Send.getRowCount(); i++ ) {
-                if (tab_Send.getValueAt(i, tab_Send.getColumnCount()-2).toString().equals("true")) {  // 倒數第二欄為checkbox
-                    String cellPhone = "";
+                if (!tab_Send.getValueAt(i, tab_Send.getColumnCount()-2).toString().equals("true")) {  // 倒數第二欄為checkbox
+                    continue;
+                }
+                String cellPhone = "";
 
-                    if (tab_Send.getValueAt(i, 7) != null)  cellPhone = tab_Send.getValueAt(i, 7).toString().trim();
-                    else if (tab_Send.getValueAt(i, 8) != null) cellPhone = tab_Send.getValueAt(i, 8).toString().trim();
+                if (tab_Send.getValueAt(i, 7) != null)  cellPhone = tab_Send.getValueAt(i, 7).toString().trim();
+                else if (tab_Send.getValueAt(i, 8) != null) cellPhone = tab_Send.getValueAt(i, 8).toString().trim();
 
-
-                    sql = "UPDATE package_set SET content = '"+txt_LetterText.getText().trim()+"', sms_state = '1', send_time = NOW(), " +
-                            "send_sno = '"+UserInfo.getUserNO()+"', cell_phone = '"+cellPhone+"', title = '"+txt_LetterName.getText()+"' " +
-                       "WHERE guid = '"+tab_Send.getValueAt(i, tab_Send.getColumnCount()-1)+"' ";
+                if (sendSms(cellPhone, txt_LetterText.getText().trim())) {
+                    sql = "UPDATE package_set SET content = '" + txt_LetterText.getText().trim() + "', sms_state = '1', send_time = NOW(), " +
+                            "send_sno = '" + UserInfo.getUserNO() + "', cell_phone = '" + cellPhone + "', title = '" + txt_LetterName.getText() + "' " +
+                            "WHERE guid = '" + tab_Send.getValueAt(i, tab_Send.getColumnCount() - 1) + "' ";
                     System.out.println(sql);
                     DBC.executeUpdate(sql);
-
                 }
+                n += 1;
+            }
+            JOptionPane.showMessageDialog(null, String.format("%d SMS submit completed.", n));
+            setSendList("");
 
-            }
-            if (sql != null) {
-                JOptionPane.showMessageDialog(null, "Submit completed.");
-                setSendList("");
-            }
-            
          } catch (SQLException ex) {
                 Logger.getLogger(Frm_MobileHealth.class.getName()).log(Level.SEVERE, null, ex);
          }
         
     }//GEN-LAST:event_btn_SendActionPerformed
+
+    private boolean sendSms(String cellPhone, String text) {
+        String klass = Frm_MobileHealth.class.getName();
+        Logger log = Logger.getLogger(klass);
+        String[] args = new String[] { cellPhone, text };
+        log.entering(klass, "sendSms", args);
+        boolean res = false;
+        try {
+            URL url = new URL(String.format("http://localhost:8080/sendsms?n=%s&m=%s",
+                    URLEncoder.encode(cellPhone, "UTF-8"),
+                    URLEncoder.encode(text, "UTF-8")));
+            HttpURLConnection http = (HttpURLConnection)url.openConnection();
+            http.setRequestMethod("GET");
+            http.connect();
+            int resCode = http.getResponseCode();
+            res = resCode == 200;
+        } catch (MalformedURLException e) {
+            log.throwing(klass, "sendSms", e);
+        } catch (ProtocolException e) {
+            log.throwing(klass, "sendSms", e);
+        } catch (IOException e) {
+            log.throwing(klass, "sendSms", e);
+        }
+        log.exiting(klass, "sendSms");
+        return res;
+    }
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
         new Frm_MobileRecord(this).setVisible(true);
