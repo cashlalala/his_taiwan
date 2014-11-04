@@ -229,7 +229,7 @@ public class RefrashWorkList extends Thread {
 
 	// 取得選定日期資料
 	@SuppressWarnings("deprecation")
-	public void getSelectDate(String date, String finished) {
+	public void getSelectDate(String date, String severity, String finished) {
 		sql = "SELECT A.visits_no AS '"
 				+ paragraph.getLanguage(line, "COL_NO")
 				+ "', "
@@ -265,9 +265,10 @@ public class RefrashWorkList extends Thread {
 				+ "WHERE " + "case_manage.reg_guid = A.guid "
 				+ "AND case_manage.p_no = patients_info.p_no "
 				+ "AND case_manage.s_no = staff_info.s_no "
-				+ "AND A.p_no = patients_info.p_no " + "AND A.reg_time LIKE '"
+				+ "AND A.p_no = patients_info.p_no " + "AND case_manage.finish_time LIKE '"
 				+ date + "%' " + "AND case_manage.type = '" + caseType + "' "
 				+ "AND case_manage.status = '" + finished + "' "
+				+ (severity.isEmpty() ? "" : "AND case_manage.severity = '" + severity + "' ")
 				+ "ORDER BY case_manage.finish_time desc";
 		try {
 			rs = DBC.executeQuery(sql);
