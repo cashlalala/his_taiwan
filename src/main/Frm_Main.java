@@ -224,6 +224,7 @@ public class Frm_Main extends javax.swing.JFrame {
 		btn_MobileHealth.setEnabled(UserInfo.getSelectPow("Mobile Health"));
 		btn_HIVCase.setEnabled(UserInfo.getSelectPow("Case Management"));
 		btn_WoundCase.setEnabled(UserInfo.getSelectPow("Case Management"));
+		btn_SearchCase.setEnabled(UserInfo.getSelectPow("Case Management"));
 		btn_DiabetesCase.setEnabled(UserInfo.getSelectPow("Case Management"));
 		btn_Cashier.setEnabled(UserInfo.getSelectPow("Cashier"));
 		btn_BedCashier.setEnabled(UserInfo.getSelectPow("Cashier"));
@@ -1117,54 +1118,45 @@ public class Frm_Main extends javax.swing.JFrame {
 			}
 		});
 		btn_WoundCase.setEnabled(false);
+		
+		btn_SearchCase = new JButton(paragraph.getString("CASE_SEARCH"));
+		btn_SearchCase.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				onSearchCaseClicked(e);
+			}
+		});
+		btn_SearchCase.setEnabled(false);
 
 		javax.swing.GroupLayout pan_CaseLayout = new javax.swing.GroupLayout(
 				pan_Case);
-		pan_CaseLayout.setHorizontalGroup(pan_CaseLayout.createParallelGroup(
-				Alignment.LEADING).addGroup(
-				pan_CaseLayout
-						.createSequentialGroup()
-						.addContainerGap()
-						.addGroup(
-								pan_CaseLayout
-										.createParallelGroup(Alignment.LEADING)
-										.addComponent(btn_DiabetesCase,
-												javax.swing.GroupLayout.PREFERRED_SIZE,
-												200,
-												javax.swing.GroupLayout.PREFERRED_SIZE)
-										.addComponent(btn_WoundCase,
-												javax.swing.GroupLayout.PREFERRED_SIZE,
-												200,
-												javax.swing.GroupLayout.PREFERRED_SIZE)
-										.addComponent(btn_HIVCase,
-												javax.swing.GroupLayout.PREFERRED_SIZE,
-												200,
-												javax.swing.GroupLayout.PREFERRED_SIZE)
-										.addComponent(btn_MobileHealth,
-												javax.swing.GroupLayout.PREFERRED_SIZE,
-												200,
-												javax.swing.GroupLayout.PREFERRED_SIZE))
-						.addContainerGap()));
-		pan_CaseLayout.setVerticalGroup(pan_CaseLayout.createParallelGroup(
-				Alignment.LEADING).addGroup(
-				pan_CaseLayout
-						.createSequentialGroup()
-						.addContainerGap()
-						.addComponent(btn_WoundCase,
-								GroupLayout.PREFERRED_SIZE, 60,
-								GroupLayout.PREFERRED_SIZE)
-						.addPreferredGap(ComponentPlacement.UNRELATED)
-						.addComponent(btn_HIVCase, GroupLayout.PREFERRED_SIZE,
-								60, GroupLayout.PREFERRED_SIZE)
-						.addPreferredGap(ComponentPlacement.UNRELATED)
-						.addComponent(btn_DiabetesCase,
-								GroupLayout.PREFERRED_SIZE, 60,
-								GroupLayout.PREFERRED_SIZE)
-						.addPreferredGap(ComponentPlacement.UNRELATED)
-						.addComponent(btn_MobileHealth, GroupLayout.PREFERRED_SIZE, 60,
-								GroupLayout.PREFERRED_SIZE)
-						.addContainerGap(GroupLayout.DEFAULT_SIZE,
-								Short.MAX_VALUE)));
+		pan_CaseLayout.setHorizontalGroup(
+			pan_CaseLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(pan_CaseLayout.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(pan_CaseLayout.createParallelGroup(Alignment.TRAILING)
+						.addComponent(btn_SearchCase, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
+						.addGroup(Alignment.LEADING, pan_CaseLayout.createParallelGroup(Alignment.TRAILING, false)
+							.addComponent(btn_DiabetesCase, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
+							.addComponent(btn_WoundCase, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
+							.addComponent(btn_HIVCase, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
+							.addComponent(btn_MobileHealth, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)))
+					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+		);
+		pan_CaseLayout.setVerticalGroup(
+			pan_CaseLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(pan_CaseLayout.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(btn_WoundCase, GroupLayout.PREFERRED_SIZE, 60, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(btn_HIVCase, GroupLayout.PREFERRED_SIZE, 60, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(btn_DiabetesCase, GroupLayout.PREFERRED_SIZE, 60, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btn_SearchCase, GroupLayout.PREFERRED_SIZE, 57, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(btn_MobileHealth, GroupLayout.PREFERRED_SIZE, 60, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+		);
 		pan_Case.setLayout(pan_CaseLayout);
 
 		jMenu1.setText(paragraph.getString("FILE"));
@@ -1424,6 +1416,11 @@ public class Frm_Main extends javax.swing.JFrame {
 	}// </editor-fold>//GEN-END:initComponents
 
 	protected void onWoundCaseClicked(ActionEvent e) {
+		new casemgmt.Frm_WorkList(0, "W").setVisible(true);
+		this.dispose();
+	}
+	
+	protected void onSearchCaseClicked(ActionEvent e) {
 		new casemgmt.Frm_WorkList(0, "W").setVisible(true);
 		this.dispose();
 	}
@@ -1700,6 +1697,7 @@ public class Frm_Main extends javax.swing.JFrame {
 	private javax.swing.JButton btn_HIVCase;
 	private JButton btn_DiabetesCase;
 	private JButton btn_WoundCase;
+	private JButton btn_SearchCase;
 	private javax.swing.JButton btn_Cashier;
 	private javax.swing.JButton btn_BedCashier;
 	private javax.swing.JButton btn_DepartmentManagement;
