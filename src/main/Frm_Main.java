@@ -1133,14 +1133,14 @@ public class Frm_Main extends javax.swing.JFrame {
 			pan_CaseLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(pan_CaseLayout.createSequentialGroup()
 					.addContainerGap()
-					.addGroup(pan_CaseLayout.createParallelGroup(Alignment.TRAILING)
-						.addComponent(btn_SearchCase, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
-						.addGroup(Alignment.LEADING, pan_CaseLayout.createParallelGroup(Alignment.TRAILING, false)
+					.addGroup(pan_CaseLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(btn_SearchCase, GroupLayout.PREFERRED_SIZE, 200, GroupLayout.PREFERRED_SIZE)
+						.addGroup(pan_CaseLayout.createParallelGroup(Alignment.TRAILING, false)
 							.addComponent(btn_DiabetesCase, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
 							.addComponent(btn_WoundCase, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
-							.addComponent(btn_HIVCase, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
-							.addComponent(btn_MobileHealth, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)))
-					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+							.addComponent(btn_HIVCase, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE))
+						.addComponent(btn_MobileHealth, GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE))
+					.addContainerGap())
 		);
 		pan_CaseLayout.setVerticalGroup(
 			pan_CaseLayout.createParallelGroup(Alignment.LEADING)
@@ -1153,9 +1153,9 @@ public class Frm_Main extends javax.swing.JFrame {
 					.addComponent(btn_DiabetesCase, GroupLayout.PREFERRED_SIZE, 60, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btn_SearchCase, GroupLayout.PREFERRED_SIZE, 57, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btn_MobileHealth, GroupLayout.PREFERRED_SIZE, 60, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+					.addContainerGap(16, Short.MAX_VALUE))
 		);
 		pan_Case.setLayout(pan_CaseLayout);
 
