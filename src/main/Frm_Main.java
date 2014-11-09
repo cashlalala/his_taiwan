@@ -1421,7 +1421,7 @@ public class Frm_Main extends javax.swing.JFrame {
 	}
 	
 	protected void onSearchCaseClicked(ActionEvent e) {
-		new casemgmt.Frm_WorkList(0, "W").setVisible(true);
+		new casemgmt.Frm_SearchPatientList().setVisible(true);
 		this.dispose();
 	}
 
