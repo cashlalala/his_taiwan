@@ -80,6 +80,8 @@ public class Frm_SearchPatientList extends JFrame {
 
 		initComponents();
 		initLanguage();
+		setExtendedState(Frm_Case.MAXIMIZED_BOTH); // 最大化
+		setLocationRelativeTo(this);
 	}
 
 	private void initLanguage() {
@@ -93,8 +95,7 @@ public class Frm_SearchPatientList extends JFrame {
 
 	protected void initComponents() {
 		setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-		setExtendedState(Frm_Case.MAXIMIZED_BOTH); // 最大化
-		setLocationRelativeTo(this);
+		
 
 		getContentPane().setLayout(new BorderLayout(0, 0));
 		setTitle("Case Management Bring-in Patient List");
@@ -263,6 +264,8 @@ public class Frm_SearchPatientList extends JFrame {
 		gbc_btnSearch.gridy = 3;
 		panel_1.add(btnSearch, gbc_btnSearch);
 		panel.setLayout(gl_panel);
+		
+		pack();
 	}
 
 	protected void onBtnEnterClicked(ActionEvent e) {
