@@ -263,6 +263,8 @@ public class Frm_SearchPatientList extends JFrame {
 		gbc_btnSearch.gridy = 3;
 		panel_1.add(btnSearch, gbc_btnSearch);
 		panel.setLayout(gl_panel);
+		
+		pack();
 	}
 
 	protected void onBtnEnterClicked(ActionEvent e) {
