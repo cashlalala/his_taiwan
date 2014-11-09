@@ -5,7 +5,9 @@
 
 package multilingual;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -24,8 +26,28 @@ public class Language {
 
 	private static ResourceBundle rb;
 
+	public static String LANGSETTINGPATH = "./lib/current_lang";
+
 	public static Language getInstance() {
-		return getInstance(Locale.getDefault());
+		BufferedReader br = null;
+		String langCode = null;
+		try {
+			br = new BufferedReader(new FileReader(LANGSETTINGPATH));
+			langCode = br.readLine();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (br != null)
+					br.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return getInstance((langCode != null && !langCode.isEmpty()) ? new Locale(
+				langCode) : Locale.getDefault());
 	}
 
 	public String getString(String id) {
@@ -34,6 +56,8 @@ public class Language {
 
 	public static Language getInstance(Locale locale) {
 		if (null == lang) {
+			lang = new Language(locale);
+		} else if (!locale.getLanguage().equals(rb.getLocale().getLanguage())) {
 			lang = new Language(locale);
 		}
 		return lang;
