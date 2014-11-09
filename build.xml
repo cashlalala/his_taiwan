@@ -21,6 +21,8 @@
 		<copy todir="${dist.dir}/lang">
 					<fileset dir="${basedir}/src/lang" includes="**"/>
 		</copy>
+		<copy tofile="${dist.dir}/lang/language_en.properties" 
+					file="${dist.dir}/lang/language.properties" overwrite="true"/>
 		<copy todir="${dist.dir}/lib" file="${basedir}/lib/setting"/>
 	</target>
 	
