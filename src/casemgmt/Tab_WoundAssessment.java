@@ -20,6 +20,8 @@ import org.apache.logging.log4j.Logger;
 
 import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
+import javax.swing.JComboBox;
+import javax.swing.DefaultComboBoxModel;
 
 public class Tab_WoundAssessment extends JPanel implements ISaveable {
 	/**
@@ -29,7 +31,7 @@ public class Tab_WoundAssessment extends JPanel implements ISaveable {
 	private static final Language lang = Language.getInstance();
 	private static Logger logger = LogManager
 			.getLogger(Tab_WoundAssessment.class.getName());
-	private String CaseGuid;
+	private String caseGuid;
 
 	private JLabel lbl_WoundAssessment;
 	private JPanel panel;
@@ -55,10 +57,12 @@ public class Tab_WoundAssessment extends JPanel implements ISaveable {
 	private JTextField txt_Other;
 
 	private JButton btn_Save;
+	private JLabel lblSeverity;
+	private JComboBox com_severity;
 
 	public Tab_WoundAssessment(String CaseGuid) {
 		setLayout(null);
-		this.CaseGuid = CaseGuid;
+		this.caseGuid = CaseGuid;
 
 		lbl_WoundAssessment = new JLabel("WOUND_ASSESSMENT");
 		lbl_WoundAssessment.setBounds(12, 12, 187, 15);
@@ -155,8 +159,30 @@ public class Tab_WoundAssessment extends JPanel implements ISaveable {
 		panel.add(txt_Other);
 		txt_Other.setColumns(10);
 
-		refreshData();
+		lblSeverity = new JLabel("Severity :");
+		lblSeverity.setBounds(341, 12, 59, 14);
+		add(lblSeverity);
+
+		com_severity = new JComboBox();
+		com_severity.setModel(new DefaultComboBoxModel(new String[] { "L", "M",
+				"H" }));
+		com_severity.setBounds(399, 9, 39, 20);
+		com_severity.addItemListener(new java.awt.event.ItemListener() {
+			public void itemStateChanged(java.awt.event.ItemEvent evt) {
+				btn_Save.setEnabled(true);
+			}
+		});
+		add(com_severity);
+
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				refreshData();
+			}
+		}).start();
 		btn_Save.setEnabled(false);
+
 	}
 
 	private void btn_SaveactionPerformed() {
@@ -172,27 +198,31 @@ public class Tab_WoundAssessment extends JPanel implements ISaveable {
 	}
 
 	private void refreshData() {
-		String sqlPateint = "SELECT case_manage.p_no FROM case_manage WHERE case_manage.guid='"
-				+ CaseGuid + "'";
+		String sqlPateint = "SELECT case_manage.p_no, severity FROM case_manage WHERE case_manage.guid='"
+				+ caseGuid + "'";
 
 		String sql = "SELECT * FROM wound_accessment WHERE wound_accessment.case_guid = '"
-				+ this.CaseGuid + "'";
+				+ this.caseGuid + "'";
+		
 		ResultSet rs = null;
 		ResultSet rsPatient = null;
 		try {
+			rsPatient = DBC.executeQuery(sqlPateint);
+			rsPatient.next();
+
+			String severity = rsPatient.getString("severity");
+			com_severity.setSelectedItem(severity);
+			
 			rs = DBC.executeQuery(sql);
 			if (!rs.next()) {
-				rsPatient = DBC.executeQuery(sqlPateint);
-				rsPatient.next();
 				String p_no = rsPatient.getString("case_manage.p_no");
 				String sqlInsert = "INSERT into wound_accessment SELECT "
-						+ "uuid()," + " '" + this.CaseGuid + "', '" + p_no
+						+ "uuid()," + " '" + this.caseGuid + "', '" + p_no
 						+ "'";
 				int i = 0;
 				for (i = 0; i < 16; i++) {
 					sqlInsert = sqlInsert + ", NULL";
 				}
-				System.out.print(sqlInsert + "\n");
 				DBC.executeUpdate(sqlInsert);
 			} else {
 				if (rs.getString("wound_accessment.Hypertension") != null
@@ -414,14 +444,24 @@ public class Tab_WoundAssessment extends JPanel implements ISaveable {
 		logger.debug("[{}][{}] {}", UserInfo.getUserID(),
 				UserInfo.getUserName(), sql);
 		PreparedStatement ps = conn.prepareStatement(sql);
+
+		String sqlSeverity = String.format(
+				"update case_manage set severity = '%s' where guid = '%s'",
+				com_severity.getSelectedItem(), caseGuid);
+		logger.debug("[{}][{}] {}", UserInfo.getUserID(),
+				UserInfo.getUserName(), sqlSeverity);
+		PreparedStatement psSev = conn.prepareStatement(sqlSeverity);
 		try {
 			ps.executeUpdate();
+			psSev.executeUpdate();
 		} catch (Exception e) {
 			throw e;
 		} finally {
 			if (ps != null) {
 				ps.close();
 			}
+			if (psSev != null)
+				psSev.close();
 		}
 
 		btn_Save.setEnabled(false);
