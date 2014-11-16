@@ -269,7 +269,28 @@ public class Frm_SearchPatientList extends JFrame {
 	}
 
 	protected void onBtnEnterClicked(ActionEvent e) {
-		// TODO Auto-generated method stub
+		int idx = table.getSelectedRow();
+		String pNo = (String) table.getValueAt(idx, 0);
+		String sql = String.format("select guid from registration_info r "
+				+ "where r.p_no = '%s' order by r.reg_time desc", pNo);
+		ResultSet rs = null;
+		String regGuid = null;
+		try {
+			rs = DBC.executeQuery(sql);
+			if (rs.next()) {
+				regGuid = rs.getString("guid");
+			}
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		} finally {
+			try {
+				DBC.closeConnection(rs);
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+		}
+
+		new Dlg_CaseMgmtType(this, pNo, regGuid, false, "dia").setVisible(true);
 
 	}
 
@@ -307,7 +328,8 @@ public class Frm_SearchPatientList extends JFrame {
 							.format("select %s from (select %s from patients_info p "
 									+ "where p.p_no in (select p_no from registration_info r "
 									+ "where r.guid in (select reg_guid from diagnostic d "
-									+ "where d.dia_code like '%s%%-%s' group by reg_guid)) "
+									+ "where d.dia_code like '%s%%-%s' group by reg_guid) "
+									+ "order by r.reg_time desc) "
 									+ "group by p.p_no) a "
 									+ "join "
 									+ "(select %s from patients_info p "
@@ -315,7 +337,8 @@ public class Frm_SearchPatientList extends JFrame {
 									+ "where r.guid in (select reg_guid from prescription pre "
 									+ "where pre.code in (select code from prescription_code "
 									+ "where ICDVersion = '%s') "
-									+ "and pre.code like '%s%%' group by reg_guid)) "
+									+ "and pre.code like '%s%%' group by reg_guid) "
+									+ "order by r.reg_time desc) "
 									+ "group by p.p_no) b "
 									+ "on a.p_no = b.p_no ", interSectCol,
 									patientInfoJoin, diaCode,
@@ -326,7 +349,8 @@ public class Frm_SearchPatientList extends JFrame {
 							.format("select %s from patients_info p "
 									+ "where p.p_no in (select p_no from registration_info r "
 									+ "where r.guid in (select reg_guid from diagnostic d "
-									+ "where d.dia_code like '%s%%-%s' group by reg_guid)) "
+									+ "where d.dia_code like '%s%%-%s' group by reg_guid) "
+									+ "order by r.reg_time desc) "
 									+ "group by p.p_no ", patientInfo, diaCode,
 									icdVersion.split("-")[1]);
 				} else if (!presCode.isEmpty()) {
@@ -336,7 +360,8 @@ public class Frm_SearchPatientList extends JFrame {
 									+ "where r.guid in (select reg_guid from prescription pre "
 									+ "where pre.code in (select code from prescription_code "
 									+ "where ICDVersion = '%s') "
-									+ "and pre.code like '%s%%' group by reg_guid)) "
+									+ "and pre.code like '%s%%' group by reg_guid) "
+									+ "order by r.reg_time desc) "
 									+ "group by p.p_no ", patientInfo,
 									icdVersion, presCode);
 				}

@@ -6,6 +6,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.UUID;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -20,6 +23,7 @@ import org.apache.logging.log4j.Logger;
 
 import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
+
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 
@@ -59,10 +63,14 @@ public class Tab_WoundAssessment extends JPanel implements ISaveable {
 	private JButton btn_Save;
 	private JLabel lblSeverity;
 	private JComboBox com_severity;
+	
+	private String guid;
+	private String p_no;
 
 	public Tab_WoundAssessment(String CaseGuid) {
 		setLayout(null);
 		this.caseGuid = CaseGuid;
+		guid = UUID.randomUUID().toString();
 
 		lbl_WoundAssessment = new JLabel("WOUND_ASSESSMENT");
 		lbl_WoundAssessment.setBounds(12, 12, 187, 15);
@@ -215,10 +223,9 @@ public class Tab_WoundAssessment extends JPanel implements ISaveable {
 			
 			rs = DBC.executeQuery(sql);
 			if (!rs.next()) {
-				String p_no = rsPatient.getString("case_manage.p_no");
-				String sqlInsert = "INSERT into wound_accessment SELECT "
-						+ "uuid()," + " '" + this.caseGuid + "', '" + p_no
-						+ "'";
+				p_no = rsPatient.getString("case_manage.p_no");
+				String sqlInsert = "INSERT into wound_accessment '"+  guid +  "', " 
+				+ " '" + this.caseGuid + "', '" + p_no + "'";
 				int i = 0;
 				for (i = 0; i < 16; i++) {
 					sqlInsert = sqlInsert + ", NULL";
@@ -341,6 +348,12 @@ public class Tab_WoundAssessment extends JPanel implements ISaveable {
 				DBC.closeConnection(rs);
 			} catch (SQLException e) {
 				e.printStackTrace();
+			} finally {
+				try {
+					DBC.closeConnection(rsPatient);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -366,7 +379,34 @@ public class Tab_WoundAssessment extends JPanel implements ISaveable {
 
 	@Override
 	public void save(Connection conn) throws Exception {
-		String sql = "UPDATE wound_accessment SET";
+//		if (!txt_CreateDate.getText().equals("")) {
+//			sql = sql + " wound_accessment.createdatetime = '"
+//					+ txt_CreateDate.getText() + "', ";
+//		}
+//		sql = sql + " wound_accessment.OtherDiseaseHistory = '"
+//				+ txt_Other.getText() + "', ";
+//
+//		sql = sql + " wound_accessment.s_no = '" + UserInfo.getUserNO() + "'";
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
+		
+		String sql = String.format("Insert into wound_accessment (guid, caseguid, p_no, Hypertension,"
+				+ "BrainVessel, Hyperlipidemia, Diabetes, HepatitisA,"
+				+ "HepatitisB, HepatitisC, Cancer, HeartDisease"
+				+ "NephroticSyndrome, Smoking, Drinking, OverWeight,"
+				+ "createdatetime, OtherDiseaseHistory, s_no) values ("
+				+ "'%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s',"
+				+ "'%s','%s','%s','%s','%s','%s','%s','%s','%s','%s') ", 
+				guid,caseGuid,p_no,(chckbx_PHHD.isSelected())? "Y":"N",
+				(chckbx_PHHD.isSelected())? "Y":"N",(chckbx_PHCD.isSelected())? "Y":"N",
+				(chckbx_PHHC.isSelected())? "Y":"N",(chckbx_PHDM.isSelected())? "Y":"N",
+				(chckbx_TypeA.isSelected())? "Y":"N",(chckbx_TypeB.isSelected())? "Y":"N",
+				(chckbx_TypeC.isSelected())? "Y":"N",(chckbx_Malignancies.isSelected())? "Y":"N",
+				(chckbx_HD.isSelected())? "Y":"N",(chckbx_PHNS.isSelected())? "Y":"N",
+				(chckbx_Smoke.isSelected())? "Y":"N",(chckbx_Alcoholism.isSelected())? "Y":"N",
+				(chckbx_OW.isSelected())? "Y":"N",(chckbx_Alcoholism.isSelected())? "Y":"N",
+				(txt_CreateDate.getText().equals(""))? sdf.format(new Date()) : txt_CreateDate.getText(),
+				txt_Other.getText(), UserInfo.getUserNO());
+		sql += "on duplicate key UPDATE ";
 		if (chckbx_PHHD.isSelected()) {
 			sql = sql + " wound_accessment.Hypertension = 'Y', ";
 		} else {
@@ -454,6 +494,8 @@ public class Tab_WoundAssessment extends JPanel implements ISaveable {
 		try {
 			ps.executeUpdate();
 			psSev.executeUpdate();
+
+			guid = UUID.randomUUID().toString();
 		} catch (Exception e) {
 			throw e;
 		} finally {
@@ -463,7 +505,6 @@ public class Tab_WoundAssessment extends JPanel implements ISaveable {
 			if (psSev != null)
 				psSev.close();
 		}
-
 		btn_Save.setEnabled(false);
 	}
 }
