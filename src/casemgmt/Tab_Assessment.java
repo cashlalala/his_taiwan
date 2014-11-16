@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.UUID;
 
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
@@ -120,7 +121,7 @@ public class Tab_Assessment extends JPanel implements ISaveable {
 
 	public Tab_Assessment(String caseGuid, String pNo, String regGuid) {
 		super();
-		this.guid = "";
+		this.guid = UUID.randomUUID().toString();
 		this.caseGuid = caseGuid;
 		this.regGuid = regGuid;
 		this.pNo = pNo;
@@ -162,7 +163,7 @@ public class Tab_Assessment extends JPanel implements ISaveable {
 			if (as.next()) {
 				if (as.getString("udate") != null) {
 					// 讀取asscement
-					this.guid = as.getString("guid");
+//					this.guid = as.getString("guid");
 					com_family_history.setSelectedIndex(Integer.parseInt(as
 							.getString("family_history")));
 					com_self_care.setSelectedIndex(Integer.parseInt(as
@@ -395,7 +396,6 @@ public class Tab_Assessment extends JPanel implements ISaveable {
 				try {
 					DBC.closeConnection(cs);
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 
@@ -3018,6 +3018,8 @@ public class Tab_Assessment extends JPanel implements ISaveable {
 		try {
 			ps.executeUpdate();
 			psCase.executeUpdate();
+			//give a new guid
+			guid = UUID.randomUUID().toString();
 		} catch (Exception e) {
 			throw e;
 		} finally {
@@ -3026,6 +3028,7 @@ public class Tab_Assessment extends JPanel implements ISaveable {
 			if (psCase != null)
 				psCase.close();
 		}
+		
 		parent.setOverValue();
 		btn_AssSave.setEnabled(false);
 	}

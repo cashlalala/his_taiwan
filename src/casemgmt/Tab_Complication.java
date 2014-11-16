@@ -1074,24 +1074,24 @@ public class Tab_Complication extends JPanel implements ISaveable {
 			bg4 = "3";
 		}
 
-		String caseMgmtSql = String
-				.format("INSERT into case_manage (guid, reg_guid, p_no, status, s_no, modify_count,isdiagnosis, finish_time) "
-						+ "VALUES ('%s','%s','%s','N', %s, %d, '1', NOW()) ON DUPLICATE KEY "
-						+ "UPDATE reg_guid='%s',p_no='%s', status='N', s_no=%s, modify_count=%d, isdiagnosis='1', finish_time=NOW() ",
-						caseGuid, regGuid, pNo, UserInfo.getUserNO(),
-						++modifyCount, regGuid, pNo, UserInfo.getUserNO(),
-						modifyCount);
-		logger.debug("[{}][{}] {}", UserInfo.getUserID(),
-				UserInfo.getUserName(), caseMgmtSql);
-		PreparedStatement psCaseUpate = conn.prepareStatement(caseMgmtSql);
-		try {
-			psCaseUpate.executeUpdate();
-		} catch (Exception e) {
-			throw e;
-		} finally {
-			if (psCaseUpate != null)
-				psCaseUpate.close();
-		}
+//		String caseMgmtSql = String
+//				.format("INSERT into case_manage (guid, reg_guid, p_no, status, s_no, modify_count,isdiagnosis, finish_time) "
+//						+ "VALUES ('%s','%s','%s','N', %s, %d, '1', NOW()) ON DUPLICATE KEY "
+//						+ "UPDATE reg_guid='%s',p_no='%s', status='N', s_no=%s, modify_count=%d, isdiagnosis='1', finish_time=NOW() ",
+//						caseGuid, regGuid, pNo, UserInfo.getUserNO(),
+//						++modifyCount, regGuid, pNo, UserInfo.getUserNO(),
+//						modifyCount);
+//		logger.debug("[{}][{}] {}", UserInfo.getUserID(),
+//				UserInfo.getUserName(), caseMgmtSql);
+//		PreparedStatement psCaseUpate = conn.prepareStatement(caseMgmtSql);
+//		try {
+//			psCaseUpate.executeUpdate();
+//		} catch (Exception e) {
+//			throw e;
+//		} finally {
+//			if (psCaseUpate != null)
+//				psCaseUpate.close();
+//		}
 
 		String sql = String
 				.format("INSERT INTO complication (guid, reg_guid, dka, hhs, hypoglycemia, stroke, "
@@ -1145,13 +1145,15 @@ public class Tab_Complication extends JPanel implements ISaveable {
 				UserInfo.getUserName(), sql);
 		PreparedStatement ps = conn.prepareStatement(sql);
 		try {
-			ps.executeUpdate();
+			ps.executeUpdate();			
+			complicationId = UUID.randomUUID().toString();
 		} catch (Exception e) {
 			throw e;
 		} finally {
 			if (ps != null)
 				ps.close();
 		}
+		
 		parent.setOverValue();
 		btn_ComSave.setEnabled(false);
 	}

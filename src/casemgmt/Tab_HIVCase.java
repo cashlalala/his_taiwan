@@ -101,6 +101,7 @@ public class Tab_HIVCase extends JPanel implements ISaveable {
 	public JButton btn_Save;
 
 	private String caseGuid;
+	private String p_no;
 
 	public void setParent(Frm_Case parent) {
 		this.parent = parent;
@@ -576,7 +577,10 @@ public class Tab_HIVCase extends JPanel implements ISaveable {
 				+ caseGuid + "'";
 
 		String sqlHIV = "SELECT * FROM HIV_assessment WHERE "
-				+ "HIV_assessment.case_guid = '" + caseGuid + "'";
+				+ "HIV_assessment.case_guid = '" + caseGuid + "' "
+				+ "AND HIV_assessment.createdatetime = "
+				+ "(SELECT MAX(HIV_assessment.createdatetime) FROM HIV_assessment WHERE HIV_assessment.case_guid = '" 
+				+ caseGuid + "')";
 
 		ResultSet rs = null;
 		ResultSet rsPatient = null;
@@ -584,19 +588,9 @@ public class Tab_HIVCase extends JPanel implements ISaveable {
 		try {
 			rsPatient = DBC.executeQuery(sqlPateint);
 			rsPatient.next();
-			String p_no = rsPatient.getString("case_manage.p_no");
+			p_no = rsPatient.getString("case_manage.p_no");
 			rs = DBC.executeQuery(sqlHIV);
-			if (!rs.next()) {
-				String newUUID = UUID.randomUUID().toString();
-				String sqlInsert = "INSERT into HIV_assessment SELECT '"
-						+ newUUID + "', '" + caseGuid + "', '" + p_no + "' ";
-				int i = 0;
-				for (i = 0; i < 44; i++) {
-					sqlInsert = sqlInsert + ", NULL";
-				}
-				System.out.print(sqlInsert + "\n");
-				DBC.executeUpdate(sqlInsert);
-			} else {
+			if (rs.next()) {
 				if (rs.getString("HIV_assessment.Hypertension") != null
 						&& ((String) rs
 								.getString("HIV_assessment.Hypertension"))
@@ -966,164 +960,168 @@ public class Tab_HIVCase extends JPanel implements ISaveable {
 
 	@Override
 	public void save(Connection conn) throws Exception {
-		String sql = "UPDATE HIV_assessment SET";
+		String newUUID = UUID.randomUUID().toString();
+	
+		String sql = "INSERT into HIV_assessment SELECT '"
+				+ newUUID + "', '" + caseGuid + "', '" + p_no + "',";
 		if (chckbx_PHHD.isSelected()) {
-			sql = sql + " HIV_assessment.Hypertension = 'Y', ";
+			sql = sql + " 'Y', ";
 		} else {
-			sql = sql + " HIV_assessment.Hypertension = 'N', ";
+			sql = sql + " 'N', ";
 		}
 		if (chckbx_PHCD.isSelected()) {
-			sql = sql + " HIV_assessment.BrainVessel = 'Y', ";
+			sql = sql + " 'Y', ";
 		} else {
-			sql = sql + " HIV_assessment.BrainVessel = 'N', ";
+			sql = sql + " 'N', ";
 		}
 		if (chckbx_PHHC.isSelected()) {
-			sql = sql + " HIV_assessment.Hyperlipidemia = 'Y', ";
+			sql = sql + " 'Y', ";
 		} else {
-			sql = sql + " HIV_assessment.Hyperlipidemia = 'N', ";
+			sql = sql + " 'N', ";
 		}
 		if (chckbx_PHDM.isSelected()) {
-			sql = sql + " HIV_assessment.Diabetes = 'Y', ";
+			sql = sql + " 'Y', ";
 		} else {
-			sql = sql + " HIV_assessment.Diabetes = 'N', ";
+			sql = sql + " 'N', ";
 		}
 		if (chckbx_TypeA.isSelected()) {
-			sql = sql + " HIV_assessment.HepatitisA = 'Y', ";
+			sql = sql + " 'Y', ";
 		} else {
-			sql = sql + " HIV_assessment.HepatitisA = 'N', ";
+			sql = sql + " 'N', ";
 		}
 		if (chckbx_TypeB.isSelected()) {
-			sql = sql + " HIV_assessment.HepatitisB = 'Y', ";
+			sql = sql + " 'Y', ";
 		} else {
-			sql = sql + " HIV_assessment.HepatitisB = 'N', ";
+			sql = sql + " 'N', ";
 		}
 		if (chckbx_TypeC.isSelected()) {
-			sql = sql + " HIV_assessment.HepatitisC = 'Y', ";
+			sql = sql + " 'Y', ";
 		} else {
-			sql = sql + " HIV_assessment.HepatitisC = 'N', ";
+			sql = sql + " 'N', ";
 		}
 		if (chckbx_Malignancies.isSelected()) {
-			sql = sql + " HIV_assessment.Cancer = 'Y', ";
+			sql = sql + " 'Y', ";
 		} else {
-			sql = sql + " HIV_assessment.Cancer = 'N', ";
+			sql = sql + " 'N', ";
 		}
 		if (chckbx_HD.isSelected()) {
-			sql = sql + " HIV_assessment.HeartDisease = 'Y', ";
+			sql = sql + " 'Y', ";
 		} else {
-			sql = sql + " HIV_assessment.HeartDisease = 'N', ";
+			sql = sql + " 'N', ";
 		}
 		if (chckbx_PHNS.isSelected()) {
-			sql = sql + " HIV_assessment.NephroticSyndrome = 'Y', ";
+			sql = sql + " 'Y', ";
 		} else {
-			sql = sql + " HIV_assessment.NephroticSyndrome = 'N', ";
+			sql = sql + " 'N', ";
 		}
 		if (chckbx_Smoke.isSelected()) {
-			sql = sql + " HIV_assessment.Smoking = 'Y', ";
+			sql = sql + " 'Y', ";
 		} else {
-			sql = sql + " HIV_assessment.Smoking = 'N', ";
+			sql = sql + " 'N', ";
 		}
 		if (chckbx_Alcoholism.isSelected()) {
-			sql = sql + " HIV_assessment.Drinking = 'Y', ";
+			sql = sql + " 'Y', ";
 		} else {
-			sql = sql + " HIV_assessment.Drinking = 'N', ";
+			sql = sql + " 'N', ";
 		}
 		if (chckbx_OW.isSelected()) {
-			sql = sql + " HIV_assessment.OverWeight = 'Y', ";
+			sql = sql + " 'Y', ";
 		} else {
-			sql = sql + " HIV_assessment.OverWeight = 'N', ";
+			sql = sql + " 'N', ";
 		}
 
-		sql = sql + " HIV_assessment.OtherDiseaseHistory = '"
-				+ txt_Other.getText() + "', ";
+		sql = sql + " '" + txt_Other.getText() + "', ";
 
 		if (chckbx_IHHC.isSelected()) {
-			sql = sql + " HIV_assessment.SelfHPL = 'Y', ";
+			sql = sql + " 'Y', ";
 		} else {
-			sql = sql + " HIV_assessment.SelfHPL = 'N', ";
+			sql = sql + " 'N', ";
 		}
 		if (chckbx_IHDM.isSelected()) {
-			sql = sql + " HIV_assessment.SelfDiabetes = 'Y', ";
+			sql = sql + " 'Y', ";
 		} else {
-			sql = sql + " HIV_assessment.SelfDiabetes = 'N', ";
+			sql = sql + " 'N', ";
 		}
 		if (chckbx_IHEBP.isSelected()) {
-			sql = sql + " HIV_assessment.SelfHTN = 'Y', ";
+			sql = sql + " 'Y', ";
 		} else {
-			sql = sql + " HIV_assessment.SelfHTN = 'N', ";
+			sql = sql + "  'N', ";
 		}
 		if (chckbx_FMHHC.isSelected()) {
-			sql = sql + " HIV_assessment.DirectHPL = 'Y', ";
+			sql = sql + " 'Y', ";
 		} else {
-			sql = sql + " HIV_assessment.DirectHPL = 'N', ";
+			sql = sql + " 'N', ";
 		}
 		if (chckbx_FMHDM.isSelected()) {
-			sql = sql + " HIV_assessment.DirectDiabetes = 'Y', ";
+			sql = sql + " 'Y', ";
 		} else {
-			sql = sql + " HIV_assessment.DirectDiabetes = 'N', ";
+			sql = sql + " 'N', ";
 		}
 		if (chckbx_FMHEBP.isSelected()) {
-			sql = sql + " HIV_assessment.DirectHTN = 'Y', ";
+			sql = sql + " 'Y', ";
 		} else {
-			sql = sql + " HIV_assessment.DirectHTN = 'N', ";
+			sql = sql + " 'N', ";
 		}
 		if (chckbx_WSVD.isSelected()) {
-			sql = sql + " HIV_assessment.HasSTD = 'Y', ";
+			sql = sql + " 'Y', ";
 		} else {
-			sql = sql + " HIV_assessment.HasSTD = 'N', ";
+			sql = sql + " 'N', ";
 		}
 		if (chckbx_10SP.isSelected()) {
-			sql = sql + " HIV_assessment.Has10ST = 'Y', ";
+			sql = sql + " 'Y', ";
 		} else {
-			sql = sql + " HIV_assessment.Has10ST = 'N', ";
+			sql = sql + " 'N', ";
 		}
 		if (chckbx_HSIWS.isSelected()) {
-			sql = sql + " HIV_assessment.HasOTS = 'Y', ";
+			sql = sql + " 'Y', ";
 		} else {
-			sql = sql + " HIV_assessment.HasOTS = 'N', ";
+			sql = sql + " 'N', ";
 		}
 
-		sql = sql + " HIV_assessment.IDUAge = '" + txt_IDUAge.getText() + "', ";
-		sql = sql + " HIV_assessment.IDUDuration = '"
-				+ txt_IDUDuration.getText() + "', ";
+		sql = sql + " '" + txt_IDUAge.getText() + "', ";
+		sql = sql + " '" + txt_IDUDuration.getText() + "', ";
 
 		if (chckbx_WTD.isSelected()) {
-			sql = sql + " HIV_assessment.UsedDrugs = 'Y', ";
+			sql = sql + " 'Y', ";
 		} else {
-			sql = sql + " HIV_assessment.UsedDrugs = 'N', ";
+			sql = sql + " 'N', ";
 		}
 		if (chckbx_HUID.isSelected()) {
-			sql = sql + " HIV_assessment.UsedInjectionDrugs = 'Y', ";
+			sql = sql + " 'Y', ";
 		} else {
-			sql = sql + " HIV_assessment.UsedInjectionDrugs = 'N', ";
+			sql = sql + " 'N', ";
 		}
 		if (chckbx_SN.isSelected() || chckbx_SNW.isSelected()) {
-			sql = sql + " HIV_assessment.SharingNeedle = 'Y', ";
+			sql = sql + " 'Y', ";
 		} else {
-			sql = sql + " HIV_assessment.SharingNeedle = 'N', ";
+			sql = sql + " 'N', ";
 		}
 		if (chckbx_SW.isSelected() || chckbx_SNW.isSelected()) {
-			sql = sql + " HIV_assessment.SharingWater = 'Y', ";
+			sql = sql + " 'Y', ";
 		} else {
-			sql = sql + " HIV_assessment.SharingWater = 'N', ";
+			sql = sql + " 'N', ";
 		}
 		if (chckbx_Methadone.isSelected()) {
-			sql = sql + " HIV_assessment.UsedMethadone = 'Y', ";
+			sql = sql + " 'Y', ";
 		} else {
-			sql = sql + " HIV_assessment.UsedMethadone = 'N', ";
+			sql = sql + " 'N', ";
 		}
 		if (!txt_StartMethadone.getText().equals("")) {
-			sql = sql + " HIV_assessment.FirstMethadone = '"
-					+ txt_StartMethadone.getText() + "', ";
+			sql = sql + " '" + txt_StartMethadone.getText() + "', ";
 		}
+		else{
+			sql = sql + " NULL, ";
+		}
+		
 		if (cbb_StaticsMethadone.getSelectedIndex() == 0) {
-			sql = sql + " HIV_assessment.MethadoneStatus = 'U', ";
+			sql = sql + " 'U', ";
 		} else {
-			sql = sql + " HIV_assessment.MethadoneStatus = 'Q', ";
+			sql = sql + " 'Q', ";
 		}
 
-		sql = sql + " HIV_assessment.s_no = '" + UserInfo.getUserNO() + "' ";
-
-		sql = sql + "WHERE HIV_assessment.case_guid = '" + caseGuid + "'";
+		sql = sql + "NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, ";
+		
+		sql = sql + "now(), '" + UserInfo.getUserNO() + "' ";
 
 		logger.debug("[{}][{}] {}", UserInfo.getUserID(),
 				UserInfo.getUserName(), sql);
