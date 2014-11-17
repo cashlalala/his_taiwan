@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.UUID;
 
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
@@ -19,12 +20,18 @@ import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 
+import multilingual.Language;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import cc.johnwu.date.DateComboBox;
 import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
+
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.DefaultComboBoxModel;
 
 public class Tab_Assessment extends JPanel implements ISaveable {
 
@@ -102,7 +109,11 @@ public class Tab_Assessment extends JPanel implements ISaveable {
 	private static Logger logger = LogManager.getLogger(Tab_Assessment.class
 			.getName());
 
+	private static Language lang = Language.getInstance();
+
 	private Frm_Case parent;
+	private JLabel lblSeverity;
+	private JComboBox com_severity;
 
 	public void setParent(Frm_Case parent) {
 		this.parent = parent;
@@ -110,12 +121,17 @@ public class Tab_Assessment extends JPanel implements ISaveable {
 
 	public Tab_Assessment(String caseGuid, String pNo, String regGuid) {
 		super();
-		this.guid = "";
+		this.guid = UUID.randomUUID().toString();
 		this.caseGuid = caseGuid;
 		this.regGuid = regGuid;
 		this.pNo = pNo;
 		initComponents();
+		initLanguage();
 		init();
+	}
+
+	private void initLanguage() {
+		lblSeverity.setText(lang.getString("CASE_MANAGEMENT_SEVERITY"));
 	}
 
 	private void init() {
@@ -131,15 +147,23 @@ public class Tab_Assessment extends JPanel implements ISaveable {
 				+ " FROM asscement"
 				+ " WHERE asscement.case_guid = '"
 				+ caseGuid + "' ORDER BY udate DESC LIMIT 0, 1";
+		String sqlSeverity = String.format(
+				"select severity from case_manage where guid = '%s'", caseGuid);
+		ResultSet cs = null;
 		ResultSet as = null;
 		try {
-			System.out.println(sqlas);
+			cs = DBC.executeQuery(sqlSeverity);
+			if (cs.next()) {
+				String severity = cs.getString("severity");
+				com_severity.setSelectedItem(severity);
+			}
+
 			as = DBC.executeQuery(sqlas);
 
 			if (as.next()) {
 				if (as.getString("udate") != null) {
 					// 讀取asscement
-					this.guid = as.getString("guid");
+//					this.guid = as.getString("guid");
 					com_family_history.setSelectedIndex(Integer.parseInt(as
 							.getString("family_history")));
 					com_self_care.setSelectedIndex(Integer.parseInt(as
@@ -368,6 +392,13 @@ public class Tab_Assessment extends JPanel implements ISaveable {
 					e.printStackTrace();
 				}
 			}
+			if (cs != null)
+				try {
+					DBC.closeConnection(cs);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+
 			btn_AssSave.setEnabled(false);
 		}
 	}
@@ -2139,112 +2170,119 @@ public class Tab_Assessment extends JPanel implements ISaveable {
 												javax.swing.GroupLayout.DEFAULT_SIZE,
 												Short.MAX_VALUE)));
 
+		lblSeverity = new JLabel("Severity :");
+
+		com_severity = new JComboBox();
+		com_severity.setModel(new DefaultComboBoxModel(new String[] { "L", "M",
+				"H" }));
+		com_severity.addItemListener(new java.awt.event.ItemListener() {
+			public void itemStateChanged(java.awt.event.ItemEvent evt) {
+				cbox_insulin_syearItemStateChanged(evt);
+			}
+		});
+
 		javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(
 				jPanel8);
-		jPanel8.setLayout(jPanel8Layout);
 		jPanel8Layout
 				.setHorizontalGroup(jPanel8Layout
-						.createParallelGroup(
-								javax.swing.GroupLayout.Alignment.LEADING)
+						.createParallelGroup(Alignment.TRAILING)
 						.addGroup(
-								javax.swing.GroupLayout.Alignment.TRAILING,
 								jPanel8Layout
 										.createSequentialGroup()
 										.addContainerGap()
 										.addGroup(
 												jPanel8Layout
 														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.TRAILING)
+																Alignment.LEADING)
 														.addComponent(
 																jPanel24,
-																javax.swing.GroupLayout.Alignment.LEADING,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
+																GroupLayout.DEFAULT_SIZE,
+																1504,
 																Short.MAX_VALUE)
 														.addComponent(
 																jPanel5,
-																javax.swing.GroupLayout.Alignment.LEADING,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
+																GroupLayout.DEFAULT_SIZE,
+																1504,
 																Short.MAX_VALUE)
 														.addComponent(
 																jPanel3,
-																javax.swing.GroupLayout.Alignment.LEADING,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
+																GroupLayout.DEFAULT_SIZE,
+																1504,
 																Short.MAX_VALUE)
 														.addGroup(
-																javax.swing.GroupLayout.Alignment.LEADING,
 																jPanel8Layout
 																		.createSequentialGroup()
 																		.addComponent(
 																				jLabel16)
 																		.addPreferredGap(
-																				javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+																				ComponentPlacement.RELATED)
 																		.addComponent(
 																				com_family_history,
-																				javax.swing.GroupLayout.PREFERRED_SIZE,
+																				GroupLayout.PREFERRED_SIZE,
 																				200,
-																				javax.swing.GroupLayout.PREFERRED_SIZE)
-																		.addGap(18,
-																				18,
-																				18)
+																				GroupLayout.PREFERRED_SIZE)
+																		.addGap(18)
 																		.addComponent(
 																				JLable17)
 																		.addPreferredGap(
-																				javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+																				ComponentPlacement.RELATED)
 																		.addComponent(
 																				com_self_care,
-																				javax.swing.GroupLayout.PREFERRED_SIZE,
+																				GroupLayout.PREFERRED_SIZE,
 																				200,
-																				javax.swing.GroupLayout.PREFERRED_SIZE))
+																				GroupLayout.PREFERRED_SIZE)
+																		.addPreferredGap(
+																				ComponentPlacement.UNRELATED)
+																		.addComponent(
+																				lblSeverity)
+																		.addPreferredGap(
+																				ComponentPlacement.UNRELATED)
+																		.addComponent(
+																				com_severity,
+																				GroupLayout.PREFERRED_SIZE,
+																				48,
+																				GroupLayout.PREFERRED_SIZE))
 														.addGroup(
-																javax.swing.GroupLayout.Alignment.LEADING,
 																jPanel8Layout
 																		.createSequentialGroup()
 																		.addComponent(
 																				jLabel30)
 																		.addPreferredGap(
-																				javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+																				ComponentPlacement.RELATED)
 																		.addComponent(
 																				com_education,
-																				javax.swing.GroupLayout.PREFERRED_SIZE,
+																				GroupLayout.PREFERRED_SIZE,
 																				100,
-																				javax.swing.GroupLayout.PREFERRED_SIZE)
-																		.addGap(63,
-																				63,
-																				63)
+																				GroupLayout.PREFERRED_SIZE)
+																		.addGap(63)
 																		.addComponent(
 																				jLabel51)
 																		.addPreferredGap(
-																				javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+																				ComponentPlacement.RELATED)
 																		.addComponent(
 																				com_sport,
-																				javax.swing.GroupLayout.PREFERRED_SIZE,
+																				GroupLayout.PREFERRED_SIZE,
 																				100,
-																				javax.swing.GroupLayout.PREFERRED_SIZE))
+																				GroupLayout.PREFERRED_SIZE))
 														.addComponent(
 																jPanel1,
-																javax.swing.GroupLayout.Alignment.LEADING,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
+																GroupLayout.DEFAULT_SIZE,
+																1504,
 																Short.MAX_VALUE)
 														.addComponent(
 																jPanel10,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
+																GroupLayout.DEFAULT_SIZE,
+																GroupLayout.DEFAULT_SIZE,
 																Short.MAX_VALUE)
 														.addComponent(
 																jPanel6,
-																javax.swing.GroupLayout.Alignment.LEADING,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
+																GroupLayout.DEFAULT_SIZE,
+																1504,
 																Short.MAX_VALUE))
 										.addContainerGap()));
 		jPanel8Layout
 				.setVerticalGroup(jPanel8Layout
-						.createParallelGroup(
-								javax.swing.GroupLayout.Alignment.LEADING)
+						.createParallelGroup(Alignment.LEADING)
 						.addGroup(
 								jPanel8Layout
 										.createSequentialGroup()
@@ -2252,82 +2290,84 @@ public class Tab_Assessment extends JPanel implements ISaveable {
 										.addGroup(
 												jPanel8Layout
 														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.BASELINE)
+																Alignment.BASELINE)
 														.addComponent(jLabel16)
 														.addComponent(
 																com_family_history,
-																javax.swing.GroupLayout.PREFERRED_SIZE,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																javax.swing.GroupLayout.PREFERRED_SIZE)
+																GroupLayout.PREFERRED_SIZE,
+																GroupLayout.DEFAULT_SIZE,
+																GroupLayout.PREFERRED_SIZE)
 														.addComponent(JLable17)
 														.addComponent(
 																com_self_care,
-																javax.swing.GroupLayout.PREFERRED_SIZE,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																javax.swing.GroupLayout.PREFERRED_SIZE))
+																GroupLayout.PREFERRED_SIZE,
+																GroupLayout.DEFAULT_SIZE,
+																GroupLayout.PREFERRED_SIZE)
+														.addComponent(
+																lblSeverity)
+														.addComponent(
+																com_severity,
+																GroupLayout.PREFERRED_SIZE,
+																GroupLayout.DEFAULT_SIZE,
+																GroupLayout.PREFERRED_SIZE))
 										.addPreferredGap(
-												javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-										.addComponent(
-												jPanel6,
-												javax.swing.GroupLayout.PREFERRED_SIZE,
-												javax.swing.GroupLayout.DEFAULT_SIZE,
-												javax.swing.GroupLayout.PREFERRED_SIZE)
+												ComponentPlacement.UNRELATED)
+										.addComponent(jPanel6,
+												GroupLayout.PREFERRED_SIZE,
+												GroupLayout.DEFAULT_SIZE,
+												GroupLayout.PREFERRED_SIZE)
 										.addPreferredGap(
-												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-										.addComponent(
-												jPanel5,
-												javax.swing.GroupLayout.PREFERRED_SIZE,
-												javax.swing.GroupLayout.DEFAULT_SIZE,
-												javax.swing.GroupLayout.PREFERRED_SIZE)
+												ComponentPlacement.RELATED)
+										.addComponent(jPanel5,
+												GroupLayout.PREFERRED_SIZE,
+												GroupLayout.DEFAULT_SIZE,
+												GroupLayout.PREFERRED_SIZE)
 										.addPreferredGap(
-												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-										.addComponent(
-												jPanel3,
-												javax.swing.GroupLayout.PREFERRED_SIZE,
-												javax.swing.GroupLayout.DEFAULT_SIZE,
-												javax.swing.GroupLayout.PREFERRED_SIZE)
+												ComponentPlacement.RELATED)
+										.addComponent(jPanel3,
+												GroupLayout.PREFERRED_SIZE,
+												GroupLayout.DEFAULT_SIZE,
+												GroupLayout.PREFERRED_SIZE)
 										.addPreferredGap(
-												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-										.addComponent(
-												jPanel1,
-												javax.swing.GroupLayout.PREFERRED_SIZE,
-												javax.swing.GroupLayout.DEFAULT_SIZE,
-												javax.swing.GroupLayout.PREFERRED_SIZE)
+												ComponentPlacement.RELATED)
+										.addComponent(jPanel1,
+												GroupLayout.PREFERRED_SIZE,
+												GroupLayout.DEFAULT_SIZE,
+												GroupLayout.PREFERRED_SIZE)
 										.addPreferredGap(
-												javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+												ComponentPlacement.UNRELATED)
 										.addGroup(
 												jPanel8Layout
 														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.BASELINE)
+																Alignment.BASELINE)
 														.addComponent(jLabel30)
 														.addComponent(
 																com_education,
-																javax.swing.GroupLayout.PREFERRED_SIZE,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																javax.swing.GroupLayout.PREFERRED_SIZE)
+																GroupLayout.PREFERRED_SIZE,
+																GroupLayout.DEFAULT_SIZE,
+																GroupLayout.PREFERRED_SIZE)
 														.addComponent(
 																com_sport,
-																javax.swing.GroupLayout.PREFERRED_SIZE,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																javax.swing.GroupLayout.PREFERRED_SIZE)
+																GroupLayout.PREFERRED_SIZE,
+																GroupLayout.DEFAULT_SIZE,
+																GroupLayout.PREFERRED_SIZE)
 														.addComponent(jLabel51))
 										.addPreferredGap(
-												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-										.addComponent(
-												jPanel10,
-												javax.swing.GroupLayout.PREFERRED_SIZE,
-												javax.swing.GroupLayout.DEFAULT_SIZE,
-												javax.swing.GroupLayout.PREFERRED_SIZE)
+												ComponentPlacement.RELATED)
+										.addComponent(jPanel10,
+												GroupLayout.PREFERRED_SIZE,
+												GroupLayout.DEFAULT_SIZE,
+												GroupLayout.PREFERRED_SIZE)
 										.addPreferredGap(
-												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-										.addComponent(
-												jPanel24,
-												javax.swing.GroupLayout.PREFERRED_SIZE,
-												javax.swing.GroupLayout.DEFAULT_SIZE,
-												javax.swing.GroupLayout.PREFERRED_SIZE)
+												ComponentPlacement.RELATED)
+										.addComponent(jPanel24,
+												GroupLayout.PREFERRED_SIZE,
+												GroupLayout.DEFAULT_SIZE,
+												GroupLayout.PREFERRED_SIZE)
 										.addContainerGap(
-												javax.swing.GroupLayout.DEFAULT_SIZE,
+												GroupLayout.DEFAULT_SIZE,
 												Short.MAX_VALUE)));
+		jPanel8.setLayout(jPanel8Layout);
 
 		jScrollPane4 = new JScrollPane();
 		jScrollPane4.setViewportView(jPanel8);
@@ -2727,6 +2767,7 @@ public class Tab_Assessment extends JPanel implements ISaveable {
 		} catch (Exception ex) {
 			System.out.println("Bug");
 		}
+
 		// String caseMgmtSql = String
 		// .format("INSERT into case_manage (guid, reg_guid, p_no, status, s_no, modify_count, isdiagnosis, finish_time) "
 		// + "VALUES ('%s','%s','%s','N', %s, %d, '1', NOW()) "
@@ -2968,14 +3009,26 @@ public class Tab_Assessment extends JPanel implements ISaveable {
 		logger.debug("[{}][{}] {}", UserInfo.getUserID(),
 				UserInfo.getUserName(), sql);
 		PreparedStatement ps = conn.prepareStatement(sql);
+		String sqlCase = String.format(
+				"update case_manage set severity = '%s' where guid = '%s'",
+				com_severity.getSelectedItem(), caseGuid);
+		logger.debug("[{}][{}] {}", UserInfo.getUserID(),
+				UserInfo.getUserName(), sqlCase);
+		PreparedStatement psCase = conn.prepareStatement(sqlCase);
 		try {
 			ps.executeUpdate();
+			psCase.executeUpdate();
+			//give a new guid
+			guid = UUID.randomUUID().toString();
 		} catch (Exception e) {
 			throw e;
 		} finally {
 			if (ps != null)
 				ps.close();
+			if (psCase != null)
+				psCase.close();
 		}
+		
 		parent.setOverValue();
 		btn_AssSave.setEnabled(false);
 	}

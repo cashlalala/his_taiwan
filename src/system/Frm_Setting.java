@@ -7,6 +7,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -181,7 +184,7 @@ public class Frm_Setting extends javax.swing.JFrame {
     private void init() {
     	initLanguage() ;
     	cob_Language.setModel(new javax.swing.DefaultComboBoxModel(
-	                new String[] { "en", "fr", "es"}
+	                new String[] { "en", "fr", "es", "zh"}
 	            )
 	    );
     	cob_ICDVersion.setModel(new javax.swing.DefaultComboBoxModel(
@@ -281,6 +284,23 @@ public class Frm_Setting extends javax.swing.JFrame {
     			
     			String langCode = rs.getString("language");
     			Language.getInstance().setLocale(langCode);
+				FileOutputStream out = null;
+				try {
+					out = new FileOutputStream(Language.LANGSETTINGPATH);
+					out.write(langCode.getBytes());
+
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} finally {
+					try {
+						if (out != null)
+							out.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
     			initLanguage();
             }
          }

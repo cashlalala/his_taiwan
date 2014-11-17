@@ -23,6 +23,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.his.util.CustomLogger;
 
+import com.google.zxing.WriterException;
+
+import QR.QRUtility;
 import barcode.PrintBarcode;
 
 public class RegPrintable implements Printable {
@@ -50,6 +53,8 @@ public class RegPrintable implements Printable {
 				height);
 
 		BufferedImage bSrc;
+		BufferedImage QR_p_no;
+		BufferedImage QR_regguid;
 		try {
 			bSrc = ImageIO.read(new File("./img/taiwan-logo.png"));
 			AffineTransform at = new AffineTransform();
@@ -66,8 +71,30 @@ public class RegPrintable implements Printable {
 
 			PrintBarcode.drawBarcodeToGraphic(graphics, 50, 210, regInfo[0]);
 
+
+			try {
+				QRUtility.createQRCode(regInfo[0], "./img/QRCode.png", "UTF-8", 200, 200);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			QR_regguid = ImageIO.read(new File("./img/QRCode.png"));
+			g2.drawImage(QR_regguid, null, 1000, 210);
+			
+			PrintBarcode.drawBarcodeToGraphic(graphics, 50, 510, regInfo[1]);
+	
+			try {
+				QRUtility.createQRCode(regInfo[1], "./img/QRCode.png", "UTF-8", 200, 200);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			QR_regguid = ImageIO.read(new File("./img/QRCode.png"));
+			g2.drawImage(QR_regguid, null, 1000, 510);	
+			
+			
 			int x = 150;
-			int y = 450;
+			int y = 750;
 			int space = 80;
 
 			g2.setFont(new Font("Serif", Font.PLAIN, 40));
@@ -80,7 +107,7 @@ public class RegPrintable implements Printable {
 			
 
 			x = 750;
-			y = 530;
+			y = 830;
 
 			g2.drawString("Shift: " + regInfo[6], x, y += space);
 			g2.drawString("Clinic: " + regInfo[7], x, y += space);

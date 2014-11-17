@@ -18,6 +18,11 @@
 		<copy todir="${dist.dir}/lib/bin">
 			<fileset dir="${basedir}/lib/bin" includes="**"/>
 		</copy>
+		<copy todir="${dist.dir}/lang">
+					<fileset dir="${basedir}/src/lang" includes="**"/>
+		</copy>
+		<copy tofile="${dist.dir}/lang/language_en.properties" 
+					file="${dist.dir}/lang/language.properties" overwrite="true"/>
 		<copy todir="${dist.dir}/lib" file="${basedir}/lib/setting"/>
 	</target>
 	
@@ -29,7 +34,6 @@
 		  </tar>
 	</target>
 	
-		
     <!--
 
     There exist several targets which are by default empty and which can be 

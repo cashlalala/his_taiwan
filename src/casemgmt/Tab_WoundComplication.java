@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.UUID;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -43,7 +44,7 @@ public class Tab_WoundComplication extends JPanel implements ISaveable {
 		this.pNo = pNo;
 		this.caseGuid = caseGuid;
 		this.regGuid = regGuid;
-		this.guid = caseGuid;
+		this.guid = UUID.randomUUID().toString();;
 
 		initComponents();
 		init();
@@ -216,7 +217,6 @@ public class Tab_WoundComplication extends JPanel implements ISaveable {
 
 	@Override
 	public boolean isSaveable() {
-		// TODO Auto-generated method stub
 		return this.btnSave.isEnabled();
 	}
 
@@ -304,6 +304,7 @@ public class Tab_WoundComplication extends JPanel implements ISaveable {
 
 			ps = conn.prepareStatement(sql);
 			ps.executeUpdate();
+			guid = UUID.randomUUID().toString();
 		} catch (Exception e) {
 			throw e;
 		} finally {
