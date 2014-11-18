@@ -70,8 +70,8 @@ public class RefrashWorkList extends Thread {
 				+ "case_manage.status AS '"
 				+ paragraph.getString("STATUS")
 				+ "', "
-				+ "case_manage.finish_time AS '"
-				+ paragraph.getString("CASE_MANAGEMENT_FINISH_TIME")
+				+ "A.reg_time AS '"
+				+ paragraph.getString("COL_REGTIME")
 				+ "', A.guid AS '"
 				+ paragraph.getString("COL_REGISTER")
 				+ "', "
@@ -97,7 +97,7 @@ public class RefrashWorkList extends Thread {
 				+ "AND case_manage.p_no = patients_info.p_no "
 				+ "AND case_manage.status = '" + finished + "' "
 				+ "AND case_manage.type = '" + type + "' "
-				+ "ORDER BY  case_manage.finish_time desc";
+				+ "ORDER BY A.reg_time desc";
 
 		this.m_Tab = tab;
 		this.m_Time = time;
@@ -229,7 +229,7 @@ public class RefrashWorkList extends Thread {
 
 	// 取得選定日期資料
 	@SuppressWarnings("deprecation")
-	public void getSelectDate(String date, String severity, String finished) {
+	public void getSelectDate(String date, String severity, String finished, String location, String pName) {
 		sql = "SELECT A.visits_no AS '"
 				+ paragraph.getLanguage(line, "COL_NO")
 				+ "', "
@@ -240,8 +240,8 @@ public class RefrashWorkList extends Thread {
 				+ paragraph.getLanguage(line, "COL_FIRST")
 				+ "', "
 				+ "case_manage.status AS 'Status', "
-				+ "case_manage.finish_time AS '"
-				+ paragraph.getLanguage(line, "CASE_MANAGEMENT_FINISH_TIME")
+				+ "A.reg_time AS '"
+				+ paragraph.getLanguage(line, "COL_REGTIME")
 				+ "', A.guid AS '"
 				+ paragraph.getLanguage(line, "COL_REGISTER")
 				+ "', "
@@ -265,11 +265,13 @@ public class RefrashWorkList extends Thread {
 				+ "WHERE " + "case_manage.reg_guid = A.guid "
 				+ "AND case_manage.p_no = patients_info.p_no "
 				+ "AND case_manage.s_no = staff_info.s_no "
-				+ "AND A.p_no = patients_info.p_no " + "AND case_manage.finish_time LIKE '"
+				+ "AND A.p_no = patients_info.p_no " + "AND A.reg_time LIKE '"
 				+ date + "%' " + "AND case_manage.type = '" + caseType + "' "
 				+ "AND case_manage.status = '" + finished + "' "
 				+ (severity.isEmpty() ? "" : "AND case_manage.severity = '" + severity + "' ")
-				+ "ORDER BY case_manage.finish_time desc";
+				+ (pName.isEmpty()? "" : "AND concat(patients_info.firstname,' ',patients_info.firstname) like '" + pName+  "%' " )
+				+ (location.isEmpty() ? "" : "AND patients_info.state like '" + location + "%' ")
+				+ "ORDER BY A.reg_time desc";
 		try {
 			rs = DBC.executeQuery(sql);
 			((DefaultTableModel) this.m_Tab.getModel()).setRowCount(0);
