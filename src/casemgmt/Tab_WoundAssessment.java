@@ -219,11 +219,11 @@ public class Tab_WoundAssessment extends JPanel implements ISaveable {
 			rsPatient.next();
 
 			String severity = rsPatient.getString("severity");
+			p_no = rsPatient.getString("case_manage.p_no");
 			com_severity.setSelectedItem(severity);
 			
 			rs = DBC.executeQuery(sql);
 			if (!rs.next()) {
-				p_no = rsPatient.getString("case_manage.p_no");
 				String sqlInsert = "INSERT into wound_accessment '"+  guid +  "', " 
 				+ " '" + this.caseGuid + "', '" + p_no + "'";
 				int i = 0;
@@ -387,23 +387,23 @@ public class Tab_WoundAssessment extends JPanel implements ISaveable {
 //				+ txt_Other.getText() + "', ";
 //
 //		sql = sql + " wound_accessment.s_no = '" + UserInfo.getUserNO() + "'";
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		
-		String sql = String.format("Insert into wound_accessment (guid, caseguid, p_no, Hypertension,"
+		String sql = String.format("Insert into wound_accessment (guid, case_guid, p_no, Hypertension,"
 				+ "BrainVessel, Hyperlipidemia, Diabetes, HepatitisA,"
-				+ "HepatitisB, HepatitisC, Cancer, HeartDisease"
+				+ "HepatitisB, HepatitisC, Cancer, HeartDisease, "
 				+ "NephroticSyndrome, Smoking, Drinking, OverWeight,"
 				+ "createdatetime, OtherDiseaseHistory, s_no) values ("
-				+ "'%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s',"
-				+ "'%s','%s','%s','%s','%s','%s','%s','%s','%s','%s') ", 
-				guid,caseGuid,p_no,(chckbx_PHHD.isSelected())? "Y":"N",
+				+ "'%s','%s','%s','%s','%s','%s','%s','%s','%s','%s',"
+				+ "'%s','%s','%s','%s','%s','%s','%s','%s','%s') ", 
+				guid,caseGuid,p_no,
 				(chckbx_PHHD.isSelected())? "Y":"N",(chckbx_PHCD.isSelected())? "Y":"N",
 				(chckbx_PHHC.isSelected())? "Y":"N",(chckbx_PHDM.isSelected())? "Y":"N",
 				(chckbx_TypeA.isSelected())? "Y":"N",(chckbx_TypeB.isSelected())? "Y":"N",
 				(chckbx_TypeC.isSelected())? "Y":"N",(chckbx_Malignancies.isSelected())? "Y":"N",
 				(chckbx_HD.isSelected())? "Y":"N",(chckbx_PHNS.isSelected())? "Y":"N",
 				(chckbx_Smoke.isSelected())? "Y":"N",(chckbx_Alcoholism.isSelected())? "Y":"N",
-				(chckbx_OW.isSelected())? "Y":"N",(chckbx_Alcoholism.isSelected())? "Y":"N",
+				(chckbx_OW.isSelected())? "Y":"N",
 				(txt_CreateDate.getText().equals(""))? sdf.format(new Date()) : txt_CreateDate.getText(),
 				txt_Other.getText(), UserInfo.getUserNO());
 		sql += "on duplicate key UPDATE ";
