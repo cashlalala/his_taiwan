@@ -145,6 +145,7 @@ public class Frm_Main extends javax.swing.JFrame {
 		mnit_Exit.setText(paragraph.getString("EXIT"));
 
 		this.btn_Inpatient.setText("InPatient");
+		this.btn_ImageMgmt.setText(paragraph.getString("IMAGEMANAGEMENT"));
 		this.btn_MedicineStock.setText(paragraph.getString("PHARMACYSTOCK"));
 		this.btn_MaterialStock.setText(paragraph.getString("MATERIALSTOCK"));
 		this.btn_BedManagement.setText(paragraph.getString("BEDMANAGEMENT"));
@@ -196,6 +197,8 @@ public class Frm_Main extends javax.swing.JFrame {
 				.createTitledBorder(paragraph.getString("BEDMANAGEMENT")));
 		this.pan_CodeMaintenance.setBorder(javax.swing.BorderFactory
 				.createTitledBorder(paragraph.getString("CODEMAINTENANCE")));
+		this.pan_ImageManagement.setBorder(javax.swing.BorderFactory
+				.createTitledBorder(paragraph.getString("IMAGEMANAGEMENT")));
 	}
 
 	public void initPermission() {
@@ -213,6 +216,7 @@ public class Frm_Main extends javax.swing.JFrame {
 		btn_PositionManagement.setEnabled(UserInfo
 				.getSelectPow("Position Management"));
 		btn_Pharmacy.setEnabled(UserInfo.getSelectPow("Pharmacy"));
+		btn_ImageMgmt.setEnabled(UserInfo.getSelectPow("Image Management"));
 		btn_MedicineStock.setEnabled(UserInfo.getSelectPow("Medicine Stock"));
 		btn_MaterialStock.setEnabled(UserInfo.getSelectPow("Material Stock"));
 		btn_Premission.setEnabled(UserInfo.getSelectPow("Permission"));
@@ -274,6 +278,7 @@ public class Frm_Main extends javax.swing.JFrame {
 		btn_PositionManagement = new javax.swing.JButton();
 		btn_DepartmentManagement = new javax.swing.JButton();
 		btn_MedicineStock = new javax.swing.JButton();
+		btn_ImageMgmt = new javax.swing.JButton();
 		btn_MaterialStock = new javax.swing.JButton();
 		btn_BedManagement = new javax.swing.JButton();
 		btn_CodeMaintenance = new javax.swing.JButton();
@@ -287,6 +292,7 @@ public class Frm_Main extends javax.swing.JFrame {
 		mnit_Logout = new javax.swing.JMenuItem();
 		mnit_Exit = new javax.swing.JMenuItem();
 		pan_StockManagement = new javax.swing.JPanel();
+		pan_ImageManagement = new javax.swing.JPanel();
 		pan_BedManagement = new javax.swing.JPanel();
 		pan_CodeMaintenance = new javax.swing.JPanel();
 
@@ -714,6 +720,50 @@ public class Frm_Main extends javax.swing.JFrame {
 										javax.swing.GroupLayout.DEFAULT_SIZE,
 										Short.MAX_VALUE)));
 
+		pan_ImageManagement.setBackground(new java.awt.Color(240, 246, 255));
+		javax.swing.GroupLayout pan_ImageManagementLayout = new javax.swing.GroupLayout(
+				pan_ImageManagement);
+		pan_ImageManagement.setLayout(pan_ImageManagementLayout);
+		pan_ImageManagementLayout
+				.setHorizontalGroup(pan_ImageManagementLayout
+						.createParallelGroup(
+								javax.swing.GroupLayout.Alignment.LEADING)
+						.addGroup(
+								pan_ImageManagementLayout
+										.createSequentialGroup()
+										.addContainerGap()
+										.addGroup(
+												pan_ImageManagementLayout
+														.createParallelGroup(
+																javax.swing.GroupLayout.Alignment.LEADING)
+														.addComponent(
+																btn_ImageMgmt,
+																javax.swing.GroupLayout.Alignment.LEADING,
+																javax.swing.GroupLayout.DEFAULT_SIZE,
+																200,
+																Short.MAX_VALUE)
+										)
+										.addContainerGap(
+												javax.swing.GroupLayout.DEFAULT_SIZE,
+												Short.MAX_VALUE)));
+		pan_ImageManagementLayout
+				.setVerticalGroup(pan_ImageManagementLayout
+						.createParallelGroup(
+								javax.swing.GroupLayout.Alignment.LEADING)
+						.addGroup(
+								javax.swing.GroupLayout.Alignment.TRAILING,
+								pan_ImageManagementLayout
+										.createSequentialGroup()
+										.addContainerGap()
+										.addComponent(
+												btn_ImageMgmt,
+												javax.swing.GroupLayout.PREFERRED_SIZE,
+												60,
+												javax.swing.GroupLayout.PREFERRED_SIZE)
+										.addContainerGap(
+												javax.swing.GroupLayout.DEFAULT_SIZE,
+												Short.MAX_VALUE)));
+		
 		pan_StockManagement.setBackground(new java.awt.Color(240, 246, 255));
 
 		javax.swing.GroupLayout pan_StockManagementLayout = new javax.swing.GroupLayout(
@@ -1052,7 +1102,12 @@ public class Frm_Main extends javax.swing.JFrame {
 						btn_DepartmentManagementActionPerformed(evt);
 					}
 				});
-
+		btn_ImageMgmt.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				btn_ImageMgmtActionPerformed(evt);
+			}
+		});
+		
 		btn_MedicineStock
 				.addActionListener(new java.awt.event.ActionListener() {
 					public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1254,7 +1309,13 @@ public class Frm_Main extends javax.swing.JFrame {
 														pan_PersonalManagement,
 														javax.swing.GroupLayout.PREFERRED_SIZE,
 														javax.swing.GroupLayout.DEFAULT_SIZE,
-														javax.swing.GroupLayout.PREFERRED_SIZE))
+														javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addComponent(
+														pan_ImageManagement,
+														javax.swing.GroupLayout.PREFERRED_SIZE,
+														javax.swing.GroupLayout.DEFAULT_SIZE,
+														javax.swing.GroupLayout.PREFERRED_SIZE)
+												)
 								.addPreferredGap(
 										javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 								.addGroup(
@@ -1381,6 +1442,13 @@ public class Frm_Main extends javax.swing.JFrame {
 																		javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 																.addComponent(
 																		pan_StockManagement,
+																		javax.swing.GroupLayout.PREFERRED_SIZE,
+																		javax.swing.GroupLayout.DEFAULT_SIZE,
+																		javax.swing.GroupLayout.PREFERRED_SIZE)
+																.addPreferredGap(
+																		javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+																.addComponent(
+																		pan_ImageManagement,
 																		javax.swing.GroupLayout.PREFERRED_SIZE,
 																		javax.swing.GroupLayout.DEFAULT_SIZE,
 																		javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1563,6 +1631,11 @@ public class Frm_Main extends javax.swing.JFrame {
 		new materialstock.Frm_MaterialStockInfo().setVisible(true);
 		this.dispose();
 	}
+	
+	private void btn_ImageMgmtActionPerformed(java.awt.event.ActionEvent evt) {
+		new camera.Frm_ImageMgmt().setVisible(true);
+		this.dispose();
+	}
 
 	private void btn_MedicineStockActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_MedicineStockActionPerformed
 		new medicinestock.Frm_MidicineStockInfo().setVisible(true);
@@ -1719,6 +1792,7 @@ public class Frm_Main extends javax.swing.JFrame {
 	private javax.swing.JButton btn_Statistic;
 	private javax.swing.JButton btn_System;
 	private javax.swing.JButton btn_CodeMaintenance;
+	private javax.swing.JButton btn_ImageMgmt;
 	private javax.swing.JMenu jMenu1;
 	private javax.swing.JMenuBar mbar;
 	private javax.swing.JMenuItem mnit_Exit;
@@ -1733,6 +1807,7 @@ public class Frm_Main extends javax.swing.JFrame {
 	private javax.swing.JPanel pan_SystemManagement;
 	private javax.swing.JPanel pan_Cashier;
 	private javax.swing.JPanel pan_StockManagement;
+	private javax.swing.JPanel pan_ImageManagement;
 	private javax.swing.JPanel pan_BedManagement;
 	private javax.swing.JPanel pan_CodeMaintenance;
 }
