@@ -15,8 +15,10 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
@@ -49,6 +51,7 @@ public class Frm_WorkList extends javax.swing.JFrame {
 	StoredErrorMessage ErrorMessage = new StoredErrorMessage();
 	private String caseGuid;
 	private String caseType;
+	private JPanel pan_all;
 
 	// LastSelectRow 最後選擇行號　　SysName　系統名
 	public Frm_WorkList(int LastSelectRow, String type) {
@@ -176,10 +179,10 @@ public class Frm_WorkList extends javax.swing.JFrame {
 	// <editor-fold defaultstate="collapsed"
 	// desc="Generated Code">//GEN-BEGIN:initComponents
 	private void initComponents() {
+		pan_all = new javax.swing.JPanel();
 		pan_Center = new javax.swing.JPanel();
 		span_WaitDiagnosis = new javax.swing.JScrollPane();
 		tab_WorkList = new javax.swing.JTable();
-		pan_Top = new javax.swing.JPanel();
 		pan_Right = new javax.swing.JPanel();
 		btn_Close = new javax.swing.JButton();
 		btn_Enter = new javax.swing.JButton();
@@ -357,225 +360,283 @@ public class Frm_WorkList extends javax.swing.JFrame {
 
 		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(
 				getContentPane());
-		getContentPane().setLayout(layout);
 		layout.setHorizontalGroup(layout
-				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(
-						javax.swing.GroupLayout.Alignment.TRAILING,
+				.createParallelGroup(Alignment.TRAILING).addGroup(
+						Alignment.LEADING,
 						layout.createSequentialGroup()
 								.addContainerGap()
-								.addGroup(
-										layout.createParallelGroup(
-												javax.swing.GroupLayout.Alignment.TRAILING)
-												.addComponent(
-														pan_Top,
-														javax.swing.GroupLayout.Alignment.LEADING,
-														javax.swing.GroupLayout.DEFAULT_SIZE,
-														javax.swing.GroupLayout.DEFAULT_SIZE,
-														Short.MAX_VALUE)
-												.addGroup(
-														layout.createSequentialGroup()
-																.addComponent(
-																		pan_Center,
-																		javax.swing.GroupLayout.DEFAULT_SIZE,
-																		javax.swing.GroupLayout.DEFAULT_SIZE,
-																		Short.MAX_VALUE)
-																.addPreferredGap(
-																		javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-																.addComponent(
-																		pan_Right,
-																		javax.swing.GroupLayout.PREFERRED_SIZE,
-																		javax.swing.GroupLayout.DEFAULT_SIZE,
-																		javax.swing.GroupLayout.PREFERRED_SIZE)))
-								.addContainerGap()));
-		layout.setVerticalGroup(layout
-				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+								.addComponent(pan_all,
+										GroupLayout.DEFAULT_SIZE, 1337,
+										Short.MAX_VALUE).addContainerGap()));
+		layout.setVerticalGroup(layout.createParallelGroup(Alignment.LEADING)
 				.addGroup(
 						layout.createSequentialGroup()
 								.addContainerGap()
-								.addComponent(pan_Top,
-										javax.swing.GroupLayout.PREFERRED_SIZE,
-										99,
-										javax.swing.GroupLayout.PREFERRED_SIZE)
-								.addPreferredGap(
-										javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-								.addGroup(
-										layout.createParallelGroup(
-												javax.swing.GroupLayout.Alignment.TRAILING)
-												.addComponent(
-														pan_Center,
-														javax.swing.GroupLayout.DEFAULT_SIZE,
-														javax.swing.GroupLayout.DEFAULT_SIZE,
-														Short.MAX_VALUE)
-												.addComponent(
-														pan_Right,
-														javax.swing.GroupLayout.DEFAULT_SIZE,
-														javax.swing.GroupLayout.DEFAULT_SIZE,
-														Short.MAX_VALUE))
-								.addContainerGap()));
+								.addComponent(pan_all,
+										GroupLayout.DEFAULT_SIZE, 672,
+										Short.MAX_VALUE)));
+
+		JPanel pan_Top = new JPanel();
+		GroupLayout gl_pan_all = new GroupLayout(pan_all);
+		gl_pan_all
+				.setHorizontalGroup(gl_pan_all
+						.createParallelGroup(Alignment.LEADING)
+						.addGroup(
+								Alignment.TRAILING,
+								gl_pan_all
+										.createSequentialGroup()
+										.addContainerGap()
+										.addGroup(
+												gl_pan_all
+														.createParallelGroup(
+																Alignment.TRAILING)
+														.addGroup(
+																gl_pan_all
+																		.createSequentialGroup()
+																		.addComponent(
+																				pan_Center,
+																				GroupLayout.DEFAULT_SIZE,
+																				1157,
+																				Short.MAX_VALUE)
+																		.addPreferredGap(
+																				ComponentPlacement.UNRELATED)
+																		.addComponent(
+																				pan_Right,
+																				GroupLayout.PREFERRED_SIZE,
+																				150,
+																				GroupLayout.PREFERRED_SIZE))
+														.addComponent(
+																pan_Top,
+																GroupLayout.DEFAULT_SIZE,
+																1317,
+																Short.MAX_VALUE))
+										.addContainerGap()));
+		gl_pan_all.setVerticalGroup(gl_pan_all.createParallelGroup(
+				Alignment.LEADING).addGroup(
+				gl_pan_all
+						.createSequentialGroup()
+						.addContainerGap()
+						.addComponent(pan_Top, GroupLayout.PREFERRED_SIZE, 85,
+								GroupLayout.PREFERRED_SIZE)
+						.addPreferredGap(ComponentPlacement.UNRELATED)
+						.addGroup(
+								gl_pan_all
+										.createParallelGroup(Alignment.LEADING)
+										.addComponent(pan_Center,
+												GroupLayout.DEFAULT_SIZE, 556,
+												Short.MAX_VALUE)
+										.addComponent(pan_Right,
+												GroupLayout.DEFAULT_SIZE, 556,
+												Short.MAX_VALUE)).addGap(11)));
+		GridBagLayout gbl_panel = new GridBagLayout();
+		gbl_panel.columnWidths = new int[] { 0 };
+		gbl_panel.rowHeights = new int[] { 0 };
+		gbl_panel.columnWeights = new double[] { Double.MIN_VALUE };
+		gbl_panel.rowWeights = new double[] { Double.MIN_VALUE };
+		pan_Top.setLayout(gbl_panel);
+		pan_all.setLayout(gl_pan_all);
+		getContentPane().setLayout(layout);
 		GridBagLayout gbl_pan_Top = new GridBagLayout();
-		gbl_pan_Top.columnWidths = new int[]{247, 247, 247, 247, 247, 247, 247, 0};
-		gbl_pan_Top.rowHeights = new int[]{29, 29, 29, 0};
-		gbl_pan_Top.columnWeights = new double[]{0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
-		gbl_pan_Top.rowWeights = new double[]{0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_pan_Top.columnWidths = new int[] { 150, 150, 150, 150, 150, 150,
+				150, 150, 0 };
+		gbl_pan_Top.rowHeights = new int[] { 25, 25, 25, 0 };
+		gbl_pan_Top.columnWeights = new double[] { 0.0, 0.0, 0.0, 1.0, 1.0,
+				1.0, 0.0, 0.0, Double.MIN_VALUE };
+		gbl_pan_Top.rowWeights = new double[] { 0.0, 0.0, 0.0, Double.MIN_VALUE };
 		pan_Top.setLayout(gbl_pan_Top);
-						lab_Name = new javax.swing.JLabel();
-						lab_Name.setHorizontalAlignment(SwingConstants.LEFT);
-						
-								lab_Name.setText("Doctor");
-								GridBagConstraints gbc_lab_Name = new GridBagConstraints();
-								gbc_lab_Name.fill = GridBagConstraints.BOTH;
-								gbc_lab_Name.insets = new Insets(0, 0, 5, 5);
-								gbc_lab_Name.gridx = 0;
-								gbc_lab_Name.gridy = 0;
-								pan_Top.add(lab_Name, gbc_lab_Name);
-						txt_Name = new javax.swing.JTextField();
-						txt_Name.setHorizontalAlignment(SwingConstants.LEFT);
-						
-								txt_Name.setEditable(false);
-								GridBagConstraints gbc_txt_Name = new GridBagConstraints();
-								gbc_txt_Name.fill = GridBagConstraints.BOTH;
-								gbc_txt_Name.insets = new Insets(0, 0, 5, 5);
-								gbc_txt_Name.gridx = 1;
-								gbc_txt_Name.gridy = 0;
-								pan_Top.add(txt_Name, gbc_txt_Name);
-						lab_poli = new javax.swing.JLabel();
-						lab_poli.setHorizontalAlignment(SwingConstants.LEFT);
-						
-								lab_poli.setText("Department");
-								GridBagConstraints gbc_lab_poli = new GridBagConstraints();
-								gbc_lab_poli.fill = GridBagConstraints.BOTH;
-								gbc_lab_poli.insets = new Insets(0, 0, 5, 5);
-								gbc_lab_poli.gridx = 2;
-								gbc_lab_poli.gridy = 0;
-								pan_Top.add(lab_poli, gbc_lab_poli);
-						txt_Poli = new javax.swing.JTextField();
-						txt_Poli.setHorizontalAlignment(SwingConstants.LEFT);
-						
-								txt_Poli.setEditable(false);
-								GridBagConstraints gbc_txt_Poli = new GridBagConstraints();
-								gbc_txt_Poli.fill = GridBagConstraints.BOTH;
-								gbc_txt_Poli.insets = new Insets(0, 0, 5, 5);
-								gbc_txt_Poli.gridx = 3;
-								gbc_txt_Poli.gridy = 0;
-								pan_Top.add(txt_Poli, gbc_txt_Poli);
-						lbl_InpNoVal = new JLabel("----"); //$NON-NLS-1$ //$NON-NLS-2$
-						lbl_InpNoVal.setVisible(false);
-						lbl_InpNo = new JLabel(this.paragraph.getString("INPATIENT_NO")); //$NON-NLS-1$ //$NON-NLS-2$
-						lbl_InpNo.setHorizontalAlignment(SwingConstants.LEFT);
-						lbl_InpNo.setVisible(false);
-						// lbl_InpNo.setLocation(pt);
-						GridBagConstraints gbc_lbl_InpNo = new GridBagConstraints();
-						gbc_lbl_InpNo.fill = GridBagConstraints.BOTH;
-						gbc_lbl_InpNo.insets = new Insets(0, 0, 5, 5);
-						gbc_lbl_InpNo.gridx = 4;
-						gbc_lbl_InpNo.gridy = 0;
-						pan_Top.add(lbl_InpNo, gbc_lbl_InpNo);
-						GridBagConstraints gbc_lbl_InpNoVal = new GridBagConstraints();
-						gbc_lbl_InpNoVal.fill = GridBagConstraints.BOTH;
-						gbc_lbl_InpNoVal.insets = new Insets(0, 0, 5, 5);
-						gbc_lbl_InpNoVal.gridx = 5;
-						gbc_lbl_InpNoVal.gridy = 0;
-						pan_Top.add(lbl_InpNoVal, gbc_lbl_InpNoVal);
-						lab_SystemTime = new javax.swing.JLabel();
-						
-								lab_SystemTime.setFont(new java.awt.Font("UnDotum", 0, 18));
-								lab_SystemTime.setText("-----");
-								GridBagConstraints gbc_lab_SystemTime = new GridBagConstraints();
-								gbc_lab_SystemTime.fill = GridBagConstraints.BOTH;
-								gbc_lab_SystemTime.insets = new Insets(0, 0, 5, 0);
-								gbc_lab_SystemTime.gridx = 6;
-								gbc_lab_SystemTime.gridy = 0;
-								pan_Top.add(lab_SystemTime, gbc_lab_SystemTime);
-						lab_Wait = new javax.swing.JLabel();
-						lab_Wait.setHorizontalAlignment(SwingConstants.LEFT);
-						
-								lab_Wait.setText("Await");
-								
-										GridBagConstraints gbc_lab_Wait = new GridBagConstraints();
-										gbc_lab_Wait.fill = GridBagConstraints.BOTH;
-										gbc_lab_Wait.insets = new Insets(0, 0, 5, 5);
-										gbc_lab_Wait.gridx = 0;
-										gbc_lab_Wait.gridy = 1;
-										pan_Top.add(lab_Wait, gbc_lab_Wait);
-						lab_WaitCount = new javax.swing.JLabel();
-						lab_WaitCount.setHorizontalAlignment(SwingConstants.LEFT);
-						
-								lab_WaitCount.setText("-----");
-								GridBagConstraints gbc_lab_WaitCount = new GridBagConstraints();
-								gbc_lab_WaitCount.fill = GridBagConstraints.BOTH;
-								gbc_lab_WaitCount.insets = new Insets(0, 0, 5, 5);
-								gbc_lab_WaitCount.gridx = 1;
-								gbc_lab_WaitCount.gridy = 1;
-								pan_Top.add(lab_WaitCount, gbc_lab_WaitCount);
-						lab_Finish = new javax.swing.JLabel();
-						lab_Finish.setHorizontalAlignment(SwingConstants.LEFT);
-						
-								lab_Finish.setText("Finish");
-								GridBagConstraints gbc_lab_Finish = new GridBagConstraints();
-								gbc_lab_Finish.fill = GridBagConstraints.BOTH;
-								gbc_lab_Finish.insets = new Insets(0, 0, 5, 5);
-								gbc_lab_Finish.gridx = 2;
-								gbc_lab_Finish.gridy = 1;
-								pan_Top.add(lab_Finish, gbc_lab_Finish);
-						lab_FinishCount = new javax.swing.JLabel();
-						lab_FinishCount.setHorizontalAlignment(SwingConstants.LEFT);
-						
-								lab_FinishCount.setText("-----");
-								GridBagConstraints gbc_lab_FinishCount = new GridBagConstraints();
-								gbc_lab_FinishCount.fill = GridBagConstraints.BOTH;
-								gbc_lab_FinishCount.insets = new Insets(0, 0, 5, 5);
-								gbc_lab_FinishCount.gridx = 3;
-								gbc_lab_FinishCount.gridy = 1;
-								pan_Top.add(lab_FinishCount, gbc_lab_FinishCount);
-				lab_Date = new javax.swing.JLabel();
-				lab_Date.setHorizontalAlignment(SwingConstants.LEFT);
-				
-						lab_Date.setText(paragraph.getString("CASE_MANAGEMENT_FINISH_TIME"));
-						GridBagConstraints gbc_lab_Date = new GridBagConstraints();
-						gbc_lab_Date.fill = GridBagConstraints.BOTH;
-						gbc_lab_Date.insets = new Insets(0, 0, 0, 5);
-						gbc_lab_Date.gridx = 0;
-						gbc_lab_Date.gridy = 2;
-						pan_Top.add(lab_Date, gbc_lab_Date);
-				dateComboBox = new cc.johnwu.date.DateComboBox();
-				GridBagConstraints gbc_dateComboBox = new GridBagConstraints();
-				gbc_dateComboBox.fill = GridBagConstraints.BOTH;
-				gbc_dateComboBox.insets = new Insets(0, 0, 0, 5);
-				gbc_dateComboBox.gridx = 1;
-				gbc_dateComboBox.gridy = 2;
-				pan_Top.add(dateComboBox, gbc_dateComboBox);
-				btn_Search = new javax.swing.JButton();
-				
-						btn_Search.setText("Search");
-						btn_Search.addActionListener(new java.awt.event.ActionListener() {
-							public void actionPerformed(java.awt.event.ActionEvent evt) {
-								btn_SearchActionPerformed(evt);
-							}
-						});
-						
-						lblSeverity = new JLabel("Severity:");
-						lblSeverity.setHorizontalAlignment(SwingConstants.LEFT);
-						GridBagConstraints gbc_lblSeverity = new GridBagConstraints();
-						gbc_lblSeverity.anchor = GridBagConstraints.WEST;
-						gbc_lblSeverity.insets = new Insets(0, 0, 0, 5);
-						gbc_lblSeverity.gridx = 2;
-						gbc_lblSeverity.gridy = 2;
-						pan_Top.add(lblSeverity, gbc_lblSeverity);
-						
-						comboBoxSeverity = new JComboBox();
-						comboBoxSeverity.setModel(new DefaultComboBoxModel(new String[] {"", "L", "M", "H"}));
-						GridBagConstraints gbc_comboBoxSeverity = new GridBagConstraints();
-						gbc_comboBoxSeverity.insets = new Insets(0, 0, 0, 5);
-						gbc_comboBoxSeverity.fill = GridBagConstraints.HORIZONTAL;
-						gbc_comboBoxSeverity.gridx = 3;
-						gbc_comboBoxSeverity.gridy = 2;
-						pan_Top.add(comboBoxSeverity, gbc_comboBoxSeverity);
-						GridBagConstraints gbc_btn_Search = new GridBagConstraints();
-						gbc_btn_Search.fill = GridBagConstraints.BOTH;
-						gbc_btn_Search.gridx = 6;
-						gbc_btn_Search.gridy = 2;
-						pan_Top.add(btn_Search, gbc_btn_Search);
+		lab_Name = new javax.swing.JLabel();
+		lab_Name.setHorizontalAlignment(SwingConstants.LEFT);
+
+		lab_Name.setText("Doctor");
+		GridBagConstraints gbc_lab_Name = new GridBagConstraints();
+		gbc_lab_Name.fill = GridBagConstraints.BOTH;
+		gbc_lab_Name.insets = new Insets(0, 0, 5, 5);
+		gbc_lab_Name.gridx = 0;
+		gbc_lab_Name.gridy = 0;
+		pan_Top.add(lab_Name, gbc_lab_Name);
+		txt_Name = new javax.swing.JTextField();
+		txt_Name.setHorizontalAlignment(SwingConstants.LEFT);
+
+		txt_Name.setEditable(false);
+		GridBagConstraints gbc_txt_Name = new GridBagConstraints();
+		gbc_txt_Name.fill = GridBagConstraints.BOTH;
+		gbc_txt_Name.insets = new Insets(0, 0, 5, 5);
+		gbc_txt_Name.gridx = 1;
+		gbc_txt_Name.gridy = 0;
+		pan_Top.add(txt_Name, gbc_txt_Name);
+		lab_poli = new javax.swing.JLabel();
+		lab_poli.setHorizontalAlignment(SwingConstants.LEFT);
+
+		lab_poli.setText("Department");
+		GridBagConstraints gbc_lab_poli = new GridBagConstraints();
+		gbc_lab_poli.fill = GridBagConstraints.BOTH;
+		gbc_lab_poli.insets = new Insets(0, 0, 5, 5);
+		gbc_lab_poli.gridx = 2;
+		gbc_lab_poli.gridy = 0;
+		pan_Top.add(lab_poli, gbc_lab_poli);
+		txt_Poli = new javax.swing.JTextField();
+		txt_Poli.setHorizontalAlignment(SwingConstants.LEFT);
+
+		txt_Poli.setEditable(false);
+		GridBagConstraints gbc_txt_Poli = new GridBagConstraints();
+		gbc_txt_Poli.fill = GridBagConstraints.BOTH;
+		gbc_txt_Poli.insets = new Insets(0, 0, 5, 5);
+		gbc_txt_Poli.gridx = 3;
+		gbc_txt_Poli.gridy = 0;
+		pan_Top.add(txt_Poli, gbc_txt_Poli);
+		lbl_InpNoVal = new JLabel("----"); //$NON-NLS-1$ //$NON-NLS-2$
+		lbl_InpNoVal.setVisible(false);
+		lbl_InpNo = new JLabel(this.paragraph.getString("INPATIENT_NO")); //$NON-NLS-1$ //$NON-NLS-2$
+		lbl_InpNo.setHorizontalAlignment(SwingConstants.LEFT);
+		lbl_InpNo.setVisible(false);
+		// lbl_InpNo.setLocation(pt);
+		GridBagConstraints gbc_lbl_InpNo = new GridBagConstraints();
+		gbc_lbl_InpNo.fill = GridBagConstraints.BOTH;
+		gbc_lbl_InpNo.insets = new Insets(0, 0, 5, 5);
+		gbc_lbl_InpNo.gridx = 4;
+		gbc_lbl_InpNo.gridy = 0;
+		pan_Top.add(lbl_InpNo, gbc_lbl_InpNo);
+		GridBagConstraints gbc_lbl_InpNoVal = new GridBagConstraints();
+		gbc_lbl_InpNoVal.fill = GridBagConstraints.BOTH;
+		gbc_lbl_InpNoVal.insets = new Insets(0, 0, 5, 5);
+		gbc_lbl_InpNoVal.gridx = 5;
+		gbc_lbl_InpNoVal.gridy = 0;
+		pan_Top.add(lbl_InpNoVal, gbc_lbl_InpNoVal);
+		lab_SystemTime = new javax.swing.JLabel();
+
+		lab_SystemTime.setFont(new java.awt.Font("UnDotum", 0, 18));
+		lab_SystemTime.setText("-----");
+		GridBagConstraints gbc_lab_SystemTime = new GridBagConstraints();
+		gbc_lab_SystemTime.fill = GridBagConstraints.BOTH;
+		gbc_lab_SystemTime.insets = new Insets(0, 0, 5, 5);
+		gbc_lab_SystemTime.gridx = 6;
+		gbc_lab_SystemTime.gridy = 0;
+		pan_Top.add(lab_SystemTime, gbc_lab_SystemTime);
+		lab_Wait = new javax.swing.JLabel();
+		lab_Wait.setHorizontalAlignment(SwingConstants.LEFT);
+
+		lab_Wait.setText("Await");
+
+		GridBagConstraints gbc_lab_Wait = new GridBagConstraints();
+		gbc_lab_Wait.fill = GridBagConstraints.BOTH;
+		gbc_lab_Wait.insets = new Insets(0, 0, 5, 5);
+		gbc_lab_Wait.gridx = 0;
+		gbc_lab_Wait.gridy = 1;
+		pan_Top.add(lab_Wait, gbc_lab_Wait);
+		lab_WaitCount = new javax.swing.JLabel();
+		lab_WaitCount.setHorizontalAlignment(SwingConstants.LEFT);
+
+		lab_WaitCount.setText("-----");
+		GridBagConstraints gbc_lab_WaitCount = new GridBagConstraints();
+		gbc_lab_WaitCount.fill = GridBagConstraints.BOTH;
+		gbc_lab_WaitCount.insets = new Insets(0, 0, 5, 5);
+		gbc_lab_WaitCount.gridx = 1;
+		gbc_lab_WaitCount.gridy = 1;
+		pan_Top.add(lab_WaitCount, gbc_lab_WaitCount);
+		lab_Finish = new javax.swing.JLabel();
+		lab_Finish.setHorizontalAlignment(SwingConstants.LEFT);
+
+		lab_Finish.setText("Finish");
+		GridBagConstraints gbc_lab_Finish = new GridBagConstraints();
+		gbc_lab_Finish.fill = GridBagConstraints.BOTH;
+		gbc_lab_Finish.insets = new Insets(0, 0, 5, 5);
+		gbc_lab_Finish.gridx = 2;
+		gbc_lab_Finish.gridy = 1;
+		pan_Top.add(lab_Finish, gbc_lab_Finish);
+		lab_FinishCount = new javax.swing.JLabel();
+		lab_FinishCount.setHorizontalAlignment(SwingConstants.LEFT);
+
+		lab_FinishCount.setText("-----");
+		GridBagConstraints gbc_lab_FinishCount = new GridBagConstraints();
+		gbc_lab_FinishCount.fill = GridBagConstraints.BOTH;
+		gbc_lab_FinishCount.insets = new Insets(0, 0, 5, 5);
+		gbc_lab_FinishCount.gridx = 3;
+		gbc_lab_FinishCount.gridy = 1;
+		pan_Top.add(lab_FinishCount, gbc_lab_FinishCount);
+
+		lblPatientName = new JLabel("Patient Name");
+		GridBagConstraints gbc_lblPatientName = new GridBagConstraints();
+		gbc_lblPatientName.fill = GridBagConstraints.BOTH;
+		gbc_lblPatientName.insets = new Insets(0, 0, 5, 5);
+		gbc_lblPatientName.gridx = 4;
+		gbc_lblPatientName.gridy = 1;
+		pan_Top.add(lblPatientName, gbc_lblPatientName);
+
+		textPatientName = new JTextField();
+		GridBagConstraints gbc_textPatientName = new GridBagConstraints();
+		gbc_textPatientName.insets = new Insets(0, 0, 5, 5);
+		gbc_textPatientName.fill = GridBagConstraints.HORIZONTAL;
+		gbc_textPatientName.gridx = 5;
+		gbc_textPatientName.gridy = 1;
+		pan_Top.add(textPatientName, gbc_textPatientName);
+		textPatientName.setColumns(10);
+		lab_Date = new javax.swing.JLabel();
+		lab_Date.setHorizontalAlignment(SwingConstants.LEFT);
+
+		lab_Date.setText(paragraph.getString("CASE_REG_TIME"));
+		GridBagConstraints gbc_lab_Date = new GridBagConstraints();
+		gbc_lab_Date.fill = GridBagConstraints.BOTH;
+		gbc_lab_Date.insets = new Insets(0, 0, 0, 5);
+		gbc_lab_Date.gridx = 0;
+		gbc_lab_Date.gridy = 2;
+		pan_Top.add(lab_Date, gbc_lab_Date);
+		dateComboBox = new cc.johnwu.date.DateComboBox();
+		GridBagConstraints gbc_dateComboBox = new GridBagConstraints();
+		gbc_dateComboBox.fill = GridBagConstraints.BOTH;
+		gbc_dateComboBox.insets = new Insets(0, 0, 0, 5);
+		gbc_dateComboBox.gridx = 1;
+		gbc_dateComboBox.gridy = 2;
+		pan_Top.add(dateComboBox, gbc_dateComboBox);
+
+		lblSeverity = new JLabel("Severity:");
+		lblSeverity.setHorizontalAlignment(SwingConstants.LEFT);
+		GridBagConstraints gbc_lblSeverity = new GridBagConstraints();
+		gbc_lblSeverity.anchor = GridBagConstraints.WEST;
+		gbc_lblSeverity.insets = new Insets(0, 0, 0, 5);
+		gbc_lblSeverity.gridx = 2;
+		gbc_lblSeverity.gridy = 2;
+		pan_Top.add(lblSeverity, gbc_lblSeverity);
+
+		comboBoxSeverity = new JComboBox();
+		comboBoxSeverity.setModel(new DefaultComboBoxModel(new String[] { "",
+				"L", "M", "H" }));
+		GridBagConstraints gbc_comboBoxSeverity = new GridBagConstraints();
+		gbc_comboBoxSeverity.insets = new Insets(0, 0, 0, 5);
+		gbc_comboBoxSeverity.fill = GridBagConstraints.HORIZONTAL;
+		gbc_comboBoxSeverity.gridx = 3;
+		gbc_comboBoxSeverity.gridy = 2;
+		pan_Top.add(comboBoxSeverity, gbc_comboBoxSeverity);
+
+		JLabel lblLocation = new JLabel("Location");
+		GridBagConstraints gbc_lblLocation = new GridBagConstraints();
+		gbc_lblLocation.fill = GridBagConstraints.BOTH;
+		gbc_lblLocation.insets = new Insets(0, 0, 0, 5);
+		gbc_lblLocation.gridx = 4;
+		gbc_lblLocation.gridy = 2;
+		pan_Top.add(lblLocation, gbc_lblLocation);
+
+		textLocation = new JTextField();
+		GridBagConstraints gbc_textLocation = new GridBagConstraints();
+		gbc_textLocation.insets = new Insets(0, 0, 0, 5);
+		gbc_textLocation.fill = GridBagConstraints.HORIZONTAL;
+		gbc_textLocation.gridx = 5;
+		gbc_textLocation.gridy = 2;
+		pan_Top.add(textLocation, gbc_textLocation);
+		textLocation.setColumns(10);
+		btn_Search = new javax.swing.JButton();
+
+		btn_Search.setText("Search");
+		btn_Search.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				btn_SearchActionPerformed(evt);
+			}
+		});
+		GridBagConstraints gbc_btn_Search = new GridBagConstraints();
+		gbc_btn_Search.insets = new Insets(0, 0, 0, 5);
+		gbc_btn_Search.fill = GridBagConstraints.BOTH;
+		gbc_btn_Search.gridx = 6;
+		gbc_btn_Search.gridy = 2;
+		pan_Top.add(btn_Search, gbc_btn_Search);
 
 		pack();
 		initDataBindings();
@@ -707,10 +768,12 @@ public class Frm_WorkList extends javax.swing.JFrame {
 			btn_Search.setText("Cancels Search");
 			m_RefrashWorkList.interrupt(); // 終止重複讀取掛號表單
 			m_RefrashWorkList.stopRunning();
-			m_RefrashWorkList.getSelectDate(dateComboBox.getValue(), severity, "N");
+			m_RefrashWorkList.getSelectDate(dateComboBox.getValue(), severity,
+					"N", textLocation.getText(), textPatientName.getText());
 			m_RefrashWorkList2.interrupt(); // 終止重複讀取掛號表單
 			m_RefrashWorkList2.stopRunning();
-			m_RefrashWorkList2.getSelectDate(dateComboBox.getValue(), severity, "C");
+			m_RefrashWorkList2.getSelectDate(dateComboBox.getValue(), severity,
+					"C", textLocation.getText(), textPatientName.getText());
 		}
 	}// GEN-LAST:event_btn_SearchActionPerformed
 
@@ -734,7 +797,6 @@ public class Frm_WorkList extends javax.swing.JFrame {
 	private javax.swing.JMenuItem mnit_Enter;
 	private javax.swing.JPanel pan_Center;
 	private javax.swing.JPanel pan_Right;
-	private javax.swing.JPanel pan_Top;
 	private javax.swing.JScrollPane span_WaitDiagnosis;
 	private javax.swing.JTable tab_WorkList;
 	private javax.swing.JTable tab_WorkListInterface;
@@ -746,6 +808,9 @@ public class Frm_WorkList extends javax.swing.JFrame {
 	private JLabel lbl_InpNo;
 	private JTable table_FinishList;
 	private JLabel lblSeverity;
+	private JLabel lblPatientName;
+	private JTextField textPatientName;
+	private JTextField textLocation;
 
 	protected void initDataBindings() {
 	}
