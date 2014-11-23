@@ -1672,10 +1672,10 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface,
 				}
 
 				String sql = String.format(
-						"upadte case_manage set status = '%s', close_time = NOW() %s "
+						"update case_manage set status = '%s', close_time = NOW() %s "
 								+ "where guid = '%s'", finished,
 						(finished.equalsIgnoreCase("C") ? ",close_reason = '"
-								+ closeReason + "' " : ""));
+								+ closeReason + "' " : ""), caseGuid);
 
 				logger.debug("[{}][{}] {}", UserInfo.getUserID(),
 						UserInfo.getUserName(), sql);
