@@ -1115,10 +1115,13 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface,
 		if (caseType.equalsIgnoreCase("W")) {
 			pan_WoundAssessment = new Tab_WoundAssessment(caseGuid);
 			pan_WoundComplication = new Tab_WoundComplication(m_Pno, caseGuid,
-					m_RegGuid);
+					m_RegGuid);	
 			jTabbedPane1.addTab(lang.getString("WOUND_ASSESSMENT"),
 					pan_WoundAssessment);
 			jTabbedPane1.addTab("Complication", pan_WoundComplication);
+			pan_WoundHistory = new Tab_WoundHistory(m_Pno);
+			jTabbedPane1.addTab(lang.getString("WOUND_HISTORY"), pan_WoundHistory);
+			
 			tabs.add(pan_WoundAssessment);
 			tabs.add(pan_WoundComplication);
 		} else {
@@ -1461,6 +1464,8 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface,
 			pan_HIVComp = new Tab_HIVCase(caseGuid);
 			pan_HIVComp.setParent(this);
 			jTabbedPane1.addTab(lang.getString("HIV_TAB"), pan_HIVComp);
+			pan_HIVHistoryComp = new Tab_HIVHistory(this.m_Pno);
+			jTabbedPane1.addTab(lang.getString("HIV_HISTORY"), pan_HIVHistoryComp);
 			tabs.add(pan_HIVComp);
 		} else if (caseType.equalsIgnoreCase("W")) {
 			pan_Wound = new Tab_Wound(m_Pno, caseGuid, caseType);
@@ -1990,7 +1995,9 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface,
 	public Tab_Wound pan_Wound;
 	private Tab_Complication pan_CompliComp;
 	private Tab_HIVCase pan_HIVComp;
+	private Tab_HIVHistory pan_HIVHistoryComp;
 	private Tab_WoundAssessment pan_WoundAssessment;
+	private Tab_WoundHistory pan_WoundHistory;
 	private Tab_ConfirmEducation pan_ConfEdu;
 	private Tab_MedicineEducation pan_MedEdu;
 	private javax.swing.JPanel pan_Prescription;
