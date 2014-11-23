@@ -21,8 +21,8 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.table.DefaultTableModel;
 
 import multilingual.Language;
+import casemgmt.Dlg_WoundPicOper;
 import cc.johnwu.sql.DBC;
-
 import common.Constant;
 import common.TabTools;
 
@@ -95,53 +95,16 @@ public class Frm_ImageMgmt extends JFrame {
    	};
    	
 	private void reloadImageTable(DefaultTableModel dtm, String date, String type, String category, String keyword) {
-		Boolean conditionEnabled = false;
 		String where = "";
-		if(!date.isEmpty()) {
-			if(!conditionEnabled) {
-				conditionEnabled = true;
-				where += "where ";
-			}
-			else {
-				where += " AND ";
-			}
-			where += "create_time LIKE '" + date + "%' ";
-		}
-		if(!type.isEmpty()) {
-			if(!conditionEnabled) {
-				conditionEnabled = true;
-				where += "where ";
-			}
-			else {
-				where += " AND ";
-			}
-			where += "type = '" + type + "' ";
-		}
-		if(!category.isEmpty()) {
-			if(!conditionEnabled) {
-				conditionEnabled = true;
-				where += "where ";
-			}
-			else {
-				where += " AND ";
-			}
-			where += "category = '" + category + "' ";
-		}
-		if(!keyword.isEmpty()) {
-			if(!conditionEnabled) {
-				conditionEnabled = true;
-				where += "where ";
-			}
-			else {
-				where += " AND ";
-			}
-			where += "keyword = '" + keyword + "' ";
-		}
+		if(!date.isEmpty()) where += " AND create_time LIKE '" + date + "%' ";
+		if(!type.isEmpty()) where += " AND type = '" + type + "' ";
+		if(!category.isEmpty()) where += " AND category = '" + category + "' ";
+		if(!keyword.isEmpty()) where += " AND keyword = '" + keyword + "' ";
 				
 		dtm.setRowCount(0);
 //String s[]={"guid", "item_guid", "p_no", "type", "category", "keyword", "note", "create_time"};
    		try{
-            ResultSet rs = DBC.executeQuery("SELECT guid, item_guid, p_no, type, body_code.desc as 'category', keyword, note, create_time FROM image_meta LEFT JOIN body_code on image_meta.category = body_code.id " + where + " order by create_time asc");
+            ResultSet rs = DBC.executeQuery("SELECT guid, item_guid, p_no, type, body_code.desc as 'category', keyword, note, create_time FROM image_meta LEFT JOIN body_code on image_meta.category = body_code.id WHERE status <> 'D' " + where + " order by create_time asc");
             String[] rowData = new String[8];
             while(rs.next()){
             	rowData[0] = rs.getString("guid");
@@ -455,8 +418,10 @@ public class Frm_ImageMgmt extends JFrame {
 	}
 	
 	private void btnEnterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_CloseActionPerformed
-        //new main.Frm_Main().setVisible(true);
-        //this.dispose();
+		String imageGUID = tbImage.getValueAt(tbImage.getSelectedRow(), 0).toString();
+		Dlg_WoundPicOper dlg = new Dlg_WoundPicOper(imageGUID);
+		dlg.setLocationRelativeTo(null);
+		dlg.setVisible(true);
     }//GEN-LAST:event_btn_CloseActionPerformed
 	
 	private void btnCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_CloseActionPerformed
@@ -465,8 +430,6 @@ public class Frm_ImageMgmt extends JFrame {
     }//GEN-LAST:event_btn_CloseActionPerformed
 	
 	private void btnQueryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_CloseActionPerformed
-        //new main.Frm_Main().setVisible(true);
-        //this.dispose();
 		String date = (cbxDate.isSelected()? dateComboBox.getValue() : "");
 		String type = ((TwoColumeClass) cobType.getSelectedItem()).col1;
 		String categoryID = ((TwoColumeClass) cobCategory.getSelectedItem()).col1;
