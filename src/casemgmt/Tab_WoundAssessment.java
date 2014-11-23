@@ -224,12 +224,13 @@ public class Tab_WoundAssessment extends JPanel implements ISaveable {
 			
 			rs = DBC.executeQuery(sql);
 			if (!rs.next()) {
-				String sqlInsert = "INSERT into wound_accessment '"+  guid +  "', " 
+				String sqlInsert = "INSERT into wound_accessment values ( '"+  guid +  "', " 
 				+ " '" + this.caseGuid + "', '" + p_no + "'";
 				int i = 0;
 				for (i = 0; i < 16; i++) {
 					sqlInsert = sqlInsert + ", NULL";
 				}
+				sqlInsert += ")";
 				DBC.executeUpdate(sqlInsert);
 			} else {
 				if (rs.getString("wound_accessment.Hypertension") != null
