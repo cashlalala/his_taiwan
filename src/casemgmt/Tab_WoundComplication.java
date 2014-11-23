@@ -23,6 +23,9 @@ import org.apache.logging.log4j.Logger;
 
 import cc.johnwu.login.UserInfo;
 import cc.johnwu.sql.DBC;
+import cc.johnwu.sql.HISModel;
+
+import javax.swing.JTable;
 
 public class Tab_WoundComplication extends JPanel implements ISaveable {
 
@@ -44,11 +47,43 @@ public class Tab_WoundComplication extends JPanel implements ISaveable {
 		this.pNo = pNo;
 		this.caseGuid = caseGuid;
 		this.regGuid = regGuid;
-		this.guid = UUID.randomUUID().toString();;
+		this.guid = UUID.randomUUID().toString();
 
 		initComponents();
-		init();
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				init();
+			}
+		}).start();
 		btnSave.setEnabled(false);
+	}
+
+	private void refreshHist() {
+		String sql = String
+				.format("select wc.createdatetime, wc.increase_redness,"
+						+ "wc.pain, wc.swelling, wc.continuous_bleeding, "
+						+ "wc.dark_dry, wc.bigger_Deeper, wc.drainage,"
+						+ "wc.pus_color, wc.pus_smell, wc.fever, wc.tender_lump,"
+						+ "wc.not_healing " + "from wound_complication wc "
+						+ "where wc.p_no = '%s' "
+						+ "order by wc.createdatetime desc", pNo);
+
+		ResultSet rs = null;
+		try {
+			rs = DBC.executeQuery(sql);
+			table.setModel(HISModel.getModel(rs));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				DBC.closeConnection(rs);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private void init() {
@@ -72,6 +107,7 @@ public class Tab_WoundComplication extends JPanel implements ISaveable {
 				chckbxTenderLump.setSelected(rs.getBoolean("tender_lump"));
 				chckbxNotHealing.setSelected(rs.getBoolean("not_healing"));
 			}
+			refreshHist();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -94,93 +130,263 @@ public class Tab_WoundComplication extends JPanel implements ISaveable {
 			}
 		});
 		GroupLayout groupLayout = new GroupLayout(this);
-		groupLayout
-				.setHorizontalGroup(groupLayout
-						.createParallelGroup(Alignment.LEADING)
-						.addComponent(scrollPane, Alignment.TRAILING,
-								GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE)
-						.addGroup(
-								Alignment.TRAILING,
-								groupLayout
-										.createSequentialGroup()
-										.addContainerGap()
-										.addComponent(btnSave,
-												GroupLayout.PREFERRED_SIZE, 80,
-												GroupLayout.PREFERRED_SIZE)
-										.addGap(10)));
+		groupLayout.setHorizontalGroup(groupLayout
+				.createParallelGroup(Alignment.TRAILING)
+				.addGroup(
+						groupLayout
+								.createSequentialGroup()
+								.addContainerGap()
+								.addComponent(btnSave,
+										GroupLayout.PREFERRED_SIZE, 80,
+										GroupLayout.PREFERRED_SIZE).addGap(10))
+				.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 450,
+						Short.MAX_VALUE));
 		groupLayout.setVerticalGroup(groupLayout.createParallelGroup(
 				Alignment.LEADING).addGroup(
+				Alignment.TRAILING,
 				groupLayout
 						.createSequentialGroup()
-						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE,
-								269, GroupLayout.PREFERRED_SIZE)
-						.addPreferredGap(ComponentPlacement.RELATED,
-								GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+						.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE,
+								410, Short.MAX_VALUE).addGap(18)
 						.addComponent(btnSave).addContainerGap()));
 
 		JPanel panel = new JPanel();
 		scrollPane.setViewportView(panel);
-		panel.setLayout(null);
 
 		chckbxIncreaseRedness = new ChangeNotifyCheckBox(
 				lang.getString("WOUND_CASE_INCREASE_REDNESS"), btnSave);
-		chckbxIncreaseRedness.setBounds(24, 7, 181, 23);
-		panel.add(chckbxIncreaseRedness);
 
 		chckbxPain = new ChangeNotifyCheckBox(
 				lang.getString("WOUND_CASE_PAIN"), btnSave);
-		chckbxPain.setBounds(207, 7, 187, 23);
-		panel.add(chckbxPain);
 
 		chckbxSwelling = new ChangeNotifyCheckBox(
 				lang.getString("WOUND_CASE_SWELLING"), btnSave);
-		chckbxSwelling.setBounds(24, 46, 181, 23);
-		panel.add(chckbxSwelling);
 
 		chckbxContinueBleeding = new ChangeNotifyCheckBox(
 				lang.getString("WOUND_CASE_CONTINUE_BLEED"), btnSave);
-		chckbxContinueBleeding.setBounds(207, 46, 187, 23);
-		panel.add(chckbxContinueBleeding);
 
 		chckbxDarkDry = new ChangeNotifyCheckBox(
 				lang.getString("WOUND_CASE_DARK_DRY"), btnSave);
-		chckbxDarkDry.setBounds(24, 86, 181, 23);
-		panel.add(chckbxDarkDry);
 
 		chckbxBiggerDeeper = new ChangeNotifyCheckBox(
 				lang.getString("WOUND_CASE_BIGGER_DEEPER"), btnSave);
-		chckbxBiggerDeeper.setBounds(207, 86, 187, 23);
-		panel.add(chckbxBiggerDeeper);
 
 		chckbxDrainage = new ChangeNotifyCheckBox(
 				lang.getString("WOUND_CASE_DRAINAGE"), btnSave);
-		chckbxDrainage.setBounds(24, 128, 181, 23);
-		panel.add(chckbxDrainage);
 
 		chckbxPus_Color = new ChangeNotifyCheckBox(
 				lang.getString("WOUND_CASE_PUS_COLOR"), btnSave);
-		chckbxPus_Color.setBounds(207, 128, 187, 23);
-		panel.add(chckbxPus_Color);
 
 		chckbxPus_Smell = new ChangeNotifyCheckBox(
 				lang.getString("WOUND_CASE_PUS_SMELL"), btnSave);
-		chckbxPus_Smell.setBounds(24, 174, 181, 23);
-		panel.add(chckbxPus_Smell);
 
 		chckbxFever = new ChangeNotifyCheckBox(
 				lang.getString("WOUND_CASE_FEVER"), btnSave);
-		chckbxFever.setBounds(207, 174, 187, 23);
-		panel.add(chckbxFever);
 
 		chckbxTenderLump = new ChangeNotifyCheckBox(
 				lang.getString("WOUND_CASE_TENDER_LUMP"), btnSave);
-		chckbxTenderLump.setBounds(24, 223, 181, 23);
-		panel.add(chckbxTenderLump);
 
 		chckbxNotHealing = new ChangeNotifyCheckBox(
 				lang.getString("WOUND_CASE_NOT_HEALING"), btnSave);
-		chckbxNotHealing.setBounds(207, 223, 187, 23);
-		panel.add(chckbxNotHealing);
+
+		scrollPane_1 = new JScrollPane();
+		GroupLayout gl_panel = new GroupLayout(panel);
+		gl_panel.setHorizontalGroup(gl_panel
+				.createParallelGroup(Alignment.LEADING)
+				.addGroup(
+						gl_panel.createSequentialGroup()
+								.addGap(24)
+								.addGroup(
+										gl_panel.createParallelGroup(
+												Alignment.LEADING)
+												.addGroup(
+														gl_panel.createSequentialGroup()
+																.addComponent(
+																		chckbxIncreaseRedness,
+																		GroupLayout.PREFERRED_SIZE,
+																		181,
+																		GroupLayout.PREFERRED_SIZE)
+																.addGap(2)
+																.addComponent(
+																		chckbxPain,
+																		GroupLayout.PREFERRED_SIZE,
+																		187,
+																		GroupLayout.PREFERRED_SIZE))
+												.addGroup(
+														gl_panel.createSequentialGroup()
+																.addComponent(
+																		chckbxSwelling,
+																		GroupLayout.PREFERRED_SIZE,
+																		181,
+																		GroupLayout.PREFERRED_SIZE)
+																.addGap(2)
+																.addComponent(
+																		chckbxContinueBleeding,
+																		GroupLayout.PREFERRED_SIZE,
+																		187,
+																		GroupLayout.PREFERRED_SIZE))
+												.addGroup(
+														gl_panel.createSequentialGroup()
+																.addComponent(
+																		chckbxDarkDry,
+																		GroupLayout.PREFERRED_SIZE,
+																		181,
+																		GroupLayout.PREFERRED_SIZE)
+																.addGap(2)
+																.addComponent(
+																		chckbxBiggerDeeper,
+																		GroupLayout.PREFERRED_SIZE,
+																		187,
+																		GroupLayout.PREFERRED_SIZE))
+												.addGroup(
+														gl_panel.createSequentialGroup()
+																.addComponent(
+																		chckbxDrainage,
+																		GroupLayout.PREFERRED_SIZE,
+																		181,
+																		GroupLayout.PREFERRED_SIZE)
+																.addGap(2)
+																.addComponent(
+																		chckbxPus_Color,
+																		GroupLayout.PREFERRED_SIZE,
+																		187,
+																		GroupLayout.PREFERRED_SIZE))
+												.addGroup(
+														gl_panel.createSequentialGroup()
+																.addComponent(
+																		chckbxPus_Smell,
+																		GroupLayout.PREFERRED_SIZE,
+																		181,
+																		GroupLayout.PREFERRED_SIZE)
+																.addGap(2)
+																.addComponent(
+																		chckbxFever,
+																		GroupLayout.PREFERRED_SIZE,
+																		187,
+																		GroupLayout.PREFERRED_SIZE))
+												.addGroup(
+														gl_panel.createSequentialGroup()
+																.addComponent(
+																		chckbxTenderLump,
+																		GroupLayout.PREFERRED_SIZE,
+																		181,
+																		GroupLayout.PREFERRED_SIZE)
+																.addGap(2)
+																.addComponent(
+																		chckbxNotHealing,
+																		GroupLayout.PREFERRED_SIZE,
+																		187,
+																		GroupLayout.PREFERRED_SIZE)))
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addComponent(scrollPane_1,
+										GroupLayout.DEFAULT_SIZE, 398,
+										Short.MAX_VALUE).addGap(49)));
+		gl_panel.setVerticalGroup(gl_panel
+				.createParallelGroup(Alignment.LEADING)
+				.addGroup(
+						gl_panel.createSequentialGroup()
+								.addGroup(
+										gl_panel.createParallelGroup(
+												Alignment.LEADING)
+												.addGroup(
+														gl_panel.createSequentialGroup()
+																.addGap(7)
+																.addGroup(
+																		gl_panel.createParallelGroup(
+																				Alignment.LEADING)
+																				.addComponent(
+																						chckbxIncreaseRedness,
+																						GroupLayout.PREFERRED_SIZE,
+																						GroupLayout.DEFAULT_SIZE,
+																						GroupLayout.PREFERRED_SIZE)
+																				.addComponent(
+																						chckbxPain,
+																						GroupLayout.PREFERRED_SIZE,
+																						GroupLayout.DEFAULT_SIZE,
+																						GroupLayout.PREFERRED_SIZE))
+																.addGap(16)
+																.addGroup(
+																		gl_panel.createParallelGroup(
+																				Alignment.LEADING)
+																				.addComponent(
+																						chckbxSwelling,
+																						GroupLayout.PREFERRED_SIZE,
+																						GroupLayout.DEFAULT_SIZE,
+																						GroupLayout.PREFERRED_SIZE)
+																				.addComponent(
+																						chckbxContinueBleeding,
+																						GroupLayout.PREFERRED_SIZE,
+																						GroupLayout.DEFAULT_SIZE,
+																						GroupLayout.PREFERRED_SIZE))
+																.addGap(17)
+																.addGroup(
+																		gl_panel.createParallelGroup(
+																				Alignment.LEADING)
+																				.addComponent(
+																						chckbxDarkDry,
+																						GroupLayout.PREFERRED_SIZE,
+																						GroupLayout.DEFAULT_SIZE,
+																						GroupLayout.PREFERRED_SIZE)
+																				.addComponent(
+																						chckbxBiggerDeeper,
+																						GroupLayout.PREFERRED_SIZE,
+																						GroupLayout.DEFAULT_SIZE,
+																						GroupLayout.PREFERRED_SIZE))
+																.addGap(19)
+																.addGroup(
+																		gl_panel.createParallelGroup(
+																				Alignment.LEADING)
+																				.addComponent(
+																						chckbxDrainage,
+																						GroupLayout.PREFERRED_SIZE,
+																						GroupLayout.DEFAULT_SIZE,
+																						GroupLayout.PREFERRED_SIZE)
+																				.addComponent(
+																						chckbxPus_Color,
+																						GroupLayout.PREFERRED_SIZE,
+																						GroupLayout.DEFAULT_SIZE,
+																						GroupLayout.PREFERRED_SIZE))
+																.addGap(23)
+																.addGroup(
+																		gl_panel.createParallelGroup(
+																				Alignment.LEADING)
+																				.addComponent(
+																						chckbxPus_Smell,
+																						GroupLayout.PREFERRED_SIZE,
+																						GroupLayout.DEFAULT_SIZE,
+																						GroupLayout.PREFERRED_SIZE)
+																				.addComponent(
+																						chckbxFever,
+																						GroupLayout.PREFERRED_SIZE,
+																						GroupLayout.DEFAULT_SIZE,
+																						GroupLayout.PREFERRED_SIZE))
+																.addGap(26)
+																.addGroup(
+																		gl_panel.createParallelGroup(
+																				Alignment.LEADING)
+																				.addComponent(
+																						chckbxTenderLump,
+																						GroupLayout.PREFERRED_SIZE,
+																						GroupLayout.DEFAULT_SIZE,
+																						GroupLayout.PREFERRED_SIZE)
+																				.addComponent(
+																						chckbxNotHealing,
+																						GroupLayout.PREFERRED_SIZE,
+																						GroupLayout.DEFAULT_SIZE,
+																						GroupLayout.PREFERRED_SIZE)))
+												.addGroup(
+														gl_panel.createSequentialGroup()
+																.addContainerGap()
+																.addComponent(
+																		scrollPane_1,
+																		GroupLayout.DEFAULT_SIZE,
+																		375,
+																		Short.MAX_VALUE)))
+								.addContainerGap()));
+
+		table = new JTable();
+		scrollPane_1.setViewportView(table);
+		panel.setLayout(gl_panel);
 
 		setLayout(groupLayout);
 
@@ -190,6 +396,13 @@ public class Tab_WoundComplication extends JPanel implements ISaveable {
 	protected void onBtnSaveClicked(ActionEvent e) {
 		try {
 			save();
+			new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					refreshHist();
+				}
+			}).start();
 			JOptionPane.showMessageDialog(null, "Save Complete");
 
 			btnSave.setEnabled(false);
@@ -214,6 +427,8 @@ public class Tab_WoundComplication extends JPanel implements ISaveable {
 	private ChangeNotifyCheckBox chckbxTenderLump;
 	private ChangeNotifyCheckBox chckbxNotHealing;
 	private JButton btnSave;
+	private JScrollPane scrollPane_1;
+	private JTable table;
 
 	@Override
 	public boolean isSaveable() {

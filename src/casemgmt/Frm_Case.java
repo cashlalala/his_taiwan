@@ -1664,9 +1664,19 @@ public class Frm_Case extends javax.swing.JFrame implements DateInterface,
 						tab.save(conn);
 					}
 				}
-				String sql = "UPDATE case_manage SET " + "status  = '"
-						+ finished + "'," + "close_time = NOW()"
-						+ "WHERE guid = '" + caseGuid + "' ";
+
+				String closeReason = "";
+				if (finished.equalsIgnoreCase("C")) {
+					closeReason = (String) JOptionPane.showInputDialog(this,
+							"Please enter the close reason: ");
+				}
+
+				String sql = String.format(
+						"upadte case_manage set status = '%s', close_time = NOW() %s "
+								+ "where guid = '%s'", finished,
+						(finished.equalsIgnoreCase("C") ? ",close_reason = '"
+								+ closeReason + "' " : ""));
+
 				logger.debug("[{}][{}] {}", UserInfo.getUserID(),
 						UserInfo.getUserName(), sql);
 				ps = conn.prepareStatement(sql);
