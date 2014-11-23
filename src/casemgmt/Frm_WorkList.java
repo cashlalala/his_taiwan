@@ -15,8 +15,10 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
@@ -26,7 +28,6 @@ import multilingual.Language;
 import cc.johnwu.login.UserInfo;
 import diagnosis.Frm_DiagnosisPrintChooser;
 import errormessage.StoredErrorMessage;
-import javax.swing.JTextField;
 
 public class Frm_WorkList extends javax.swing.JFrame {
 
@@ -50,6 +51,7 @@ public class Frm_WorkList extends javax.swing.JFrame {
 	StoredErrorMessage ErrorMessage = new StoredErrorMessage();
 	private String caseGuid;
 	private String caseType;
+	private JPanel pan_all;
 
 	// LastSelectRow 最後選擇行號　　SysName　系統名
 	public Frm_WorkList(int LastSelectRow, String type) {
@@ -177,10 +179,10 @@ public class Frm_WorkList extends javax.swing.JFrame {
 	// <editor-fold defaultstate="collapsed"
 	// desc="Generated Code">//GEN-BEGIN:initComponents
 	private void initComponents() {
+		pan_all = new javax.swing.JPanel();
 		pan_Center = new javax.swing.JPanel();
 		span_WaitDiagnosis = new javax.swing.JScrollPane();
 		tab_WorkList = new javax.swing.JTable();
-		pan_Top = new javax.swing.JPanel();
 		pan_Right = new javax.swing.JPanel();
 		btn_Close = new javax.swing.JButton();
 		btn_Enter = new javax.swing.JButton();
@@ -358,68 +360,88 @@ public class Frm_WorkList extends javax.swing.JFrame {
 
 		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(
 				getContentPane());
-		getContentPane().setLayout(layout);
 		layout.setHorizontalGroup(layout
-				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(
-						javax.swing.GroupLayout.Alignment.TRAILING,
+				.createParallelGroup(Alignment.TRAILING).addGroup(
+						Alignment.LEADING,
 						layout.createSequentialGroup()
 								.addContainerGap()
-								.addGroup(
-										layout.createParallelGroup(
-												javax.swing.GroupLayout.Alignment.TRAILING)
-												.addComponent(
-														pan_Top,
-														javax.swing.GroupLayout.Alignment.LEADING,
-														javax.swing.GroupLayout.DEFAULT_SIZE,
-														javax.swing.GroupLayout.DEFAULT_SIZE,
-														Short.MAX_VALUE)
-												.addGroup(
-														layout.createSequentialGroup()
-																.addComponent(
-																		pan_Center,
-																		javax.swing.GroupLayout.DEFAULT_SIZE,
-																		javax.swing.GroupLayout.DEFAULT_SIZE,
-																		Short.MAX_VALUE)
-																.addPreferredGap(
-																		javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-																.addComponent(
-																		pan_Right,
-																		javax.swing.GroupLayout.PREFERRED_SIZE,
-																		javax.swing.GroupLayout.DEFAULT_SIZE,
-																		javax.swing.GroupLayout.PREFERRED_SIZE)))
-								.addContainerGap()));
-		layout.setVerticalGroup(layout
-				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+								.addComponent(pan_all,
+										GroupLayout.DEFAULT_SIZE, 1337,
+										Short.MAX_VALUE).addContainerGap()));
+		layout.setVerticalGroup(layout.createParallelGroup(Alignment.LEADING)
 				.addGroup(
 						layout.createSequentialGroup()
 								.addContainerGap()
-								.addComponent(pan_Top,
-										javax.swing.GroupLayout.PREFERRED_SIZE,
-										99,
-										javax.swing.GroupLayout.PREFERRED_SIZE)
-								.addPreferredGap(
-										javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-								.addGroup(
-										layout.createParallelGroup(
-												javax.swing.GroupLayout.Alignment.TRAILING)
-												.addComponent(
-														pan_Center,
-														javax.swing.GroupLayout.DEFAULT_SIZE,
-														javax.swing.GroupLayout.DEFAULT_SIZE,
-														Short.MAX_VALUE)
-												.addComponent(
-														pan_Right,
-														javax.swing.GroupLayout.DEFAULT_SIZE,
-														javax.swing.GroupLayout.DEFAULT_SIZE,
-														Short.MAX_VALUE))
-								.addContainerGap()));
+								.addComponent(pan_all,
+										GroupLayout.DEFAULT_SIZE, 672,
+										Short.MAX_VALUE)));
+
+		JPanel pan_Top = new JPanel();
+		GroupLayout gl_pan_all = new GroupLayout(pan_all);
+		gl_pan_all
+				.setHorizontalGroup(gl_pan_all
+						.createParallelGroup(Alignment.LEADING)
+						.addGroup(
+								Alignment.TRAILING,
+								gl_pan_all
+										.createSequentialGroup()
+										.addContainerGap()
+										.addGroup(
+												gl_pan_all
+														.createParallelGroup(
+																Alignment.TRAILING)
+														.addGroup(
+																gl_pan_all
+																		.createSequentialGroup()
+																		.addComponent(
+																				pan_Center,
+																				GroupLayout.DEFAULT_SIZE,
+																				1157,
+																				Short.MAX_VALUE)
+																		.addPreferredGap(
+																				ComponentPlacement.UNRELATED)
+																		.addComponent(
+																				pan_Right,
+																				GroupLayout.PREFERRED_SIZE,
+																				150,
+																				GroupLayout.PREFERRED_SIZE))
+														.addComponent(
+																pan_Top,
+																GroupLayout.DEFAULT_SIZE,
+																1317,
+																Short.MAX_VALUE))
+										.addContainerGap()));
+		gl_pan_all.setVerticalGroup(gl_pan_all.createParallelGroup(
+				Alignment.LEADING).addGroup(
+				gl_pan_all
+						.createSequentialGroup()
+						.addContainerGap()
+						.addComponent(pan_Top, GroupLayout.PREFERRED_SIZE, 85,
+								GroupLayout.PREFERRED_SIZE)
+						.addPreferredGap(ComponentPlacement.UNRELATED)
+						.addGroup(
+								gl_pan_all
+										.createParallelGroup(Alignment.LEADING)
+										.addComponent(pan_Center,
+												GroupLayout.DEFAULT_SIZE, 556,
+												Short.MAX_VALUE)
+										.addComponent(pan_Right,
+												GroupLayout.DEFAULT_SIZE, 556,
+												Short.MAX_VALUE)).addGap(11)));
+		GridBagLayout gbl_panel = new GridBagLayout();
+		gbl_panel.columnWidths = new int[] { 0 };
+		gbl_panel.rowHeights = new int[] { 0 };
+		gbl_panel.columnWeights = new double[] { Double.MIN_VALUE };
+		gbl_panel.rowWeights = new double[] { Double.MIN_VALUE };
+		pan_Top.setLayout(gbl_panel);
+		pan_all.setLayout(gl_pan_all);
+		getContentPane().setLayout(layout);
 		GridBagLayout gbl_pan_Top = new GridBagLayout();
-		gbl_pan_Top.columnWidths = new int[] { 247, 247, 247, 247, 247, 247,
-				247, 0 };
-		gbl_pan_Top.rowHeights = new int[] { 29, 29, 29, 0 };
+		gbl_pan_Top.columnWidths = new int[] { 150, 150, 150, 150, 150, 150,
+				150, 150, 0 };
+		gbl_pan_Top.rowHeights = new int[] { 25, 25, 25, 0 };
 		gbl_pan_Top.columnWeights = new double[] { 0.0, 0.0, 0.0, 1.0, 1.0,
-				1.0, 0.0, Double.MIN_VALUE };
+				1.0, 0.0, 0.0, Double.MIN_VALUE };
 		gbl_pan_Top.rowWeights = new double[] { 0.0, 0.0, 0.0, Double.MIN_VALUE };
 		pan_Top.setLayout(gbl_pan_Top);
 		lab_Name = new javax.swing.JLabel();
@@ -486,7 +508,7 @@ public class Frm_WorkList extends javax.swing.JFrame {
 		lab_SystemTime.setText("-----");
 		GridBagConstraints gbc_lab_SystemTime = new GridBagConstraints();
 		gbc_lab_SystemTime.fill = GridBagConstraints.BOTH;
-		gbc_lab_SystemTime.insets = new Insets(0, 0, 5, 0);
+		gbc_lab_SystemTime.insets = new Insets(0, 0, 5, 5);
 		gbc_lab_SystemTime.gridx = 6;
 		gbc_lab_SystemTime.gridy = 0;
 		pan_Top.add(lab_SystemTime, gbc_lab_SystemTime);
@@ -565,14 +587,6 @@ public class Frm_WorkList extends javax.swing.JFrame {
 		gbc_dateComboBox.gridx = 1;
 		gbc_dateComboBox.gridy = 2;
 		pan_Top.add(dateComboBox, gbc_dateComboBox);
-		btn_Search = new javax.swing.JButton();
-
-		btn_Search.setText("Search");
-		btn_Search.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				btn_SearchActionPerformed(evt);
-			}
-		});
 
 		lblSeverity = new JLabel("Severity:");
 		lblSeverity.setHorizontalAlignment(SwingConstants.LEFT);
@@ -609,7 +623,16 @@ public class Frm_WorkList extends javax.swing.JFrame {
 		gbc_textLocation.gridy = 2;
 		pan_Top.add(textLocation, gbc_textLocation);
 		textLocation.setColumns(10);
+		btn_Search = new javax.swing.JButton();
+
+		btn_Search.setText("Search");
+		btn_Search.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				btn_SearchActionPerformed(evt);
+			}
+		});
 		GridBagConstraints gbc_btn_Search = new GridBagConstraints();
+		gbc_btn_Search.insets = new Insets(0, 0, 0, 5);
 		gbc_btn_Search.fill = GridBagConstraints.BOTH;
 		gbc_btn_Search.gridx = 6;
 		gbc_btn_Search.gridy = 2;
@@ -774,7 +797,6 @@ public class Frm_WorkList extends javax.swing.JFrame {
 	private javax.swing.JMenuItem mnit_Enter;
 	private javax.swing.JPanel pan_Center;
 	private javax.swing.JPanel pan_Right;
-	private javax.swing.JPanel pan_Top;
 	private javax.swing.JScrollPane span_WaitDiagnosis;
 	private javax.swing.JTable tab_WorkList;
 	private javax.swing.JTable tab_WorkListInterface;
