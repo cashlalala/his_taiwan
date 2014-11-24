@@ -1,5 +1,7 @@
 package camera;
 
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.ResultSet;
@@ -23,6 +25,7 @@ import javax.swing.table.DefaultTableModel;
 import multilingual.Language;
 import casemgmt.Dlg_WoundPicOper;
 import cc.johnwu.sql.DBC;
+
 import common.Constant;
 import common.TabTools;
 
@@ -218,6 +221,14 @@ public class Frm_ImageMgmt extends JFrame {
 		tbImage.setRowHeight(30);
 		tbImage.setAutoCreateRowSorter(true);
 		reloadImageTable(imageTableModel, "", "", "", "");
+		tbImage.addMouseListener(new MouseAdapter(){
+		    @Override
+		    public void mouseClicked(MouseEvent e){
+		        if(e.getClickCount()==2){
+		        	openImageDialog();
+		        }
+		    }
+		});
 
 		javax.swing.GroupLayout jPanelLTLayout = new javax.swing.GroupLayout(paneleftTop);
 		paneleftTop.setLayout(jPanelLTLayout);
@@ -417,11 +428,15 @@ public class Frm_ImageMgmt extends JFrame {
 		initLanguage();
 	}
 	
-	private void btnEnterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_CloseActionPerformed
+	private void openImageDialog() {
 		String imageGUID = tbImage.getValueAt(tbImage.getSelectedRow(), 0).toString();
 		Dlg_WoundPicOper dlg = new Dlg_WoundPicOper(imageGUID);
 		dlg.setLocationRelativeTo(null);
 		dlg.setVisible(true);
+	}
+	
+	private void btnEnterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_CloseActionPerformed
+		openImageDialog();
     }//GEN-LAST:event_btn_CloseActionPerformed
 	
 	private void btnCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_CloseActionPerformed
