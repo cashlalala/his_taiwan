@@ -7,7 +7,10 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.UUID;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,7 +27,11 @@ import multilingual.Language;
 import cc.johnwu.sql.DBC;
 
 public class Frm_ConfirmImage extends JFrame {
+	
 	private static final long serialVersionUID = 1L;
+	
+	private Vector<TwoColumeClass> cobCategoryData;
+	private Vector<TwoColumeClass> cobKeywordData;
 
 	//private Webcam webcam = null;
 	//private WebcamPanel panel = null;
@@ -35,6 +42,14 @@ public class Frm_ConfirmImage extends JFrame {
 	private javax.swing.JLabel label_Image;
 	private JButton btnReTake;
 	private JButton btnSave;
+	private javax.swing.JLabel lblNote;
+	private javax.swing.JLabel lblKeyword;
+	private javax.swing.JLabel lblCategory;
+	private javax.swing.JScrollPane scrollingNote;
+	private javax.swing.JTextArea txtNote;
+	private javax.swing.JTextField txtKeyword;
+	private javax.swing.JComboBox cobCategory;
+	private javax.swing.JComboBox cobKeyword;
 	//private JButton btnCancel;
 	
 	private Language paragraph = Language.getInstance();
@@ -43,6 +58,36 @@ public class Frm_ConfirmImage extends JFrame {
 	private String mItemGuid;
 	private String mType;
 	//private JFrame mParent;
+
+	private void getCategoryData() {
+		String sql = "SELECT * FROM body_code";
+   		try{
+            ResultSet rs = DBC.executeQuery(sql);
+            //String[] rowData = new String[5];
+            while(rs.next()){
+            	cobCategoryData.add(new TwoColumeClass(rs.getString("id"), rs.getString("desc")));
+            }
+         }
+         catch (SQLException ex){
+             Logger.getLogger(Frm_ConfirmImage.class.getName()).log(Level.SEVERE, null, ex);
+         }
+	}
+	
+	private void getKeywordData() {
+		cobKeywordData.add(new TwoColumeClass("", ""));
+		
+		String sql = "SELECT distinct keyword FROM image_meta WHERE type='wound' AND keyword is not null order by keyword ASC";
+   		try{
+            ResultSet rs = DBC.executeQuery(sql);
+            //String[] rowData = new String[5];
+            while(rs.next()){
+            	cobKeywordData.add(new TwoColumeClass("", rs.getString("keyword")));
+            }
+         }
+         catch (SQLException ex){
+             Logger.getLogger(Frm_ConfirmImage.class.getName()).log(Level.SEVERE, null, ex);
+         }
+	}
 	
     private void btn_CloseActionPerformed(java.awt.event.ActionEvent evt) {
     	if (!mType.equalsIgnoreCase("wound")) {
@@ -99,29 +144,59 @@ public class Frm_ConfirmImage extends JFrame {
 		}*/
 		
 		try {
-		String sql = "INSERT INTO image_meta(guid, p_no, item_guid, type, image_data, create_time) VALUES(?, ? ,?, ?, ?, now())";
-		Connection conn = DBC.getConnectionExternel();
-		PreparedStatement prestate =  conn.prepareStatement(sql); //先建立一個 SQL 語句並回傳一個 PreparedStatement 物件
-		prestate.setString(1, UUID.randomUUID().toString()); 
-		prestate.setString(2, mPno); 
-		prestate.setString(3, mItemGuid); 
-		prestate.setString(4, mType);
-		
-		ByteArrayOutputStream stream = new ByteArrayOutputStream(); 
-		ImageIO.write(mImage,"jpg",stream);
-		byte[] bytes = stream.toByteArray(); 
-		ByteArrayInputStream in = new ByteArrayInputStream(bytes); 
-		prestate.setBinaryStream(5, in, bytes.length); 
- 
-		prestate.executeUpdate(); 
-		DBC.closeConnectionExternel(conn);
-		
-		JOptionPane.showMessageDialog(null,"Saved successfully.");
-		} catch (Exception ex) {
-			Logger.getLogger(Frm_ConfirmImage.class.getName()).log(Level.SEVERE, null, ex);
-		}
-		
-		this.dispose();
+			if (mType.equalsIgnoreCase("wound")) {
+				String categoryId = ((TwoColumeClass) cobCategory.getSelectedItem()).col1;
+				String keyword = ((TwoColumeClass) cobKeyword.getSelectedItem()).col2;
+				if(keyword.isEmpty()) keyword = txtKeyword.getText();
+				String note = txtNote.getText();
+				
+				String sql = "INSERT INTO image_meta(guid, p_no, item_guid, type, image_data, create_time, category, keyword, note) VALUES(?, ? ,?, ?, ?, now(), ?, ?, ?)";
+				Connection conn = DBC.getConnectionExternel();
+				PreparedStatement prestate =  conn.prepareStatement(sql); //先建立一個 SQL 語句並回傳一個 PreparedStatement 物件
+				prestate.setString(1, UUID.randomUUID().toString()); 
+				prestate.setString(2, mPno); 
+				prestate.setString(3, mItemGuid); 
+				prestate.setString(4, mType);
+				
+				ByteArrayOutputStream stream = new ByteArrayOutputStream(); 
+				ImageIO.write(mImage,"jpg",stream);
+				byte[] bytes = stream.toByteArray(); 
+				ByteArrayInputStream in = new ByteArrayInputStream(bytes); 
+				prestate.setBinaryStream(5, in, bytes.length); 
+		 
+				prestate.setString(6, categoryId);
+				prestate.setString(7, keyword);
+				prestate.setString(8, note);
+				
+				prestate.executeUpdate(); 
+				DBC.closeConnectionExternel(conn);
+				
+			} else {
+				String sql = "INSERT INTO image_meta(guid, p_no, item_guid, type, image_data, create_time) VALUES(?, ? ,?, ?, ?, now())";
+				Connection conn = DBC.getConnectionExternel();
+				PreparedStatement prestate =  conn.prepareStatement(sql); //先建立一個 SQL 語句並回傳一個 PreparedStatement 物件
+				prestate.setString(1, UUID.randomUUID().toString()); 
+				prestate.setString(2, mPno); 
+				prestate.setString(3, mItemGuid); 
+				prestate.setString(4, mType);
+				
+				ByteArrayOutputStream stream = new ByteArrayOutputStream(); 
+				ImageIO.write(mImage,"jpg",stream);
+				byte[] bytes = stream.toByteArray(); 
+				ByteArrayInputStream in = new ByteArrayInputStream(bytes); 
+				prestate.setBinaryStream(5, in, bytes.length); 
+		 
+				prestate.executeUpdate(); 
+				DBC.closeConnectionExternel(conn);
+			}
+			
+			
+			JOptionPane.showMessageDialog(null,"Saved successfully.");
+			} catch (Exception ex) {
+				Logger.getLogger(Frm_ConfirmImage.class.getName()).log(Level.SEVERE, null, ex);
+			}
+			
+			this.dispose();
 	}
 	
 	private void initComponents() {
@@ -129,14 +204,35 @@ public class Frm_ConfirmImage extends JFrame {
 		label_Image = new javax.swing.JLabel();
 		btnReTake = new JButton("Re-Take");
 		btnSave = new JButton("Save");
-		//btnCancel = new JButton("Cancel");
 		
-		//Webcam webcam = Webcam.getDefault();
-		//[176x144] [320x240] [640x480
-		//webcam.setViewSize(new Dimension(640, 480));
-		//webcam.setViewSize(WebcamResolution.VGA.getSize());
-		//WebcamPanel camPanel = new WebcamPanel(webcam);
-		//camPanel.setFPSDisplayed(true);
+		lblNote = new javax.swing.JLabel("Note:");
+		txtNote = new javax.swing.JTextArea(5,20);
+		scrollingNote = new javax.swing.JScrollPane(txtNote);
+		
+		lblKeyword = new javax.swing.JLabel("Keyword:");
+		txtKeyword = new javax.swing.JTextField();
+		
+		lblCategory = new javax.swing.JLabel("Category:");
+		cobCategory = new javax.swing.JComboBox();
+		cobKeyword = new javax.swing.JComboBox();
+		
+		if (!mType.equalsIgnoreCase("wound")) {
+			lblNote.setVisible(false);
+			txtNote.setVisible(false);
+			scrollingNote.setVisible(false);
+			lblKeyword.setVisible(false);
+			txtKeyword.setVisible(false);
+			lblCategory.setVisible(false);
+			cobCategory.setVisible(false);
+			cobKeyword.setVisible(false);
+		} else {
+			cobCategoryData = new Vector<TwoColumeClass>();
+			cobKeywordData = new Vector<TwoColumeClass>();
+			getCategoryData();
+			getKeywordData();
+			cobCategory = new javax.swing.JComboBox(cobCategoryData);
+			cobKeyword = new javax.swing.JComboBox(cobKeywordData);
+		}
 		
 		//setMinimumSize(new java.awt.Dimension(500, 260));
 		//setResizable(false);
@@ -169,8 +265,15 @@ public class Frm_ConfirmImage extends JFrame {
 				.addGroup(pan_RightLayout.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(pan_RightLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(btnReTake, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
-						.addComponent(btnSave, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
+						.addComponent(lblCategory, Alignment.LEADING)
+						.addComponent(cobCategory, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblKeyword, Alignment.LEADING)
+						.addComponent(cobKeyword, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
+						.addComponent(txtKeyword, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblNote, Alignment.LEADING)
+						.addComponent(scrollingNote, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
+						.addComponent(btnReTake, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
+						.addComponent(btnSave, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
 						//.addComponent(btnCancel, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
 						)
 					.addContainerGap())
@@ -179,6 +282,22 @@ public class Frm_ConfirmImage extends JFrame {
 			pan_RightLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(pan_RightLayout.createSequentialGroup()
 					.addContainerGap()
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(lblCategory)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(cobCategory)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGap(5)
+					.addComponent(lblKeyword)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(cobKeyword)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(txtKeyword)
+					.addGap(5)
+					.addComponent(lblNote)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(scrollingNote)
+					.addGap(20)
 					.addComponent(btnReTake)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btnSave)
