@@ -28,19 +28,6 @@ import cc.johnwu.sql.DBC;
 
 public class Frm_ConfirmImage extends JFrame {
 	
-	private class TwoColumeClass {
-		public String col1;
-		public String col2;
-		public TwoColumeClass(String _col1, String _col2) {
-			col1 = _col1;
-			col2 = _col2;
-		}
-		public String toString()  
-        {  
-            return col2;  
-        } 
-	}
-	
 	private static final long serialVersionUID = 1L;
 	
 	private Vector<TwoColumeClass> cobCategoryData;
@@ -72,7 +59,7 @@ public class Frm_ConfirmImage extends JFrame {
 	private String mType;
 	//private JFrame mParent;
 
-	public void getCategoryData() {
+	private void getCategoryData() {
 		String sql = "SELECT * FROM body_code";
    		try{
             ResultSet rs = DBC.executeQuery(sql);
@@ -86,10 +73,10 @@ public class Frm_ConfirmImage extends JFrame {
          }
 	}
 	
-	public void getKeywordData() {
+	private void getKeywordData() {
 		cobKeywordData.add(new TwoColumeClass("", ""));
 		
-		String sql = "SELECT distinct keyword FROM image_meta WHERE type='wound' AND keyword is not null";
+		String sql = "SELECT distinct keyword FROM image_meta WHERE type='wound' AND keyword is not null order by keyword ASC";
    		try{
             ResultSet rs = DBC.executeQuery(sql);
             //String[] rowData = new String[5];
